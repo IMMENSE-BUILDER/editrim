@@ -1,0 +1,17 @@
+import { chromium } from 'playwright';
+const b = await chromium.launch({channel:'chrome'});
+const p = await b.newPage({viewport:{width:1440,height:1000}});
+await p.goto('http://127.0.0.1:5173/',{waitUntil:'networkidle'});
+await p.waitForTimeout(1200);
+await p.locator('.formats-section').scrollIntoViewIfNeeded();
+await p.waitForTimeout(600);
+await p.screenshot({path:'shots/formats.png'});
+await p.locator('.editor-section').scrollIntoViewIfNeeded();
+await p.waitForTimeout(600);
+await p.screenshot({path:'shots/editor-section.png'});
+await p.goto('http://127.0.0.1:5173/templates',{waitUntil:'networkidle'});
+await p.waitForTimeout(800);
+await p.screenshot({path:'shots/gallery2.png'});
+const m=await p.evaluate(()=>{const f=document.querySelector('.gallery-filters');return {client:f.clientWidth,scroll:f.scrollWidth}});
+console.log(m);
+await b.close();

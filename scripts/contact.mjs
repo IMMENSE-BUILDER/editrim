@@ -1,0 +1,11 @@
+import fs from 'node:fs';
+import { chromium } from 'playwright';
+const ids = ['cafe-opening','form-04','simple-significant','flash-sale','north-coast','tomato-basil','porter-pitch','mara-portfolio','night-shift','forms-of-quiet','elena-resume','north-card','built-in-24h','olive-ash','amara-jonah','north-mark','move-intent','ada-banner','long-take','bruma-email'];
+const imgs = ids.map(id => `<figure><img src="data:image/png;base64,${fs.readFileSync(`shots/tpl-${id}.png`).toString('base64')}"><figcaption>${id}</figcaption></figure>`).join('');
+const html = `<!doctype html><style>body{margin:0;background:#ece9e0;font-family:Arial;padding:20px}h1{font-size:18px}main{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}figure{margin:0;background:#fff;padding:8px;border:1px solid #ddd}img{width:100%;display:block}figcaption{font-size:11px;padding-top:6px;color:#333}</style><h1>Template QA — first page, native canvas</h1><main>${imgs}</main>`;
+const b = await chromium.launch({channel:'chrome'});
+const p = await b.newPage({viewport:{width:1500,height:1200}});
+await p.setContent(html);
+await p.waitForTimeout(500);
+await p.screenshot({path:'shots/contact-sheet.png',fullPage:true});
+await b.close();

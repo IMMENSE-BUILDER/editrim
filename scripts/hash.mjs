@@ -1,0 +1,10 @@
+import { chromium } from 'playwright';
+const b=await chromium.launch({channel:'chrome'});
+const p=await b.newPage({viewport:{width:1440,height:1000}});
+await p.goto('http://127.0.0.1:5173/templates',{waitUntil:'networkidle'});
+await p.getByRole('navigation',{name:'Main'}).getByRole('link',{name:'Features'}).click();
+await p.waitForTimeout(1300);
+console.log('url', p.url());
+console.log('top', Math.round(await p.locator('#features').evaluate(el=>el.getBoundingClientRect().top)));
+await p.screenshot({path:'shots/hash-nav.png'});
+await b.close();

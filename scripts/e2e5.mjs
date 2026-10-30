@@ -1,0 +1,27 @@
+import { chromium } from 'playwright';
+const b = await chromium.launch({channel:'chrome'});
+const p = await b.newPage({viewport:{width:1600,height:1000}});
+await p.goto('http://127.0.0.1:5173/editor/new?template=cafe-opening',{waitUntil:'networkidle'});
+await p.waitForTimeout(1200);
+const a = p.locator('.cv-el').filter({hasText:'Bruma'}).first();
+const bb = p.locator('.cv-el').filter({hasText:'COFFEE'}).first();
+await a.click({position:{x:80,y:60}});
+await bb.click({position:{x:30,y:10}, modifiers:['Shift']});
+await p.waitForTimeout(300);
+console.log('group', await p.locator('.cv-sel-group').count());
+console.log('multiInspector', await p.locator('.insp-selection-head').innerText());
+await p.locator('.insp-align button[title="Align left"]').click();
+await p.waitForTimeout(400);
+console.log('alignLeft', await a.evaluate(el=>el.style.left), await bb.evaluate(el=>el.style.left));
+console.log('opacitySection', await p.locator('.insp-section').filter({hasText:'Selection'}).count());
+await p.screenshot({path:'shots/multi-select.png'});
+// background
+await p.keyboard.press('Escape');
+await p.getByRole('button',{name:'Background'}).click();
+await p.waitForTimeout(300);
+await p.locator('.bg-controls .segmented button').nth(1).click();
+await p.waitForTimeout(400);
+const bgImage = await p.locator('.cv-page-clip > div').first().evaluate(el=>getComputedStyle(el).backgroundImage);
+console.log('bgImage', bgImage.slice(0,80));
+await p.screenshot({path:'shots/editor-gradient.png'});
+await b.close();

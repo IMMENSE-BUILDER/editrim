@@ -1,0 +1,12 @@
+import { chromium } from 'playwright';
+const b = await chromium.launch({channel:'chrome'});
+const p = await b.newPage({viewport:{width:1440,height:1000}});
+const errs=[]; p.on('pageerror',e=>errs.push(e.message)); p.on('console',m=>{if(m.type()==='error')errs.push(m.text())});
+await p.goto('http://127.0.0.1:5173/editor/new?template=cafe-opening',{waitUntil:'networkidle'});
+await p.waitForTimeout(1200);
+await p.click('.ed-back');
+await p.waitForTimeout(800);
+await p.screenshot({path:'shots/dashboard.png', fullPage:false});
+console.log('URL', p.url());
+console.log('ERRORS', errs);
+await b.close();

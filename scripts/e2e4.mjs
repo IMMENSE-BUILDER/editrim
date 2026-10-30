@@ -1,0 +1,42 @@
+import { chromium } from 'playwright';
+import assert from 'node:assert';
+const b = await chromium.launch({channel:'chrome'});
+const p = await b.newPage({viewport:{width:1600,height:1000}});
+await p.goto('http://127.0.0.1:5173/editor/new?template=cafe-opening',{waitUntil:'networkidle'});
+await p.waitForTimeout(1200);
+const a = p.locator('.cv-el').filter({hasText:'Bruma'}).first();
+const bb = p.locator('.cv-el').filter({hasText:'COFFEE'}).first();
+await a.click({position:{x:80,y:60}});
+await bb.click({position:{x:40,y:10}, modifiers:['Shift']});
+await p.waitForTimeout(300);
+console.log('group', await p.locator('.cv-sel-group').count(), 'sel', await p.locator('.cv-sel').count());
+const before = await p.locator('.cv-el').count();
+await p.keyboard.press('Control+c');
+await p.keyboard.press('Control+v');
+await p.waitForTimeout(500);
+console.log('paste', before, await p.locator('.cv-el').count());
+// undo paste
+await p.keyboard.press('Control+z');
+await p.waitForTimeout(300);
+console.log('undoPaste', await p.locator('.cv-el').count());
+// align left
+await a.click({position:{x:80,y:60}});
+await bb.click({position:{x:30,y:10}, modifiers:['Shift']});
+await p.waitForTimeout(200);
+await p.locator('.insp-align button[title="Align left"]').click();
+await p.waitForTimeout(400);
+const x1 = await a.evaluate(el=>el.style.left);
+const x2 = await bb.evaluate(el=>el.style.left);
+console.log('alignLeft', x1, x2);
+// background gradient
+await p.keyboard.press('Escape');
+await p.getByRole('button',{name:'Background'}).click();
+await p.waitForTimeout(300);
+await p.locator('.bg-controls .segmented button').nth(1).click();
+await p.waitForTimeout(500);
+const bgImage = await p.locator('.cv-page-clip > div').first().evaluate(el=>getComputedStyle(el).backgroundImage);
+console.log('bgImage', bgImage);
+assert.ok(bgImage.includes('linear-gradient'));
+await p.screenshot({path:'shots/editor-gradient.png'});
+await b.close();
+console.log('OK');

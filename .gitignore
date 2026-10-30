@@ -1,0 +1,12 @@
+node_modules/
+dist/
+shots/
+dev.log
+preview.log
+playwright-report/
+test-results/
+.DS_Store
+*.local
+.vercel/
+tsconfig.tsbuildinfo
+

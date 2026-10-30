@@ -1,0 +1,13 @@
+import { chromium } from 'playwright';
+import fs from 'node:fs';
+const b = await chromium.launch({channel:'chrome'});
+const c = await b.newContext({viewport:{width:1600,height:1000}, acceptDownloads:true});
+const p = await c.newPage();
+await p.goto('http://127.0.0.1:5173/editor/new?template=cafe-opening',{waitUntil:'networkidle'});
+await p.waitForTimeout(1400);
+await p.locator('.ed-download').click();
+const [d] = await Promise.all([p.waitForEvent('download'), p.locator('.modal-footer .btn-cobalt').click()]);
+await d.saveAs('shots/cafe-export.png');
+const buf=fs.readFileSync('shots/cafe-export.png');
+console.log('export', buf.length, buf.readUInt32BE(16), buf.readUInt32BE(20), d.suggestedFilename());
+await b.close();
