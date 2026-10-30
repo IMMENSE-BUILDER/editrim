@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   ArrowRight, ArrowUpRight, Check, ChevronDown, Download, Layers, Lock,
@@ -56,6 +56,10 @@ export default function Landing() {
   const brand = useMemo(() => getBrand(), []);
   const { open: faqOpen, setOpen: setFaqOpen } = useFaq();
   const [format, setFormat] = useState<'post' | 'story' | 'deck' | 'poster'>('post');
+
+  useEffect(() => {
+    document.title = 'Vellum — Design anything. Beautifully.';
+  }, []);
   const formats = {
     post: { label: 'Post', size: '1080 × 1080', page: cafe.pages[0], dims: cafe.size, note: 'Square post' },
     story: { label: 'Story', size: '1080 × 1920', page: sale.pages[0], dims: { name: 'Story', width: 1080, height: 1920 }, note: 'Full-screen story' },

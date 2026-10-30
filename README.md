@@ -4,7 +4,7 @@
 
 No account. No backend. No watermark. Design, present, share and export — all in the browser.
 
-> Live: **https://vellum-studio.vercel.app** &nbsp;·&nbsp; Source: **https://github.com/IMMENSE-BUILDER/vellum**
+> Live: **https://vellum-delta-dun.vercel.app** &nbsp;·&nbsp; Source: **https://github.com/IMMENSE-BUILDER/vellum**
 
 ---
 

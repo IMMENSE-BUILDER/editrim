@@ -2,6 +2,10 @@
    Vellum — site (landing + gallery)
    ============================================================ */
 
+.landing {
+  overflow-x: clip;
+}
+
 .logo {
   display: inline-flex;
   align-items: center;
@@ -139,6 +143,7 @@
   max-width: 1320px;
   margin: 0 auto;
   padding: 58px 40px 0;
+  overflow-x: clip;
 }
 
 .hero-grid {
