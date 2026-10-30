@@ -100,7 +100,7 @@ The app was tested end-to-end with Playwright against Chrome:
 
 ## Credits
 
-Templates and interface designed for this project. Photos via [Unsplash](https://unsplash.com). Fonts via [Fontsource](https://fontsource.org). Icons via [Lucide](https://lucide.dev). Built with React, Vite and Three-free Canvas 2D.
+Templates and interface designed for this project. Photos via [Unsplash](https://unsplash.com). Fonts via [Fontsource](https://fontsource.org). Icons via [Lucide](https://lucide.dev). Built with React, Vite and Canvas 2D.
 
 ## License
 

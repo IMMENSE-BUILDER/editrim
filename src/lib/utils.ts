@@ -123,7 +123,8 @@ export async function compressImage(file: File, maxDim = 1600, quality = 0.86): 
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingQuality = 'high';
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL('image/jpeg', quality);
+  const keepAlpha = file.type === 'image/png' || file.type === 'image/webp';
+  return canvas.toDataURL(keepAlpha ? 'image/webp' : 'image/jpeg', 0.9);
 }
 
 export function formatBytes(n: number) {

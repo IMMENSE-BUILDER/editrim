@@ -45,8 +45,12 @@ export default function SharedView() {
         elements: p.elements.map(el => ({ ...structuredClone(el), id: uid(el.type) })),
       })),
     };
-    saveDesign(copy);
-    navigate(`/editor/${copy.id}`);
+    try {
+      saveDesign(copy);
+      navigate(`/editor/${copy.id}`);
+    } catch {
+      toast('This design is too large for local storage. Ask for a smaller file.', 'error');
+    }
   };
 
   const download = async () => {

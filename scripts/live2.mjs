@@ -1,0 +1,12 @@
+import { chromium } from 'playwright';
+const b=await chromium.launch({channel:'chrome'});
+const p=await b.newPage({viewport:{width:1440,height:1000}});
+const errors=[];p.on('pageerror',e=>errors.push(e.message));p.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+await p.goto('https://vellum-delta-dun.vercel.app/',{waitUntil:'networkidle'});
+await p.waitForTimeout(800);
+console.log('title', await p.title());
+console.log('overflow', await p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth})));
+console.log('template cards', await p.locator('.template-card').count());
+await p.screenshot({path:'shots/live-latest.png'});
+console.log('errors', errors);
+await b.close();
