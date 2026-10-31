@@ -16,8 +16,9 @@ import { ColorField, Segmented, SliderField } from './controls';
 import { ShapeView } from '../components/ElementView';
 import { useToast } from '../components/Toast';
 import { FONTS } from '../lib/fonts';
+import { AiPanel } from './AiPanel';
 
-export type PanelTab = 'templates' | 'elements' | 'text' | 'uploads' | 'background' | 'brand';
+export type PanelTab = 'templates' | 'ai' | 'elements' | 'text' | 'uploads' | 'background' | 'brand';
 
 const PHOTOS = [
   { name: 'Coffee', src: TEMPLATE_IMAGES.coffee, ratio: 0.8 },
@@ -56,6 +57,10 @@ export function LeftPanel({
 }) {
   const { toast } = useToast();
   const page = store.page;
+
+  if (tab === 'ai') {
+    return <AiPanel store={store} brand={brand} onClose={onClose} onOpenBrand={onOpenBrand} />;
+  }
 
   if (tab === 'templates') {
     return (

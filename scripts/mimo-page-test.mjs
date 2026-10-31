@@ -1,0 +1,17 @@
+import { chromium } from 'playwright';
+const b=await chromium.launch({channel:'chrome'});
+const p=await b.newPage({viewport:{width:1600,height:1000}});
+await p.goto('http://127.0.0.1:5173/editor/new?template=cafe-opening#ai',{waitUntil:'networkidle'});
+await p.waitForTimeout(1200);
+await p.locator('#ai-design-prompt').fill('A warm editorial launch poster for Bruma slow coffee, with one coffee photo and a confident headline.');
+await p.locator('.ai-run').click();
+await p.waitForSelector('.ai-result-card',{timeout:90000});
+const resultName=await p.locator('.ai-result-head strong').innerText();
+await p.getByRole('button',{name:/Add as new page/i}).click();
+await p.waitForTimeout(900);
+const pageName=await p.locator('.insp-section input.input').first().inputValue();
+const activeText=await p.locator('.page-strip-info span').first().innerText();
+const stored=await p.evaluate(()=>{const idx=JSON.parse(localStorage.getItem('vellum.index.v1')); const id=idx[0].id; const d=JSON.parse(localStorage.getItem('vellum.design.v1.'+id)); return d.pages.map(p=>({name:p.name,n:p.elements.length}));});
+console.log({resultName,pageName,activeText,stored});
+await p.locator('.cv-page').screenshot({path:'shots/mimo-ai-design-page.png'});
+await b.close();

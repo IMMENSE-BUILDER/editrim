@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ArrowRight, ArrowUpRight, Check, ChevronDown, Download, Layers, Lock,
-  Palette, Play, Sparkles, Type, Zap, LayoutGrid, MonitorPlay, Images,
+  ArrowRight, ArrowUpRight, Check, ChevronDown, Download, ImagePlus, Languages, Layers, Lock,
+  Palette, PenLine, Play, ScanEye, Sparkles, Type, Wand2, Zap, LayoutGrid, MonitorPlay, Images,
 } from 'lucide-react';
 import { SiteHeader, SiteFooter } from '../components/SiteChrome';
 import { PagePreview } from '../components/PagePreview';
@@ -38,6 +38,10 @@ const FAQS = [
   {
     q: 'Do I need to create an account?',
     a: 'No. There is no sign-up, no email capture and no “continue with Google” wall. Open the editor and start.',
+  },
+  {
+    q: 'How does the AI work?',
+    a: 'AI Studio sends your brief to Xiaomi MiMo V2.6 Flash through a Vercel AI Gateway serverless function. Text actions send the prompt and a compact description of the current page. AI Review renders a temporary snapshot of the page and sends that image for visual critique. Requests happen only when you press generate, and API keys stay on the server. Nothing is stored by Vellum. AI drafts are always previewed first, so nothing changes until you approve it. AI can be wrong — review the result. Image segmentation and inpainting (such as a background remover) are not implemented; AI illustrations are generated as sanitised vector SVG.',
   },
 ];
 
@@ -76,11 +80,11 @@ export default function Landing() {
       <section className="hero">
         <div className="hero-grid">
           <div className="hero-copy">
-            <div className="hero-badge">
+            <Link to="/#ai" className="hero-badge">
               <span className="chip chip-lime">New</span>
-              Brand kits &amp; one-click resize
+              AI Studio is here
               <ArrowRight size={13} />
-            </div>
+            </Link>
             <h1 className="hero-title">
               Make it look<br />
               like you hired<br />
@@ -88,7 +92,7 @@ export default function Landing() {
             </h1>
             <p className="hero-sub">
               Vellum is a full design studio in your browser. Posts, decks, posters,
-              resumes — start from a real template or a blank page, and finish in minutes.
+              resumes — start from a real template, a blank page, or a sentence.
             </p>
             <div className="hero-ctas">
               <Link to="/editor/new" className="btn btn-cobalt btn-lg">
@@ -134,6 +138,7 @@ export default function Landing() {
         <div className="hero-stats">
           <div><strong>{TEMPLATES.length}</strong><span>designed templates</span></div>
           <div><strong>{SIZE_PRESETS.length}</strong><span>canvas sizes</span></div>
+          <div><strong>6</strong><span>AI tools</span></div>
           <div><strong>3</strong><span>export formats</span></div>
           <div><strong>0</strong><span>sign-ups required</span></div>
         </div>
@@ -271,6 +276,70 @@ export default function Landing() {
           </div>
           <div className="app-shot-chip app-shot-chip-one"><Zap size={14} /> Live snapping</div>
           <div className="app-shot-chip app-shot-chip-two"><Download size={14} /> Export at 3×</div>
+        </div>
+      </section>
+
+      {/* ---------------- AI studio ---------------- */}
+      <section className="ai-section reveal" id="ai">
+        <div className="ai-section-inner">
+          <div className="ai-section-copy">
+            <span className="eyebrow"><span className="dot" /> AI Studio</span>
+            <h2>Start with a sentence.<br /><span className="serif-italic">Finish with something yours.</span></h2>
+            <p>
+              Describe a design, ask for the words, translate a line, or get a second opinion.
+              Every result arrives as an editable draft — never a locked black box.
+            </p>
+            <div className="ai-capability-list">
+              {[
+                { icon: Sparkles, title: 'AI design', body: 'A complete page from a brief — type, shapes and photo, all editable.' },
+                { icon: PenLine, title: 'AI writing', body: 'Generate, rewrite, shorten or expand copy in your brand voice.' },
+                { icon: Wand2, title: 'AI edits', body: 'Ask for a change and review the exact commands before they apply.' },
+                { icon: ImagePlus, title: 'AI illustrations', body: 'Flat vector artwork generated as safe, reusable SVG.' },
+                { icon: Languages, title: 'AI translation', body: 'Translate selected text into 16 languages without losing the layout.' },
+                { icon: ScanEye, title: 'AI review', body: 'An honest critique of hierarchy, contrast and legibility.' },
+              ].map(item => {
+                const Icon = item.icon;
+                return (
+                  <div className="ai-capability" key={item.title}>
+                    <span><Icon size={15} /></span>
+                    <div><strong>{item.title}</strong><p>{item.body}</p></div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="ai-section-actions">
+              <Link to="/editor/new#ai" className="btn btn-cobalt">
+                Try AI Studio <ArrowUpRight size={16} />
+              </Link>
+              <span className="ai-powered"><span /> MiMo V2.6 Flash · Vercel AI Gateway</span>
+            </div>
+          </div>
+
+          <div className="ai-demo">
+            <div className="ai-demo-top">
+              <span className="ai-demo-brand"><Sparkles size={13} /> AI Studio</span>
+              <span>WRITE</span>
+            </div>
+            <div className="ai-demo-prompt">
+              <span className="ai-demo-label">YOUR BRIEF</span>
+              <p>Write a launch line for a slow coffee brand called Bruma. Warm, editorial, confident.</p>
+              <div className="ai-demo-cta"><Sparkles size={13} /> Generate</div>
+            </div>
+            <div className="ai-demo-output">
+              <div className="ai-demo-output-head">
+                <span>AI COPY · DRAFT</span>
+                <span className="ai-demo-draft">Draft</span>
+              </div>
+              <p>“A slower morning, a bolder cup — waiting for you on the corner of Mill Lane.”</p>
+              <div className="ai-demo-tools">
+                <span>Rewrite</span><span>Shorten</span><span>Translate</span>
+              </div>
+            </div>
+            <div className="ai-demo-foot">
+              <span><Check size={11} /> Editable before it lands</span>
+              <span>MiMo V2.6 Flash</span>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -443,6 +512,7 @@ export default function Landing() {
             <div className="pricing-row"><span>Multi-page documents</span><Check size={16} /></div>
             <div className="pricing-row"><span>PNG, JPG &amp; PDF export</span><Check size={16} /></div>
             <div className="pricing-row"><span>Brand kits</span><Check size={16} /></div>
+            <div className="pricing-row"><span>AI writing, design &amp; review</span><Check size={16} /></div>
             <div className="pricing-row"><span>Presentation mode</span><Check size={16} /></div>
             <div className="pricing-row muted"><span>Team collaboration</span><span className="chip">Later</span></div>
             <div className="pricing-row muted"><span>Cloud sync</span><span className="chip">Later</span></div>

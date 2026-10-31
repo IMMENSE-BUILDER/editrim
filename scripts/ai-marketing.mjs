@@ -1,0 +1,14 @@
+import { chromium } from 'playwright';
+const b=await chromium.launch({channel:'chrome'});
+const p=await b.newPage({viewport:{width:1440,height:1000}});
+await p.goto('http://127.0.0.1:5173/',{waitUntil:'networkidle'});
+await p.waitForTimeout(900);
+await p.locator('#ai').scrollIntoViewIfNeeded();
+await p.waitForTimeout(500);
+await p.screenshot({path:'shots/ai-section.png'});
+const m=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,cw:document.documentElement.clientWidth}));
+console.log('overflow',m);
+await p.goto('http://127.0.0.1:5173/dashboard',{waitUntil:'networkidle'});
+await p.waitForTimeout(700);
+await p.screenshot({path:'shots/dashboard-ai.png'});
+await b.close();

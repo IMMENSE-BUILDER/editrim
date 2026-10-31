@@ -116,6 +116,19 @@ export function BrandKitModal({ open, onClose, onSaved }: { open: boolean; onClo
           <span style={{ fontFamily: `"${kit.fonts[1]}", sans-serif` }}>The quick brown fox jumps over the lazy dog.</span>
         </div>
       </div>
+
+      <div className="field" style={{ marginTop: 18 }}>
+        <label className="field-label" htmlFor="brand-voice">Brand voice sample <span className="brand-optional">optional</span></label>
+        <textarea
+          id="brand-voice"
+          className="input"
+          rows={3}
+          value={kit.voice}
+          onChange={e => update({ voice: e.target.value })}
+          placeholder="Paste two or three sentences written in your brand's voice. AI copy can match it."
+        />
+        <span className="brand-voice-hint">Used only when you enable “Match brand voice” in AI Studio.</span>
+      </div>
     </Modal>
   );
 }

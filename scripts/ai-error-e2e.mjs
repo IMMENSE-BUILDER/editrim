@@ -1,0 +1,40 @@
+import { chromium } from 'playwright';
+import assert from 'node:assert';
+const b=await chromium.launch({channel:'chrome'});
+const c=await b.newContext({viewport:{width:1600,height:1000}});
+const p=await c.newPage();
+const errors=[];p.on('pageerror',e=>errors.push(e.message));p.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+await p.goto('http://127.0.0.1:5173/editor/new?template=cafe-opening#ai',{waitUntil:'networkidle'});
+await p.waitForTimeout(1600);
+await p.route('**/api/ai', async route => {
+  if (route.request().method()==='GET') return route.continue();
+  await route.fulfill({status:502,contentType:'application/json',body:JSON.stringify({ok:false,error:'The AI gateway returned HTTP 502 (upstream provider failed).',stage:'gateway',code:'GATEWAY_502',status:502,requestId:'ai_diag_12345',model:'minimax/minimax-m3.1-flash'})});
+});
+await p.getByRole('tab',{name:'Write'}).click();
+await p.waitForTimeout(300);
+await p.locator('.ai-write-modes button').filter({hasText:'compose'}).click();
+await p.locator('#ai-write-prompt').fill('A short launch line for a coffee brand.');
+await p.locator('.ai-run').click();
+await p.waitForSelector('.ai-error',{timeout:20000});
+const text=await p.locator('.ai-error').innerText();
+console.log(text.replace(/\n/g,' | '));
+console.log('consoleErrors', errors.length, errors.slice(-3));
+assert.ok(text.includes('Vercel AI Gateway error'));
+assert.ok(text.includes('GATEWAY_502'));
+assert.ok(text.includes('ai_diag_12345'));
+assert.ok(text.includes('HTTP 502'));
+await p.screenshot({path:'shots/ai-error2.png'});
+// network failure
+await p.unroute('**/api/ai');
+await p.route('**/api/ai', async route => {
+  if (route.request().method()==='GET') return route.continue();
+  await route.abort('failed');
+});
+await p.locator('.ai-error-actions button').first().click();
+await p.waitForTimeout(1500);
+const err2=await p.locator('.ai-error').innerText();
+console.log('NETWORK', err2.replace(/\n/g,' | '));
+assert.ok(err2.includes('Network error') || err2.includes('Network') || err2.includes('endpoint'));
+await p.screenshot({path:'shots/ai-network-error.png'});
+await b.close();
+console.log('ERROR UI OK');

@@ -27,3 +27,10 @@ Editorial studio meets precision tool. Warm paper, ink-black type, one electric 
 - No generic purple SaaS gradient, no glassmorphism everywhere, no emoji as feature icons.
 - No centered-everything marketing page; use an asymmetric editorial grid.
 - No fake "AI" badges or invented customer logos.
+
+## AI Studio
+- Lives in the editor rail with a lime "Beta" chip and a green health dot; powered by MiMo V2.6 Flash through Vercel AI Gateway.
+- AI chrome uses the same paper/ink/cobalt system. AI output cards are bordered white with a lime "AI draft / Proposed" badge; AI actions never look like normal canvas elements until applied.
+- AI errors are first-class UI: warm coral surface, stage + code + request ID in mono, retry and copy diagnostics. No generic "Something went wrong".
+- AI Review sends a rendered snapshot; say so in the panel. AI Design and AI Edit preview before they change the document.
+

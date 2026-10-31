@@ -8,6 +8,9 @@ test-results/
 .DS_Store
 *.local
 .vercel/
+.env
+.env.*
+!.env.example
 tsconfig.tsbuildinfo
 
 .vercel

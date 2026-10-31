@@ -363,8 +363,21 @@ export function useEditor(initial: Design) {
     [apply, safePageIndex],
   );
 
-  const duplicatePage = useCallback(
-    (index = safePageIndex) => {
+  const insertPage = useCallback(
+    (page: Page, after = safePageIndex) => {
+      apply(d => {
+        const pages = [...d.pages];
+        pages.splice(after + 1, 0, page);
+        return { ...d, pages };
+      });
+      setActivePageState(after + 1);
+      setSelectedIds([]);
+      setEditingId(null);
+    },
+    [apply, safePageIndex],
+  );
+
+  const duplicatePage = useCallback((index = safePageIndex) => {
       apply(d => {
         const source = d.pages[index];
         if (!source) return d;
@@ -487,6 +500,7 @@ export function useEditor(initial: Design) {
     selectAll,
     setActivePage,
     addPage,
+    insertPage,
     duplicatePage,
     deletePage,
     movePage,

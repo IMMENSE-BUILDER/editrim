@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import {
   ArrowLeft, Check, ChevronLeft, ChevronRight, Cloud, Copy, Download, HelpCircle,
   ImageUp, LayoutTemplate, Loader2, Maximize2, Palette, PaintBucket, Play, Plus,
-  Redo2, Share2, Shapes, SlidersHorizontal, Trash2, Type, Undo2, X,
+  Redo2, Share2, Shapes, SlidersHorizontal, Sparkles, Trash2, Type, Undo2, X,
 } from 'lucide-react';
 import { Logo } from '../components/Brand';
 import { PagePreview } from '../components/PagePreview';
@@ -37,14 +37,14 @@ export default function Editor() {
       const t = templateId ? getTemplate(templateId) : undefined;
       if (t) {
         const created = fromTemplate(t);
-        navigate(`/editor/${created.id}`, { replace: true });
+        navigate(`/editor/${created.id}${window.location.hash}`, { replace: true });
         return;
       }
       const w = clamp(Number(search.get('w')) || 1080, 100, 6000);
       const h = clamp(Number(search.get('h')) || 1080, 100, 6000);
       const name = search.get('name') || (w === h ? 'Untitled square' : 'Untitled design');
       const created = createDesign({ title: name, width: w, height: h, category: 'Custom' });
-      navigate(`/editor/${created.id}`, { replace: true });
+      navigate(`/editor/${created.id}${window.location.hash}`, { replace: true });
       return;
     }
 
@@ -84,6 +84,7 @@ function MissingDesign() {
 
 const TABS: { id: PanelTab; label: string; icon: typeof Shapes }[] = [
   { id: 'templates', label: 'Templates', icon: LayoutTemplate },
+  { id: 'ai', label: 'AI', icon: Sparkles },
   { id: 'elements', label: 'Elements', icon: Shapes },
   { id: 'text', label: 'Text', icon: Type },
   { id: 'uploads', label: 'Uploads', icon: ImageUp },
@@ -95,7 +96,10 @@ function EditorWorkspace({ initial }: { initial: Design }) {
   const store = useEditor(initial);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [panel, setPanel] = useState<PanelTab | null>(() => (typeof window !== 'undefined' && window.innerWidth > 1180 ? 'templates' : null));
+  const [panel, setPanel] = useState<PanelTab | null>(() => {
+    if (typeof window !== 'undefined' && window.location.hash === '#ai') return 'ai';
+    return typeof window !== 'undefined' && window.innerWidth > 1180 ? 'templates' : null;
+  });
   const [brand, setBrand] = useState<BrandKit>(() => getBrand());
   const [brandOpen, setBrandOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);

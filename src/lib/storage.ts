@@ -154,6 +154,7 @@ export const DEFAULT_BRAND: BrandKit = {
   name: 'My brand',
   colors: ['#2440F0', '#D8F55A', '#14130F', '#F4F1EA', '#FF6A46'],
   fonts: ['Bricolage Grotesque', 'Inter'],
+  voice: '',
 };
 
 export function getBrand(): BrandKit {

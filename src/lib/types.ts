@@ -145,6 +145,7 @@ export type BrandKit = {
   name: string;
   colors: string[];
   fonts: string[];
+  voice: string;
 };
 
 export type Point = { x: number; y: number };

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowRight, ArrowUpRight, Clock, Copy, Download, FolderOpen, LayoutTemplate,
-  MoreHorizontal, Palette, Pencil, Plus, Search, Trash2, Wand2, X,
+  MoreHorizontal, Palette, Pencil, Plus, Search, Sparkles, Trash2, Wand2, X,
 } from 'lucide-react';
 import { Logo } from '../components/Brand';
 import { NewDesignModal } from '../components/NewDesignModal';
@@ -127,6 +127,7 @@ export default function Dashboard() {
         <nav className="dash-nav">
           <Link to="/dashboard" className="active"><FolderOpen size={17} /> Your designs</Link>
           <Link to="/templates"><LayoutTemplate size={17} /> Templates</Link>
+          <Link to="/editor/new#ai"><Sparkles size={17} /> AI Studio</Link>
           <button onClick={() => setBrandOpen(true)}><Palette size={17} /> Brand kit</button>
         </nav>
         <button className="dash-new" onClick={() => setNewOpen(true)}>
@@ -167,9 +168,14 @@ export default function Dashboard() {
               <h1>Your designs</h1>
               <p>{entries.length ? `${entries.length} ${entries.length === 1 ? 'design' : 'designs'} · ${pageCount} ${pageCount === 1 ? 'page' : 'pages'} · autosaved` : 'Everything starts with a blank page.'}</p>
             </div>
-            <button className="btn btn-cobalt" onClick={() => setNewOpen(true)}>
-              <Plus size={16} /> New design
-            </button>
+            <div className="dash-heading-actions">
+              <Link to="/editor/new#ai" className="btn btn-secondary dash-ai-btn">
+                <Sparkles size={15} /> AI Studio
+              </Link>
+              <button className="btn btn-cobalt" onClick={() => setNewOpen(true)}>
+                <Plus size={16} /> New design
+              </button>
+            </div>
           </section>
 
           <section className="quick-row" aria-label="Quick start">

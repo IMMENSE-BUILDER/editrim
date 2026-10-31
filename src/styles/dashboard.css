@@ -1235,3 +1235,39 @@
     grid-template-columns: 1fr;
   }
 }
+
+.dash-heading-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dash-ai-btn {
+  background: #fff;
+}
+
+.dash-ai-btn svg {
+  color: var(--cobalt);
+}
+
+@media (max-width: 860px) {
+  .dash-heading-actions {
+    width: 100%;
+  }
+}
+
+.brand-optional {
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: none;
+  color: var(--muted-2);
+  margin-left: 4px;
+}
+
+.brand-voice-hint {
+  font-size: 9.5px;
+  line-height: 1.45;
+  color: var(--muted-2);
+}

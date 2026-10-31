@@ -14,6 +14,7 @@ export function SiteHeader({ variant = 'default' }: { variant?: 'default' | 'pla
         </Link>
         <nav className="site-nav" aria-label="Main">
           <Link to="/templates">Templates</Link>
+          <Link to="/#ai">AI Studio</Link>
           <Link to="/#features">Features</Link>
           <Link to="/#how">How it works</Link>
           <Link to="/#pricing">Pricing</Link>
@@ -32,6 +33,7 @@ export function SiteHeader({ variant = 'default' }: { variant?: 'default' | 'pla
       {open && (
         <div className="site-mobile-nav">
           <Link to="/templates" onClick={() => setOpen(false)}>Templates</Link>
+          <Link to="/#ai" onClick={() => setOpen(false)}>AI Studio</Link>
           <Link to="/#features" onClick={() => setOpen(false)}>Features</Link>
           <Link to="/#how" onClick={() => setOpen(false)}>How it works</Link>
           <Link to="/#pricing" onClick={() => setOpen(false)}>Pricing</Link>
