@@ -12,6 +12,8 @@ No account. No watermark. Your designs stay yours. AI runs through a serverless 
 
 - **20 hand-built templates** across Instagram, stories, presentations, posters, resumes, menus, invitations, business cards, YouTube, banners and podcasts.
 - **24 canvas presets** plus custom dimensions up to 6000 × 6000.
+- **Canvas-style Home dashboard** at `/dashboard` — left rail with Create, Home, Projects, Templates, Brand, AI Studio, Print and More; a gradient “What will you design today?” hero; glowing universal search across designs, templates and actions; 13 creation shortcuts; Continue designing; Templates for you; and a full Projects view with rename, duplicate, download, present and delete.
+- **Functional starting points** — Presentation, Social media, Doc, Whiteboard, Upload, Custom size, Printables and Templates create real editable designs. Video, Sheet, Website and Magic Layers explain their honest scope instead of faking media tools.
 - **A real editor** — drag, resize, rotate, snap to guides, multi-select, group resize, align, distribute, layer, lock, hide, duplicate, copy/paste and undo/redo.
 - **Typography** — 15 self-hosted fonts, weight, size, line-height, letter-spacing, alignment, uppercase, underline, highlight, outline and drop shadow.
 - **Shapes & graphics** — 12 vector shapes, lines, 30 line icons, nine built-in photos.
@@ -83,7 +85,7 @@ src/
   components/    shared UI, page renderer, modals
   editor/        canvas interactions, inspector, AI Studio, panels, state/history
   lib/           types, templates, renderer, AI schemas/commands, storage, export
-  pages/         landing, templates, dashboard, editor, present, shared view
+  pages/         landing, home dashboard, templates, editor, present, shared view
   styles/        design tokens and surface styles
 server/          shared AI core (prompts, gateway call, validation)
 api/             Vercel serverless AI endpoint
@@ -117,6 +119,7 @@ The app was tested end-to-end with Playwright against Chrome:
 - share link preview and editable import
 - present mode navigation
 - dashboard rename, duplicate, delete and search
+- Home dashboard: hero CTA routing, 13 categories, Presentation/Doc/Whiteboard/Video storyboard/Sheet/Website creation, image upload, print modal, universal search, project menus, More/Help popovers and a 390 px mobile layout
 - responsive layouts at 1440, 1600 and 390 px
 - **AI health check, design generation, AI editing with preview + apply + undo, AI copy, vector illustration, visual review, and visible diagnostics for gateway/network/validation failures**
 - Model verification: `xiaomi/mimo-v2.6-flash` via Vercel AI Gateway, verified from `/api/ai` health and request logs

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, LayoutGrid, Plus } from 'lucide-react';
 import { Modal } from './Modal';
@@ -12,19 +12,27 @@ export function NewDesignModal({
   onClose,
   onCreated,
   initialGroup = 'Social',
+  initialCustom = false,
 }: {
   open: boolean;
   onClose: () => void;
   onCreated?: (design: Design) => void;
   initialGroup?: string;
+  initialCustom?: boolean;
 }) {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [group, setGroup] = useState(initialGroup);
-  const [custom, setCustom] = useState(false);
+  const [custom, setCustom] = useState(initialCustom);
   const [w, setW] = useState(1080);
   const [h, setH] = useState(1080);
   const [title, setTitle] = useState('');
+
+  useEffect(() => {
+    if (!open) return;
+    setCustom(initialCustom);
+    setGroup(initialGroup);
+  }, [open, initialCustom, initialGroup]);
 
   const presets = useMemo(() => SIZE_PRESETS.filter(p => p.group === group), [group]);
 

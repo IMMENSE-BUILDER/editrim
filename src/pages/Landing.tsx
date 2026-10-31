@@ -95,7 +95,7 @@ export default function Landing() {
               resumes — start from a real template, a blank page, or a sentence.
             </p>
             <div className="hero-ctas">
-              <Link to="/editor/new" className="btn btn-cobalt btn-lg">
+              <Link to="/dashboard" className="btn btn-cobalt btn-lg">
                 Start designing
                 <ArrowUpRight size={17} />
               </Link>
@@ -501,7 +501,7 @@ export default function Landing() {
             <span className="eyebrow">Pricing</span>
             <h2>Free. Actually free.</h2>
             <p>Every feature, every template, every export. No trial timer, no credit card, no “Pro” badge on the good fonts.</p>
-            <Link to="/editor/new" className="btn btn-lime btn-lg">
+            <Link to="/dashboard" className="btn btn-lime btn-lg">
               Start designing <ArrowUpRight size={17} />
             </Link>
             <span className="pricing-small">No account needed. Nothing to cancel.</span>

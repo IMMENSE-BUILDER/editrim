@@ -21,7 +21,7 @@ export function SiteHeader({ variant = 'default' }: { variant?: 'default' | 'pla
         </nav>
         <div className="site-actions">
           <Link to="/dashboard" className="site-login">Your designs</Link>
-          <Link to="/editor/new" className="btn btn-primary btn-sm">
+          <Link to="/dashboard" className="btn btn-primary btn-sm">
             Start designing
             <ArrowUpRight size={14} />
           </Link>
@@ -38,7 +38,7 @@ export function SiteHeader({ variant = 'default' }: { variant?: 'default' | 'pla
           <Link to="/#how" onClick={() => setOpen(false)}>How it works</Link>
           <Link to="/#pricing" onClick={() => setOpen(false)}>Pricing</Link>
           <Link to="/dashboard" onClick={() => setOpen(false)}>Your designs</Link>
-          <Link to="/editor/new" className="btn btn-primary" onClick={() => setOpen(false)}>Start designing</Link>
+          <Link to="/dashboard" className="btn btn-primary" onClick={() => setOpen(false)}>Start designing</Link>
         </div>
       )}
     </header>
@@ -52,7 +52,7 @@ export function SiteFooter() {
         <div className="footer-brand">
           <Logo size={36} />
           <p>A complete design studio in your browser.<br />Free, fast, and yours to keep.</p>
-          <Link to="/editor/new" className="btn btn-lime btn-sm footer-cta">
+          <Link to="/dashboard" className="btn btn-lime btn-sm footer-cta">
             Start designing
             <ArrowUpRight size={14} />
           </Link>

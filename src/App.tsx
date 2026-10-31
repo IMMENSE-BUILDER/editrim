@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Landing from './pages/Landing';
 import Templates from './pages/Templates';
-import Dashboard from './pages/Dashboard';
+import Home, { ProjectsRoute } from './pages/Home';
 import Editor from './pages/Editor';
 import Present from './pages/Present';
 import SharedView from './pages/SharedView';
@@ -32,7 +32,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/templates" element={<Templates />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/dashboard" element={<Home />} />
+        <Route path="/projects" element={<ProjectsRoute />} />
         <Route path="/editor/:id" element={<Editor />} />
         <Route path="/present/:id" element={<Present />} />
         <Route path="/view" element={<SharedView />} />
