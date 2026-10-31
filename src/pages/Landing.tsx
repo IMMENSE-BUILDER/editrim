@@ -330,7 +330,7 @@ export default function Landing() {
                 <span>AI COPY · DRAFT</span>
                 <span className="ai-demo-draft">Draft</span>
               </div>
-              <p>“A slower morning, a bolder cup — waiting for you on the corner of Mill Lane.”</p>
+              <p>“Bruma: coffee that takes its time, so you can take yours.”</p>
               <div className="ai-demo-tools">
                 <span>Rewrite</span><span>Shorten</span><span>Translate</span>
               </div>
