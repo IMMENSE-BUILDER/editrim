@@ -138,6 +138,7 @@ The panel shows stage, code, HTTP status, request ID, model, and a **Copy diagno
 - AI Review: visual snapshot + scene summary → accurate, specific critique with score/strengths/improvements.
 - Error UI: simulated gateway 502 and network failure, with stage/code/request ID and retry.
 - Model switch verified from `/api/ai` health and responses: `xiaomi/mimo-v2.6-flash`.
+- Home dashboard: functional workspace at `/dashboard` with 13 creation shortcuts, universal search, recent designs, template shelf, project menus and print-ready PDF. Doc, Whiteboard, Sheet, Website and Video storyboard shortcuts create real editable layouts; they are not collaborative apps or media renderers.
 
 ### Not implemented (honest limits)
 
@@ -146,7 +147,7 @@ The panel shows stage, code, HTTP status, request ID, model, and a **Copy diagno
 - Real-time collaboration, comments, approvals, cloud sync.
 - Social scheduling, print fulfilment, Canva's asset library.
 - Automatic Memory Library, scheduled agents, connectors/OAuth.
-- Canva Code / Sheets / Whiteboards.
+- Real spreadsheet formulas, multiplayer whiteboards, Canva Code, video generation.
 - Template locks are not yet exposed in the editor, so AI Edit only skips element `locked` flags; there is no folder-level Brand Control engine.
 
 ## 6. Prioritized roadmap
