@@ -690,6 +690,7 @@
 /* ---------------- sections ---------------- */
 .home-section {
   margin-top: 34px;
+  text-align: left;
 }
 
 .home-section-head {
