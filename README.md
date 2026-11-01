@@ -86,6 +86,7 @@ src/
   components/    shared UI, page renderer, modals
   editor/        canvas interactions, inspector, AI Studio, panels, state/history
   lib/           types, templates, renderer, AI schemas/commands, storage, export
+  lib/engine/    canvas, typography, timeline, vector, color, presentation, layout, brand schemas
   pages/         landing, home dashboard, templates, editor, present, shared view
   styles/        design tokens and surface styles
 server/          shared AI core (prompts, gateway call, validation)
@@ -94,7 +95,7 @@ docs/            feature research and AI architecture notes
 scripts/         Playwright QA scripts used during development
 ```
 
-See [docs/AI-RESEARCH.md](docs/AI-RESEARCH.md) for the Canva/advanced-feature research, honest competitive matrix, and the AI architecture decisions.
+See [docs/AI-RESEARCH.md](docs/AI-RESEARCH.md) for the Canva/advanced-feature research, honest competitive matrix, and the AI architecture decisions. See [docs/ENGINE-SCHEMA.md](docs/ENGINE-SCHEMA.md) for the core canvas, typography, timeline, vector, color, presentation, layout and brand schemas.
 
 ## Privacy & limits
 
@@ -124,6 +125,7 @@ The app was tested end-to-end with Playwright against Chrome:
 - Design library: 59 formats across six groups including Desktop/Phone Wallpaper, Facebook Post/Cover/Story/Event, Photo Collage, Certificate, Invoice, Letterhead, Brochure, Postcard, Book/Magazine Cover, Podcast/Album Cover, App Icon, YouTube Banner, Link in Bio, Code, Doc, Document, Sheet, Whiteboard, Mobile/Landscape Video, Newsletter and Your Story; searchable across all formats
 - Editor right-click menu: copy/paste, copy/paste style, duplicate/delete, layer and align submenus, group/ungroup, component save + insert + persistence, comment add/resolve/delete + pin, lock/unlock, palette apply + undo, selection PNG download, and Magic Write/Translate handoff to AI Studio
 - Motion and accessibility polish: reduced-motion without losing colour feedback, toast exit, origin-aware menus, modal focus trap/restore, button press states, 4.79:1 Home label contrast, and no horizontal overflow at 390 px
+- Engine schema audit: 59 canvas formats, print DPI mappings, 16 font assets, 6 text-effect presets, 8 type pairings, 5 transitions, 35 vectors in 6 clusters, 10 mood palettes, 7 slide archetypes, 3 chart wrappers, reflow without overflow and enforced brand locks
 - responsive layouts at 1440, 1600 and 390 px
 - **AI health check, design generation, AI editing with preview + apply + undo, AI copy, vector illustration, visual review, and visible diagnostics for gateway/network/validation failures**
 - Model verification: `xiaomi/mimo-v2.6-flash` via Vercel AI Gateway, verified from `/api/ai` health and request logs
