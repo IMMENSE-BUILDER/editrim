@@ -28,6 +28,11 @@
   --shadow-md: 0 10px 30px rgba(30, 26, 16, 0.12), 0 2px 8px rgba(30, 26, 16, 0.06);
   --shadow-lg: 0 30px 70px rgba(30, 26, 16, 0.18), 0 8px 24px rgba(30, 26, 16, 0.08);
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --dur-fast: 120ms;
+  --dur: 180ms;
+  --dur-slow: 240ms;
   --topbar: 56px;
   --rail: 72px;
   --panel: 300px;
@@ -193,12 +198,22 @@ button:focus:not(:focus-visible) {
   font-weight: 600;
   letter-spacing: -0.01em;
   white-space: nowrap;
-  transition: background 0.16s var(--ease), color 0.16s, transform 0.16s var(--ease), box-shadow 0.16s;
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    transform var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur) var(--ease);
   user-select: none;
 }
 
-.btn:active {
-  transform: translateY(1px);
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .btn-primary {
@@ -280,16 +295,21 @@ button:focus:not(:focus-visible) {
   display: inline-grid;
   place-items: center;
   color: var(--ink-soft);
-  transition: background 0.15s;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur-fast) var(--ease-out);
 }
 
 .btn-icon:hover {
   background: rgba(20, 19, 15, 0.07);
 }
 
+.btn-icon:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
 .btn-icon:disabled {
   opacity: 0.35;
   cursor: not-allowed;
+  transform: none;
 }
 
 .btn-block {
@@ -351,7 +371,7 @@ button:focus:not(:focus-visible) {
   border: 1px solid var(--line);
   background: #fff;
   font-size: 13px;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
 
 .input:hover,
@@ -407,23 +427,24 @@ textarea.input {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 600;
   display: grid;
   place-items: center;
   padding: 24px;
   background: rgba(18, 16, 11, 0.48);
   backdrop-filter: blur(3px);
-  animation: overlay-in 0.18s var(--ease);
+  animation: overlay-in var(--dur) var(--ease-out);
 }
 
 .modal {
   width: min(560px, 100%);
   max-height: min(86vh, 820px);
   overflow: auto;
+  overscroll-behavior: contain;
   background: var(--card);
   border-radius: 18px;
   box-shadow: var(--shadow-lg);
-  animation: modal-in 0.24s var(--ease);
+  animation: modal-in var(--dur-slow) var(--ease-out);
 }
 
 .modal-header {
@@ -496,8 +517,26 @@ textarea.input {
   font-size: 13px;
   font-weight: 500;
   box-shadow: var(--shadow-md);
-  animation: toast-in 0.25s var(--ease);
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transform-origin: center bottom;
+  transition:
+    opacity var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease-out);
   pointer-events: auto;
+}
+
+@starting-style {
+  .toast {
+    opacity: 0;
+    transform: translateY(9px) scale(0.97);
+  }
+}
+
+.toast.is-leaving {
+  opacity: 0;
+  transform: translateY(5px) scale(0.98);
+  pointer-events: none;
 }
 
 .toast svg {
@@ -506,10 +545,6 @@ textarea.input {
 
 .toast-error svg {
   color: #ff9c8a;
-}
-
-@keyframes toast-in {
-  from { opacity: 0; transform: translateY(10px) scale(0.96); }
 }
 
 /* ---------- misc ---------- */
@@ -559,7 +594,21 @@ textarea.input {
   *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-property: color, background-color, border-color, box-shadow, opacity !important;
+    transition-duration: var(--dur-fast) !important;
     scroll-behavior: auto !important;
+  }
+
+  .hero-card,
+  .hero-float-chip,
+  .marquee-track,
+  .ai-orbit,
+  .editor-loading-bar i {
+    animation: none !important;
+  }
+
+  .btn:active:not(:disabled),
+  .btn-icon:active:not(:disabled) {
+    transform: none;
   }
 }

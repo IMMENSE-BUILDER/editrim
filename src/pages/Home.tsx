@@ -115,6 +115,10 @@ export default function Home() {
         e.preventDefault();
         searchRef.current?.focus();
       }
+      if (e.key === 'Escape') {
+        setMenuId(null);
+        setRailPopover(null);
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -379,7 +383,7 @@ export default function Home() {
           <button onClick={openPrint} title="Print-ready PDF">
             <Printer size={19} /><span className="rail-label">Print</span>
           </button>
-            <button onClick={() => setRailPopover(railPopover === 'more' ? null : 'more')} title="More">
+          <button onClick={() => setRailPopover(railPopover === 'more' ? null : 'more')} title="More" aria-expanded={railPopover === 'more'}>
             <MoreHorizontal size={19} /><span className="rail-label">More</span>
           </button>
         </nav>
@@ -392,11 +396,19 @@ export default function Home() {
               setNotificationsRead(true);
             }}
             title="Notifications"
+            aria-label="Notifications"
+            aria-expanded={railPopover === 'notifications'}
           >
             <Bell size={18} />
             {!notificationsRead && <i />}
           </button>
-          <button className="rail-avatar" onClick={() => setRailPopover(railPopover === 'avatar' ? null : 'avatar')} title="Local workspace">
+          <button
+            className="rail-avatar"
+            onClick={() => setRailPopover(railPopover === 'avatar' ? null : 'avatar')}
+            title="Local workspace"
+            aria-label="Open profile menu"
+            aria-expanded={railPopover === 'avatar'}
+          >
             V
           </button>
         </div>
@@ -628,15 +640,21 @@ export default function Home() {
                           <div className="home-project-info">
                             <div><Link to={`/editor/${d.id}`}>{d.title}</Link><span><Icon size={10} style={{ color: meta.color }} /> {d.category} · {formatCount(d.pages.length, 'page', 'pages')} · {timeAgo(d.updatedAt)}</span></div>
                             <div className="home-project-menu-wrap" ref={menuId === d.id ? menuRef : undefined}>
-                              <button className="home-project-menu-btn" onClick={() => setMenuId(menuId === d.id ? null : d.id)} aria-label={`Options for ${d.title}`}><MoreHorizontal size={16} /></button>
+                              <button
+                                className="home-project-menu-btn"
+                                onClick={() => setMenuId(menuId === d.id ? null : d.id)}
+                                aria-label={`Options for ${d.title}`}
+                                aria-haspopup="menu"
+                                aria-expanded={menuId === d.id}
+                              ><MoreHorizontal size={16} /></button>
                               {menuId === d.id && (
-                                <div className="home-project-menu">
-                                  <button onClick={() => { setMenuId(null); navigate(`/editor/${d.id}`); }}><Pencil size={13} /> Edit</button>
-                                  <button onClick={() => onRename(d)}><FileText size={13} /> Rename</button>
-                                  <button onClick={() => onDuplicate(d)}><Copy size={13} /> Duplicate</button>
-                                  <button onClick={() => onDownload(d)}><Download size={13} /> Download PNG</button>
-                                  <button onClick={() => { setMenuId(null); navigate(`/present/${d.id}`); }}><Play size={13} /> Present</button>
-                                  <button className="danger" onClick={() => { setMenuId(null); setDeleting(d); }}><Trash2 size={13} /> Delete</button>
+                                <div className="home-project-menu" role="menu" aria-label={`Options for ${d.title}`}>
+                                  <button role="menuitem" onClick={() => { setMenuId(null); navigate(`/editor/${d.id}`); }}><Pencil size={13} /> Edit</button>
+                                  <button role="menuitem" onClick={() => onRename(d)}><FileText size={13} /> Rename</button>
+                                  <button role="menuitem" onClick={() => onDuplicate(d)}><Copy size={13} /> Duplicate</button>
+                                  <button role="menuitem" onClick={() => onDownload(d)}><Download size={13} /> Download PNG</button>
+                                  <button role="menuitem" onClick={() => { setMenuId(null); navigate(`/present/${d.id}`); }}><Play size={13} /> Present</button>
+                                  <button role="menuitem" className="danger" onClick={() => { setMenuId(null); setDeleting(d); }}><Trash2 size={13} /> Delete</button>
                                 </div>
                               )}
                             </div>

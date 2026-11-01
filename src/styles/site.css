@@ -293,13 +293,15 @@
   will-change: transform;
 }
 
-.hero-card:hover {
-  transform: translateY(-5px) rotate(0deg) !important;
-  z-index: 10;
-}
-
 .hero-card .page-preview {
   border-radius: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-card:hover {
+    transform: translateY(-5px) rotate(0deg) !important;
+    z-index: 10;
+  }
 }
 
 .hero-card-a {
@@ -387,7 +389,7 @@
 }
 
 .hero-chip-type {
-  right: -6px;
+  right: 18px;
   bottom: 110px;
   background: var(--card);
   color: var(--ink);
@@ -523,12 +525,16 @@
   border-bottom: 1px solid var(--ink);
   padding-bottom: 5px;
   margin-bottom: 8px;
-  transition: gap 0.18s var(--ease);
   flex: none;
+  transition: color var(--dur) var(--ease);
 }
 
-.section-link:hover {
-  gap: 12px;
+.section-link svg {
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.section-link:hover svg {
+  transform: translate(3px, -3px);
 }
 
 .promise {
@@ -2060,7 +2066,7 @@
   color: var(--muted);
   white-space: nowrap;
   border: 1px solid transparent;
-  transition: all 0.15s;
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
 
 .gallery-filter:hover {

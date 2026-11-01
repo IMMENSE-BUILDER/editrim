@@ -122,6 +122,7 @@ The app was tested end-to-end with Playwright against Chrome:
 - dashboard rename, duplicate, delete and search
 - Home dashboard: hero CTA routing, 13 categories, Presentation/Doc/Whiteboard/Video storyboard/Sheet/Website creation, image upload, print modal, universal search, project menus, More/Help popovers and a 390 px mobile layout
 - Editor right-click menu: copy/paste, copy/paste style, duplicate/delete, layer and align submenus, group/ungroup, component save + insert + persistence, comment add/resolve/delete + pin, lock/unlock, palette apply + undo, selection PNG download, and Magic Write/Translate handoff to AI Studio
+- Motion and accessibility polish: reduced-motion without losing colour feedback, toast exit, origin-aware menus, modal focus trap/restore, button press states, 4.79:1 Home label contrast, and no horizontal overflow at 390 px
 - responsive layouts at 1440, 1600 and 390 px
 - **AI health check, design generation, AI editing with preview + apply + undo, AI copy, vector illustration, visual review, and visible diagnostics for gateway/network/validation failures**
 - Model verification: `xiaomi/mimo-v2.6-flash` via Vercel AI Gateway, verified from `/api/ai` health and request logs

@@ -318,7 +318,7 @@
   flex-direction: column;
   min-height: 0;
   z-index: 24;
-  animation: panel-in 0.2s var(--ease);
+  animation: panel-in var(--dur) var(--ease-out);
 }
 
 @keyframes panel-in {
@@ -1410,7 +1410,12 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   box-shadow: var(--shadow-md);
-  animation: modal-in 0.14s var(--ease);
+  transform-origin: top left;
+  animation: popover-in var(--dur-fast) var(--ease-out);
+}
+
+@keyframes popover-in {
+  from { opacity: 0; transform: translateY(-5px) scale(0.985); }
 }
 
 .page-menu-backdrop {
@@ -1837,7 +1842,8 @@ input[type='range']::-moz-range-thumb {
   border-radius: 8px;
   box-shadow: var(--shadow-md);
   padding: 9px;
-  animation: modal-in 0.14s var(--ease);
+  transform-origin: top left;
+  animation: popover-in var(--dur-fast) var(--ease-out);
 }
 
 .color-pop-top {
@@ -1960,7 +1966,8 @@ input[type='range']::-moz-range-thumb {
   border-radius: 8px;
   box-shadow: var(--shadow-md);
   overflow: hidden;
-  animation: modal-in 0.14s var(--ease);
+  transform-origin: top left;
+  animation: popover-in var(--dur-fast) var(--ease-out);
 }
 
 .font-search {
@@ -3485,9 +3492,9 @@ input[type='range']::-moz-range-thumb {
 
 .ai-selection {
   padding: 9px 10px;
-  border-left: 2px solid var(--cobalt);
+  border: 1px solid rgba(36, 64, 240, 0.22);
   background: #f5f6ff;
-  border-radius: 0 5px 5px 0;
+  border-radius: 6px;
   margin-bottom: 11px;
 }
 
@@ -3959,12 +3966,12 @@ input[type='range']::-moz-range-thumb {
 .cv-menu-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 150;
+  z-index: 550;
 }
 
 .cv-menu {
   position: fixed;
-  z-index: 151;
+  z-index: 551;
   width: 302px;
   padding: 6px;
   background: #1f1e1c;
@@ -3972,7 +3979,8 @@ input[type='range']::-moz-range-thumb {
   border-radius: 11px;
   box-shadow: 0 24px 60px rgba(10, 8, 5, 0.35), 0 2px 8px rgba(10, 8, 5, 0.22);
   color: #f4f1ea;
-  animation: cv-menu-in 0.13s var(--ease);
+  transform-origin: top left;
+  animation: cv-menu-in var(--dur-fast) var(--ease-out);
   font-family: var(--sans);
 }
 
@@ -4003,13 +4011,24 @@ input[type='range']::-moz-range-thumb {
   font-weight: 450;
   text-align: left;
   white-space: nowrap;
-  transition: background 0.12s, color 0.12s;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
 }
 
 .cv-menu-row:hover:not(:disabled),
 .cv-menu-row.is-open {
   background: rgba(255, 255, 255, 0.105);
   color: #fff;
+}
+
+.cv-menu-row:focus-visible {
+  outline: 2px solid #b9a7ff;
+  outline-offset: -2px;
+  background: rgba(255, 255, 255, 0.105);
+  color: #fff;
+}
+
+.cv-menu-row:active:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .cv-menu-row:disabled {
@@ -4074,12 +4093,23 @@ input[type='range']::-moz-range-thumb {
   border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 9px;
   box-shadow: 0 18px 44px rgba(10, 8, 5, 0.34);
-  animation: cv-menu-in 0.12s var(--ease);
+  transform-origin: top left;
+  animation: cv-sub-in var(--dur-fast) var(--ease-out);
 }
 
 .cv-menu-sub.is-flip {
   left: auto;
   right: calc(100% + 4px);
+  transform-origin: top right;
+  animation-name: cv-sub-in-flip;
+}
+
+@keyframes cv-sub-in {
+  from { opacity: 0; transform: translateX(-5px) scale(0.985); }
+}
+
+@keyframes cv-sub-in-flip {
+  from { opacity: 0; transform: translateX(5px) scale(0.985); }
 }
 
 .cv-menu-sub .cv-menu-row {
@@ -4103,11 +4133,12 @@ input[type='range']::-moz-range-thumb {
   box-shadow: 0 5px 14px rgba(10, 8, 5, 0.32);
   cursor: pointer;
   transform-origin: center;
+  transition: background var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
 }
 
 .cv-comment-pin:hover {
   background: var(--cobalt);
-  transform-origin: center;
+  box-shadow: 0 8px 20px rgba(36, 64, 240, 0.35);
 }
 
 .cv-comment-pin > span {
@@ -4353,4 +4384,27 @@ input[type='range']::-moz-range-thumb {
 .component-draft-meta svg {
   flex: none;
   color: var(--cobalt);
+}
+
+/* ---------- press feedback on editor chrome ---------- */
+.ed-back,
+.ed-ico,
+.ed-size-pill,
+.ed-action,
+.ed-rail > button,
+.cv-controls button {
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.ed-back:active,
+.ed-ico:active:not(:disabled),
+.ed-size-pill:active,
+.ed-action:active,
+.ed-rail > button:active,
+.cv-controls button:active {
+  transform: scale(0.94);
 }
