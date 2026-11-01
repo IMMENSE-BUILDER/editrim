@@ -292,9 +292,10 @@ export function ResizeModal({
 
 export function ShortcutsModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const groups = [
-    { title: 'Canvas', items: [['Select all', '⌘/Ctrl A'], ['Deselect', 'Esc'], ['Zoom', '⌘/Ctrl + scroll'], ['Pan', 'Space + drag'], ['Fit to screen', 'Shift 1']] },
+    { title: 'Canvas', items: [['Select all', '⌘/Ctrl A'], ['Deselect', 'Esc'], ['Zoom', '⌘/Ctrl + scroll'], ['Pan', 'Space + drag'], ['Fit to screen', 'Ctrl+Shift+1']] },
     { title: 'Edit', items: [['Undo', '⌘/Ctrl Z'], ['Redo', '⌘/Ctrl ⇧ Z'], ['Duplicate', '⌘/Ctrl D'], ['Copy / paste', '⌘/Ctrl C / V'], ['Delete', '⌫ / Del'], ['Nudge', 'Arrow keys']] },
     { title: 'Text & selection', items: [['Edit text', 'Double-click'], ['Multi-select', 'Shift + click'], ['Constrain move', 'Shift + drag'], ['Resize from centre-ish', 'Shift + corner'], ['Snap rotation', 'Shift + rotate']] },
+    { title: 'Layers & actions', items: [['Context menu', 'Right-click'], ['Copy style', 'Ctrl+Alt+C'], ['Paste style', 'Ctrl+Alt+V'], ['Group', 'Ctrl+G'], ['Ungroup', 'Ctrl+Shift+G'], ['Create component', 'Ctrl+Alt+K'], ['Comment', 'Ctrl+Alt+N']] },
   ];
   return (
     <Modal open={open} onClose={onClose} title="Keyboard shortcuts" subtitle="The fast way around the canvas." width={640}>

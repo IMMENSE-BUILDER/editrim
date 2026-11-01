@@ -15,7 +15,7 @@ const backHome = async () => {
 };
 
 // hero CTA should land on Home, not the editor
-await page.goto('http://127.0.0.1:5173/', { waitUntil: 'networkidle' });
+await page.goto('http://localhost:5173/', { waitUntil: 'networkidle' });
 await wait(700);
 const heroHref = await page.locator('.hero-ctas a').first().getAttribute('href');
 log('heroCtaHref', heroHref);
@@ -214,7 +214,7 @@ const mp = await mobile.newPage();
 const mobileErrors = [];
 mp.on('pageerror', e => mobileErrors.push('PAGEERR ' + e.message));
 mp.on('console', m => { if (m.type() === 'error') mobileErrors.push('CONSOLE ' + m.text()); });
-await mp.goto('http://127.0.0.1:5173/dashboard', { waitUntil: 'networkidle' });
+await mp.goto('http://localhost:5173/dashboard', { waitUntil: 'networkidle' });
 await mp.waitForTimeout(800);
 const mobileMetrics = await mp.evaluate(() => ({
   scrollWidth: document.documentElement.scrollWidth,

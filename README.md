@@ -15,6 +15,7 @@ No account. No watermark. Your designs stay yours. AI runs through a serverless 
 - **Canvas-style Home dashboard** at `/dashboard` — left rail with Create, Home, Projects, Templates, Brand, AI Studio, Print and More; a gradient “What will you design today?” hero; glowing universal search across designs, templates and actions; 13 creation shortcuts; Continue designing; Templates for you; and a full Projects view with rename, duplicate, download, present and delete.
 - **Functional starting points** — Presentation, Social media, Doc, Whiteboard, Upload, Custom size, Printables and Templates create real editable designs. Video, Sheet, Website and Magic Layers explain their honest scope instead of faking media tools.
 - **A real editor** — drag, resize, rotate, snap to guides, multi-select, group resize, align, distribute, layer, lock, hide, duplicate, copy/paste and undo/redo.
+- **Right-click canvas menu** — copy, copy/paste style, paste, duplicate and delete; Layer and Align-to-page submenus; group/ungroup; reusable components; local comment pins; lock controls; apply a palette from the selection to the page; download the selection as a transparent PNG; Magic Write and Translate powers.
 - **Typography** — 15 self-hosted fonts, weight, size, line-height, letter-spacing, alignment, uppercase, underline, highlight, outline and drop shadow.
 - **Shapes & graphics** — 12 vector shapes, lines, 30 line icons, nine built-in photos.
 - **Images** — drag and drop your own, automatic compression, fit/fill, corner radius, flips, brightness/contrast/saturation/blur/grayscale filters.
@@ -120,6 +121,7 @@ The app was tested end-to-end with Playwright against Chrome:
 - present mode navigation
 - dashboard rename, duplicate, delete and search
 - Home dashboard: hero CTA routing, 13 categories, Presentation/Doc/Whiteboard/Video storyboard/Sheet/Website creation, image upload, print modal, universal search, project menus, More/Help popovers and a 390 px mobile layout
+- Editor right-click menu: copy/paste, copy/paste style, duplicate/delete, layer and align submenus, group/ungroup, component save + insert + persistence, comment add/resolve/delete + pin, lock/unlock, palette apply + undo, selection PNG download, and Magic Write/Translate handoff to AI Studio
 - responsive layouts at 1440, 1600 and 390 px
 - **AI health check, design generation, AI editing with preview + apply + undo, AI copy, vector illustration, visual review, and visible diagnostics for gateway/network/validation failures**
 - Model verification: `xiaomi/mimo-v2.6-flash` via Vercel AI Gateway, verified from `/api/ai` health and request logs

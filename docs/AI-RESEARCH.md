@@ -139,6 +139,7 @@ The panel shows stage, code, HTTP status, request ID, model, and a **Copy diagno
 - Error UI: simulated gateway 502 and network failure, with stage/code/request ID and retry.
 - Model switch verified from `/api/ai` health and responses: `xiaomi/mimo-v2.6-flash`.
 - Home dashboard: functional workspace at `/dashboard` with 13 creation shortcuts, universal search, recent designs, template shelf, project menus and print-ready PDF. Doc, Whiteboard, Sheet, Website and Video storyboard shortcuts create real editable layouts; they are not collaborative apps or media renderers.
+- Editor context menu: copy/copy style/paste/paste style, layer and page-align submenus, grouping, reusable local components, comment pins with resolve/delete, lock controls, palette extraction and page recolouring, selection-only PNG export, plus Magic Write/Translate entry points into AI Studio.
 
 ### Not implemented (honest limits)
 

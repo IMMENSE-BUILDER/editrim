@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import type { Background, Design, El, Page } from '../lib/types';
+import type { Background, CanvasComment, Design, El, Page } from '../lib/types';
 import { rotatedBBox, unionRect, uid } from '../lib/utils';
 import { newPage } from '../lib/storage';
 
@@ -186,20 +186,26 @@ export function useEditor(initial: Design) {
 
   const deleteSelected = useCallback(() => {
     if (!selectedIds.length) return;
-    const ids = new Set(selectedIds);
+    const ids = new Set(selected.filter(el => !el.locked).map(el => el.id));
+    if (!ids.size) return;
     updatePage(p => ({ ...p, elements: p.elements.filter(e => !ids.has(e.id)) }));
-    setSelectedIds([]);
+    setSelectedIds(selectedIds.filter(id => !ids.has(id)));
     setEditingId(null);
-  }, [selectedIds, updatePage]);
+  }, [selected, selectedIds, updatePage]);
 
   const duplicateSelected = useCallback(() => {
     if (!selected.length) return;
     if (selected.some(e => e.locked)) return;
+    const groupIds = new Map<string, string>();
+    selected.forEach(el => {
+      if (el.groupId && !groupIds.has(el.groupId)) groupIds.set(el.groupId, uid('g'));
+    });
     const copies = selected.map(el => ({
       ...structuredClone(el),
       id: uid(el.type),
       x: el.x + 24,
       y: el.y + 24,
+      ...(el.groupId ? { groupId: groupIds.get(el.groupId) } : {}),
     })) as El[];
     updatePage(p => ({ ...p, elements: [...p.elements, ...copies] }));
     setSelectedIds(copies.map(e => e.id));
@@ -228,6 +234,7 @@ export function useEditor(initial: Design) {
         : bounds;
       const updates: Record<string, Partial<El>> = {};
       bboxes.forEach(({ el, b }) => {
+        if (el.locked) return;
         let dx = 0;
         let dy = 0;
         if (kind === 'left') dx = box.x - b.x;
@@ -337,6 +344,52 @@ export function useEditor(initial: Design) {
     const anyVisible = selected.some(e => !e.hidden);
     patchSelected({ hidden: anyVisible });
   }, [selected, patchSelected]);
+
+  const setLocked = useCallback((locked: boolean) => {
+    const updates: Record<string, Partial<El>> = {};
+    selected.forEach(el => { updates[el.id] = { locked }; });
+    updateElements(updates);
+  }, [selected, updateElements]);
+
+  const lockAllOnPage = useCallback((locked: boolean) => {
+    const updates: Record<string, Partial<El>> = {};
+    page.elements.forEach(el => { updates[el.id] = { locked }; });
+    updateElements(updates);
+  }, [page.elements, updateElements]);
+
+  const groupSelected = useCallback(() => {
+    if (selected.length < 2) return;
+    const groupId = uid('g');
+    const updates: Record<string, Partial<El>> = {};
+    selected.forEach(el => { updates[el.id] = { groupId }; });
+    updateElements(updates);
+  }, [selected, updateElements]);
+
+  const ungroupSelected = useCallback(() => {
+    const grouped = selected.filter(el => el.groupId);
+    if (!grouped.length) return;
+    const updates: Record<string, Partial<El>> = {};
+    grouped.forEach(el => { updates[el.id] = { groupId: undefined }; });
+    updateElements(updates);
+    if (selectedIds.length > 1) setSelectedIds([selectedIds[0]]);
+  }, [selected, selectedIds, updateElements]);
+
+  const addComment = useCallback((comment: Omit<CanvasComment, 'id' | 'createdAt'>) => {
+    const next: CanvasComment = { ...comment, id: uid('c'), createdAt: Date.now() };
+    apply(d => ({ ...d, comments: [...(d.comments ?? []), next] }));
+    return next;
+  }, [apply]);
+
+  const updateComment = useCallback((id: string, patch: Partial<CanvasComment>) => {
+    apply(d => ({
+      ...d,
+      comments: (d.comments ?? []).map(c => (c.id === id ? { ...c, ...patch } : c)),
+    }));
+  }, [apply]);
+
+  const removeComment = useCallback((id: string) => {
+    apply(d => ({ ...d, comments: (d.comments ?? []).filter(c => c.id !== id) }));
+  }, [apply]);
 
   const selectAll = useCallback(() => {
     setSelectedIds(page.elements.filter(e => !e.hidden).map(e => e.id));
@@ -497,6 +550,13 @@ export function useEditor(initial: Design) {
     reorder,
     toggleLock,
     toggleHidden,
+    setLocked,
+    lockAllOnPage,
+    groupSelected,
+    ungroupSelected,
+    addComment,
+    updateComment,
+    removeComment,
     selectAll,
     setActivePage,
     addPage,

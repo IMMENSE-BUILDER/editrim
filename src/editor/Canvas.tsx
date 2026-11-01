@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type React from 'react';
-import { Maximize, Minus, Plus, Lock } from 'lucide-react';
-import type { El, Page, Point, Rect } from '../lib/types';
+import { Maximize, Minus, Plus, Lock, MessageSquare } from 'lucide-react';
+import type { CanvasComment, El, Page, Point, Rect } from '../lib/types';
 import type { Design } from '../lib/types';
 import { PageBackground, ElementView } from '../components/ElementView';
 import { FONT_CSS_STACK } from '../lib/fonts';
@@ -42,6 +42,10 @@ type Props = {
   setEditingId: (id: string | null) => void;
   updateElements: (updates: Record<string, Partial<El>>, opts?: { transient?: boolean; merge?: string }) => void;
   pushHistory: () => void;
+  comments?: CanvasComment[];
+  onElementContextMenu?: (e: React.MouseEvent, el: El) => void;
+  onCanvasContextMenu?: (e: React.MouseEvent, point: Point) => void;
+  onCommentClick?: (target: { elementId?: string; x: number; y: number }) => void;
   onOpenShortcuts?: () => void;
 };
 
@@ -61,6 +65,10 @@ export function Canvas({
   setEditingId,
   updateElements,
   pushHistory,
+  comments = [],
+  onElementContextMenu,
+  onCanvasContextMenu,
+  onCommentClick,
   onOpenShortcuts,
 }: Props) {
   const viewportRef = useRef<HTMLDivElement>(null);
@@ -291,18 +299,26 @@ export function Canvas({
     window.addEventListener('pointerup', up);
   };
 
+  const groupMembers = (el: El) =>
+    el.groupId ? page.elements.filter(x => x.groupId === el.groupId && !x.hidden) : [el];
+
   const onElementDown = (e: React.PointerEvent, el: El) => {
     if (e.button !== 0 || space || e.altKey) return;
     e.stopPropagation();
     if (editingId === el.id) return;
     setEditingId(null);
+    const grouped = groupMembers(el);
+    const groupIds = grouped.map(x => x.id);
     let finalIds = selectedIds;
     if (e.shiftKey) {
-      finalIds = selectedIds.includes(el.id) ? selectedIds.filter(i => i !== el.id) : [...selectedIds, el.id];
+      const allSelected = groupIds.every(id => selectedIds.includes(id));
+      finalIds = allSelected
+        ? selectedIds.filter(id => !groupIds.includes(id))
+        : [...new Set([...selectedIds, ...groupIds])];
       setSelectedIds(finalIds);
       if (!finalIds.includes(el.id)) return;
-    } else if (!selectedIds.includes(el.id)) {
-      finalIds = [el.id];
+    } else if (!groupIds.every(id => selectedIds.includes(id))) {
+      finalIds = groupIds;
       setSelectedIds(finalIds);
     }
     if (!el.locked) startMove(e, el.id, finalIds);
@@ -475,6 +491,30 @@ export function Canvas({
     setEditingId(el.id);
   };
 
+  const commentPins = (() => {
+    const pins = new Map<string, { key: string; x: number; y: number; count: number; elementId?: string }>();
+    const pad = 18 / (view.zoom || 1);
+    const elementsById = new Map(page.elements.map(el => [el.id, el]));
+    comments
+      .filter(c => c.pageId === page.id && !c.resolved)
+      .forEach(c => {
+        const key = c.elementId ?? `page-${c.id}`;
+        const anchor = c.elementId ? elementsById.get(c.elementId) : undefined;
+        const rawX = anchor ? anchor.x + anchor.w : c.x;
+        const rawY = anchor ? anchor.y + 12 : c.y;
+        const hit = pins.get(key);
+        if (hit) hit.count += 1;
+        else pins.set(key, {
+          key,
+          x: clamp(rawX, pad, size.width - pad),
+          y: clamp(rawY, pad, size.height - pad),
+          count: 1,
+          elementId: c.elementId,
+        });
+      });
+    return [...pins.values()];
+  })();
+
   const renderTextEditor = (el: Extract<El, { type: 'text' }>) => {
     const pad = el.padding ?? 0;
     return (
@@ -490,6 +530,7 @@ export function Canvas({
         }}
         onBlur={() => setEditingId(null)}
         onPointerDown={e => e.stopPropagation()}
+        onContextMenu={e => e.stopPropagation()}
         onKeyDown={e => {
           e.stopPropagation();
           if (e.key === 'Escape') (e.target as HTMLTextAreaElement).blur();
@@ -529,7 +570,12 @@ export function Canvas({
       className={`cv-viewport ${space ? 'is-space' : ''} ${panning ? 'is-panning' : ''}`}
       ref={viewportRef}
       onPointerDown={onViewportDown}
-      onContextMenu={e => e.preventDefault()}
+      onContextMenu={e => {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'TEXTAREA' || target.tagName === 'INPUT') return;
+        e.preventDefault();
+        onCanvasContextMenu?.(e, toPage(e.clientX, e.clientY));
+      }}
     >
       <div
         className="cv-stage"
@@ -558,6 +604,11 @@ export function Canvas({
                     cursor: el.locked ? 'default' : space ? 'grab' : 'move',
                   }}
                   onPointerDown={e => onElementDown(e, el)}
+                  onContextMenu={e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onElementContextMenu?.(e, el);
+                  }}
                   onDoubleClick={e => {
                     e.stopPropagation();
                     editText(el);
@@ -571,6 +622,26 @@ export function Canvas({
               );
             })}
           </div>
+
+          {commentPins.map(pin => (
+            <button
+              key={pin.key}
+              className="cv-comment-pin"
+              style={{
+                left: pin.x,
+                top: pin.y,
+                transform: `translate(-50%, -50%) scale(${1 / view.zoom})`,
+              }}
+              onPointerDown={e => e.stopPropagation()}
+              onClick={e => { e.stopPropagation(); onCommentClick?.({ elementId: pin.elementId, x: pin.x, y: pin.y }); }}
+              onContextMenu={e => { e.preventDefault(); e.stopPropagation(); onCommentClick?.({ elementId: pin.elementId, x: pin.x, y: pin.y }); }}
+              title={`${pin.count} ${pin.count === 1 ? 'comment' : 'comments'}`}
+              aria-label={`Open ${pin.count} ${pin.count === 1 ? 'comment' : 'comments'}`}
+            >
+              <MessageSquare size={12} />
+              {pin.count > 1 && <span>{pin.count}</span>}
+            </button>
+          ))}
 
           {guides.x !== null && (
             <div className="cv-guide cv-guide-x" style={{ left: guides.x, width: 1 / view.zoom, height: size.height }} />

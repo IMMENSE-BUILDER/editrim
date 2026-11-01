@@ -30,6 +30,7 @@ export type BaseElement = {
   opacity: number;
   locked?: boolean;
   hidden?: boolean;
+  groupId?: string;
   shadow?: Shadow | null;
 };
 
@@ -125,9 +126,22 @@ export type Design = {
   category: string;
   size: DesignSize;
   pages: Page[];
+  comments?: CanvasComment[];
   createdAt: number;
   updatedAt: number;
   templateId?: string;
+};
+
+export type CanvasComment = {
+  id: string;
+  pageId: string;
+  elementId?: string;
+  x: number;
+  y: number;
+  text: string;
+  author: string;
+  createdAt: number;
+  resolved?: boolean;
 };
 
 export type Template = {

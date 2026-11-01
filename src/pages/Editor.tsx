@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import type { MouseEvent as ReactMouseEvent } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft, Check, ChevronLeft, ChevronRight, Cloud, Copy, Download, HelpCircle,
-  ImageUp, LayoutTemplate, Loader2, Maximize2, Palette, PaintBucket, Play, Plus,
+  ImageUp, LayoutTemplate, Loader2, Maximize2, MessageSquare, Palette, PaintBucket, Play, Plus,
   Redo2, Share2, Shapes, SlidersHorizontal, Sparkles, Trash2, Type, Undo2, X,
 } from 'lucide-react';
 import { Logo } from '../components/Brand';
+import { Modal } from '../components/Modal';
 import { PagePreview } from '../components/PagePreview';
 import { BrandKitModal } from '../components/BrandKitModal';
 import { useToast } from '../components/Toast';
@@ -13,11 +15,16 @@ import { Canvas } from '../editor/Canvas';
 import { Inspector } from '../editor/Inspector';
 import { LeftPanel, type PanelTab } from '../editor/Panels';
 import { ExportModal, ResizeModal, ShareModal, ShortcutsModal } from '../editor/Modals';
+import { CanvasContextMenu, type CanvasMenuState } from '../editor/ContextMenu';
 import { useEditor } from '../editor/useEditor';
 import { createDesign, fromTemplate, getBrand, getDesign, saveDesign } from '../lib/storage';
 import { getTemplate } from '../lib/templates';
-import type { BrandKit, Design, El } from '../lib/types';
-import { clamp, timeAgo, uid } from '../lib/utils';
+import { exportSelection } from '../lib/export';
+import { copyStyle, pasteStyle, type StylePayload } from '../lib/styleClipboard';
+import { saveComponent } from '../lib/components';
+import { applyPaletteToPage, paletteFromElements } from '../lib/colors';
+import type { BrandKit, Design, El, Point } from '../lib/types';
+import { clamp, rotatedBBox, timeAgo, uid, unionRect } from '../lib/utils';
 
 export default function Editor() {
   const { id } = useParams();
@@ -109,10 +116,195 @@ function EditorWorkspace({ initial }: { initial: Design }) {
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const [saveState, setSaveState] = useState<'saved' | 'saving' | 'error'>('saved');
   const [pageMenu, setPageMenu] = useState<{ index: number; x: number; top: number } | null>(null);
+  const [contextMenu, setContextMenu] = useState<CanvasMenuState | null>(null);
+  const [styleClipboard, setStyleClipboard] = useState<StylePayload | null>(null);
+  const [clipboardHas, setClipboardHas] = useState(false);
+  const [componentDraft, setComponentDraft] = useState<{ name: string; elements: El[]; width: number; height: number } | null>(null);
+  const [commentTarget, setCommentTarget] = useState<{ pageId: string; elementId?: string; x: number; y: number } | null>(null);
+  const [commentText, setCommentText] = useState('');
+  const [aiFocus, setAiFocus] = useState<{ focus: 'write' | 'translate'; nonce: number } | null>(null);
   const clipboard = useRef<El[]>([]);
   const errorShown = useRef(false);
 
   const design = store.design;
+
+  const copySelection = useCallback(() => {
+    if (!store.selected.length) return;
+    clipboard.current = structuredClone(store.selected);
+    setClipboardHas(true);
+    toast('Copied');
+  }, [store.selected, toast]);
+
+  const pasteClipboard = useCallback((at?: Point) => {
+    if (!clipboard.current.length) return;
+    let copies = clipboard.current.map(el => ({
+      ...structuredClone(el),
+      id: uid(el.type),
+      x: el.x + 24,
+      y: el.y + 24,
+    })) as El[];
+    const groupIds = new Map<string, string>();
+    copies.forEach(el => {
+      if (el.groupId && !groupIds.has(el.groupId)) groupIds.set(el.groupId, uid('g'));
+    });
+    copies = copies.map(el => (el.groupId ? { ...el, groupId: groupIds.get(el.groupId) } : el));
+    if (at) {
+      const bounds = unionRect(copies.map(el => rotatedBBox(el)));
+      if (bounds) {
+        const dx = at.x - (bounds.x + bounds.w / 2);
+        const dy = at.y - (bounds.y + bounds.h / 2);
+        copies = copies.map(el => ({ ...el, x: el.x + dx, y: el.y + dy }));
+      }
+    }
+    store.addElements(copies);
+    clipboard.current = structuredClone(copies);
+    setClipboardHas(true);
+  }, [store]);
+
+  const copyStyleSelection = useCallback((elementId?: string) => {
+    const el = (elementId ? store.page.elements.find(item => item.id === elementId) : null) ?? store.selected[0];
+    if (!el) return;
+    const payload = copyStyle(el);
+    setStyleClipboard(payload);
+    toast(`Copied ${payload.label}`);
+  }, [store.page.elements, store.selected, toast]);
+
+  const pasteStyleSelection = useCallback(() => {
+    if (!styleClipboard) return;
+    const updates: Record<string, Partial<El>> = {};
+    store.selected.forEach(el => {
+      if (el.locked) return;
+      const patch = pasteStyle(el, styleClipboard);
+      if (patch) updates[el.id] = patch;
+    });
+    if (!Object.keys(updates).length) {
+      toast(`Select a ${styleClipboard.type} layer to paste this ${styleClipboard.label}`, 'error');
+      return;
+    }
+    store.updateElements(updates);
+    toast(`Pasted ${styleClipboard.label}`);
+    setContextMenu(null);
+  }, [styleClipboard, store, toast]);
+
+  const openComponentDialog = useCallback(() => {
+    if (!store.selected.length) return;
+    const bounds = unionRect(store.selected.map(el => rotatedBBox(el)));
+    if (!bounds) return;
+    setComponentDraft({
+      name: 'New component',
+      elements: store.selected.map(el => ({
+        ...structuredClone(el),
+        x: el.x - bounds.x,
+        y: el.y - bounds.y,
+      })),
+      width: Math.max(1, Math.ceil(bounds.w)),
+      height: Math.max(1, Math.ceil(bounds.h)),
+    });
+    setContextMenu(null);
+  }, [store.selected]);
+
+  const saveComponentDraft = useCallback(() => {
+    if (!componentDraft) return;
+    try {
+      const component = saveComponent(componentDraft.name, componentDraft.elements, componentDraft.width, componentDraft.height);
+      store.groupSelected();
+      setComponentDraft(null);
+      setPanel('elements');
+      toast(`“${component.name}” saved — insert it from Elements`);
+    } catch {
+      toast('Could not save the component — browser storage is full', 'error');
+    }
+  }, [componentDraft, store, toast]);
+
+  const openComment = useCallback((elementId?: string, point?: Point) => {
+    let anchorId = elementId;
+    let x = point?.x ?? 24;
+    let y = point?.y ?? 24;
+    if (elementId) {
+      const el = store.page.elements.find(item => item.id === elementId);
+      if (el) {
+        x = el.x + el.w;
+        y = el.y + 12;
+      }
+    } else if (!point) {
+      const el = store.selected[0];
+      if (el) {
+        anchorId = el.id;
+        x = el.x + el.w;
+        y = el.y + 12;
+      }
+    }
+    x = clamp(x, 14, store.design.size.width - 14);
+    y = clamp(y, 14, store.design.size.height - 14);
+    setCommentTarget({ pageId: store.page.id, elementId: anchorId, x, y });
+    setCommentText('');
+    setContextMenu(null);
+  }, [store.page, store.selected, store.design.size.width, store.design.size.height]);
+
+  const openCommentThread = useCallback((target: { elementId?: string; x: number; y: number }) => {
+    setCommentTarget({ pageId: store.page.id, elementId: target.elementId, x: target.x, y: target.y });
+    setCommentText('');
+  }, [store.page.id]);
+
+  const postComment = useCallback(() => {
+    if (!commentTarget || !commentText.trim()) return;
+    store.addComment({
+      pageId: commentTarget.pageId,
+      elementId: commentTarget.elementId,
+      x: commentTarget.x,
+      y: commentTarget.y,
+      text: commentText.trim(),
+      author: 'You',
+    });
+    setCommentText('');
+    toast('Comment added');
+  }, [commentTarget, commentText, store, toast]);
+
+  const applyColorsToSelection = useCallback(async () => {
+    const elements = store.selected.filter(el => !el.hidden);
+    if (!elements.length) return;
+    setContextMenu(null);
+    const palette = await paletteFromElements(elements);
+    if (!palette.length) {
+      toast('No usable colors in this selection', 'error');
+      return;
+    }
+    store.updatePage(page => applyPaletteToPage(page, palette));
+    toast(`Applied ${palette.length} ${palette.length === 1 ? 'color' : 'colors'} to the page — undo with Ctrl+Z`);
+  }, [store, toast]);
+
+  const downloadSelection = useCallback(async () => {
+    const elements = store.selected.filter(el => !el.hidden);
+    if (!elements.length) return;
+    setContextMenu(null);
+    try {
+      await exportSelection(design, elements, store.page);
+      toast('Selection downloaded as a transparent PNG');
+    } catch {
+      toast('Could not download this selection', 'error');
+    }
+  }, [design, store.page, store.selected, toast]);
+
+  const focusAi = useCallback((focus: 'write' | 'translate') => {
+    setPanel('ai');
+    setAiFocus({ focus, nonce: Date.now() });
+    setContextMenu(null);
+  }, []);
+
+  const openElementMenu = useCallback((e: ReactMouseEvent, el: El) => {
+    let ids = store.selectedIds;
+    if (el.groupId) {
+      ids = store.page.elements.filter(item => item.groupId === el.groupId && !item.hidden).map(item => item.id);
+    } else if (!store.selectedIds.includes(el.id)) {
+      ids = [el.id];
+    }
+    store.setSelectedIds(ids);
+    setContextMenu({ kind: 'element', x: e.clientX, y: e.clientY, elementId: el.id });
+  }, [store]);
+
+  const openCanvasMenu = useCallback((e: ReactMouseEvent, point: Point) => {
+    setContextMenu({ kind: 'page', x: e.clientX, y: e.clientY, pagePoint: point });
+  }, []);
 
   useEffect(() => {
     document.title = `${design.title || 'Untitled'} — Vellum`;
@@ -153,6 +345,7 @@ function EditorWorkspace({ initial }: { initial: Design }) {
       }
       const mod = e.metaKey || e.ctrlKey;
       const key = e.key.toLowerCase();
+      const code = e.code;
 
       if (mod && key === 'z') {
         e.preventDefault();
@@ -165,30 +358,64 @@ function EditorWorkspace({ initial }: { initial: Design }) {
         store.redo();
         return;
       }
+      if (mod && e.altKey && (key === 'c' || code === 'KeyC')) {
+        e.preventDefault();
+        copyStyleSelection();
+        return;
+      }
+      if (mod && e.altKey && (key === 'v' || code === 'KeyV')) {
+        e.preventDefault();
+        pasteStyleSelection();
+        return;
+      }
+      if (mod && e.altKey && (key === 'k' || code === 'KeyK')) {
+        e.preventDefault();
+        openComponentDialog();
+        return;
+      }
+      if (mod && e.altKey && (key === 'n' || code === 'KeyN')) {
+        e.preventDefault();
+        openComment();
+        return;
+      }
+      if (mod && e.altKey && (key === ']' || key === '[' || code === 'BracketRight' || code === 'BracketLeft')) {
+        e.preventDefault();
+        const front = key === ']' || code === 'BracketRight';
+        store.reorder(front ? 'front' : 'back');
+        return;
+      }
+      if (mod && (key === ']' || key === '[' || code === 'BracketRight' || code === 'BracketLeft')) {
+        e.preventDefault();
+        const forward = key === ']' || code === 'BracketRight';
+        store.reorder(forward ? 'forward' : 'backward');
+        return;
+      }
+      if (mod && e.shiftKey && key === 'g') {
+        e.preventDefault();
+        store.ungroupSelected();
+        return;
+      }
+      if (mod && key === 'g') {
+        e.preventDefault();
+        if (store.selected.length >= 2) {
+          store.groupSelected();
+          toast('Grouped — click any layer to select the group');
+        }
+        return;
+      }
       if (mod && key === 'd') {
         e.preventDefault();
         store.duplicateSelected();
         return;
       }
       if (mod && key === 'c') {
-        const els = store.page.elements.filter(el => store.selectedIds.includes(el.id));
-        if (els.length) {
-          clipboard.current = structuredClone(els);
-          toast('Copied');
-        }
+        e.preventDefault();
+        copySelection();
         return;
       }
       if (mod && key === 'v') {
-        if (!clipboard.current.length) return;
         e.preventDefault();
-        const copies = clipboard.current.map(el => ({
-          ...structuredClone(el),
-          id: uid(el.type),
-          x: el.x + 24,
-          y: el.y + 24,
-        })) as El[];
-        store.addElements(copies);
-        clipboard.current = structuredClone(copies);
+        pasteClipboard();
         return;
       }
       if (mod && key === 'a') {
@@ -221,6 +448,7 @@ function EditorWorkspace({ initial }: { initial: Design }) {
         store.setSelectedIds([]);
         store.setEditingId(null);
         setPageMenu(null);
+        setContextMenu(null);
         return;
       }
       if (e.key === 'Enter' && store.selected.length === 1 && store.selected[0].type === 'text') {
@@ -355,6 +583,7 @@ function EditorWorkspace({ initial }: { initial: Design }) {
             tab={panel}
             store={store}
             brand={brand}
+            aiFocus={aiFocus}
             onClose={() => setPanel(null)}
             onOpenBrand={() => setBrandOpen(true)}
           />
@@ -370,6 +599,10 @@ function EditorWorkspace({ initial }: { initial: Design }) {
             setEditingId={store.setEditingId}
             updateElements={store.updateElements}
             pushHistory={store.pushHistory}
+            comments={design.comments ?? []}
+            onElementContextMenu={openElementMenu}
+            onCanvasContextMenu={openCanvasMenu}
+            onCommentClick={openCommentThread}
             onOpenShortcuts={() => setShortcutsOpen(true)}
           />
           <div className="page-strip" onPointerDown={e => e.stopPropagation()}>
@@ -428,6 +661,130 @@ function EditorWorkspace({ initial }: { initial: Design }) {
       <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} design={design} />
       <ResizeModal open={resizeOpen} onClose={() => setResizeOpen(false)} design={design} onResize={(w, h) => { store.resizeDesign(w, h); setPanel(null); toast('Canvas resized — content scaled to fit'); }} />
       <ShortcutsModal open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
+      {contextMenu && (
+        <CanvasContextMenu
+          menu={contextMenu}
+          onClose={() => setContextMenu(null)}
+          store={store}
+          hasClipboard={clipboardHas}
+          styleLabel={styleClipboard && store.selected.some(el => el.type === styleClipboard.type && !el.locked) ? styleClipboard.label : null}
+          onCopy={copySelection}
+          onPaste={pasteClipboard}
+          onCopyStyle={copyStyleSelection}
+          onPasteStyle={pasteStyleSelection}
+          onCreateComponent={openComponentDialog}
+          onComment={() => {
+            if (contextMenu.kind === 'page') openComment(undefined, contextMenu.pagePoint);
+            else openComment(contextMenu.elementId);
+          }}
+          onApplyColors={applyColorsToSelection}
+          onDownloadSelection={downloadSelection}
+          onMagicWrite={() => focusAi('write')}
+          onTranslate={() => focusAi('translate')}
+          onOpenBackground={() => setPanel('background')}
+          onResize={() => setResizeOpen(true)}
+          onAddPage={() => store.addPage()}
+          onDuplicatePage={() => store.duplicatePage()}
+          onFit={() => window.dispatchEvent(new CustomEvent('vellum:fit'))}
+        />
+      )}
+
+      <Modal
+        open={Boolean(componentDraft)}
+        onClose={() => setComponentDraft(null)}
+        title="Create component"
+        subtitle="Save this selection as a reusable asset. Insert it from Elements in any design."
+        width={480}
+        footer={
+          <>
+            <button className="btn btn-ghost" onClick={() => setComponentDraft(null)}>Cancel</button>
+            <button className="btn btn-cobalt" onClick={saveComponentDraft} disabled={!componentDraft?.name.trim()}>Save component</button>
+          </>
+        }
+      >
+        <div className="field">
+          <label className="field-label" htmlFor="component-name">Component name</label>
+          <input
+            id="component-name"
+            className="input"
+            value={componentDraft?.name ?? ''}
+            onChange={e => setComponentDraft(d => d ? { ...d, name: e.target.value } : d)}
+            onFocus={e => e.currentTarget.select()}
+            onKeyDown={e => { if (e.key === 'Enter') saveComponentDraft(); }}
+            autoFocus
+          />
+        </div>
+        {componentDraft && (
+          <div className="component-draft-meta">
+            <Shapes size={15} />
+            <span>{componentDraft.elements.length} layers · {componentDraft.width} × {componentDraft.height} px · stored locally</span>
+          </div>
+        )}
+      </Modal>
+
+      <Modal
+        open={Boolean(commentTarget)}
+        onClose={() => setCommentTarget(null)}
+        title="Comments"
+        subtitle={
+          commentTarget
+            ? commentTarget.elementId
+              ? design.pages.find(p => p.id === commentTarget.pageId)?.elements.find(el => el.id === commentTarget.elementId)?.name || 'Selected layer'
+              : design.pages.find(p => p.id === commentTarget.pageId)?.name || 'This page'
+            : ''
+        }
+        width={560}
+        footer={
+          <>
+            <button className="btn btn-ghost" onClick={() => setCommentTarget(null)}>Close</button>
+            <button className="btn btn-cobalt" onClick={postComment} disabled={!commentText.trim()}>Post comment</button>
+          </>
+        }
+      >
+        <div className="comment-thread">
+          {commentTarget && (design.comments ?? [])
+            .filter(c => c.pageId === commentTarget.pageId && (commentTarget.elementId ? c.elementId === commentTarget.elementId : !c.elementId))
+            .sort((a, b) => a.createdAt - b.createdAt)
+            .map(c => (
+              <div className={`comment-item ${c.resolved ? 'is-resolved' : ''}`} key={c.id}>
+                <div className="comment-avatar">{c.author.slice(0, 1).toUpperCase()}</div>
+                <div className="comment-body">
+                  <div className="comment-meta">
+                    <strong>{c.author}</strong>
+                    <span>{timeAgo(c.createdAt)}</span>
+                    {c.resolved && <span className="comment-resolved">Resolved</span>}
+                  </div>
+                  <p>{c.text}</p>
+                  <div className="comment-actions">
+                    <button onClick={() => store.updateComment(c.id, { resolved: !c.resolved })}>
+                      <Check size={12} /> {c.resolved ? 'Reopen' : 'Resolve'}
+                    </button>
+                    <button className="danger" onClick={() => store.removeComment(c.id)}><Trash2 size={12} /> Delete</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          {commentTarget && !(design.comments ?? []).some(c => c.pageId === commentTarget.pageId && (commentTarget.elementId ? c.elementId === commentTarget.elementId : !c.elementId)) && (
+            <div className="comment-empty">
+              <MessageSquare size={20} />
+              <strong>No comments yet.</strong>
+              <p>Leave a note for yourself or whoever opens this file next.</p>
+            </div>
+          )}
+        </div>
+        <label className="field">
+          <span className="field-label">New comment</span>
+          <textarea
+            className="input comment-input"
+            value={commentText}
+            onChange={e => setCommentText(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) postComment(); }}
+            placeholder="What should change, and why?"
+            rows={3}
+          />
+        </label>
+      </Modal>
+
       <BrandKitModal
         open={brandOpen}
         onClose={() => setBrandOpen(false)}

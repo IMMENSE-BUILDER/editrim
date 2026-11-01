@@ -2,20 +2,22 @@ import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ArrowUpRight, Check, ImagePlus, LayoutTemplate, Palette, Sparkles, Trash2, Upload, X,
+  ArrowUpRight, Boxes, Check, ImagePlus, LayoutTemplate, Palette, Sparkles, Trash2, Upload, X,
 } from 'lucide-react';
-import type { BrandKit, El, Paint, ShapeKind } from '../lib/types';
+import type { BrandKit, El, Page, Paint, ShapeKind } from '../lib/types';
 import type { EditorStore } from './useEditor';
 import { addAsset, deleteAsset, listAssets, type AssetRecord } from '../lib/storage';
-import { compressImage } from '../lib/utils';
+import { compressImage, uid } from '../lib/utils';
 import { TEMPLATE_IMAGES } from '../lib/templates';
 import { ICONS } from '../lib/icons';
 import { FONT_PAIRS, PALETTES, SWATCHES } from '../lib/palettes';
 import { CREATE_SHAPES, createIcon, createImage, createNumber, createShape, createText, PAGE_LAYOUTS } from './factory';
 import { ColorField, Segmented, SliderField } from './controls';
 import { ShapeView } from '../components/ElementView';
+import { PagePreview } from '../components/PagePreview';
 import { useToast } from '../components/Toast';
 import { FONTS } from '../lib/fonts';
+import { deleteComponent, listComponents, onComponentsChange, type SavedComponent } from '../lib/components';
 import { AiPanel } from './AiPanel';
 
 export type PanelTab = 'templates' | 'ai' | 'elements' | 'text' | 'uploads' | 'background' | 'brand';
@@ -46,20 +48,40 @@ export function LeftPanel({
   tab,
   store,
   brand,
+  aiFocus,
   onClose,
   onOpenBrand,
 }: {
   tab: PanelTab;
   store: EditorStore;
   brand: BrandKit;
+  aiFocus?: { focus: 'write' | 'translate'; nonce: number } | null;
   onClose: () => void;
   onOpenBrand: () => void;
 }) {
   const { toast } = useToast();
   const page = store.page;
+  const [components, setComponents] = useState<SavedComponent[]>(() => listComponents());
+
+  useEffect(() => onComponentsChange(() => setComponents(listComponents())), []);
+
+  const insertComponent = (component: SavedComponent) => {
+    const groupId = uid('g');
+    const dx = (store.design.size.width - component.width) / 2;
+    const dy = (store.design.size.height - component.height) / 2;
+    const elements = component.elements.map(el => ({
+      ...structuredClone(el),
+      id: uid(el.type),
+      groupId,
+      x: el.x + dx,
+      y: el.y + dy,
+    })) as El[];
+    store.addElements(elements);
+    toast(`Inserted ${component.name}`);
+  };
 
   if (tab === 'ai') {
-    return <AiPanel store={store} brand={brand} onClose={onClose} onOpenBrand={onOpenBrand} />;
+    return <AiPanel store={store} brand={brand} focusRequest={aiFocus} onClose={onClose} onOpenBrand={onOpenBrand} />;
   }
 
   if (tab === 'templates') {
@@ -105,6 +127,52 @@ export function LeftPanel({
       <div className="lp">
         <PanelHead title="Elements" onClose={onClose} />
         <div className="lp-scroll">
+          {components.length > 0 && (
+            <>
+              <div className="lp-section-title">Your components</div>
+              <div className="component-list">
+                {components.map(component => {
+                  const preview: Page = {
+                    id: `component-${component.id}`,
+                    name: component.name,
+                    background: { kind: 'solid', color: '#f4f1ea' },
+                    elements: component.elements,
+                  };
+                  return (
+                    <div className="component-card" key={component.id}>
+                      <button
+                        className="component-thumb"
+                        onClick={() => insertComponent(component)}
+                        title={`Insert ${component.name}`}
+                      >
+                        <PagePreview page={preview} size={{ name: component.name, width: component.width, height: component.height }} />
+                      </button>
+                      <div className="component-info">
+                        <strong>{component.name}</strong>
+                        <small>{component.elements.length} {component.elements.length === 1 ? 'layer' : 'layers'} · click to insert</small>
+                      </div>
+                      <button
+                        className="component-delete"
+                        onClick={() => {
+                          try {
+                            deleteComponent(component.id);
+                            toast('Component deleted');
+                          } catch {
+                            toast('Could not delete this component', 'error');
+                          }
+                        }}
+                        title={`Delete ${component.name}`}
+                        aria-label={`Delete ${component.name}`}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
+          )}
+
           <div className="lp-section-title">Shapes</div>
           <div className="shape-grid">
             {CREATE_SHAPES.map(s => {

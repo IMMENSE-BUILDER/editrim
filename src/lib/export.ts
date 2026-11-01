@@ -1,6 +1,6 @@
-import type { Design } from './types';
+import type { Design, El, Page } from './types';
 import { renderPageCanvas, canvasToBlob } from './render';
-import { downloadBlob, safeFilename } from './utils';
+import { downloadBlob, rotatedBBox, safeFilename, unionRect } from './utils';
 
 export type ExportFormat = 'png' | 'jpg' | 'pdf';
 
@@ -13,8 +13,29 @@ export type ExportOptions = {
 
 export type ExportResult = { files: number; pages: number; format: ExportFormat };
 
-export async function exportDesign(design: Design, currentPage: number, opts: ExportOptions): Promise<ExportResult> {
-  const base = safeFilename(design.title);
+export async function exportSelection(design: Design, elements: El[], page?: Page): Promise<void> {
+  if (!elements.length) throw new Error('Nothing selected');
+  const bounds = unionRect(elements.map(el => rotatedBBox(el)));
+  if (!bounds || bounds.w < 1 || bounds.h < 1) throw new Error('Nothing to export');
+  const width = Math.max(1, Math.ceil(bounds.w));
+  const height = Math.max(1, Math.ceil(bounds.h));
+  const temp: Page = {
+    id: 'selection',
+    name: 'Selection',
+    background: { kind: 'solid', color: '#ffffff' },
+    elements: elements.map(el => ({
+      ...structuredClone(el),
+      x: el.x - bounds.x,
+      y: el.y - bounds.y,
+    })),
+  };
+  const canvas = await renderPageCanvas(temp, { name: 'Selection', width, height }, { scale: 2, transparent: true });
+  const blob = await canvasToBlob(canvas, 'image/png', 0.94);
+  const suffix = page ? `-${safeFilename(page.name || 'page')}` : '';
+  downloadBlob(blob, `${safeFilename(design.title)}${suffix}-selection.png`);
+}
+
+export async function exportDesign(design: Design, currentPage: number, opts: ExportOptions): Promise<ExportResult> {  const base = safeFilename(design.title);
   const indexes = opts.pages === 'all' ? design.pages.map((_, i) => i) : [currentPage];
 
   if (opts.format === 'pdf') {

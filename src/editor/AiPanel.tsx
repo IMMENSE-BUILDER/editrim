@@ -83,11 +83,13 @@ function errorHint(err: AiRequestError): string | null {
 export function AiPanel({
   store,
   brand,
+  focusRequest,
   onClose,
   onOpenBrand,
 }: {
   store: EditorStore;
   brand: BrandKit;
+  focusRequest?: { focus: 'write' | 'translate'; nonce: number } | null;
   onClose: () => void;
   onOpenBrand: () => void;
 }) {
@@ -131,6 +133,8 @@ export function AiPanel({
   const copyResultRef = useRef<HTMLDivElement>(null);
   const critiqueResultRef = useRef<HTMLDivElement>(null);
   const editResultRef = useRef<HTMLDivElement>(null);
+  const writePromptRef = useRef<HTMLTextAreaElement>(null);
+  const translateRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!designPage) return;
@@ -165,6 +169,23 @@ export function AiPanel({
     const el = store.selected.find(e => e.type === 'text');
     return el && el.type === 'text' ? el : null;
   }, [store.selected]);
+
+  useEffect(() => {
+    if (!focusRequest) return;
+    setMode('write');
+    const t = window.setTimeout(() => {
+      if (focusRequest.focus === 'translate') {
+        translateRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      } else {
+        if (selectedText) setWriteMode('rewrite');
+        writePromptRef.current?.focus();
+        writePromptRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      }
+    }, 120);
+    return () => window.clearTimeout(t);
+    // The nonce is the explicit trigger; selectedText is read at that moment.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusRequest?.nonce]);
 
   useEffect(() => {
     let alive = true;
@@ -726,6 +747,7 @@ export function AiPanel({
             <label className="field-label" htmlFor="ai-write-prompt">{writeMode === 'compose' ? 'What should it say?' : 'Extra direction (optional)'}</label>
             <textarea
               id="ai-write-prompt"
+              ref={writePromptRef}
               className="ai-textarea"
               rows={3}
               value={writePrompt}
@@ -781,7 +803,7 @@ export function AiPanel({
 
             <div className="ai-divider" />
 
-            <div className="ai-translate">
+            <div className="ai-translate" ref={translateRef}>
               <span className="ai-eyebrow">TRANSLATE</span>
               <p>Translate the selected text into another language.</p>
               <div className="ai-field-row">
