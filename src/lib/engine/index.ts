@@ -10,7 +10,7 @@ export * from './brandHub';
 import { CANVAS_FORMATS, PRINT_STANDARDS, fitCanvas, printPixels } from './canvasFormats';
 import { ALL_FONT_ASSETS, FONT_PAIRINGS, TEXT_EFFECTS } from './typography';
 import { TIMELINE_COMPOSITIONS, TRANSITIONS, validateTimeline } from './timeline';
-import { BUILT_IN_VECTORS, MASK_FRAMES, PARAMETRIC_SHAPES, VECTOR_ASSETS, clusterVectors, parametricPath } from './vectors';
+import { BUILT_IN_VECTORS, DEVICE_MOCKUPS, MASK_FRAMES, PARAMETRIC_SHAPES, VECTOR_ASSETS, clusterVectors, parametricPath } from './vectors';
 import { GRADIENT_PRESETS, MOOD_PALETTES, toCssGradient } from './colorEngine';
 import { CHART_WRAPPERS, SLIDE_ARCHETYPES, SLIDE_DECK_TEMPLATES, pieSlices } from './presentationKit';
 import { LAYOUT_TEST_BOXES, reflowLayout } from './layoutEngine';
@@ -61,8 +61,8 @@ export function validateEngineSchema(): EngineValidation {
     `${VECTOR_ASSETS.length} assets in ${clusters.length} clusters; built-ins sanitized=${BUILT_IN_VECTORS.every(asset => asset.sanitized)}`);
   check('parametric shapes', PARAMETRIC_SHAPES.every(shape => parametricPath(shape).startsWith('M')),
     `${PARAMETRIC_SHAPES.length} editable shapes`);
-  check('frames and mockups', MASK_FRAMES.length >= 5 && BRAND_ASSET_BUNDLE.layoutPolicies.length > 0,
-    `${MASK_FRAMES.length} clipping frames, ${BRAND_ASSET_BUNDLE.layoutPolicies.length} layout policy`);
+  check('frames and mockups', MASK_FRAMES.length >= 5 && DEVICE_MOCKUPS.length >= 4,
+    `${MASK_FRAMES.length} clipping frames, ${DEVICE_MOCKUPS.length} device mockups`);
 
   check('mood palettes', MOOD_PALETTES.every(palette => palette.colors.length >= 3 && palette.colors.length <= 5),
     `${MOOD_PALETTES.length} palettes with 3–5 colours`);
@@ -89,8 +89,8 @@ export function validateEngineSchema(): EngineValidation {
 
   const fontCheck = checkBrandChange(DEFAULT_BRAND_HUB, { kind: 'font', values: ['Inter'] });
   const rogueFont = checkBrandChange(DEFAULT_BRAND_HUB, { kind: 'font', values: ['Comic Sans MS'] });
-  check('brand lockouts', fontCheck.allowed && !rogueFont.allowed && DEFAULT_BRAND_HUB.assets.length >= 7,
-    `${DEFAULT_BRAND_HUB.locks.length} locks; locked font=${!rogueFont.allowed}`);
+  check('brand lockouts', fontCheck.allowed && !rogueFont.allowed && DEFAULT_BRAND_HUB.assets.length >= 7 && BRAND_ASSET_BUNDLE.layoutPolicies.length > 0,
+    `${DEFAULT_BRAND_HUB.locks.length} locks; locked font=${!rogueFont.allowed}; ${BRAND_ASSET_BUNDLE.layoutPolicies.length} locked layout policy`);
 
   const counts: Record<string, number> = {
     canvasFormats: CANVAS_FORMATS.length,
