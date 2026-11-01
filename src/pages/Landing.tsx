@@ -64,6 +64,24 @@ export default function Landing() {
   useEffect(() => {
     document.title = 'Vellum — Design anything. Beautifully.';
   }, []);
+
+  useEffect(() => {
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('.landing .reveal'));
+    if (!nodes.length) return;
+    if (!('IntersectionObserver' in window) || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      nodes.forEach(node => node.classList.add('is-visible'));
+      return;
+    }
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    nodes.forEach(node => observer.observe(node));
+    return () => observer.disconnect();
+  }, []);
   const formats = {
     post: { label: 'Post', size: '1080 × 1080', page: cafe.pages[0], dims: cafe.size, note: 'Square post' },
     story: { label: 'Story', size: '1080 × 1920', page: sale.pages[0], dims: { name: 'Story', width: 1080, height: 1920 }, note: 'Full-screen story' },

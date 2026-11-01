@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, LayoutGrid, Plus } from 'lucide-react';
+import { ArrowRight, LayoutGrid, Plus, Search, X } from 'lucide-react';
 import { Modal } from './Modal';
-import { GROUP_ORDER, SIZE_PRESETS } from '../lib/presets';
+import { GROUP_ORDER, SIZE_PRESETS, type SizePreset } from '../lib/presets';
 import { createDesign } from '../lib/storage';
 import type { Design } from '../lib/types';
 import { useToast } from './Toast';
@@ -27,17 +27,33 @@ export function NewDesignModal({
   const [w, setW] = useState(1080);
   const [h, setH] = useState(1080);
   const [title, setTitle] = useState('');
+  const [query, setQuery] = useState('');
 
   useEffect(() => {
     if (!open) return;
     setCustom(initialCustom);
     setGroup(initialGroup);
+    setQuery('');
   }, [open, initialCustom, initialGroup]);
 
-  const presets = useMemo(() => SIZE_PRESETS.filter(p => p.group === group), [group]);
+  const presets = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (q) {
+      const score = (p: SizePreset) => {
+        const name = p.name.toLowerCase();
+        if (name.startsWith(q)) return 0;
+        if (name.split(/\s+/).some(word => word.startsWith(q))) return 1;
+        return 2;
+      };
+      return SIZE_PRESETS
+        .filter(p => `${p.name} ${p.group} ${p.hint}`.toLowerCase().includes(q))
+        .sort((a, b) => score(a) - score(b));
+    }
+    return SIZE_PRESETS.filter(p => p.group === group);
+  }, [group, query]);
 
-  const start = (width: number, height: number, name: string) => {
-    const design = createDesign({ title: title.trim() || name, width, height, category: group });
+  const start = (width: number, height: number, name: string, category = group) => {
+    const design = createDesign({ title: title.trim() || name, width, height, category });
     toast('Canvas ready — make something good');
     onClose();
     if (onCreated) onCreated(design);
@@ -55,7 +71,7 @@ export function NewDesignModal({
         custom ? (
           <>
             <button className="btn btn-ghost" onClick={() => setCustom(false)}>Back to presets</button>
-            <button className="btn btn-cobalt" onClick={() => start(w, h, 'Untitled design')}>
+            <button className="btn btn-cobalt" onClick={() => start(w, h, 'Untitled design', 'Custom')}>
               Create canvas
               <ArrowRight size={15} />
             </button>
@@ -69,30 +85,65 @@ export function NewDesignModal({
     >
       {!custom ? (
         <>
-          <div className="size-tabs" role="tablist">
-            {GROUP_ORDER.map(g => (
-              <button
-                key={g}
-                role="tab"
-                aria-selected={group === g}
-                className={`size-tab ${group === g ? 'active' : ''}`}
-                onClick={() => setGroup(g)}
-              >
-                {g}
+          <div className="size-search">
+            <Search size={15} />
+            <input
+              className="size-search-input"
+              value={query}
+              onChange={e => setQuery(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && presets[0]) start(presets[0].w, presets[0].h, presets[0].name, presets[0].name);
+              }}
+              placeholder={`Search ${SIZE_PRESETS.length} formats`}
+              aria-label="Search design formats"
+              data-autofocus="false"
+            />
+            {query && (
+              <button className="size-search-clear" onClick={() => setQuery('')} aria-label="Clear format search">
+                <X size={14} />
               </button>
-            ))}
+            )}
           </div>
-          <div className="size-grid">
-            {presets.map(p => (
-              <button key={p.id} className="size-card" onClick={() => start(p.w, p.h, p.name)}>
+          {!query.trim() ? (
+            <div className="size-tabs" role="tablist">
+              {GROUP_ORDER.map(g => (
+                <button
+                  key={g}
+                  role="tab"
+                  aria-selected={group === g}
+                  className={`size-tab ${group === g ? 'active' : ''}`}
+                  onClick={() => setGroup(g)}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="size-results-count" aria-live="polite">{presets.length} {presets.length === 1 ? 'format' : 'formats'} matching “{query.trim()}”</div>
+          )}
+          <div className="size-grid" key={query.trim() ? 'search' : group}>
+            {presets.map((p, i) => (
+              <button
+                key={p.id}
+                className="size-card"
+                onClick={() => start(p.w, p.h, p.name, p.name)}
+                style={{ animationDelay: `${Math.min(i, 8) * 18}ms` }}
+              >
                 <span className="size-card-shape" style={{ aspectRatio: `${p.w} / ${p.h}` }} />
                 <span className="size-card-body">
                   <span className="size-card-name">{p.name}</span>
-                  <span className="size-card-hint">{p.hint} · {p.w}×{p.h}</span>
+                  <span className="size-card-hint">{query.trim() ? `${p.group} · ${p.hint} · ` : `${p.hint} · `}{p.w}×{p.h}</span>
                 </span>
               </button>
             ))}
           </div>
+          {presets.length === 0 && (
+            <div className="size-empty">
+              <strong>No formats match “{query.trim()}”.</strong>
+              <p>Try “story”, “print”, “banner” or a format name.</p>
+              <button className="btn btn-secondary btn-sm" onClick={() => setQuery('')}>Clear search</button>
+            </div>
+          )}
           <div className="size-custom-hint">
             <LayoutGrid size={16} />
             Need a different size? Use <button onClick={() => setCustom(true)}>custom dimensions</button>.

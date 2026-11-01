@@ -20,7 +20,7 @@ for (const g of tabs) {
   console.log(g, names.length, names);
   all.push(...names);
 }
-const requested = ['Desktop Wallpaper','Facebook Post','Photo Collage','Menu','Phone Wallpaper','Facebook Cover','Business Card','Certificate','Banner','Invoice','Letterhead','Logo','Whiteboard','Resume','YouTube Thumbnail','Invitation','Brochure','Link in Bio','Code','Doc','Mobile Video','Sheet','Email','Presentation','Document','Poster','Flyer','Website','Instagram Post','Landscape Video','Your Story'];
+const requested = ['Desktop Wallpaper','Facebook Post','Photo Collage','Menu','Phone Wallpaper','Facebook Cover','Business Card','Certificate','Banner','Invoice','Letterhead','Logo','Whiteboard','Resume','YouTube Thumbnail','Invitation','Brochure','Link in Bio','Code','Doc','Mobile Video','Sheet','Email','Presentation','Document','Poster','Flyer','Website','Instagram Post','Landscape Video','Your Story','Facebook Story','Facebook Event Cover','X / Twitter Header','Threads Post','Bluesky Post','Keynote 16:10','Postcard','Book Cover','Magazine Cover','Recipe Card','YouTube Banner','Podcast Cover','Album Cover','App Icon','GitHub Social','Google Business Cover','Etsy Banner','Newsletter','Contract','Proposal'];
 const missing = requested.filter(n => !all.includes(n));
 console.log('library total', all.length, 'missing', missing);
 assert.equal(missing.length, 0);
@@ -51,10 +51,10 @@ await p.locator('.home-cat[title="More"]').click();
 await p.waitForTimeout(300);
 const moreFirst = await p.locator('.home-more-grid button').first().innerText();
 console.log('more lead', moreFirst);
-assert.ok(moreFirst.includes('Design library') && moreFirst.includes('39 formats'));
+assert.ok(moreFirst.includes('Design library') && moreFirst.includes('59 formats'));
 await p.getByRole('button', { name: /Design library/ }).click();
 await p.waitForTimeout(350);
-assert.ok((await p.locator('.modal-sub').innerText()).includes('39 formats'));
+assert.ok((await p.locator('.modal-sub').innerText()).includes('59 formats'));
 await p.keyboard.press('Escape');
 await p.waitForTimeout(200);
 console.log('errors', errors);

@@ -751,6 +751,63 @@
   overflow-x: auto;
 }
 
+.size-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 38px;
+  padding: 0 10px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--muted);
+  transition: border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.size-search:focus-within {
+  border-color: var(--cobalt);
+  box-shadow: 0 0 0 3px rgba(36, 64, 240, 0.12);
+}
+
+.size-search-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 12.5px;
+  color: var(--ink);
+}
+
+.size-search-input::placeholder {
+  color: var(--muted-2);
+}
+
+.size-search-clear {
+  width: 23px;
+  height: 23px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  color: var(--muted);
+}
+
+.size-search-clear:hover {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.size-results-count {
+  margin: 2px 2px 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 .size-tab {
   flex: 1;
   padding: 8px 12px;
@@ -759,6 +816,7 @@
   font-weight: 500;
   color: var(--muted);
   white-space: nowrap;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
 
 .size-tab.active {
@@ -782,13 +840,42 @@
   border-radius: 9px;
   background: #fff;
   text-align: left;
-  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+  animation: size-card-in var(--dur) var(--ease-out) both;
+  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease);
+}
+
+@keyframes size-card-in {
+  from { opacity: 0; transform: translateY(5px) scale(0.985); }
 }
 
 .size-card:hover {
   border-color: var(--cobalt);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(36, 64, 240, 0.08);
+}
+
+.size-card:active {
+  transform: scale(0.985);
+}
+
+.size-empty {
+  padding: 24px 16px;
+  text-align: center;
+  border: 1px dashed var(--line-strong);
+  border-radius: 9px;
+  color: var(--muted);
+}
+
+.size-empty strong {
+  display: block;
+  font-size: 13px;
+  color: var(--ink);
+  margin-bottom: 3px;
+}
+
+.size-empty p {
+  font-size: 11px;
+  margin-bottom: 12px;
 }
 
 .size-card-shape {
@@ -1270,4 +1357,15 @@
   font-size: 9.5px;
   line-height: 1.45;
   color: var(--muted-2);
+}
+
+@media (max-width: 600px) {
+  .size-tabs {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+
+  .size-tab {
+    flex: 1 0 calc(50% - 4px);
+  }
 }

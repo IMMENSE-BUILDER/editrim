@@ -55,7 +55,7 @@ export function Modal({
       const modal = modalRef.current;
       if (!modal || modal.contains(document.activeElement)) return;
       const target =
-        modal.querySelector<HTMLElement>('input:not([disabled]), textarea:not([disabled]), select:not([disabled])') ??
+        modal.querySelector<HTMLElement>('input:not([disabled]):not([data-autofocus="false"]), textarea:not([disabled]), select:not([disabled])') ??
         modal.querySelector<HTMLElement>('[role="tab"]:not([disabled]), .size-card:not([disabled])') ??
         modal.querySelector<HTMLElement>('.modal-footer .btn-cobalt, .modal-footer .btn-primary') ??
         modal.querySelector<HTMLElement>('.modal-footer .btn-ghost') ??

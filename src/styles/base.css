@@ -613,3 +613,10 @@ textarea.input {
     transform: none;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .size-card,
+  .gallery-grid .template-card {
+    animation-delay: 0ms !important;
+  }
+}

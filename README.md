@@ -11,9 +11,9 @@ No account. No watermark. Your designs stay yours. AI runs through a serverless 
 ## What it does
 
 - **20 hand-built templates** across Instagram, stories, presentations, posters, resumes, menus, invitations, business cards, YouTube, banners and podcasts.
-- **39 canvas presets** plus custom dimensions up to 6000 × 6000.
+- **59 canvas presets** plus custom dimensions up to 6000 × 6000.
 - **Canvas-style Home dashboard** at `/dashboard` — left rail with Create, Home, Projects, Templates, Brand, AI Studio, Print and More; a gradient “What will you design today?” hero; glowing universal search across designs, templates and actions; 13 creation shortcuts; Continue designing; Templates for you; and a full Projects view with rename, duplicate, download, present and delete.
-- **Functional starting points** — Presentation, Social media, Doc, Whiteboard, Upload, Custom size, Printables and Templates create real editable designs. Video, Sheet, Website and Magic Layers explain their honest scope instead of faking media tools. The Create modal is a **39-format design library** grouped into Social, Presentation, Print, Brand, Web and Docs.
+- **Functional starting points** — Presentation, Social media, Doc, Whiteboard, Upload, Custom size, Printables and Templates create real editable designs. Video, Sheet, Website and Magic Layers explain their honest scope instead of faking media tools. The Create modal is a **59-format design library** grouped into Social, Presentation, Print, Brand, Web and Docs, with search across every format.
 - **A real editor** — drag, resize, rotate, snap to guides, multi-select, group resize, align, distribute, layer, lock, hide, duplicate, copy/paste and undo/redo.
 - **Right-click canvas menu** — copy, copy/paste style, paste, duplicate and delete; Layer and Align-to-page submenus; group/ungroup; reusable components; local comment pins; lock controls; apply a palette from the selection to the page; download the selection as a transparent PNG; Magic Write and Translate powers.
 - **Typography** — 15 self-hosted fonts, weight, size, line-height, letter-spacing, alignment, uppercase, underline, highlight, outline and drop shadow.
@@ -121,7 +121,7 @@ The app was tested end-to-end with Playwright against Chrome:
 - present mode navigation
 - dashboard rename, duplicate, delete and search
 - Home dashboard: hero CTA routing, 13 categories, Presentation/Doc/Whiteboard/Video storyboard/Sheet/Website creation, image upload, print modal, universal search, project menus, More/Help popovers and a 390 px mobile layout
-- Design library: 39 formats across six groups including Desktop/Phone Wallpaper, Facebook Post/Cover, Photo Collage, Certificate, Invoice, Letterhead, Brochure, Link in Bio, Code, Doc, Document, Sheet, Whiteboard, Mobile Video, Landscape Video and Your Story; Certificate starts at 1240 × 1754
+- Design library: 59 formats across six groups including Desktop/Phone Wallpaper, Facebook Post/Cover/Story/Event, Photo Collage, Certificate, Invoice, Letterhead, Brochure, Postcard, Book/Magazine Cover, Podcast/Album Cover, App Icon, YouTube Banner, Link in Bio, Code, Doc, Document, Sheet, Whiteboard, Mobile/Landscape Video, Newsletter and Your Story; searchable across all formats
 - Editor right-click menu: copy/paste, copy/paste style, duplicate/delete, layer and align submenus, group/ungroup, component save + insert + persistence, comment add/resolve/delete + pin, lock/unlock, palette apply + undo, selection PNG download, and Magic Write/Translate handoff to AI Studio
 - Motion and accessibility polish: reduced-motion without losing colour feedback, toast exit, origin-aware menus, modal focus trap/restore, button press states, 4.79:1 Home label contrast, and no horizontal overflow at 390 px
 - responsive layouts at 1440, 1600 and 390 px

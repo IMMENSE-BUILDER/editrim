@@ -82,7 +82,7 @@ export default function Templates() {
         </div>
 
         {results.length > 0 ? (
-          <div className="gallery-grid">
+          <div className="gallery-grid" key={category}>
             {results.map(t => (
               <TemplateCard key={t.id} template={t} to={`/editor/new?template=${t.id}`} />
             ))}
