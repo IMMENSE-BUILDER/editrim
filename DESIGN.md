@@ -13,6 +13,7 @@ Editorial studio meets precision tool. Warm paper, ink-black type, one electric 
 
 ## Type
 - Display: **Bricolage Grotesque** 700/800, tight tracking (-0.03em), oversized.
+- Landing display accent: **Geist Serif Regular** for the hero emphasis — high-contrast editorial serif; self-hosted, no synthetic italic.
 - Serif accent: **Instrument Serif** italic for one word per headline.
 - UI/body: **Inter** 400/500/600, 13–16px in app, 17–19px marketing.
 - Canvas fonts offered: Inter, Bricolage Grotesque, Instrument Serif, Playfair Display, DM Serif Display, Space Grotesk, Bebas Neue, Archivo Black, Fraunces, Manrope, Libre Baskerville, Poppins, Oswald, Montserrat, Caveat.

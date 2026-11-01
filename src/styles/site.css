@@ -2,6 +2,14 @@
    Vellum — site (landing + gallery)
    ============================================================ */
 
+@font-face {
+  font-family: 'Geist Serif';
+  src: url('/fonts/geist-serif-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 .landing {
   overflow-x: clip;
 }
@@ -198,10 +206,10 @@
 }
 
 .hero-accent {
-  font-family: var(--serif);
-  font-style: italic;
+  font-family: var(--geist-serif);
+  font-style: normal;
   font-weight: 400;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.045em;
   color: var(--cobalt);
   display: inline-block;
   position: relative;

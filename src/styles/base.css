@@ -23,6 +23,7 @@
   --display: 'Bricolage Grotesque', 'Inter', system-ui, sans-serif;
   --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --serif: 'Instrument Serif', Georgia, serif;
+  --geist-serif: 'Geist Serif', 'Instrument Serif', Georgia, serif;
   --shadow-xs: 0 1px 2px rgba(30, 26, 16, 0.06);
   --shadow-sm: 0 2px 8px rgba(30, 26, 16, 0.07), 0 1px 2px rgba(30, 26, 16, 0.05);
   --shadow-md: 0 10px 30px rgba(30, 26, 16, 0.12), 0 2px 8px rgba(30, 26, 16, 0.06);
