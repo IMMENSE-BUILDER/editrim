@@ -1,0 +1,63 @@
+import { chromium } from 'playwright';
+import assert from 'node:assert';
+const b = await chromium.launch({ channel: 'chrome' });
+const ctx = await b.newContext({ viewport: { width: 1440, height: 1000 } });
+const p = await ctx.newPage();
+const errors = []; p.on('pageerror',e=>errors.push(e.message)); p.on('console',m=>{if(m.type()==='error')errors.push(m.text())});
+await p.goto('http://localhost:5173/dashboard', { waitUntil: 'networkidle' });
+await p.waitForTimeout(800);
+await p.locator('.rail-create').click();
+await p.waitForTimeout(400);
+console.log('subtitle:', await p.locator('.modal-sub').innerText());
+const tabs = await p.locator('.size-tab').allInnerTexts();
+console.log('groups:', tabs);
+assert.deepEqual(tabs, ['Social','Presentation','Print','Brand','Web','Docs']);
+const all = [];
+for (const g of tabs) {
+  await p.locator('.size-tab').filter({ hasText: new RegExp('^'+g+'$') }).click();
+  await p.waitForTimeout(150);
+  const names = await p.locator('.size-card-name').allInnerTexts();
+  console.log(g, names.length, names);
+  all.push(...names);
+}
+const requested = ['Desktop Wallpaper','Facebook Post','Photo Collage','Menu','Phone Wallpaper','Facebook Cover','Business Card','Certificate','Banner','Invoice','Letterhead','Logo','Whiteboard','Resume','YouTube Thumbnail','Invitation','Brochure','Link in Bio','Code','Doc','Mobile Video','Sheet','Email','Presentation','Document','Poster','Flyer','Website','Instagram Post','Landscape Video','Your Story'];
+const missing = requested.filter(n => !all.includes(n));
+console.log('library total', all.length, 'missing', missing);
+assert.equal(missing.length, 0);
+await p.screenshot({ path: 'shots/library-all.png' });
+// Create a certificate from the library
+await p.locator('.size-tab').filter({ hasText: /^Print$/ }).click();
+await p.waitForTimeout(150);
+await p.locator('.size-card').filter({ has: p.locator('.size-card-name', { hasText: /^Certificate$/ }) }).click();
+await p.waitForSelector('.editor', { timeout: 15000 });
+await p.waitForTimeout(500);
+console.log('certificate size', await p.locator('.ed-size-pill').innerText());
+assert.ok((await p.locator('.ed-size-pill').innerText()).includes('1240'));
+// Search action exposure
+await p.goto('http://localhost:5173/dashboard', { waitUntil: 'networkidle' });
+await p.waitForTimeout(500);
+await p.locator('.home-search-wrap input').fill('certificate');
+await p.waitForTimeout(250);
+console.log('format search', await p.locator('.home-result-row.action').allInnerTexts());
+assert.ok((await p.locator('.home-result-row.action').allInnerTexts()).some(t => t.includes('Certificate')));
+await p.locator('.home-search-wrap input').fill('library');
+await p.waitForTimeout(250);
+console.log('search library rows', await p.locator('.home-result-row.action').allInnerTexts());
+assert.ok((await p.locator('.home-result-row.action').allInnerTexts()).some(t => t.includes('design library')));
+// More modal exposes the library as the lead option
+await p.locator('.home-search-wrap input').press('Escape');
+await p.waitForTimeout(200);
+await p.locator('.home-cat[title="More"]').click();
+await p.waitForTimeout(300);
+const moreFirst = await p.locator('.home-more-grid button').first().innerText();
+console.log('more lead', moreFirst);
+assert.ok(moreFirst.includes('Design library') && moreFirst.includes('39 formats'));
+await p.getByRole('button', { name: /Design library/ }).click();
+await p.waitForTimeout(350);
+assert.ok((await p.locator('.modal-sub').innerText()).includes('39 formats'));
+await p.keyboard.press('Escape');
+await p.waitForTimeout(200);
+console.log('errors', errors);
+assert.equal(errors.length, 0);
+await b.close();
+console.log('LIBRARY OK');

@@ -49,7 +49,7 @@ export function NewDesignModal({
       open={open}
       onClose={onClose}
       title="Create a design"
-      subtitle="Pick a size, or start from a blank canvas at any dimensions."
+      subtitle={`Design library — ${SIZE_PRESETS.length} formats across social, print, brand, web and docs. Or set any size.`}
       width={760}
       footer={
         custom ? (

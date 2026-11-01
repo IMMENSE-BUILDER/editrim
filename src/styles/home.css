@@ -2022,3 +2022,21 @@
 @keyframes home-reveal {
   from { opacity: 0; transform: translateY(4px); }
 }
+
+/* The design library is the lead option in More. */
+.home-more-grid button:first-child {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(100deg, rgba(138, 99, 255, 0.08), rgba(255, 255, 255, 0.01));
+  border-color: rgba(185, 167, 255, 0.28);
+}
+
+.home-more-grid button:first-child svg {
+  margin-bottom: 0;
+}
+
+.home-more-grid button:first-child small {
+  margin-left: auto;
+}

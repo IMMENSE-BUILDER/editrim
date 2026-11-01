@@ -15,7 +15,7 @@ People who need polished visuals without a design background: small-business own
 
 ## Core promises
 1. **Real editing, not a mockup.** Move, resize, rotate, snap, layer, align, style text, upload images, undo/redo, multi-page, present, export.
-2. **Start fast.** 20 hand-built templates across 12 categories, 24 size presets and blank canvases.
+2. **Start fast.** 20 hand-built templates across 12 categories, 39 size presets and blank canvases.
 3. **Yours.** Projects autosave locally, export without watermarks, work offline after first load.
 4. **No dark patterns.** No sign-up wall, no paywall. AI is opt-in, previewed before it changes anything, and honestly scoped. Everything shown is usable.
 

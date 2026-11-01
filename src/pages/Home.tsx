@@ -21,6 +21,7 @@ import {
 } from '../lib/storage';
 import { exportDesign } from '../lib/export';
 import { TEMPLATES } from '../lib/templates';
+import { SIZE_PRESETS } from '../lib/presets';
 import { compressImage, formatBytes, timeAgo } from '../lib/utils';
 import { createImage } from '../editor/factory';
 import type { Design } from '../lib/types';
@@ -32,8 +33,14 @@ type RailPopover = 'notifications' | 'avatar' | 'more' | null;
 
 const TYPE_META: Record<string, { icon: LucideIcon; color: string }> = {
   Instagram: { icon: Heart, color: '#ff6a79' },
+  'Instagram Post': { icon: Heart, color: '#ff6a79' },
+  'Instagram Portrait': { icon: Heart, color: '#ff6a79' },
   Story: { icon: Heart, color: '#ff6a79' },
+  'LinkedIn Post': { icon: Heart, color: '#6c9dff' },
+  'X / Twitter Post': { icon: Heart, color: '#6c9dff' },
+  'Pinterest Pin': { icon: Heart, color: '#ff6a79' },
   Presentation: { icon: Presentation, color: '#ff914f' },
+  'Presentation 4:3': { icon: Presentation, color: '#ff914f' },
   Poster: { icon: FileImage, color: '#b895ff' },
   Resume: { icon: FileText, color: '#6c9dff' },
   'Business card': { icon: CreditCard, color: '#7bd6ff' },
@@ -44,11 +51,28 @@ const TYPE_META: Record<string, { icon: LucideIcon; color: string }> = {
   Flyer: { icon: FileImage, color: '#ffb39f' },
   Banner: { icon: RectangleHorizontal, color: '#6c9dff' },
   Podcast: { icon: Mic, color: '#d8f55a' },
+  'TikTok Video': { icon: Clapperboard, color: '#ff5da8' },
+  'US Letter': { icon: FileText, color: '#6c9dff' },
   Doc: { icon: FileText, color: '#2ec4c6' },
+  Document: { icon: FileText, color: '#6c9dff' },
   Whiteboard: { icon: PenTool, color: '#38c976' },
   Website: { icon: Globe2, color: '#3d9bff' },
   Sheet: { icon: Table2, color: '#4d8cff' },
   Video: { icon: Clapperboard, color: '#ff5da8' },
+  'Mobile Video': { icon: Clapperboard, color: '#ff5da8' },
+  'Landscape Video': { icon: Clapperboard, color: '#ff5da8' },
+  'Your Story': { icon: Heart, color: '#ff6a79' },
+  'Desktop Wallpaper': { icon: ImageIcon, color: '#b895ff' },
+  'Phone Wallpaper': { icon: ImageIcon, color: '#7bd6ff' },
+  'Photo Collage': { icon: ImageIcon, color: '#ffb39f' },
+  Certificate: { icon: FileText, color: '#d8f55a' },
+  Invoice: { icon: FileText, color: '#6c9dff' },
+  Letterhead: { icon: Mail, color: '#e8a3c5' },
+  Brochure: { icon: FileImage, color: '#ffb39f' },
+  'Link in Bio': { icon: Globe2, color: '#3d9bff' },
+  Code: { icon: Frame, color: '#b895ff' },
+  Email: { icon: Mail, color: '#6c9dff' },
+  'Email Header': { icon: Mail, color: '#6c9dff' },
   Upload: { icon: ImageIcon, color: '#b895ff' },
   Custom: { icon: Frame, color: '#b895ff' },
 };
@@ -284,8 +308,15 @@ export default function Home() {
     return TEMPLATES.filter(t => `${t.name} ${t.category} ${t.description} ${t.tags.join(' ')}`.toLowerCase().includes(q)).slice(0, 6);
   }, [query]);
 
+  const searchPresets = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    return SIZE_PRESETS.filter(p => `${p.name} ${p.group} ${p.hint}`.toLowerCase().includes(q)).slice(0, 6);
+  }, [query]);
+
   const actions = [
     { label: 'Create a presentation', hint: '16:9 deck', icon: Presentation, run: () => startBlank(1920, 1080, 'Untitled presentation', 'Presentation') },
+    { label: 'Browse design library', hint: `${SIZE_PRESETS.length} formats, from social to print`, icon: LayoutTemplate, run: () => openCreate() },
     { label: 'Open AI Studio', hint: 'Design, write, edit or review with AI', icon: Sparkles, run: () => navigate('/editor/new#ai') },
     { label: 'Upload an image', hint: 'Turn a photo into a new design', icon: Upload, run: () => fileRef.current?.click() },
     { label: 'Print-ready PDF', hint: 'Download a print PDF', icon: Printer, run: openPrint },
@@ -298,10 +329,11 @@ export default function Home() {
     : [];
 
   const hasSearch = Boolean(query.trim());
-  const firstSearchResult = searchDesigns[0] ?? searchTemplates[0] ?? null;
+  const firstSearchResult = searchDesigns[0] ?? searchTemplates[0] ?? searchPresets[0] ?? null;
   const openFirstResult = () => {
     if (searchDesigns[0]) navigate(`/editor/${searchDesigns[0].id}`);
     else if (searchTemplates[0]) navigate(`/editor/new?template=${searchTemplates[0].id}`);
+    else if (searchPresets[0]) startBlank(searchPresets[0].w, searchPresets[0].h, `Untitled ${searchPresets[0].name.toLowerCase()}`, searchPresets[0].name);
     else if (searchActions[0]) searchActions[0].run();
   };
 
@@ -359,7 +391,7 @@ export default function Home() {
           {collapsed ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
         </button>
 
-        <button className="rail-create" onClick={() => openCreate()} title="Create a design">
+        <button className="rail-create" onClick={() => openCreate()} title="Open design library">
           <span className="rail-create-icon"><Plus size={20} /></span>
           <span className="rail-label">Create</span>
         </button>
@@ -494,7 +526,7 @@ export default function Home() {
               <section className="home-search-results">
                 <div className="home-results-head">
                   <span className="home-eyebrow">Search results</span>
-                  <span>{searchDesigns.length + searchTemplates.length + searchActions.length} found</span>
+                  <span>{searchDesigns.length + searchTemplates.length + searchPresets.length + searchActions.length} found</span>
                 </div>
                 {searchDesigns.length > 0 && (
                   <div className="home-result-group">
@@ -506,6 +538,29 @@ export default function Home() {
                         <ArrowUpRight size={14} />
                       </Link>
                     ))}
+                  </div>
+                )}
+                {searchPresets.length > 0 && (
+                  <div className="home-result-group">
+                    <h3>Formats</h3>
+                    {searchPresets.map(preset => {
+                      const meta = typeMeta(preset.name);
+                      const Icon = meta.icon;
+                      return (
+                        <button
+                          key={preset.id}
+                          className="home-result-row action"
+                          onClick={() => {
+                            setQuery('');
+                            startBlank(preset.w, preset.h, `Untitled ${preset.name.toLowerCase()}`, preset.name);
+                          }}
+                        >
+                          <span className="home-result-action-icon" style={{ color: meta.color }}><Icon size={17} /></span>
+                          <span><strong>{preset.name}</strong><small>{preset.group} · {preset.w}×{preset.h} · {preset.hint}</small></span>
+                          <ArrowUpRight size={14} />
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
                 {searchTemplates.length > 0 && (
@@ -535,7 +590,7 @@ export default function Home() {
                     })}
                   </div>
                 )}
-                {!searchDesigns.length && !searchTemplates.length && !searchActions.length && (
+                {!searchDesigns.length && !searchTemplates.length && !searchPresets.length && !searchActions.length && (
                   <div className="home-no-results">
                     <Search size={22} /><h3>Nothing matches “{query}”.</h3>
                     <p>Try a design name, a template type, or an action like “AI” or “print”.</p>
@@ -760,6 +815,7 @@ export default function Home() {
         width={560}
       >
         <div className="home-more-grid">
+          <button onClick={() => { setMoreOpen(false); openCreate(); }}><LayoutTemplate size={18} /><strong>Design library</strong><small>{SIZE_PRESETS.length} formats</small></button>
           <button onClick={() => { setMoreOpen(false); openCreate(true); }}><Frame size={18} /><strong>Custom size</strong><small>Any dimensions</small></button>
           <button onClick={() => { setMoreOpen(false); fileRef.current?.click(); }}><Upload size={18} /><strong>Upload image</strong><small>Start from a photo</small></button>
           <button onClick={() => { setMoreOpen(false); openPrint(); }}><Printer size={18} /><strong>Print-ready PDF</strong><small>All pages at 2×</small></button>
