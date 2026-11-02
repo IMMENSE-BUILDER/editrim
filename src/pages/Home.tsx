@@ -335,7 +335,7 @@ export default function Home() {
 
   const actions: { label: string; hint: string; icon: VellumIconName; run: () => void }[] = [
     { label: 'Create a presentation', hint: '16:9 deck', icon: 'present', run: () => startBlank(1920, 1080, 'Untitled presentation', 'Presentation') },
-    { label: 'Open video studio', hint: 'Timeline, clips, audio and text overlays', icon: 'video', run: () => navigate('/video') },
+    { label: 'Open video studio', hint: 'Timeline, clips, audio and text overlays', icon: 'video', run: () => navigate('/videos') },
     { label: 'Browse design library', hint: `${SIZE_PRESETS.length} formats, from social to print`, icon: 'templates', run: () => openCreate() },
     { label: 'Open AI Studio', hint: 'Design, write, edit or review with AI', icon: 'spark', run: () => navigate('/editor/new#ai') },
     { label: 'Upload an image', hint: 'Turn a photo into a new design', icon: 'upload', run: () => fileRef.current?.click() },

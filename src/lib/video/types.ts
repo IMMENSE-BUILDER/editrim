@@ -28,6 +28,15 @@ export type VideoTrack = {
   volume: number;
 };
 
+export type ClipFilters = {
+  brightness: number;
+  contrast: number;
+  saturation: number;
+  blur: number;
+};
+
+export type TextMotion = 'none' | 'fade' | 'rise' | 'pop';
+
 export type TextOverlayStyle = {
   content: string;
   fontFamily: string;
@@ -42,6 +51,7 @@ export type TextOverlayStyle = {
   letterSpacing: number;
   uppercase: boolean;
   shadow: boolean;
+  motion: TextMotion;
 };
 
 export type VideoClip = {
@@ -53,6 +63,7 @@ export type VideoClip = {
   start: number;
   duration: number;
   inPoint: number;
+  speed: number;
   opacity: number;
   volume: number;
   fadeIn: number;
@@ -60,6 +71,7 @@ export type VideoClip = {
   x: number;
   y: number;
   scale: number;
+  filters: ClipFilters;
   text?: TextOverlayStyle;
 };
 
@@ -73,6 +85,7 @@ export type VideoProject = {
   tracks: VideoTrack[];
   clips: VideoClip[];
   assets: VideoAsset[];
+  createdAt: number;
   updatedAt: number;
 };
 
@@ -99,7 +112,10 @@ export const DEFAULT_TEXT: TextOverlayStyle = {
   letterSpacing: -1,
   uppercase: false,
   shadow: true,
+  motion: 'none',
 };
+
+export const DEFAULT_FILTERS: ClipFilters = { brightness: 1, contrast: 1, saturation: 1, blur: 0 };
 
 export function createVideoTracks(): VideoTrack[] {
   return [
@@ -120,6 +136,7 @@ export function newVideoProject(name = 'Untitled video'): VideoProject {
     tracks: createVideoTracks(),
     clips: [],
     assets: [],
+    createdAt: Date.now(),
     updatedAt: Date.now(),
   };
 }
@@ -176,6 +193,7 @@ export function createTextClip(at: number, style: Partial<TextOverlayStyle> = {}
     start: Math.max(0, at),
     duration: 4,
     inPoint: 0,
+    speed: 1,
     opacity: 1,
     volume: 1,
     fadeIn: 0,
@@ -183,7 +201,22 @@ export function createTextClip(at: number, style: Partial<TextOverlayStyle> = {}
     x: 0.5,
     y: 0.5,
     scale: 1,
+    filters: { ...DEFAULT_FILTERS },
     text: { ...DEFAULT_TEXT, ...style },
+  };
+}
+
+export function normalizeVideoProject(project: VideoProject): VideoProject {
+  return {
+    ...project,
+    createdAt: project.createdAt ?? project.updatedAt ?? Date.now(),
+    updatedAt: project.updatedAt ?? Date.now(),
+    clips: project.clips.map(clip => ({
+      ...clip,
+      speed: clip.speed && clip.speed > 0 ? clip.speed : 1,
+      filters: { ...DEFAULT_FILTERS, ...(clip.filters ?? {}) },
+      text: clip.text ? { ...DEFAULT_TEXT, ...clip.text, motion: clip.text.motion ?? 'none' } : clip.text,
+    })),
   };
 }
 

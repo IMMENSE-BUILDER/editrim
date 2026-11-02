@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Logo } from '../components/Brand';
 import { VellumIcon, type VellumIconName } from '../components/VellumIcon';
 import { useToast } from '../components/Toast';
@@ -11,12 +11,14 @@ import {
   clipColor,
   clipEnd,
   createTextClip,
+  DEFAULT_FILTERS,
   DEFAULT_TEXT,
   formatTimecode,
   newVideoProject,
   projectDuration,
   sanitizeVideoFilename,
   VIDEO_ASPECTS,
+  type ClipFilters,
   type TextOverlayStyle,
   type VideoAsset,
   type VideoClip,
@@ -25,7 +27,7 @@ import {
   type VideoTrack,
 } from '../lib/video/types';
 import { renderVideoFrame, type MediaElementMap } from '../lib/video/render';
-import { clearVideoProject, loadVideoProject, saveMediaBlob, saveVideoProject } from '../lib/video/storage';
+import { createVideoProject, loadVideoProject, saveMediaBlob, saveVideoProject } from '../lib/video/storage';
 import { clamp, downloadBlob, uid } from '../lib/utils';
 import '../styles/video.css';
 
@@ -180,6 +182,8 @@ function IconButton({
 
 export default function VideoEditor() {
   const { toast } = useToast();
+  const { id: projectId } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [project, setProject] = useState<VideoProject>(() => newVideoProject());
   const projectRef = useRef(project);
   const [ready, setReady] = useState(false);
@@ -228,6 +232,7 @@ export default function VideoEditor() {
 
   const duration = useMemo(() => projectDuration(project), [project]);
   const selectedClip = project.clips.find(clip => clip.id === selectedClipId) ?? null;
+  const selectedFilters = selectedClip ? { ...DEFAULT_FILTERS, ...(selectedClip.filters ?? {}) } : DEFAULT_FILTERS;
   const contentDuration = Math.max(30, duration + 8);
   const contentWidth = Math.max(900, contentDuration * zoom);
   const clipCount = project.clips.length;
@@ -301,6 +306,7 @@ export default function VideoEditor() {
       renderVideoFrame(ctx, projectRef.current, currentTimeRef.current, mediaRefs.current, {
         showGuides: true,
         selectedClipId: selectedClipRef.current,
+        animateText: playingRef.current,
       });
     });
   }, []);
@@ -317,7 +323,9 @@ export default function VideoEditor() {
       const fadeIn = clip.fadeIn > 0 ? Math.min(1, (time - clip.start) / clip.fadeIn) : 1;
       const fadeOut = clip.fadeOut > 0 ? Math.min(1, (clipEnd(clip) - time) / clip.fadeOut) : 1;
       const volume = clamp(clip.volume * track.volume * masterVolumeRef.current * Math.max(0, Math.min(fadeIn, fadeOut)), 0, 1);
-      const target = Math.max(0, Math.min(asset.duration || clip.duration, clip.inPoint + (time - clip.start)));
+      const speed = clip.speed || 1;
+      const target = Math.max(0, Math.min(asset.duration || clip.duration, clip.inPoint + (time - clip.start) * speed));
+      el.playbackRate = clamp(speed, 0.25, 4);
       el.volume = volume;
       if (el.readyState >= 1 && (el.paused || Math.abs(el.currentTime - target) > 0.22)) {
         el.currentTime = target;
@@ -443,17 +451,35 @@ export default function VideoEditor() {
 
   useEffect(() => {
     let cancelled = false;
-    loadVideoProject().then(loaded => {
+    if (!projectId) {
+      navigate('/videos', { replace: true });
+      return () => { cancelled = true; };
+    }
+    setReady(false);
+    loadVideoProject(projectId).then(loaded => {
       if (cancelled) return;
-      if (loaded) {
-        projectRef.current = loaded;
-        setProject(loaded);
-        if (loaded.assets.some(asset => asset.missing)) toast('Some media is missing');
+      if (!loaded) {
+        toast('Project not found');
+        navigate('/videos', { replace: true });
+        return;
       }
+      projectRef.current = loaded;
+      setProject(loaded);
+      pastRef.current = [];
+      futureRef.current = [];
+      selectedClipRef.current = null;
+      setSelectedClipId(null);
+      currentTimeRef.current = 0;
+      setCurrentTime(0);
+      playingRef.current = false;
+      setPlaying(false);
+      setSaveState('saved');
+      syncHistoryState();
       setReady(true);
+      if (loaded.assets.some(asset => asset.missing)) toast('Some media is missing');
     });
     return () => { cancelled = true; };
-  }, [toast]);
+  }, [projectId, navigate, syncHistoryState, toast]);
 
   useEffect(() => {
     const onBeforeUnload = () => { saveVideoProject(projectRef.current); };
@@ -512,20 +538,22 @@ export default function VideoEditor() {
         const previousEnd = current.clips
           .filter(item => item.trackId === clip.trackId && item.id !== clip.id && clipEnd(item) <= drag.origStart + 0.001)
           .reduce((max, item) => Math.max(max, clipEnd(item)), 0);
-        const minBySource = clip.kind === 'video' || clip.kind === 'audio' ? Math.max(0, drag.origStart - drag.origInPoint) : 0;
+        const speed = clip.speed || 1;
+        const minBySource = clip.kind === 'video' || clip.kind === 'audio' ? Math.max(0, drag.origStart - drag.origInPoint / speed) : 0;
         const minStart = Math.max(previousEnd, minBySource);
         const start = clamp(drag.origStart + delta, minStart, drag.origStart + drag.origDuration - 0.2);
         const shift = start - drag.origStart;
         next = {
           start,
           duration: drag.origDuration - shift,
-          inPoint: clip.kind === 'video' || clip.kind === 'audio' ? drag.origInPoint + shift : 0,
+          inPoint: clip.kind === 'video' || clip.kind === 'audio' ? drag.origInPoint + shift * speed : 0,
         };
       } else {
         const nextClip = current.clips
           .filter(item => item.trackId === clip.trackId && item.id !== clip.id && item.start >= drag.origStart)
           .sort((a, b) => a.start - b.start)[0];
-        const sourceMax = sourceDuration(current, clip) - drag.origInPoint;
+        const speed = clip.speed || 1;
+        const sourceMax = (sourceDuration(current, clip) - drag.origInPoint) / speed;
         const maxByNext = nextClip ? nextClip.start - drag.origStart : 600;
         const maxDuration = Math.max(0.2, Math.min(sourceMax, maxByNext));
         next = {
@@ -631,6 +659,36 @@ export default function VideoEditor() {
     }), groupKey);
   }, [commit]);
 
+  const setClipSpeed = useCallback((clipId: string, speed: number) => {
+    commit(current => ({
+      ...current,
+      clips: current.clips.map(clip => {
+        if (clip.id !== clipId) return clip;
+        const oldSpeed = clip.speed || 1;
+        const sourceSpan = clip.duration * oldSpeed;
+        let duration = sourceSpan / speed;
+        if (clip.kind === 'video' || clip.kind === 'audio') {
+          const sourceMax = Math.max(0.2, sourceDuration(current, clip) - clip.inPoint);
+          duration = Math.min(duration, sourceMax / speed);
+        }
+        const next = current.clips
+          .filter(item => item.trackId === clip.trackId && item.id !== clip.id && item.start >= clip.start)
+          .sort((a, b) => a.start - b.start)[0];
+        if (next) duration = Math.min(duration, next.start - clip.start);
+        return { ...clip, speed, duration: Math.max(0.2, duration) };
+      }),
+    }), `speed:${clipId}`);
+  }, [commit]);
+
+  const updateFilter = useCallback((clipId: string, key: keyof ClipFilters, value: number) => {
+    commit(current => ({
+      ...current,
+      clips: current.clips.map(clip => clip.id === clipId
+        ? { ...clip, filters: { ...DEFAULT_FILTERS, ...(clip.filters ?? {}), [key]: value } }
+        : clip),
+    }), `filter:${clipId}:${key}`);
+  }, [commit]);
+
   const updateText = useCallback((id: string, patch: Partial<TextOverlayStyle>, groupKey?: string) => {
     commit(current => ({
       ...current,
@@ -685,7 +743,7 @@ export default function VideoEditor() {
       id: uid('clip'),
       start: time,
       duration: rightDuration,
-      inPoint: clip.kind === 'video' || clip.kind === 'audio' ? clip.inPoint + leftDuration : 0,
+      inPoint: clip.kind === 'video' || clip.kind === 'audio' ? clip.inPoint + leftDuration * (clip.speed || 1) : 0,
     };
     const left: VideoClip = { ...clip, duration: leftDuration };
     commit({
@@ -785,6 +843,7 @@ export default function VideoEditor() {
       start,
       duration: baseDuration,
       inPoint: 0,
+      speed: 1,
       opacity: 1,
       volume: asset.kind === 'image' ? 0 : 1,
       fadeIn: 0,
@@ -792,6 +851,7 @@ export default function VideoEditor() {
       x: 0.5,
       y: 0.5,
       scale: asset.kind === 'image' ? 0.58 : 1,
+      filters: { ...DEFAULT_FILTERS },
     };
     commit({ ...current, clips: [...current.clips, clip] });
     selectClip(clip.id);
@@ -816,20 +876,11 @@ export default function VideoEditor() {
   }, [commit]);
 
   const newProject = useCallback(() => {
-    if (!window.confirm('Start a new video? The current timeline will be cleared.')) return;
-    projectRef.current.assets.forEach(asset => { if (asset.src.startsWith('blob:')) URL.revokeObjectURL(asset.src); });
-    const fresh = newVideoProject();
-    clearVideoProject();
-    pastRef.current = [];
-    futureRef.current = [];
-    projectRef.current = fresh;
-    setProject(fresh);
-    selectClip(null);
-    seekTo(0);
-    setSaveState('saved');
-    syncHistoryState();
+    saveVideoProject(projectRef.current);
+    const fresh = createVideoProject();
+    navigate(`/video/${fresh.id}`);
     toast('New project');
-  }, [seekTo, selectClip, syncHistoryState, toast]);
+  }, [navigate, toast]);
 
   const startClipDrag = (event: React.PointerEvent, clip: VideoClip, mode: DragMode) => {
     if (exportingRef.current) return;
@@ -1047,7 +1098,7 @@ export default function VideoEditor() {
     >
       <header className="vd-header">
         <div className="vd-left">
-          <Link to="/dashboard" className="vd-back" title="Back to dashboard"><VellumIcon name="arrowLeft" size={17} /></Link>
+          <Link to="/videos" className="vd-back" title="Back to videos"><VellumIcon name="arrowLeft" size={17} /></Link>
           <Logo size={26} wordmark={false} />
           <div className="vd-title-wrap">
             <input value={project.name} onChange={event => renameProject(event.target.value)} aria-label="Video project name" />
@@ -1244,6 +1295,7 @@ export default function VideoEditor() {
                             <div className="vd-clip-content">
                               <span className="vd-clip-icon"><VellumIcon name={KIND_ICONS[clip.kind]} size={12} /></span>
                               <span className="vd-clip-name">{clip.kind === 'text' ? (clip.text?.content ?? clip.name) : clip.name}</span>
+                              {clip.speed && clip.speed !== 1 && <span className="vd-clip-speed">{clip.speed}×</span>}
                               {width > 110 && <span className="vd-clip-time">{formatTimecode(clipDuration, false)}</span>}
                             </div>
                             {clip.kind === 'audio' && asset?.waveform && (
@@ -1291,7 +1343,17 @@ export default function VideoEditor() {
                     <Field label="Fade out"><input type="number" step="0.1" min={0} max={5} value={selectedClip.fadeOut} onChange={event => updateClip(selectedClip.id, { fadeOut: clamp(Number(event.target.value), 0, 5) }, 'fade:out')} /></Field>
                   </div>
                   {selectedClip.kind !== 'text' && <RangeField label="Opacity" value={selectedClip.opacity} min={0} max={1} step={0.01} suffix="" onChange={value => updateClip(selectedClip.id, { opacity: value }, 'opacity')} />}
-                  {(selectedClip.kind === 'video' || selectedClip.kind === 'audio') && <RangeField label="Volume" value={selectedClip.volume} min={0} max={1} step={0.01} suffix="" onChange={value => updateClip(selectedClip.id, { volume: value }, 'volume')} />}
+                  {(selectedClip.kind === 'video' || selectedClip.kind === 'audio') && (
+                    <>
+                      <RangeField label="Volume" value={selectedClip.volume} min={0} max={1} step={0.01} suffix="" onChange={value => updateClip(selectedClip.id, { volume: value }, 'volume')} />
+                      <Field label="Speed">
+                        <select value={selectedClip.speed ?? 1} onChange={event => setClipSpeed(selectedClip.id, Number(event.target.value))}>
+                          {[0.5, 0.75, 1, 1.25, 1.5, 2].map(value => <option key={value} value={value}>{value}×</option>)}
+                        </select>
+                      </Field>
+                    </>
+                  )}
+                  {selectedClip.kind === 'video' && <RangeField label="Zoom" value={selectedClip.scale || 1} min={1} max={2.5} step={0.01} suffix="×" onChange={value => updateClip(selectedClip.id, { scale: value }, 'scale')} />}
                   {selectedClip.kind === 'image' && (
                     <>
                       <RangeField label="Size" value={selectedClip.scale} min={0.08} max={1.3} step={0.01} suffix="" onChange={value => updateClip(selectedClip.id, { scale: value }, 'scale')} />
@@ -1302,6 +1364,15 @@ export default function VideoEditor() {
                     </>
                   )}
                 </div>
+                {(selectedClip.kind === 'video' || selectedClip.kind === 'image') && (
+                  <div className="vd-inspector-section">
+                    <div className="vd-section-title"><span>Look</span></div>
+                    <RangeField label="Brightness" value={selectedFilters.brightness} min={0.5} max={1.5} step={0.01} suffix="" onChange={value => updateFilter(selectedClip.id, 'brightness', value)} />
+                    <RangeField label="Contrast" value={selectedFilters.contrast} min={0.5} max={1.5} step={0.01} suffix="" onChange={value => updateFilter(selectedClip.id, 'contrast', value)} />
+                    <RangeField label="Saturation" value={selectedFilters.saturation} min={0} max={2} step={0.01} suffix="" onChange={value => updateFilter(selectedClip.id, 'saturation', value)} />
+                    <RangeField label="Blur" value={selectedFilters.blur} min={0} max={12} step={0.5} suffix="px" onChange={value => updateFilter(selectedClip.id, 'blur', value)} />
+                  </div>
+                )}
                 {selectedClip.kind === 'text' && selectedClip.text && (
                   <div className="vd-inspector-section">
                     <div className="vd-section-title"><span>Text</span></div>
@@ -1318,6 +1389,14 @@ export default function VideoEditor() {
                         }}
                       >
                         {FONTS.map(font => <option key={font.family} value={font.family}>{font.label}</option>)}
+                      </select>
+                    </Field>
+                    <Field label="Motion">
+                      <select value={selectedClip.text.motion ?? 'none'} onChange={event => updateText(selectedClip.id, { motion: event.target.value as TextOverlayStyle['motion'] }, 'motion')}>
+                        <option value="none">None</option>
+                        <option value="fade">Fade</option>
+                        <option value="rise">Rise</option>
+                        <option value="pop">Pop</option>
                       </select>
                     </Field>
                     <div className="vd-inspector-grid">

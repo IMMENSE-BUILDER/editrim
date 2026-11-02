@@ -49,7 +49,12 @@ const designId = await p.evaluate(async () => {
 assert.ok(designId, 'editor saved a design');
 const present = await audit(p, 'present 1440', `${base}/present/${designId}`);
 const notfound = await audit(p, '404 1440', `${base}/not-a-real-page`);
-const video = await audit(p, 'video 1440', `${base}/video`);
+const videos = await audit(p, 'videos 1440', `${base}/videos`);
+const videoId = await p.evaluate(async () => {
+  const storage = await import('/src/lib/video/storage.ts');
+  return storage.createVideoProject('Icon check').id;
+});
+const video = await audit(p, 'video 1440', `${base}/video/${videoId}`);
 
 await p.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
 await p.waitForTimeout(500);
@@ -106,7 +111,12 @@ const mid = await mp.evaluate(async () => {
   return storage.listDesigns()[0]?.id ?? '';
 });
 const mpresent = await audit(mp, 'present 390', `${base}/present/${mid}`);
-const mvideo = await audit(mp, 'video 390', `${base}/video`);
+const mvideos = await audit(mp, 'videos 390', `${base}/videos`);
+const mvideoId = await mp.evaluate(async () => {
+  const storage = await import('/src/lib/video/storage.ts');
+  return storage.createVideoProject('Icon check').id;
+});
+const mvideo = await audit(mp, 'video 390', `${base}/video/${mvideoId}`);
 await mp.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
 await mp.waitForTimeout(400);
 await mp.locator('.rail-create').click();
@@ -122,8 +132,9 @@ assert.ok(editor.count >= 15, 'editor icon coverage');
 assert.ok(present.count >= 5, 'present icon coverage');
 assert.ok(shared.count >= 4, 'shared view icon coverage');
 assert.ok(notfound.count >= 1, '404 icon coverage');
+assert.ok(videos.count >= 4, 'video library icon coverage');
 assert.ok(video.count >= 20, 'video editor icon coverage');
-assert.ok(mlanding.count >= 12 && mhome.count >= 15 && mtemplates.glyphs >= 12 && meditor.count >= 10 && mpresent.count >= 4 && mvideo.count >= 15, 'mobile icon coverage');
+assert.ok(mlanding.count >= 12 && mhome.count >= 15 && mtemplates.glyphs >= 12 && meditor.count >= 10 && mpresent.count >= 4 && mvideos.count >= 4 && mvideo.count >= 15, 'mobile icon coverage');
 
 // Editor surfaces: context menu, AI panel, export and share dialogs
 await p.goto(`${base}/editor/new?template=cafe-opening`, { waitUntil: 'networkidle' });

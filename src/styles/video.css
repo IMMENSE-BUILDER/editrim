@@ -1844,3 +1844,14 @@
 .vd-canvas-wrap.has-draggable-overlay {
   touch-action: none;
 }
+
+.vd-clip-speed {
+  flex: none;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 7px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--vd-lime);
+  background: rgba(11, 9, 17, 0.5);
+}

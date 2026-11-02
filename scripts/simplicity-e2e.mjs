@@ -29,8 +29,13 @@ const p = await desktop.newPage();
 p.on('pageerror', e => errors.push(e.message));
 p.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
 
-await p.goto(`${base}/video`, { waitUntil: 'networkidle' });
-await p.waitForTimeout(600);
+await p.goto(`${base}/videos`, { waitUntil: 'networkidle' });
+await p.waitForTimeout(500);
+assert.equal(await p.locator('.videos-page').count(), 1);
+assert.ok(await p.locator('.videos-new').count());
+await p.locator('.videos-new').first().click();
+await p.waitForSelector('.video-editor', { timeout: 15000 });
+await p.waitForTimeout(500);
 const video = await p.evaluate(() => ({
   text: document.body.innerText,
   dropzones: document.querySelectorAll('.vd-dropzone, .vd-quick-add, .vd-project-card, .vd-shortcuts').length,
@@ -91,7 +96,7 @@ const mobile = await browser.newContext({ viewport: { width: 390, height: 844 },
 const mp = await mobile.newPage();
 mp.on('pageerror', e => errors.push(e.message));
 mp.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
-for (const route of ['/video', '/dashboard', '/templates', '/editor/new?template=cafe-opening']) {
+for (const route of ['/videos', '/dashboard', '/templates', '/editor/new?template=cafe-opening']) {
   await mp.goto(`${base}${route}`, { waitUntil: 'networkidle' });
   await mp.waitForTimeout(500);
   const overflow = await mp.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);

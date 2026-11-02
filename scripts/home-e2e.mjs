@@ -77,14 +77,21 @@ await wait(300);
 await page.locator('.rail-nav button[title="Home"]').click();
 await wait(500);
 
-// video studio opens from the dashboard
+// video library opens from the dashboard, then the editor
 await page.locator('.home-cat[title="Video"]').click();
+await page.waitForSelector('.videos-page', { timeout: 15000 });
+await wait(500);
+log('videosPage', await page.locator('.videos-head-left h1').innerText());
+assert.ok(await page.locator('.videos-new').count());
+await page.locator('.videos-new').first().click();
 await page.waitForSelector('.video-editor', { timeout: 15000 });
-await wait(700);
+await wait(600);
 log('videoEditor', await page.locator('.vd-title-wrap input').inputValue());
 assert.ok(await page.locator('.vd-timeline').count());
 assert.ok(await page.locator('.vd-export-btn').count());
 await page.click('.vd-back');
+await page.waitForSelector('.videos-page', { timeout: 15000 });
+await page.locator('.videos-back').click();
 await page.waitForSelector('.home', { timeout: 15000 });
 await wait(500);
 

@@ -1,11 +1,12 @@
 import type { VideoAsset, VideoClip, VideoProject } from './types';
-import { activeClips, clipOpacity } from './types';
+import { activeClips, clipOpacity, DEFAULT_FILTERS } from './types';
 
 export type MediaElementMap = Map<string, HTMLVideoElement | HTMLAudioElement | HTMLImageElement>;
 
 type RenderOptions = {
   showGuides?: boolean;
   selectedClipId?: string | null;
+  animateText?: boolean;
 };
 
 type TextBounds = { x: number; y: number; w: number; h: number };
@@ -126,6 +127,7 @@ function drawTextClip(
   project: VideoProject,
   clip: VideoClip,
   time: number,
+  animate: boolean,
 ): TextBounds {
   const style = clip.text;
   if (!style) return { x: 0, y: 0, w: 0, h: 0 };
@@ -146,8 +148,19 @@ function drawTextClip(
   const boxLeft = centerX - maxWidth / 2;
   const blockLeft = centerX - blockWidth / 2;
   const top = centerY - blockHeight / 2;
-  const alpha = clipOpacity(clip, time);
+  const motion = style.motion ?? 'none';
+  const progress = animate ? Math.max(0, Math.min(1, (time - clip.start) / 0.45)) : 1;
+  const eased = 1 - Math.pow(1 - progress, 3);
+  const motionAlpha = motion === 'none' ? 1 : eased;
+  const alpha = clipOpacity(clip, time) * motionAlpha;
+  const offsetY = motion === 'rise' ? (1 - eased) * style.fontSize * 0.55 : 0;
+  const scale = motion === 'pop' ? 0.9 + eased * 0.1 : 1;
   const pad = Math.round(style.fontSize * 0.2);
+
+  ctx.save();
+  ctx.translate(centerX, centerY + offsetY);
+  ctx.scale(scale, scale);
+  ctx.translate(-centerX, -centerY);
 
   if (style.backgroundOpacity > 0) {
     const bgWidth = blockWidth + pad * 2;
@@ -178,11 +191,12 @@ function drawTextClip(
     ctx.fillText(line, drawX, top + index * lineHeight);
   });
   ctx.restore();
+  ctx.restore();
   return {
     x: style.align === 'left' ? boxLeft : style.align === 'right' ? boxLeft + maxWidth - blockWidth : blockLeft,
-    y: top,
-    w: blockWidth,
-    h: blockHeight,
+    y: top + offsetY,
+    w: blockWidth * scale,
+    h: blockHeight * scale,
   };
 }
 
@@ -202,9 +216,15 @@ function drawImageClip(
   const y = clip.y * project.height;
   ctx.save();
   ctx.globalAlpha = clipOpacity(clip, time);
+  ctx.filter = clipFilter(clip);
   drawContain(ctx, element, x, y, width, height);
   ctx.restore();
   return { x: x - width / 2, y: y - height / 2, w: width, h: height };
+}
+
+function clipFilter(clip: VideoClip): string {
+  const filters = clip.filters ?? DEFAULT_FILTERS;
+  return `brightness(${filters.brightness}) contrast(${filters.contrast}) saturate(${filters.saturation})${filters.blur > 0 ? ` blur(${filters.blur}px)` : ''}`;
 }
 
 function drawGuide(ctx: CanvasRenderingContext2D, bounds: TextBounds) {
@@ -241,6 +261,11 @@ export function renderVideoFrame(
     if (!asset || !mediaReady(element)) return;
     ctx.save();
     ctx.globalAlpha = clipOpacity(clip, time);
+    ctx.filter = clipFilter(clip);
+    const zoom = Math.max(1, clip.scale || 1);
+    ctx.translate(width / 2, height / 2);
+    ctx.scale(zoom, zoom);
+    ctx.translate(-width / 2, -height / 2);
     drawCover(ctx, element, 0, 0, width, height);
     ctx.restore();
     if (options.showGuides && clip.id === options.selectedClipId) {
@@ -251,7 +276,7 @@ export function renderVideoFrame(
   activeOverlay.forEach(clip => {
     let bounds: TextBounds | null = null;
     if (clip.kind === 'text') {
-      bounds = drawTextClip(ctx, project, clip, time);
+      bounds = drawTextClip(ctx, project, clip, time, options.animateText ?? true);
     } else if (clip.kind === 'image') {
       const asset = project.assets.find(item => item.id === clip.assetId);
       const element = asset ? elements.get(asset.id) : undefined;

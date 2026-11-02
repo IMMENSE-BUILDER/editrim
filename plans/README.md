@@ -8,3 +8,4 @@
 | 004 | Vellum Ink v2 duotone rendering, first-paint icon stagger and hover/active motion for dashboard and Studio | Implemented |
 | 005 | Video Studio — media library, three-track timeline, text/image/audio editing, autosave and WebM export | Implemented |
 | 006 | Simplification pass — remove taglines, helper copy and secondary labels from Video Studio and dashboard | Implemented |
+| 007 | Video Studio v2 — project library, speed, colour correction, video zoom and text motion | Implemented |
