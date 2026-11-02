@@ -709,10 +709,7 @@ export function Canvas({
                     onPointerDown={startRotate}
                     title="Rotate"
                   >
-                    <svg viewBox="0 0 24 24" width={11 / view.zoom} height={11 / view.zoom} fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round">
-                      <path d="M21 12a9 9 0 1 1-2.6-6.4" />
-                      <path d="M21 3v6h-6" />
-                    </svg>
+                    <VellumIcon name="rotate" size={11 / view.zoom} strokeWidth={2} className="cv-rotate-icon" />
                   </span>
                   {HANDLES.map(h => (
                     <span

@@ -4496,6 +4496,10 @@ input[type='range']::-moz-range-thumb {
     transform: scale(1.12);
   }
 
+  .cv-rotate:hover .vellum-icon {
+    transform: rotate(-28deg) scale(1.08);
+  }
+
   .export-format:hover .vellum-icon {
     transform: scale(1.1);
   }

@@ -30,6 +30,7 @@ The format library keeps its separate `FormatGlyph` identity: 59 formats, each w
 - Rail navigation, More, Help and notifications: direction-aware lifts and rotations.
 - Studio top bar: icons lift; undo rotates counter-clockwise, redo clockwise, download dips.
 - Studio rail: hover lifts and tilts; active tab plays a 260ms `vellum-icon-pop`.
+- Canvas selection: the rotation handle now uses the custom rotate glyph and turns under the pointer; selection overlays no longer contain stock SVG controls.
 - Context menu: the row icon nudges and scales on hover.
 - Inspector: arrange, align, layer and page action icons scale on hover.
 - AI Studio: mode tabs lift, the active mode pops.
@@ -56,6 +57,8 @@ All motion animates `transform` and `opacity` only. Durations are 160–300ms.
   - rail icon: `none → matrix(1.097, -0.077, 0.077, 1.097, 0, -1.5)`
   - format glyph: `none → matrix(1.06, 0, 0, 1.06, 0, -1)`
   - studio rail hover and context-menu hover produce non-identity matrices
+  - canvas rotate handle: custom glyph and animated hover
+  - canvas selection audit: `rotate: true`, `stock: 0`
   - active editor rail: `vellum-icon-pop`, `0.26s`
   - active AI mode: `vellum-icon-pop`, `0.26s`
   - reduced motion: `transition: none`, `animation: none`, hover transform `none`

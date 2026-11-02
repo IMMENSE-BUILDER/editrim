@@ -149,6 +149,23 @@ await p.waitForTimeout(350);
 await surface('editor AI panel', '.ai-panel');
 await p.locator('.lp-close').click();
 await p.waitForTimeout(200);
+await p.locator('.cv-el').nth(2).click({ force: true });
+await p.waitForTimeout(250);
+const selectionIcons = await p.evaluate(() => {
+  const sel = document.querySelector('.cv-sel');
+  if (!sel) return { exists: false, rotate: false, icons: 0, stock: 0 };
+  const stock = [...sel.querySelectorAll('svg:not([data-vellum-icon])')]
+    .filter(svg => !svg.closest('.format-glyph') && !svg.closest('.logo') && !svg.closest('.brand-mark') && !svg.closest('.spin'));
+  return {
+    exists: true,
+    rotate: !!sel.querySelector('.cv-rotate [data-vellum-icon="rotate"]'),
+    icons: sel.querySelectorAll('[data-vellum-icon]').length,
+    stock: stock.length,
+  };
+});
+console.log('canvas selection', selectionIcons);
+assert.ok(selectionIcons.exists && selectionIcons.rotate, 'canvas rotate handle uses the Vellum icon');
+assert.equal(selectionIcons.stock, 0, 'canvas selection has stock icons');
 await p.locator('.ed-download').click();
 await p.waitForTimeout(300);
 await surface('export modal', '.modal');
