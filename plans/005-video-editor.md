@@ -54,3 +54,15 @@ node scripts/context-menu-e2e.mjs CONTEXT MENU E2E OK
 - mobile drawer layout and overflow
 
 The deterministic test clip is `scripts/fixtures/test-clip.webm`; regenerate it with `scripts/make-video-fixture.mjs` if needed.
+
+## Live verification
+
+Production check on `https://vellum-delta-dun.vercel.app/video`:
+
+- dashboard **Video** category opens `/video`
+- WebM fixture imports and appears in the library
+- video clip and text overlay added; playback advances
+- WebM export downloads successfully (1.0 MB in the live run)
+- zero stock interface icons
+- mobile 390px layout has no horizontal overflow and drawers are mutually exclusive
+- `/api/ai` health remains `200` with `xiaomi/mimo-v2.6-flash`
