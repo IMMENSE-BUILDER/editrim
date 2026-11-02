@@ -17,7 +17,9 @@ export type VellumIconName =
   | 'distributeH' | 'distributeV' | 'layerFront' | 'layerBack'
   | 'group' | 'ungroup' | 'clipboard' | 'component' | 'paintBucket'
   | 'paintbrush' | 'language' | 'minus' | 'zoomIn' | 'zoomOut' | 'rotate' | 'clock'
-  | 'info' | 'scan' | 'sidebar' | 'sidebarOpen' | 'refresh' | 'camera';
+  | 'info' | 'scan' | 'sidebar' | 'sidebarOpen' | 'refresh' | 'camera'
+  | 'film' | 'music' | 'volume' | 'volumeOff' | 'scissors' | 'split'
+  | 'skipStart' | 'skipEnd' | 'loop' | 'record' | 'waveform';
 
 const ICONS: Record<VellumIconName, string[]> = {
   home: ['M3 10.8 12 3.5l9 7.3V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-9.2Z', 'M9.5 21v-6h5v6'],
@@ -120,6 +122,17 @@ const ICONS: Record<VellumIconName, string[]> = {
   sidebarOpen: ['M3 5h18v14H3z', 'M9 5v14', 'M13 9l3 3-3 3'],
   refresh: ['M20 12a8 8 0 1 1-2.3-5.7', 'M20 4v6h-6'],
   camera: ['M4 8h3l1.5-2h7L17 8h3v11H4z', 'M12 10.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z'],
+  film: ['M4 4h16v16H4z', 'M8 4v16M16 4v16', 'M4 8h4M4 12h4M4 16h4M16 8h4M16 12h4M16 16h4'],
+  music: ['M9 18V6l10-2v12', 'M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0z', 'M19 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0z'],
+  volume: ['M4 9h4l5-4v14l-5-4H4z', 'M16 9a4 4 0 0 1 0 6', 'M18.5 6.5a8 8 0 0 1 0 11'],
+  volumeOff: ['M4 9h4l5-4v14l-5-4H4z', 'M16 9l5 6M21 9l-5 6'],
+  scissors: ['M6 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6z', 'M6 13a3 3 0 1 0 0 6 3 3 0 0 0 0-6z', 'M9 9l11 8M9 15 20 7'],
+  split: ['M12 3v18', 'M4 6h5v4H4z', 'M15 14h5v4h-5z', 'M9 8h3M12 16h3'],
+  skipStart: ['M19 5v14L8 12z', 'M5 5v14'],
+  skipEnd: ['M5 5v14l11-7z', 'M19 5v14'],
+  loop: ['M17 2l4 4-4 4', 'M3 11V9a4 4 0 0 1 4-4h14', 'M7 22l-4-4 4-4', 'M21 13v2a4 4 0 0 1-4 4H3'],
+  record: ['M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16z', 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z'],
+  waveform: ['M3 10v4M7 7v10M11 4v16M15 8v8M19 6v12M23 10v4'],
 };
 
 export function VellumIcon({

@@ -28,10 +28,10 @@ import { SIZE_PRESETS } from '../lib/presets';
 import { compressImage, formatBytes, timeAgo } from '../lib/utils';
 import { createImage } from '../editor/factory';
 import type { Design } from '../lib/types';
-import { createDocDesign, createSheetDesign, createStoryboardDesign, createWebsiteDesign, createWhiteboardDesign } from '../lib/homeDesigns';
+import { createDocDesign, createSheetDesign, createWebsiteDesign, createWhiteboardDesign } from '../lib/homeDesigns';
 import '../styles/home.css';
 
-type FeatureKind = 'video' | 'sheet' | 'website' | 'magic';
+type FeatureKind = 'sheet' | 'website' | 'magic';
 type RailPopover = 'notifications' | 'avatar' | 'more' | null;
 
 const TYPE_META: Record<string, { icon: LucideIcon; color: string }> = {
@@ -208,10 +208,6 @@ export default function Home() {
     setFeature(null);
     navigate(`/editor/${createSheetDesign().id}`);
   };
-  const startStoryboard = () => {
-    setFeature(null);
-    navigate(`/editor/${createStoryboardDesign().id}`);
-  };
 
   const openCreate = (custom = false) => {
     setNewCustom(custom);
@@ -339,6 +335,7 @@ export default function Home() {
 
   const actions: { label: string; hint: string; icon: VellumIconName; run: () => void }[] = [
     { label: 'Create a presentation', hint: '16:9 deck', icon: 'present', run: () => startBlank(1920, 1080, 'Untitled presentation', 'Presentation') },
+    { label: 'Open video studio', hint: 'Timeline, clips, audio and text overlays', icon: 'video', run: () => navigate('/video') },
     { label: 'Browse design library', hint: `${SIZE_PRESETS.length} formats, from social to print`, icon: 'templates', run: () => openCreate() },
     { label: 'Open AI Studio', hint: 'Design, write, edit or review with AI', icon: 'spark', run: () => navigate('/editor/new#ai') },
     { label: 'Upload an image', hint: 'Turn a photo into a new design', icon: 'upload', run: () => fileRef.current?.click() },
@@ -364,7 +361,7 @@ export default function Home() {
     { id: 'templates', label: 'Templates', icon: 'templates', tone: 'purple', run: () => navigate('/templates') },
     { id: 'presentation', label: 'Presentation', icon: 'present', tone: 'orange', run: () => startBlank(1920, 1080, 'Untitled presentation', 'Presentation') },
     { id: 'social', label: 'Social media', icon: 'social', tone: 'coral', run: () => startBlank(1080, 1080, 'Untitled social post', 'Instagram') },
-    { id: 'video', label: 'Video', icon: 'video', tone: 'pink', run: () => setFeature('video') },
+    { id: 'video', label: 'Video', icon: 'video', tone: 'pink', run: () => navigate('/video') },
     { id: 'printables', label: 'Printables', icon: 'printable', tone: 'violet', run: () => navigate('/templates?category=Poster') },
     { id: 'doc', label: 'Doc', icon: 'doc', tone: 'teal', run: startDoc },
     { id: 'whiteboard', label: 'Whiteboard', icon: 'board', tone: 'green', run: startWhiteboard },
@@ -377,13 +374,6 @@ export default function Home() {
   ];
 
   const featureMeta = feature ? {
-    video: {
-      title: 'Video is not a video editor yet.',
-      subtitle: 'Vellum is a static design studio. You can plan the motion, not render an MP4.',
-      body: 'Build a shot-by-shot storyboard on a vertical canvas, then use Present mode to walk through it. Video generation and timeline editing are not implemented in this build.',
-      primary: 'Create a storyboard',
-      run: startStoryboard,
-    },
     sheet: {
       title: 'A sheet layout, not a spreadsheet.',
       subtitle: 'Rows and columns are editable design layers. Formulas and cell references are not available.',
@@ -835,6 +825,7 @@ export default function Home() {
       >
         <div className="home-more-grid">
           <button onClick={() => { setMoreOpen(false); openCreate(); }}><VellumIcon name="templates" size={18} /><strong>Design library</strong><small>{SIZE_PRESETS.length} formats</small></button>
+          <button onClick={() => { setMoreOpen(false); navigate('/video'); }}><VellumIcon name="video" size={18} /><strong>Video studio</strong><small>Timeline editor</small></button>
           <button onClick={() => { setMoreOpen(false); openCreate(true); }}><VellumIcon name="custom" size={18} /><strong>Custom size</strong><small>Any dimensions</small></button>
           <button onClick={() => { setMoreOpen(false); fileRef.current?.click(); }}><VellumIcon name="upload" size={18} /><strong>Upload image</strong><small>Start from a photo</small></button>
           <button onClick={() => { setMoreOpen(false); openPrint(); }}><VellumIcon name="print" size={18} /><strong>Print-ready PDF</strong><small>All pages at 2×</small></button>

@@ -5,6 +5,7 @@ import Landing from './pages/Landing';
 import Templates from './pages/Templates';
 import Home, { ProjectsRoute } from './pages/Home';
 import Editor from './pages/Editor';
+import VideoEditor from './pages/VideoEditor';
 import Present from './pages/Present';
 import SharedView from './pages/SharedView';
 import NotFound from './pages/NotFound';
@@ -35,6 +36,7 @@ export default function App() {
         <Route path="/dashboard" element={<Home />} />
         <Route path="/projects" element={<ProjectsRoute />} />
         <Route path="/editor/:id" element={<Editor />} />
+        <Route path="/video" element={<VideoEditor />} />
         <Route path="/present/:id" element={<Present />} />
         <Route path="/view" element={<SharedView />} />
         <Route path="/designs" element={<Navigate to="/dashboard" replace />} />

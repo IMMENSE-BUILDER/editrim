@@ -77,16 +77,16 @@ await wait(300);
 await page.locator('.rail-nav button[title="Home"]').click();
 await wait(500);
 
-// feature modal (video) + storyboard
+// video studio opens from the dashboard
 await page.locator('.home-cat[title="Video"]').click();
-await wait(400);
-log('videoModal', await page.locator('.modal-title').innerText());
-await page.getByRole('button', { name: /Create a storyboard/i }).click();
-await page.waitForSelector('.editor', { timeout: 15000 });
-await wait(400);
-log('storyboardElements', await page.locator('.cv-el').count());
-assert.ok(await page.locator('.cv-el').count() > 5);
-await backHome();
+await page.waitForSelector('.video-editor', { timeout: 15000 });
+await wait(700);
+log('videoEditor', await page.locator('.vd-title-wrap input').inputValue());
+assert.ok(await page.locator('.vd-timeline').count());
+assert.ok(await page.locator('.vd-export-btn').count());
+await page.click('.vd-back');
+await page.waitForSelector('.home', { timeout: 15000 });
+await wait(500);
 
 // print modal
 await page.locator('.rail-nav button[title="Print-ready PDF"]').click();
