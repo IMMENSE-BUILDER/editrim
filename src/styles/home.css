@@ -903,17 +903,6 @@
   background: rgba(255, 255, 255, 0.025);
 }
 
-.home-empty-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 10px;
-  background: rgba(138, 99, 255, 0.16);
-  color: var(--h-lilac);
-  display: grid;
-  place-items: center;
-  flex: none;
-}
-
 .home-empty-continue > div {
   min-width: 0;
   flex: 1;
@@ -922,14 +911,6 @@
 .home-empty-continue strong {
   font-size: 12px;
   font-weight: 600;
-}
-
-.home-empty-continue p {
-  font-size: 10px;
-  line-height: 1.5;
-  color: var(--h-muted);
-  margin-top: 2px;
-  max-width: 520px;
 }
 
 .home-btn-primary {
@@ -1897,10 +1878,6 @@
     order: 2;
   }
 
-  .home-empty-continue .home-empty-icon {
-    order: 0;
-  }
-
   .home-empty-continue .home-btn-primary,
   .home-empty-continue .home-btn-ghost {
     order: 3;
@@ -1952,11 +1929,6 @@
     font-size: 8px;
     white-space: normal;
     max-width: 58px;
-  }
-
-  .home-section-head {
-    flex-direction: column;
-    gap: 7px;
   }
 
   .home-project-grid {
@@ -2161,4 +2133,16 @@
 
 .rail-nav button.active:nth-child(n) .vellum-icon {
   animation-delay: 0ms;
+}
+
+.home-sr-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }

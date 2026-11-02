@@ -494,13 +494,8 @@ export default function Home() {
           <section className="home-hero">
             <div className="home-topline">
               <Link to="/" className="home-brand" aria-label="Vellum home"><BrandMark size={24} /><span>Vellum</span></Link>
-              <span className="home-workspace-label">LOCAL WORKSPACE <i /></span>
             </div>
-            <h1>{view === 'projects' ? <>All your <em>projects.</em></> : <>What will you <em>design</em> today?</>}</h1>
-            <div className="home-tabs">
-              <button className={view === 'home' ? 'active' : ''} onClick={() => setView('home')}><VellumIcon name="home" size={14} /> Home</button>
-              <Link to="/templates"><VellumIcon name="templates" size={14} /> Templates</Link>
-            </div>
+            <h1 className="home-sr-title">{view === 'projects' ? 'Projects' : 'Home'}</h1>
 
             <div className="home-search-wrap">
               <VellumIcon name="search" size={21} />
@@ -640,7 +635,6 @@ export default function Home() {
                     </div>
                   ) : (
                     <div className="home-empty-continue">
-                      <span className="home-empty-icon"><VellumIcon name="magic" size={21} /></span>
                       <div><strong>No designs</strong></div>
                       <button className="btn home-btn-primary" onClick={() => openCreate()}><VellumIcon name="plus" size={14} /> Create</button>
                       <Link to="/templates" className="btn home-btn-ghost">Browse templates</Link>

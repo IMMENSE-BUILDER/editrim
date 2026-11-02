@@ -27,8 +27,9 @@ Result: the video editor reads as three regions — media, preview/timeline, pro
 
 Removed:
 
+- visual hero headline, Home/Templates tabs and “Local workspace” label; the page now opens with search, categories and work
 - section eyebrows (“Pick up where you left off”, “Made to be made yours”, “A little help from the machine”, “Everything in this workspace”)
-- empty-state paragraph
+- empty-state paragraph and decorative icon
 - AI section tagline and paragraph, replaced with the destination label and one action
 - More dialog subtitle and card descriptions
 - print modal subtitle and helper note
@@ -55,6 +56,9 @@ npm run build                     ✓ built
 node scripts/video-editor-e2e.mjs VIDEO EDITOR E2E OK
 node scripts/home-e2e.mjs         HOME FEATURES E2E OK
 node scripts/polish-e2e.mjs       POLISH E2E OK
+node scripts/simplicity-e2e.mjs   SIMPLICITY E2E OK
 ```
+
+`simplicity-e2e.mjs` asserts that the removed copy does not return, that the video editor exposes only Media/Project panel headings, that no dropzone/quick-add/project-card/shortcut blocks exist, and that both routes fit at 1440 and 390.
 
 The video E2E continues to verify import, playback, text, image and audio editing, undo/redo, trim, split, persistence, WebM export and the mobile drawer layout.
