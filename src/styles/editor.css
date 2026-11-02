@@ -4423,3 +4423,97 @@ input[type='range']::-moz-range-thumb {
   border-radius: 2px;
   background: var(--cobalt);
 }
+
+/* Studio icon motion ----------------------------------------- */
+.ed-rail > button.active .vellum-icon,
+.ai-tabs button.active .vellum-icon,
+.export-format.active .vellum-icon {
+  animation: vellum-icon-pop 260ms var(--ease-out);
+}
+
+.ed-topbar button:focus-visible > .vellum-icon,
+.ed-rail > button:focus-visible .vellum-icon,
+.ed-rail-bottom button:focus-visible .vellum-icon,
+.inspector button:focus-visible > .vellum-icon,
+.lp button:focus-visible > .vellum-icon,
+.cv-menu-row:focus-visible .cv-menu-icon .vellum-icon {
+  transform: scale(1.08);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ed-topbar button:hover:not(:disabled) > .vellum-icon {
+    transform: translateY(-1px) scale(1.08);
+  }
+
+  .ed-top-center .ed-ico:first-child:hover .vellum-icon {
+    transform: rotate(-24deg) scale(1.1);
+  }
+
+  .ed-top-center .ed-ico:nth-child(2):hover .vellum-icon {
+    transform: rotate(24deg) scale(1.1);
+  }
+
+  .ed-download:hover .vellum-icon {
+    transform: translateY(2px) scale(1.08);
+  }
+
+  .ed-rail > button:hover .vellum-icon,
+  .ed-rail-bottom button:hover .vellum-icon {
+    transform: translateY(-1px) rotate(-4deg) scale(1.1);
+  }
+
+  .ed-rail > button:active .vellum-icon,
+  .ed-rail-bottom button:active .vellum-icon {
+    transform: scale(0.9);
+  }
+
+  .cv-menu-row:hover:not(:disabled) .cv-menu-icon .vellum-icon {
+    transform: translateX(1px) scale(1.12);
+  }
+
+  .inspector button:hover:not(:disabled) > .vellum-icon {
+    transform: scale(1.12);
+  }
+
+  .insp-arrange button:hover .vellum-icon,
+  .insp-align button:hover .vellum-icon {
+    transform: translateY(-1px) scale(1.12);
+  }
+
+  .lp button:hover:not(:disabled) > .vellum-icon {
+    transform: translateY(-1px) scale(1.1) rotate(-3deg);
+  }
+
+  .lp .lp-close:hover .vellum-icon {
+    transform: rotate(90deg) scale(1.08);
+  }
+
+  .ai-tabs button:hover .vellum-icon {
+    transform: translateY(-1px) scale(1.15);
+  }
+
+  .cv-controls button:hover .vellum-icon {
+    transform: scale(1.12);
+  }
+
+  .export-format:hover .vellum-icon {
+    transform: scale(1.1);
+  }
+}
+
+/* Studio rail first-paint reveal ----------------------------- */
+.ed-rail > button .vellum-icon {
+  animation: vellum-icon-enter 280ms var(--ease-out) backwards;
+}
+
+.ed-rail > button:nth-child(1) .vellum-icon { animation-delay: 0ms; }
+.ed-rail > button:nth-child(2) .vellum-icon { animation-delay: 16ms; }
+.ed-rail > button:nth-child(3) .vellum-icon { animation-delay: 32ms; }
+.ed-rail > button:nth-child(4) .vellum-icon { animation-delay: 48ms; }
+.ed-rail > button:nth-child(5) .vellum-icon { animation-delay: 64ms; }
+.ed-rail > button:nth-child(6) .vellum-icon { animation-delay: 80ms; }
+.ed-rail > button:nth-child(7) .vellum-icon { animation-delay: 96ms; }
+
+.ed-rail > button.active:nth-child(n) .vellum-icon {
+  animation-delay: 0ms;
+}

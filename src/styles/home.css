@@ -2061,3 +2061,104 @@
   border-radius: 2px;
   background: var(--h-lilac);
 }
+
+/* Dashboard icon motion -------------------------------------- */
+.rail-nav button.active .vellum-icon,
+.rail-nav a.active .vellum-icon {
+  animation: vellum-icon-pop 280ms var(--ease-out);
+}
+
+.rail-nav button:focus-visible .vellum-icon,
+.rail-nav a:focus-visible .vellum-icon,
+.rail-bottom button:focus-visible .vellum-icon,
+.rail-create:focus-visible .vellum-icon {
+  transform: translateY(-1px) rotate(-4deg) scale(1.08);
+}
+
+.home-cat:focus-visible .home-cat-icon .vellum-icon {
+  transform: translateY(-1px) rotate(-5deg) scale(1.08);
+}
+
+.home-search-wrap:focus-within > .vellum-icon {
+  transform: scale(1.08);
+  color: var(--h-lilac);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .rail-create:hover .vellum-icon {
+    transform: rotate(12deg) scale(1.12);
+  }
+
+  .rail-create:active .vellum-icon {
+    transform: rotate(12deg) scale(0.92);
+  }
+
+  .rail-nav button:hover .vellum-icon,
+  .rail-nav a:hover .vellum-icon,
+  .rail-bottom button:hover .vellum-icon {
+    transform: translateY(-1.5px) rotate(-4deg) scale(1.1);
+  }
+
+  .rail-nav button:active .vellum-icon,
+  .rail-nav a:active .vellum-icon,
+  .rail-bottom button:active .vellum-icon {
+    transform: scale(0.92);
+  }
+
+  .rail-bell:hover .vellum-icon {
+    transform: rotate(-14deg) scale(1.08);
+  }
+
+  .home-cat:hover .home-cat-icon .vellum-icon {
+    transform: translateY(-1px) rotate(-6deg) scale(1.12);
+  }
+
+  .home-cat:active .home-cat-icon .vellum-icon {
+    transform: scale(0.92);
+  }
+
+  .home-tabs button:hover .vellum-icon,
+  .home-tabs a:hover .vellum-icon,
+  .home-result-row:hover .home-result-action-icon .vellum-icon,
+  .home-more-grid button:hover .vellum-icon,
+  .home-card-menu button:hover .vellum-icon {
+    transform: translateY(-1px) scale(1.12) rotate(-3deg);
+  }
+
+  .home-result-row:hover .format-glyph,
+  .home-template-card:hover .home-template-meta .format-glyph,
+  .size-card:hover .format-glyph {
+    transform: translateY(-1px) scale(1.06);
+  }
+
+  .home-help:hover .vellum-icon {
+    transform: rotate(12deg) scale(1.1);
+  }
+
+  .home-cat:hover .home-cat-label {
+    color: #fff;
+  }
+}
+
+/* First-paint icon entrance --------------------------------- */
+.home-cat .home-cat-icon .vellum-icon {
+  animation: vellum-icon-enter 300ms var(--ease-out) backwards;
+  animation-delay: calc(var(--icon-index, 0) * 12ms);
+}
+
+.rail-nav button .vellum-icon,
+.rail-nav a .vellum-icon {
+  animation: vellum-icon-enter 280ms var(--ease-out) backwards;
+}
+
+.rail-nav > :nth-child(1) .vellum-icon { animation-delay: 0ms; }
+.rail-nav > :nth-child(2) .vellum-icon { animation-delay: 16ms; }
+.rail-nav > :nth-child(3) .vellum-icon { animation-delay: 32ms; }
+.rail-nav > :nth-child(4) .vellum-icon { animation-delay: 48ms; }
+.rail-nav > :nth-child(5) .vellum-icon { animation-delay: 64ms; }
+.rail-nav > :nth-child(6) .vellum-icon { animation-delay: 80ms; }
+.rail-nav > :nth-child(7) .vellum-icon { animation-delay: 96ms; }
+
+.rail-nav button.active:nth-child(n) .vellum-icon {
+  animation-delay: 0ms;
+}

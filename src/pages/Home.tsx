@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import {
@@ -533,7 +534,7 @@ export default function Home() {
                   return (
                     <div className="home-cat-wrap" key={cat.id}>
                       {i === 1 && <span className="home-cat-sep" />}
-                      <button className={`home-cat ${cat.outline ? 'is-outline' : ''} tone-${cat.tone}`} onClick={cat.run} title={cat.label}>
+                      <button className={`home-cat ${cat.outline ? 'is-outline' : ''} tone-${cat.tone}`} onClick={cat.run} title={cat.label} style={{ '--icon-index': i } as CSSProperties}>
                         <span className="home-cat-icon"><VellumIcon name={cat.icon} size={22} /></span>
                         <span className="home-cat-label">{cat.label}</span>
                       </button>

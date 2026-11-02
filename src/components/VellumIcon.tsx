@@ -125,10 +125,11 @@ const ICONS: Record<VellumIconName, string[]> = {
 export function VellumIcon({
   name,
   size = 18,
-  strokeWidth = 1.8,
+  strokeWidth = 1.65,
   className = '',
   ...rest
 }: { name: VellumIconName; size?: number; strokeWidth?: number; className?: string } & Omit<SVGProps<SVGSVGElement>, 'name' | 'width' | 'height'>) {
+  const paths = ICONS[name];
   return (
     <svg
       width={size}
@@ -139,12 +140,18 @@ export function VellumIcon({
       strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={className}
+      className={`vellum-icon ${size <= 13 ? 'is-compact' : ''} ${className}`.trim()}
       data-vellum-icon={name}
+      data-icon-size={size}
       aria-hidden="true"
       {...rest}
     >
-      {ICONS[name].map((d, index) => <path key={index} d={d} />)}
+      <g className="vellum-icon-echo" transform="translate(0.55 0.75)">
+        {paths.map((d, index) => <path key={`echo-${index}`} d={d} />)}
+      </g>
+      <g className="vellum-icon-main">
+        {paths.map((d, index) => <path key={index} d={d} />)}
+      </g>
     </svg>
   );
 }

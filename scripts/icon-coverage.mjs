@@ -16,6 +16,7 @@ async function audit(p, name, url) {
       .map(svg => svg.outerHTML.slice(0, 120));
     return {
       count: icons.length,
+      echoes: document.querySelectorAll('[data-vellum-icon] .vellum-icon-echo').length,
       names: [...new Set(icons.map(el => el.getAttribute('data-vellum-icon')))],
       glyphs: document.querySelectorAll('.format-glyph').length,
       stock,
@@ -23,11 +24,12 @@ async function audit(p, name, url) {
       forbidden: /Design not found/i.test(document.body.innerText),
     };
   });
-  console.log(name, { count: data.count, glyphs: data.glyphs, stock: data.stock.length, overflow: data.overflow, forbidden: data.forbidden, names: data.names });
+  console.log(name, { count: data.count, echoes: data.echoes, glyphs: data.glyphs, stock: data.stock.length, overflow: data.overflow, forbidden: data.forbidden, names: data.names });
   if (data.stock.length) console.log(name, 'STOCK', data.stock);
   assert.equal(data.forbidden, false, `${name} rendered a not-found state`);
   assert.equal(data.overflow, false, `${name} horizontally overflows`);
   assert.equal(data.stock.length, 0, `${name} still renders stock icons`);
+  assert.equal(data.echoes, data.count, `${name} has icons without the ink echo`);
   return data;
 }
 
@@ -129,11 +131,12 @@ const surface = async (name, selector) => {
     if (!root) return { exists: false, icons: 0, stock: 0 };
     const stock = [...root.querySelectorAll('svg:not([data-vellum-icon])')]
       .filter(svg => !svg.closest('.format-glyph') && !svg.closest('.logo') && !svg.closest('.brand-mark') && !svg.closest('.spin') && !svg.closest('.page-preview') && !svg.closest('.cv-el'));
-    return { exists: true, icons: root.querySelectorAll('[data-vellum-icon]').length, stock: stock.length };
+    return { exists: true, icons: root.querySelectorAll('[data-vellum-icon]').length, echoes: root.querySelectorAll('[data-vellum-icon] .vellum-icon-echo').length, stock: stock.length };
   }, selector);
   console.log(name, data);
   assert.ok(data.exists, `${name} not found`);
   assert.ok(data.icons >= 2, `${name} lacks custom icons`);
+  assert.equal(data.echoes, data.icons, `${name} icons lack the ink echo`);
   assert.equal(data.stock, 0, `${name} still has stock icons`);
 };
 await p.locator('.cv-el').first().click({ button: 'right' });
