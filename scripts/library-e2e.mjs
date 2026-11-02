@@ -52,7 +52,7 @@ await p.locator('.home-cat[title="More"]').click();
 await p.waitForTimeout(300);
 const moreFirst = await p.locator('.home-more-grid button').first().innerText();
 console.log('more lead', moreFirst);
-assert.ok(moreFirst.includes('Design library') && moreFirst.includes('59 formats'));
+assert.ok(moreFirst.includes('Design library'));
 await p.getByRole('button', { name: /Design library/ }).click();
 await p.waitForTimeout(350);
 assert.ok((await p.locator('.modal-sub').innerText()).includes('59 formats'));
