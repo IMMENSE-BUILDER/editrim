@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Check, Copy, Download, ExternalLink, FileImage, FileText, Loader2, Share2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
+import { VellumIcon } from '../components/VellumIcon';
 import { Modal } from '../components/Modal';
 import type { Design } from '../lib/types';
 import { exportDesign, type ExportFormat } from '../lib/export';
@@ -63,7 +64,7 @@ export function ExportModal({
             {format === 'pdf' ? `${pages === 'all' ? design.pages.length : 1} page PDF` : `${outW} × ${outH} px`} · {format.toUpperCase()}
           </span>
           <button className="btn btn-cobalt" onClick={run} disabled={busy}>
-            {busy ? <Loader2 size={16} className="spin" /> : <Download size={16} />}
+            {busy ? <Loader2 size={16} className="spin" /> : <VellumIcon name="download" size={16} />}
             {busy ? 'Exporting…' : 'Download'}
           </button>
         </>
@@ -71,17 +72,16 @@ export function ExportModal({
     >
       <div className="export-formats">
         {[
-          { id: 'png' as ExportFormat, label: 'PNG', note: 'Best quality · transparency', icon: FileImage },
-          { id: 'jpg' as ExportFormat, label: 'JPG', note: 'Smaller file · no transparency', icon: FileImage },
-          { id: 'pdf' as ExportFormat, label: 'PDF', note: 'Print-ready · all pages', icon: FileText },
+          { id: 'png' as ExportFormat, label: 'PNG', note: 'Best quality · transparency', icon: 'image' as const },
+          { id: 'jpg' as ExportFormat, label: 'JPG', note: 'Smaller file · no transparency', icon: 'camera' as const },
+          { id: 'pdf' as ExportFormat, label: 'PDF', note: 'Print-ready · all pages', icon: 'doc' as const },
         ].map(f => {
-          const Icon = f.icon;
           return (
             <button key={f.id} className={`export-format ${format === f.id ? 'active' : ''}`} onClick={() => setFormat(f.id)}>
-              <Icon size={19} />
+              <VellumIcon name={f.icon} size={19} />
               <b>{f.label}</b>
               <span>{f.note}</span>
-              {format === f.id && <Check size={15} className="export-check" />}
+              {format === f.id && <VellumIcon name="check" size={15} className="export-check" />}
             </button>
           );
         })}
@@ -174,7 +174,7 @@ export function ShareModal({
         <>
           <button className="btn btn-ghost" onClick={onClose}>Close</button>
           <button className="btn btn-cobalt" onClick={copy} disabled={!state?.ok}>
-            {copied ? <Check size={15} /> : <Copy size={15} />} {copied ? 'Copied' : 'Copy link'}
+            {copied ? <VellumIcon name="check" size={15} /> : <VellumIcon name="copy" size={15} />} {copied ? 'Copied' : 'Copy link'}
           </button>
         </>
       }
@@ -186,19 +186,19 @@ export function ShareModal({
           <div className="share-input">
             <input id="share-url" readOnly value={state.url} onFocus={e => e.currentTarget.select()} />
             <button className="btn btn-secondary btn-sm" onClick={() => window.open(state.url, '_blank', 'noreferrer')}>
-              <ExternalLink size={14} /> Preview
+              <VellumIcon name="external" size={14} /> Preview
             </button>
           </div>
           {!state.ok && (
             <div className="share-warning">
-              <Share2 size={15} />
+              <VellumIcon name="share" size={15} />
               <span>{state.reason ?? 'This design is too large to fit in a link.'}</span>
             </div>
           )}
           <div className="share-facts">
-            <span><Check size={13} /> Read-only view</span>
-            <span><Check size={13} /> Opens without an account</span>
-            <span><Check size={13} /> Entirely client-side</span>
+            <span><VellumIcon name="check" size={13} /> Read-only view</span>
+            <span><VellumIcon name="check" size={13} /> Opens without an account</span>
+            <span><VellumIcon name="check" size={13} /> Entirely client-side</span>
           </div>
           <div className="share-hint">
             Tip: for print or client work, use Download → PDF. A link is best for a quick review.

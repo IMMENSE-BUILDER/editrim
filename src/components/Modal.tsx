@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
-import { X } from 'lucide-react';
+import { VellumIcon } from './VellumIcon';
 
 export function Modal({
   open,
@@ -92,7 +92,7 @@ export function Modal({
               {subtitle && <div className="modal-sub">{subtitle}</div>}
             </div>
             <button className="btn-icon" onClick={onClose} aria-label="Close">
-              <X size={18} />
+              <VellumIcon name="close" size={18} />
             </button>
           </div>
         )}

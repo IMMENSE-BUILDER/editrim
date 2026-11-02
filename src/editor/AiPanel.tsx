@@ -1,8 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  AlertTriangle, ArrowRight, Check, Copy, ImagePlus, Info, Loader2, PenLine,
-  RefreshCcw, ScanEye, Sparkles, Wand2, X,
-} from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import type { BrandKit, Page } from '../lib/types';
 import type { EditorStore } from './useEditor';
 import { useToast } from '../components/Toast';
@@ -15,6 +12,7 @@ import { normalizeAiDesign, sanitizeAiSvg, svgToDataUrl } from '../lib/aiDesign'
 import { applyEditPlan, normalizeEditPlan, summarizePlan, type EditPlan } from '../lib/aiCommands';
 import { createImage, createText } from './factory';
 import { renderPageCanvas, measureTextHeight } from '../lib/render';
+import { VellumIcon, type VellumIconName } from '../components/VellumIcon';
 
 type Mode = 'design' | 'edit' | 'write' | 'critique';
 type WriteMode = 'compose' | 'rewrite' | 'shorten' | 'expand';
@@ -458,19 +456,19 @@ export function AiPanel({
     setEditInstruction('');
   };
 
-  const modeTabs: { id: Mode; label: string; icon: typeof Sparkles }[] = [
-    { id: 'design', label: 'Design', icon: Sparkles },
-    { id: 'edit', label: 'Edit', icon: Wand2 },
-    { id: 'write', label: 'Write', icon: PenLine },
-    { id: 'critique', label: 'Review', icon: ScanEye },
+  const modeTabs: { id: Mode; label: string; icon: VellumIconName }[] = [
+    { id: 'design', label: 'Design', icon: 'spark' },
+    { id: 'edit', label: 'Edit', icon: 'magic' },
+    { id: 'write', label: 'Write', icon: 'pencil' },
+    { id: 'critique', label: 'Review', icon: 'scan' },
   ];
 
   return (
     <div className="lp ai-panel">
       <div className="lp-head ai-head">
-        <h3><Sparkles size={15} /> AI Studio</h3>
+        <h3><VellumIcon name="spark" size={15} /> AI Studio</h3>
         <span className="ai-beta">Beta</span>
-        <button className="lp-close" onClick={onClose} aria-label="Close AI panel"><X size={16} /></button>
+        <button className="lp-close" onClick={onClose} aria-label="Close AI panel"><VellumIcon name="close" size={16} /></button>
       </div>
 
       <div className={`ai-health ${healthBroken ? 'is-bad' : healthReady ? 'is-good' : ''}`}>
@@ -486,21 +484,20 @@ export function AiPanel({
             onClick={() => { setHealth(undefined); checkAiHealth().then(setHealth); }}
             title="Recheck AI health"
           >
-            <RefreshCcw size={12} />
+            <VellumIcon name="refresh" size={12} />
           </button>
         )}
       </div>
 
       {health === null && (
         <div className="ai-config-note">
-          <Info size={14} />
+          <VellumIcon name="info" size={14} />
           <span>If you are running locally, make sure the dev server was restarted after adding <code>AI_GATEWAY_API_KEY</code>. On Vercel, check the function deployment.</span>
         </div>
       )}
 
       <div className="ai-tabs" role="tablist" aria-label="AI Studio mode">
         {modeTabs.map(t => {
-          const Icon = t.icon;
           return (
             <button
               key={t.id}
@@ -509,7 +506,7 @@ export function AiPanel({
               className={mode === t.id ? 'active' : ''}
               onClick={() => setMode(t.id)}
             >
-              <Icon size={13} /> {t.label}
+              <VellumIcon name={t.icon} size={13} /> {t.label}
             </button>
           );
         })}
@@ -519,7 +516,7 @@ export function AiPanel({
         {mode === 'design' && (
           <>
             <div className="ai-lede">
-              <span className="ai-eyebrow"><Wand2 size={12} /> AI DESIGN</span>
+              <span className="ai-eyebrow"><VellumIcon name="magic" size={12} /> AI DESIGN</span>
               <h4>Describe it. Get a real first draft.</h4>
               <p>A complete, editable page — type, shapes and a photo — built for this canvas.</p>
             </div>
@@ -555,13 +552,13 @@ export function AiPanel({
             </div>
 
             <button className="btn btn-cobalt ai-run" onClick={generateDesign} disabled={designBusy || !designPrompt.trim()}>
-              {designBusy ? <Loader2 size={15} className="spin" /> : <Sparkles size={15} />}
+              {designBusy ? <Loader2 size={15} className="spin" /> : <VellumIcon name="spark" size={15} />}
               {designBusy ? 'Designing…' : designPage ? 'Regenerate draft' : 'Generate design'}
             </button>
 
               {designBusy && (
               <div className="ai-loading">
-                <span className="ai-orbit"><Sparkles size={15} /></span>
+                <span className="ai-orbit"><VellumIcon name="spark" size={15} /></span>
                 <div>
                   <strong>Art-directing your page…</strong>
                   <span>MiMo V2.6 Flash via Vercel AI Gateway</span>
@@ -586,8 +583,8 @@ export function AiPanel({
                   <PagePreview page={designPage} size={store.design.size} />
                 </div>
                 <div className="ai-result-actions">
-                  <button className="btn btn-cobalt btn-sm" onClick={addDesignPage}>Add as new page <ArrowRight size={13} /></button>
-                  <button className="btn btn-ghost btn-sm" onClick={generateDesign} disabled={designBusy}><RefreshCcw size={13} /> Again</button>
+                  <button className="btn btn-cobalt btn-sm" onClick={addDesignPage}>Add as new page <VellumIcon name="arrowRight" size={13} /></button>
+                  <button className="btn btn-ghost btn-sm" onClick={generateDesign} disabled={designBusy}><VellumIcon name="refresh" size={13} /> Again</button>
                 </div>
                 <p className="ai-fineprint">Nothing has changed yet. Review the draft, then add it as a page. Every element stays editable.</p>
               </div>
@@ -596,7 +593,7 @@ export function AiPanel({
             <div className="ai-divider" />
 
             <button className="ai-subsection-toggle" onClick={() => setIllustrationOpen(v => !v)} aria-expanded={illustrationOpen}>
-              <span><ImagePlus size={14} /> AI illustration</span>
+              <span><VellumIcon name="image" size={14} /> AI illustration</span>
               <span>{illustrationOpen ? '−' : '+'}</span>
             </button>
             {illustrationOpen && (
@@ -610,7 +607,7 @@ export function AiPanel({
                   placeholder="Three coffee cups and a sun, geometric, warm cream, coral and cobalt…"
                 />
                 <button className="btn btn-secondary btn-sm ai-run-secondary" onClick={generateIllustration} disabled={illustrationBusy || !illustrationPrompt.trim()}>
-                  {illustrationBusy ? <Loader2 size={14} className="spin" /> : <Wand2 size={14} />}
+                  {illustrationBusy ? <Loader2 size={14} className="spin" /> : <VellumIcon name="magic" size={14} />}
                   {illustrationBusy ? 'Drawing…' : 'Generate illustration'}
                 </button>
                 {illustrationError && <AiErrorCard error={illustrationError} onRetry={generateIllustration} />}
@@ -631,7 +628,7 @@ export function AiPanel({
         {mode === 'edit' && (
           <>
             <div className="ai-lede">
-              <span className="ai-eyebrow"><Wand2 size={12} /> AI EDIT</span>
+              <span className="ai-eyebrow"><VellumIcon name="magic" size={12} /> AI EDIT</span>
               <h4>Ask for a change. See it first.</h4>
               <p>Vellum turns your instruction into explicit canvas commands. Nothing is applied until you approve the preview.</p>
             </div>
@@ -659,7 +656,7 @@ export function AiPanel({
             </div>
 
             <button className="btn btn-cobalt ai-run" onClick={generateEditPlan} disabled={editBusy || !editInstruction.trim() || !store.page.elements.length}>
-              {editBusy ? <Loader2 size={15} className="spin" /> : <Wand2 size={15} />}
+              {editBusy ? <Loader2 size={15} className="spin" /> : <VellumIcon name="magic" size={15} />}
               {editBusy ? 'Planning changes…' : editPlan ? 'Plan another change' : 'Plan this edit'}
             </button>
 
@@ -669,7 +666,7 @@ export function AiPanel({
 
             {editBusy && (
               <div className="ai-loading">
-                <span className="ai-orbit"><Wand2 size={15} /></span>
+                <span className="ai-orbit"><VellumIcon name="magic" size={15} /></span>
                 <div>
                   <strong>Reading the scene, planning the edit…</strong>
                   <span>MiMo V2.6 Flash · validated canvas commands</span>
@@ -706,7 +703,7 @@ export function AiPanel({
                   </div>
                 )}
                 <div className="ai-result-actions">
-                  <button className="btn btn-cobalt btn-sm" onClick={applyCurrentEditPlan}>Apply changes <ArrowRight size={13} /></button>
+                  <button className="btn btn-cobalt btn-sm" onClick={applyCurrentEditPlan}>Apply changes <VellumIcon name="arrowRight" size={13} /></button>
                   <button className="btn btn-ghost btn-sm" onClick={() => { setEditPlan(null); setEditPreview(null); }}>Discard</button>
                 </div>
                 <p className="ai-fineprint">Only validated changes reach the canvas. Locked elements are skipped automatically.</p>
@@ -718,7 +715,7 @@ export function AiPanel({
         {mode === 'write' && (
           <>
             <div className="ai-lede">
-              <span className="ai-eyebrow"><PenLine size={12} /> AI WRITE</span>
+              <span className="ai-eyebrow"><VellumIcon name="pencil" size={12} /> AI WRITE</span>
               <h4>{selectedText ? 'Work with the text you selected.' : 'A first line, without the blank page.'}</h4>
               <p>{selectedText ? 'Rewrite, shorten, expand or translate it — then choose what to keep.' : 'Generate copy, then add it as a new text layer.'}</p>
             </div>
@@ -776,12 +773,12 @@ export function AiPanel({
               {!brand.voice.trim() ? (
                 <button onClick={onOpenBrand}>Add a voice sample</button>
               ) : (
-                <span className="ai-voice-ok"><Check size={11} /> {brand.name}</span>
+                <span className="ai-voice-ok"><VellumIcon name="check" size={11} /> {brand.name}</span>
               )}
             </div>
 
             <button className="btn btn-cobalt ai-run" onClick={() => generateCopy('write')} disabled={copyBusy || (writeMode !== 'compose' && !selectedText)}>
-              {copyBusy && copyAction === 'write' ? <Loader2 size={15} className="spin" /> : <Sparkles size={15} />}
+              {copyBusy && copyAction === 'write' ? <Loader2 size={15} className="spin" /> : <VellumIcon name="spark" size={15} />}
               {copyBusy && copyAction === 'write' ? 'Writing…' : writeMode === 'compose' ? 'Write copy' : `${writeMode.charAt(0).toUpperCase()}${writeMode.slice(1)} selection`}
             </button>
 
@@ -791,7 +788,7 @@ export function AiPanel({
               <div className="ai-copy-result" ref={copyResultRef}>
                 <div className="ai-result-head">
                   <strong>Copy</strong>
-                  <button className="ai-icon-link" onClick={() => { navigator.clipboard?.writeText(copy); toast('Copied'); }} title="Copy text"><Copy size={13} /></button>
+                  <button className="ai-icon-link" onClick={() => { navigator.clipboard?.writeText(copy); toast('Copied'); }} title="Copy text"><VellumIcon name="copy" size={13} /></button>
                 </div>
                 <p>{copy}</p>
                 <div className="ai-result-actions">
@@ -811,7 +808,7 @@ export function AiPanel({
                   {AI_LANGUAGES.map(l => <option key={l}>{l}</option>)}
                 </select>
                 <button className="btn btn-secondary btn-sm" onClick={() => generateCopy('translate')} disabled={copyBusy || !selectedText}>
-                  {copyBusy && copyAction === 'translate' ? <Loader2 size={14} className="spin" /> : <Sparkles size={14} />}
+                  {copyBusy && copyAction === 'translate' ? <Loader2 size={14} className="spin" /> : <VellumIcon name="spark" size={14} />}
                   Translate
                 </button>
               </div>
@@ -825,7 +822,7 @@ export function AiPanel({
         {mode === 'critique' && (
           <>
             <div className="ai-lede">
-              <span className="ai-eyebrow"><ScanEye size={12} /> AI REVIEW</span>
+              <span className="ai-eyebrow"><VellumIcon name="scan" size={12} /> AI REVIEW</span>
               <h4>A second pair of eyes.</h4>
               <p>An honest critique of hierarchy, spacing, contrast and legibility. Nothing is changed automatically.</p>
             </div>
@@ -837,7 +834,7 @@ export function AiPanel({
             <p className="ai-privacy-note">Visual review sends a temporary snapshot of this page to MiMo for inspection. Nothing is stored.</p>
 
             <button className="btn btn-cobalt ai-run" onClick={generateCritique} disabled={critiqueBusy || !store.page.elements.length}>
-              {critiqueBusy ? <Loader2 size={15} className="spin" /> : <ScanEye size={15} />}
+              {critiqueBusy ? <Loader2 size={15} className="spin" /> : <VellumIcon name="scan" size={15} />}
               {critiqueBusy ? 'Reading the page…' : critique ? 'Review again' : 'Review this page'}
             </button>
 
@@ -860,7 +857,7 @@ export function AiPanel({
                   <div className="ai-review-block">
                     <h5>Working well</h5>
                     <ul>
-                      {critique.strengths.map((s, i) => <li key={i}><Check size={12} /> {s}</li>)}
+                      {critique.strengths.map((s, i) => <li key={i}><VellumIcon name="check" size={12} /> {s}</li>)}
                     </ul>
                   </div>
                 )}
@@ -887,7 +884,7 @@ export function AiPanel({
       </div>
 
       <div className="ai-foot">
-        <span><Sparkles size={11} /> {AI_MODEL_LABEL}</span>
+        <span><VellumIcon name="spark" size={11} /> {AI_MODEL_LABEL}</span>
         <span>AI can make mistakes. Review before publishing.</span>
       </div>
     </div>
@@ -918,7 +915,7 @@ function AiErrorCard({ error, onRetry }: { error: AiRequestError; onRetry: () =>
   return (
     <div className="ai-error" role="alert">
       <div className="ai-error-head">
-        <AlertTriangle size={14} />
+        <VellumIcon name="alert" size={14} />
         <strong>{stage} error</strong>
         {error.status && <span>HTTP {error.status}</span>}
       </div>
@@ -936,8 +933,8 @@ function AiErrorCard({ error, onRetry }: { error: AiRequestError; onRetry: () =>
         </details>
       )}
       <div className="ai-error-actions">
-        <button onClick={onRetry}><RefreshCcw size={12} /> Try again</button>
-        <button onClick={copyDiagnostics}><Copy size={12} /> Copy diagnostics</button>
+        <button onClick={onRetry}><VellumIcon name="refresh" size={12} /> Try again</button>
+        <button onClick={copyDiagnostics}><VellumIcon name="copy" size={12} /> Copy diagnostics</button>
       </div>
     </div>
   );

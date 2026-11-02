@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight, Maximize, Pause, Play, X } from 'lucide-react';
+import { VellumIcon } from '../components/VellumIcon';
 import { PagePreview } from '../components/PagePreview';
 import { getDesign } from '../lib/storage';
 import type { Design } from '../lib/types';
@@ -122,7 +122,7 @@ export default function Present() {
       </div>
 
       <button className="present-exit" onClick={() => navigate(`/editor/${id}`)} title="Exit presentation (Esc)">
-        <X size={16} /> Exit
+        <VellumIcon name="close" size={16} /> Exit
       </button>
 
       <div className="present-progress">
@@ -143,7 +143,7 @@ export default function Present() {
           disabled={pageIndex === 0}
           aria-label="Previous page"
         >
-          <ChevronLeft size={22} />
+          <VellumIcon name="chevronLeft" size={22} />
         </button>
         <button
           className="present-arrow present-arrow-right"
@@ -151,13 +151,13 @@ export default function Present() {
           disabled={pageIndex === pages - 1}
           aria-label="Next page"
         >
-          <ChevronRight size={22} />
+          <VellumIcon name="chevronRight" size={22} />
         </button>
       </div>
 
       <div className="present-bar" onClick={e => e.stopPropagation()}>
         <button onClick={() => setAuto(a => !a)} title={auto ? 'Pause autoplay' : 'Autoplay'} className="present-tool">
-          {auto ? <Pause size={15} /> : <Play size={15} />}
+          {auto ? <VellumIcon name="pause" size={15} /> : <VellumIcon name="play" size={15} />}
         </button>
         <span className="present-count">{pageIndex + 1} / {pages}</span>
         <span className="present-title">{design.title}</span>
@@ -170,10 +170,10 @@ export default function Present() {
             }}
             title="Fullscreen (F)"
           >
-            <Maximize size={15} />
+            <VellumIcon name="fit" size={15} />
           </button>
           <button className="present-tool" onClick={() => navigate(`/editor/${id}`)} title="Back to editor">
-            <ArrowLeft size={15} />
+            <VellumIcon name="arrowLeft" size={15} />
           </button>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Menu, X, ArrowUpRight } from 'lucide-react';
+import { VellumIcon } from './VellumIcon';
 import { Logo } from './Brand';
 
 export function SiteHeader({ variant = 'default' }: { variant?: 'default' | 'plain' }) {
@@ -23,11 +23,11 @@ export function SiteHeader({ variant = 'default' }: { variant?: 'default' | 'pla
           <Link to="/dashboard" className="site-login">Your designs</Link>
           <Link to="/dashboard" className="btn btn-primary btn-sm">
             Start designing
-            <ArrowUpRight size={14} />
+            <VellumIcon name="arrowUpRight" size={14} />
           </Link>
         </div>
         <button className="site-menu-btn" onClick={() => setOpen(v => !v)} aria-label="Menu">
-          {open ? <X size={20} /> : <Menu size={20} />}
+          {open ? <VellumIcon name="close" size={20} /> : <VellumIcon name="menu" size={20} />}
         </button>
       </div>
       {open && (
@@ -54,7 +54,7 @@ export function SiteFooter() {
           <p>A complete design studio in your browser.<br />Free, fast, and yours to keep.</p>
           <Link to="/dashboard" className="btn btn-lime btn-sm footer-cta">
             Start designing
-            <ArrowUpRight size={14} />
+            <VellumIcon name="arrowUpRight" size={14} />
           </Link>
         </div>
         <div className="footer-cols">

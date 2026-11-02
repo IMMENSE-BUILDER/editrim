@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, Trash2, RotateCcw } from 'lucide-react';
+import { VellumIcon } from './VellumIcon';
 import { Modal } from './Modal';
 import { getBrand, saveBrand, DEFAULT_BRAND } from '../lib/storage';
 import { FONTS } from '../lib/fonts';
@@ -37,7 +37,7 @@ export function BrandKitModal({ open, onClose, onSaved }: { open: boolean; onClo
               setKit({ ...DEFAULT_BRAND, colors: [...DEFAULT_BRAND.colors], fonts: [...DEFAULT_BRAND.fonts] });
             }}
           >
-            <RotateCcw size={14} /> Reset
+            <VellumIcon name="undo" size={14} /> Reset
           </button>
           <button className="btn btn-cobalt" onClick={save}>Save brand kit</button>
         </>
@@ -73,14 +73,14 @@ export function BrandKitModal({ open, onClose, onSaved }: { open: boolean; onClo
                 onClick={() => update({ colors: kit.colors.filter((_, j) => j !== i) })}
                 aria-label="Remove colour"
               >
-                <Trash2 size={12} />
+                <VellumIcon name="trash" size={12} />
               </button>
             )}
           </div>
         ))}
         {kit.colors.length < 8 && (
           <button className="brand-color-add" onClick={() => update({ colors: [...kit.colors, '#FFFFFF'] })}>
-            <Plus size={16} /> Add
+            <VellumIcon name="plus" size={16} /> Add
           </button>
         )}
       </div>

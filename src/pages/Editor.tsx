@@ -7,6 +7,7 @@ import {
   Redo2, Share2, Shapes, SlidersHorizontal, Sparkles, Trash2, Type, Undo2, X,
 } from 'lucide-react';
 import { Logo } from '../components/Brand';
+import { VellumIcon, type VellumIconName } from '../components/VellumIcon';
 import { Modal } from '../components/Modal';
 import { PagePreview } from '../components/PagePreview';
 import { BrandKitModal } from '../components/BrandKitModal';
@@ -89,14 +90,14 @@ function MissingDesign() {
   );
 }
 
-const TABS: { id: PanelTab; label: string; icon: typeof Shapes }[] = [
-  { id: 'templates', label: 'Templates', icon: LayoutTemplate },
-  { id: 'ai', label: 'AI', icon: Sparkles },
-  { id: 'elements', label: 'Elements', icon: Shapes },
-  { id: 'text', label: 'Text', icon: Type },
-  { id: 'uploads', label: 'Uploads', icon: ImageUp },
-  { id: 'background', label: 'Background', icon: PaintBucket },
-  { id: 'brand', label: 'Brand', icon: Palette },
+const TABS: { id: PanelTab; label: string; icon: VellumIconName }[] = [
+  { id: 'templates', label: 'Templates', icon: 'templates' },
+  { id: 'ai', label: 'AI', icon: 'spark' },
+  { id: 'elements', label: 'Elements', icon: 'elements' },
+  { id: 'text', label: 'Text', icon: 'text' },
+  { id: 'uploads', label: 'Uploads', icon: 'uploads' },
+  { id: 'background', label: 'Background', icon: 'background' },
+  { id: 'brand', label: 'Brand', icon: 'brand' },
 ];
 
 function EditorWorkspace({ initial }: { initial: Design }) {
@@ -515,7 +516,7 @@ function EditorWorkspace({ initial }: { initial: Design }) {
     <div className={`editor ${inspectorOpen ? 'show-inspector' : ''}`}>
       <header className="ed-topbar">
         <div className="ed-top-left">
-          <Link to="/dashboard" className="ed-back" title="Back to your designs"><ArrowLeft size={17} /></Link>
+          <Link to="/dashboard" className="ed-back" title="Back to your designs"><VellumIcon name="arrowLeft" size={17} /></Link>
           <Link to="/" className="ed-mark" aria-label="Vellum home"><Logo size={26} wordmark={false} /></Link>
           <div className="ed-title">
             <input
@@ -525,31 +526,31 @@ function EditorWorkspace({ initial }: { initial: Design }) {
               aria-label="Design title"
             />
             <span className={`ed-status ${saveState}`}>
-              {saveState === 'saving' ? <Loader2 size={10} className="spin" /> : <Cloud size={11} />}
+              {saveState === 'saving' ? <Loader2 size={10} className="spin" /> : <VellumIcon name="cloud" size={11} />}
               {saveState === 'saving' ? 'Saving' : saveState === 'error' ? 'Storage full' : 'Saved'}
             </span>
           </div>
         </div>
 
         <div className="ed-top-center">
-          <button className="ed-ico" onClick={store.undo} disabled={!store.canUndo} title="Undo (⌘Z)"><Undo2 size={16} /></button>
-          <button className="ed-ico" onClick={store.redo} disabled={!store.canRedo} title="Redo (⌘⇧Z)"><Redo2 size={16} /></button>
+          <button className="ed-ico" onClick={store.undo} disabled={!store.canUndo} title="Undo (⌘Z)"><VellumIcon name="undo" size={16} /></button>
+          <button className="ed-ico" onClick={store.redo} disabled={!store.canRedo} title="Redo (⌘⇧Z)"><VellumIcon name="redo" size={16} /></button>
           <span className="ed-divider" />
           <button className="ed-size-pill" onClick={() => setResizeOpen(true)} title="Resize canvas">
             {design.size.width} × {design.size.height}
-            <Maximize2 size={12} />
+            <VellumIcon name="fit" size={12} />
           </button>
         </div>
 
         <div className="ed-top-right">
           <button className="ed-ico ed-insp-toggle" onClick={() => setInspectorOpen(v => !v)} title="Design controls">
-            <SlidersHorizontal size={17} />
+            <VellumIcon name="sliders" size={17} />
           </button>
-          <button className="ed-ico ed-help" onClick={() => setShortcutsOpen(true)} title="Keyboard shortcuts"><HelpCircle size={17} /></button>
-          <button className="ed-action" onClick={present}><Play size={14} /> <span>Present</span></button>
-          <button className="ed-action" onClick={openShare}><Share2 size={14} /> <span>Share</span></button>
+          <button className="ed-ico ed-help" onClick={() => setShortcutsOpen(true)} title="Keyboard shortcuts"><VellumIcon name="help" size={17} /></button>
+          <button className="ed-action" onClick={present}><VellumIcon name="play" size={14} /> <span>Present</span></button>
+          <button className="ed-action" onClick={openShare}><VellumIcon name="share" size={14} /> <span>Share</span></button>
           <button className="btn btn-cobalt btn-sm ed-download" onClick={() => setExportOpen(true)}>
-            <Download size={14} /> Download
+            <VellumIcon name="download" size={14} /> Download
           </button>
         </div>
       </header>
@@ -557,7 +558,6 @@ function EditorWorkspace({ initial }: { initial: Design }) {
       <div className="ed-body">
         <nav className="ed-rail" aria-label="Editor panels">
           {TABS.map(t => {
-            const Icon = t.icon;
             return (
               <button
                 key={t.id}
@@ -565,14 +565,14 @@ function EditorWorkspace({ initial }: { initial: Design }) {
                 onClick={() => setPanel(panel === t.id ? null : t.id)}
                 title={t.label}
               >
-                <Icon size={19} />
+                <VellumIcon name={t.icon} size={19} />
                 <span>{t.label}</span>
               </button>
             );
           })}
           <div className="ed-rail-bottom">
             <button onClick={() => setShortcutsOpen(true)} title="Shortcuts">
-              <HelpCircle size={18} />
+              <VellumIcon name="help" size={18} />
               <span>Help</span>
             </button>
           </div>
@@ -629,16 +629,16 @@ function EditorWorkspace({ initial }: { initial: Design }) {
                     <>
                       <div className="page-menu-backdrop" onClick={() => setPageMenu(null)} />
                       <div className="page-menu" style={{ left: pageMenu.x, top: pageMenu.top }}>
-                        <button onClick={() => { store.duplicatePage(i); setPageMenu(null); }}><Copy size={13} /> Duplicate</button>
-                        <button onClick={() => { store.movePage(i, i - 1); setPageMenu(null); }} disabled={i === 0}><ChevronLeft size={13} /> Move left</button>
-                        <button onClick={() => { store.movePage(i, i + 1); setPageMenu(null); }} disabled={i === design.pages.length - 1}><ChevronRight size={13} /> Move right</button>
-                        <button className="danger" onClick={() => { store.deletePage(i); setPageMenu(null); }} disabled={design.pages.length <= 1}><Trash2 size={13} /> Delete page</button>
+                        <button onClick={() => { store.duplicatePage(i); setPageMenu(null); }}><VellumIcon name="duplicate" size={13} /> Duplicate</button>
+                        <button onClick={() => { store.movePage(i, i - 1); setPageMenu(null); }} disabled={i === 0}><VellumIcon name="chevronLeft" size={13} /> Move left</button>
+                        <button onClick={() => { store.movePage(i, i + 1); setPageMenu(null); }} disabled={i === design.pages.length - 1}><VellumIcon name="chevronRight" size={13} /> Move right</button>
+                        <button className="danger" onClick={() => { store.deletePage(i); setPageMenu(null); }} disabled={design.pages.length <= 1}><VellumIcon name="trash" size={13} /> Delete page</button>
                       </div>
                     </>
                   )}
                 </div>
               ))}
-              <button className="page-add" onClick={() => store.addPage()} title="Add page"><Plus size={17} /><span>Add page</span></button>
+              <button className="page-add" onClick={() => store.addPage()} title="Add page"><VellumIcon name="plus" size={17} /><span>Add page</span></button>
             </div>
             <div className="page-strip-info">
               <span>Page {store.activePage + 1} of {design.pages.length}</span>
@@ -716,7 +716,7 @@ function EditorWorkspace({ initial }: { initial: Design }) {
         </div>
         {componentDraft && (
           <div className="component-draft-meta">
-            <Shapes size={15} />
+            <VellumIcon name="elements" size={15} />
             <span>{componentDraft.elements.length} layers · {componentDraft.width} × {componentDraft.height} px · stored locally</span>
           </div>
         )}
@@ -757,16 +757,16 @@ function EditorWorkspace({ initial }: { initial: Design }) {
                   <p>{c.text}</p>
                   <div className="comment-actions">
                     <button onClick={() => store.updateComment(c.id, { resolved: !c.resolved })}>
-                      <Check size={12} /> {c.resolved ? 'Reopen' : 'Resolve'}
+                      <VellumIcon name="check" size={12} /> {c.resolved ? 'Reopen' : 'Resolve'}
                     </button>
-                    <button className="danger" onClick={() => store.removeComment(c.id)}><Trash2 size={12} /> Delete</button>
+                    <button className="danger" onClick={() => store.removeComment(c.id)}><VellumIcon name="trash" size={12} /> Delete</button>
                   </div>
                 </div>
               </div>
             ))}
           {commentTarget && !(design.comments ?? []).some(c => c.pageId === commentTarget.pageId && (commentTarget.elementId ? c.elementId === commentTarget.elementId : !c.elementId)) && (
             <div className="comment-empty">
-              <MessageSquare size={20} />
+              <VellumIcon name="comment" size={20} />
               <strong>No comments yet.</strong>
               <p>Leave a note for yourself or whoever opens this file next.</p>
             </div>

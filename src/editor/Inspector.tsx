@@ -15,6 +15,7 @@ import {
 import { fontByFamily } from '../lib/fonts';
 import { PALETTES } from '../lib/palettes';
 import { PagePreview } from '../components/PagePreview';
+import { VellumIcon } from '../components/VellumIcon';
 
 type Props = {
   store: EditorStore;
@@ -26,10 +27,10 @@ type Props = {
 };
 
 const typeIcon = (el: El) => {
-  if (el.type === 'text') return <Type size={14} />;
-  if (el.type === 'image') return <ImageIcon size={14} />;
-  if (el.type === 'icon') return <Sparkles size={14} />;
-  return <Shapes size={14} />;
+  if (el.type === 'text') return <VellumIcon name="text" size={14} />;
+  if (el.type === 'image') return <VellumIcon name="image" size={14} />;
+  if (el.type === 'icon') return <VellumIcon name="spark" size={14} />;
+  return <VellumIcon name="elements" size={14} />;
 };
 
 export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenResize, onOpenBrand }: Props) {
@@ -94,7 +95,7 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                       store.patchElement(el.id, { hidden: !el.hidden });
                     }}
                   >
-                    {el.hidden ? <EyeOff size={13} /> : <Eye size={13} />}
+                    {el.hidden ? <VellumIcon name="eyeOff" size={13} /> : <VellumIcon name="eye" size={13} />}
                   </button>
                   <button
                     className="layer-action"
@@ -104,7 +105,7 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                       store.patchElement(el.id, { locked: !el.locked });
                     }}
                   >
-                    {el.locked ? <Lock size={13} /> : <Unlock size={13} />}
+                    {el.locked ? <VellumIcon name="lock" size={13} /> : <VellumIcon name="unlock" size={13} />}
                   </button>
                 </div>
               );
@@ -117,10 +118,10 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
             <div className="layer-footer">
               <span>{selected.length} selected</span>
               <div>
-                <button onClick={() => store.reorder('front')} title="Bring to front"><ChevronsUp size={14} /></button>
-                <button onClick={() => store.reorder('back')} title="Send to back"><ChevronsDown size={14} /></button>
-                <button onClick={() => store.duplicateSelected()} title="Duplicate"><Copy size={14} /></button>
-                <button onClick={() => store.deleteSelected()} title="Delete"><Trash2 size={14} /></button>
+                <button onClick={() => store.reorder('front')} title="Bring to front"><VellumIcon name="chevronsUp" size={14} /></button>
+                <button onClick={() => store.reorder('back')} title="Send to back"><VellumIcon name="chevronsDown" size={14} /></button>
+                <button onClick={() => store.duplicateSelected()} title="Duplicate"><VellumIcon name="duplicate" size={14} /></button>
+                <button onClick={() => store.deleteSelected()} title="Delete"><VellumIcon name="trash" size={14} /></button>
               </div>
             </div>
           )}
@@ -144,7 +145,7 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                 <span className="insp-muted">{design.size.name}</span>
               </div>
               <button className="btn btn-secondary btn-sm" onClick={onOpenResize}>
-                <Maximize2 size={13} /> Resize
+                <VellumIcon name="fit" size={13} /> Resize
               </button>
             </div>
           </InspectorSection>
@@ -214,10 +215,10 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
 
           <InspectorSection title="This page">
             <div className="insp-page-actions">
-              <button onClick={() => store.duplicatePage()}><Copy size={14} /> Duplicate</button>
-              <button onClick={() => store.addPage()}><Wand2 size={14} /> Add page</button>
+              <button onClick={() => store.duplicatePage()}><VellumIcon name="duplicate" size={14} /> Duplicate</button>
+              <button onClick={() => store.addPage()}><VellumIcon name="magic" size={14} /> Add page</button>
               <button onClick={() => store.deletePage()} disabled={design.pages.length <= 1} className="danger">
-                <Trash2 size={14} /> Delete
+                <VellumIcon name="trash" size={14} /> Delete
               </button>
             </div>
             <div className="insp-hint" style={{ marginTop: 12 }}>
@@ -229,7 +230,7 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
         <div className="insp-scroll">
           <div className="insp-selection-head">
             <div className="insp-sel-type">
-              {single ? typeIcon(single) : <Sparkles size={14} />}
+              {single ? typeIcon(single) : <VellumIcon name="spark" size={14} />}
               <div>
                 <strong>{single ? single.name : `${selected.length} elements`}</strong>
                 <span>{single ? single.type : 'Multiple selection'}</span>
@@ -237,12 +238,12 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
             </div>
             <div className="insp-sel-actions">
               <button onClick={store.toggleHidden} title="Show / hide">
-                {selected.some(e => !e.hidden) ? <Eye size={14} /> : <EyeOff size={14} />}
+                {selected.some(e => !e.hidden) ? <VellumIcon name="eye" size={14} /> : <VellumIcon name="eyeOff" size={14} />}
               </button>
               <button onClick={store.toggleLock} title={selected.every(e => e.locked) ? 'Unlock' : 'Lock'}>
-                {selected.every(e => e.locked) ? <Lock size={14} /> : <LockOpen size={14} />}
+                {selected.every(e => e.locked) ? <VellumIcon name="lock" size={14} /> : <VellumIcon name="unlock" size={14} />}
               </button>
-              <button onClick={store.deleteSelected} title="Delete" className="danger"><Trash2 size={14} /></button>
+              <button onClick={store.deleteSelected} title="Delete" className="danger"><VellumIcon name="trash" size={14} /></button>
             </div>
           </div>
 
@@ -292,9 +293,9 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                 <Segmented
                   value={text.align}
                   options={[
-                    { value: 'left', label: <AlignLeft size={14} /> },
-                    { value: 'center', label: <AlignCenter size={14} /> },
-                    { value: 'right', label: <AlignRight size={14} /> },
+                    { value: 'left', label: <VellumIcon name="alignLeft" size={14} /> },
+                    { value: 'center', label: <VellumIcon name="alignCenter" size={14} /> },
+                    { value: 'right', label: <VellumIcon name="alignRight" size={14} /> },
                   ]}
                   onChange={v => patch({ align: v } as Partial<TextElement>)}
                 />
@@ -379,27 +380,27 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
 
           <InspectorSection title="Arrange">
             <div className="insp-arrange">
-              <button onClick={() => store.reorder('front')} title="Bring to front"><ChevronsUp size={15} /></button>
-              <button onClick={() => store.reorder('forward')} title="Bring forward"><ChevronUp size={15} /></button>
-              <button onClick={() => store.reorder('backward')} title="Send backward"><ChevronDown size={15} /></button>
-              <button onClick={() => store.reorder('back')} title="Send to back"><ChevronsDown size={15} /></button>
+              <button onClick={() => store.reorder('front')} title="Bring to front"><VellumIcon name="chevronsUp" size={15} /></button>
+              <button onClick={() => store.reorder('forward')} title="Bring forward"><VellumIcon name="chevronUp" size={15} /></button>
+              <button onClick={() => store.reorder('backward')} title="Send backward"><VellumIcon name="chevronDown" size={15} /></button>
+              <button onClick={() => store.reorder('back')} title="Send to back"><VellumIcon name="chevronsDown" size={15} /></button>
             </div>
             <div className="insp-align">
-              <button onClick={() => store.align('left')} title="Align left"><AlignHorizontalJustifyStart size={15} /></button>
-              <button onClick={() => store.align('hcenter')} title="Centre horizontally"><AlignHorizontalJustifyCenter size={15} /></button>
-              <button onClick={() => store.align('right')} title="Align right"><AlignHorizontalJustifyEnd size={15} /></button>
-              <button onClick={() => store.align('top')} title="Align top"><AlignVerticalJustifyStart size={15} /></button>
-              <button onClick={() => store.align('vcenter')} title="Centre vertically"><AlignVerticalJustifyCenter size={15} /></button>
-              <button onClick={() => store.align('bottom')} title="Align bottom"><AlignVerticalJustifyEnd size={15} /></button>
+              <button onClick={() => store.align('left')} title="Align left"><VellumIcon name="alignHorizontalStart" size={15} /></button>
+              <button onClick={() => store.align('hcenter')} title="Centre horizontally"><VellumIcon name="alignHorizontalCenter" size={15} /></button>
+              <button onClick={() => store.align('right')} title="Align right"><VellumIcon name="alignHorizontalEnd" size={15} /></button>
+              <button onClick={() => store.align('top')} title="Align top"><VellumIcon name="alignVerticalStart" size={15} /></button>
+              <button onClick={() => store.align('vcenter')} title="Centre vertically"><VellumIcon name="alignVerticalCenter" size={15} /></button>
+              <button onClick={() => store.align('bottom')} title="Align bottom"><VellumIcon name="alignVerticalEnd" size={15} /></button>
             </div>
             {selected.length >= 3 && (
               <div className="insp-align" style={{ marginTop: 6 }}>
-                <button onClick={() => store.distribute('h')} title="Distribute horizontally"><AlignHorizontalSpaceBetween size={15} /></button>
-                <button onClick={() => store.distribute('v')} title="Distribute vertically"><AlignVerticalSpaceBetween size={15} /></button>
+                <button onClick={() => store.distribute('h')} title="Distribute horizontally"><VellumIcon name="distributeH" size={15} /></button>
+                <button onClick={() => store.distribute('v')} title="Distribute vertically"><VellumIcon name="distributeV" size={15} /></button>
               </div>
             )}
             <div className="insp-duo">
-              <button className="btn btn-secondary btn-sm" onClick={() => store.duplicateSelected()}><Copy size={13} /> Duplicate</button>
+              <button className="btn btn-secondary btn-sm" onClick={() => store.duplicateSelected()}><VellumIcon name="duplicate" size={13} /> Duplicate</button>
               <button className="btn btn-secondary btn-sm" onClick={() => store.centerOnPage()}>Centre on page</button>
             </div>
           </InspectorSection>
@@ -433,7 +434,7 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                   title={c}
                 />
               ))}
-              <button className="insp-brand-edit" onClick={onOpenBrand} title="Edit brand kit"><Palette size={12} /></button>
+              <button className="insp-brand-edit" onClick={onOpenBrand} title="Edit brand kit"><VellumIcon name="palette" size={12} /></button>
             </div>
           </div>
         </div>

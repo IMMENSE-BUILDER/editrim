@@ -1,13 +1,5 @@
 import { useEffect, useState } from 'react';
-import type { LucideIcon } from 'lucide-react';
-import {
-  AlignCenter, AlignLeft, AlignRight, AlignVerticalJustifyCenter,
-  AlignVerticalJustifyEnd, AlignVerticalJustifyStart, BringToFront,
-  ChevronDown, ChevronRight, ChevronUp, ClipboardPaste, Component,
-  Copy, CopyPlus, Download, Languages, Layers, Lock, LockOpen,
-  MessageSquare, PaintBucket, Paintbrush, SendToBack, Sparkles, Trash2,
-  Ungroup, Wand2,
-} from 'lucide-react';
+import { VellumIcon, type VellumIconName } from '../components/VellumIcon';
 import type { EditorStore } from './useEditor';
 import type { Point } from '../lib/types';
 
@@ -19,12 +11,12 @@ export type CanvasMenuState = {
   pagePoint?: Point;
 };
 
-type IconType = LucideIcon;
+type IconType = VellumIconName;
 
 function Row({
-  icon: Icon, label, shortcut, onClick, disabled, danger, submenu, active, onEnter,
+  icon, label, shortcut, onClick, disabled, danger, submenu, active, onEnter,
 }: {
-  icon: IconType;
+  icon: VellumIconName;
   label: string;
   shortcut?: string;
   onClick: () => void;
@@ -43,10 +35,10 @@ function Row({
       aria-haspopup={submenu ? 'menu' : undefined}
       aria-expanded={submenu ? active : undefined}
     >
-      <span className="cv-menu-icon"><Icon size={16} /></span>
+      <span className="cv-menu-icon"><VellumIcon name={icon} size={16} /></span>
       <span className="cv-menu-label">{label}</span>
       {shortcut && <span className="cv-menu-key">{shortcut}</span>}
-      {submenu && <ChevronRight size={14} className="cv-menu-chev" />}
+      {submenu && <VellumIcon name="chevronRight" size={14} className="cv-menu-chev" />}
     </button>
   );
 }
@@ -142,31 +134,31 @@ export function CanvasContextMenu({
       >
         {menu.kind === 'page' ? (
           <>
-            <Row icon={ClipboardPaste} label="Paste" shortcut="Ctrl+V" disabled={!hasClipboard} onClick={act(() => onPaste(menu.pagePoint))} />
-            <Row icon={Layers} label="Select all" shortcut="Ctrl+A" onClick={act(store.selectAll)} />
+            <Row icon="clipboard" label="Paste" shortcut="Ctrl+V" disabled={!hasClipboard} onClick={act(() => onPaste(menu.pagePoint))} />
+            <Row icon="layers" label="Select all" shortcut="Ctrl+A" onClick={act(store.selectAll)} />
             <div className="cv-menu-sep" />
-            <Row icon={CopyPlus} label="Add page" onClick={act(onAddPage)} />
-            <Row icon={Copy} label="Duplicate page" onClick={act(onDuplicatePage)} />
-            <Row icon={Component} label="Resize canvas" onClick={act(onResize)} />
-            <Row icon={PaintBucket} label="Page background" onClick={act(onOpenBackground)} />
-            <Row icon={MessageSquare} label="Comment here" onClick={act(onComment)} />
+            <Row icon="page" label="Add page" onClick={act(onAddPage)} />
+            <Row icon="duplicate" label="Duplicate page" onClick={act(onDuplicatePage)} />
+            <Row icon="component" label="Resize canvas" onClick={act(onResize)} />
+            <Row icon="paintBucket" label="Page background" onClick={act(onOpenBackground)} />
+            <Row icon="comment" label="Comment here" onClick={act(onComment)} />
             <div className="cv-menu-sep" />
-            <Row icon={Sparkles} label="Fit canvas" shortcut="Ctrl+Shift+1" onClick={act(onFit)} />
+            <Row icon="fit" label="Fit canvas" shortcut="Ctrl+Shift+1" onClick={act(onFit)} />
           </>
         ) : (
           <>
-            <Row icon={Copy} label="Copy" shortcut="Ctrl+C" onClick={act(onCopy)} />
-            <Row icon={Paintbrush} label="Copy style" shortcut="Ctrl+Alt+C" onClick={act(() => onCopyStyle(menu.elementId))} />
-            {styleLabel && <Row icon={Paintbrush} label={`Paste ${styleLabel}`} shortcut="Ctrl+Alt+V" onClick={act(onPasteStyle)} />}
-            <Row icon={ClipboardPaste} label="Paste" shortcut="Ctrl+V" disabled={!hasClipboard} onClick={act(() => onPaste())} />
-            <Row icon={CopyPlus} label="Duplicate" shortcut="Ctrl+D" onClick={act(store.duplicateSelected)} disabled={locked.length > 0} />
-            <Row icon={Trash2} label="Delete" shortcut="Del" onClick={act(store.deleteSelected)} disabled={!canEdit} danger />
+            <Row icon="copy" label="Copy" shortcut="Ctrl+C" onClick={act(onCopy)} />
+            <Row icon="paintbrush" label="Copy style" shortcut="Ctrl+Alt+C" onClick={act(() => onCopyStyle(menu.elementId))} />
+            {styleLabel && <Row icon="paintbrush" label={`Paste ${styleLabel}`} shortcut="Ctrl+Alt+V" onClick={act(onPasteStyle)} />}
+            <Row icon="clipboard" label="Paste" shortcut="Ctrl+V" disabled={!hasClipboard} onClick={act(() => onPaste())} />
+            <Row icon="duplicate" label="Duplicate" shortcut="Ctrl+D" onClick={act(store.duplicateSelected)} disabled={locked.length > 0} />
+            <Row icon="trash" label="Delete" shortcut="Del" onClick={act(store.deleteSelected)} disabled={!canEdit} danger />
 
             <div className="cv-menu-sep" />
 
             <div className="cv-menu-subwrap" onPointerEnter={() => setSub('layer')}>
               <Row
-                icon={Layers}
+                icon="layers"
                 label="Layer"
                 submenu
                 active={sub === 'layer'}
@@ -176,17 +168,17 @@ export function CanvasContextMenu({
               />
               {sub === 'layer' && (
                 <div className={`cv-menu-sub ${flip ? 'is-flip' : ''}`} role="menu">
-                  <Row icon={BringToFront} label="Bring to front" shortcut="Ctrl+Alt+]" onClick={act(() => store.reorder('front'))} />
-                  <Row icon={ChevronUp} label="Bring forward" shortcut="Ctrl+]" onClick={act(() => store.reorder('forward'))} />
-                  <Row icon={ChevronDown} label="Send backward" shortcut="Ctrl+[" onClick={act(() => store.reorder('backward'))} />
-                  <Row icon={SendToBack} label="Send to back" shortcut="Ctrl+Alt+[" onClick={act(() => store.reorder('back'))} />
+                  <Row icon="layerFront" label="Bring to front" shortcut="Ctrl+Alt+]" onClick={act(() => store.reorder('front'))} />
+                  <Row icon="chevronUp" label="Bring forward" shortcut="Ctrl+]" onClick={act(() => store.reorder('forward'))} />
+                  <Row icon="chevronDown" label="Send backward" shortcut="Ctrl+[" onClick={act(() => store.reorder('backward'))} />
+                  <Row icon="layerBack" label="Send to back" shortcut="Ctrl+Alt+[" onClick={act(() => store.reorder('back'))} />
                 </div>
               )}
             </div>
 
             <div className="cv-menu-subwrap" onPointerEnter={() => setSub('align')}>
               <Row
-                icon={AlignCenter}
+                icon="alignCenter"
                 label="Align to page"
                 submenu
                 active={sub === 'align'}
@@ -196,12 +188,12 @@ export function CanvasContextMenu({
               />
               {sub === 'align' && (
                 <div className={`cv-menu-sub ${flip ? 'is-flip' : ''}`} role="menu">
-                  <Row icon={AlignLeft} label="Align left" onClick={act(() => store.align('left', 'page'))} />
-                  <Row icon={AlignCenter} label="Center horizontally" onClick={act(() => store.align('hcenter', 'page'))} />
-                  <Row icon={AlignRight} label="Align right" onClick={act(() => store.align('right', 'page'))} />
-                  <Row icon={AlignVerticalJustifyStart} label="Align top" onClick={act(() => store.align('top', 'page'))} />
-                  <Row icon={AlignVerticalJustifyCenter} label="Center vertically" onClick={act(() => store.align('vcenter', 'page'))} />
-                  <Row icon={AlignVerticalJustifyEnd} label="Align bottom" onClick={act(() => store.align('bottom', 'page'))} />
+                  <Row icon="alignLeft" label="Align left" onClick={act(() => store.align('left', 'page'))} />
+                  <Row icon="alignCenter" label="Center horizontally" onClick={act(() => store.align('hcenter', 'page'))} />
+                  <Row icon="alignRight" label="Align right" onClick={act(() => store.align('right', 'page'))} />
+                  <Row icon="alignTop" label="Align top" onClick={act(() => store.align('top', 'page'))} />
+                  <Row icon="alignMiddle" label="Center vertically" onClick={act(() => store.align('vcenter', 'page'))} />
+                  <Row icon="alignBottom" label="Align bottom" onClick={act(() => store.align('bottom', 'page'))} />
                 </div>
               )}
             </div>
@@ -209,16 +201,16 @@ export function CanvasContextMenu({
             <div className="cv-menu-sep" />
 
             {anyGrouped ? (
-              <Row icon={Ungroup} label="Ungroup" shortcut="Ctrl+Shift+G" onClick={act(store.ungroupSelected)} />
+              <Row icon="ungroup" label="Ungroup" shortcut="Ctrl+Shift+G" onClick={act(store.ungroupSelected)} />
             ) : (
-              <Row icon={Layers} label="Group" shortcut="Ctrl+G" onClick={act(store.groupSelected)} disabled={selected.length < 2} />
+              <Row icon="group" label="Group" shortcut="Ctrl+G" onClick={act(store.groupSelected)} disabled={selected.length < 2} />
             )}
-            <Row icon={Component} label="Create component" shortcut="Ctrl+Alt+K" onClick={act(onCreateComponent)} />
-            <Row icon={MessageSquare} label="Comment" shortcut="Ctrl+Alt+N" onClick={act(onComment)} />
+            <Row icon="component" label="Create component" shortcut="Ctrl+Alt+K" onClick={act(onCreateComponent)} />
+            <Row icon="comment" label="Comment" shortcut="Ctrl+Alt+N" onClick={act(onComment)} />
 
             <div className="cv-menu-subwrap" onPointerEnter={() => setSub('lock')}>
               <Row
-                icon={Lock}
+                icon="lock"
                 label="Lock"
                 submenu
                 active={sub === 'lock'}
@@ -227,25 +219,25 @@ export function CanvasContextMenu({
               />
               {sub === 'lock' && (
                 <div className={`cv-menu-sub ${flip ? 'is-flip' : ''}`} role="menu">
-                  <Row icon={Lock} label="Lock selection" onClick={act(() => store.setLocked(true))} disabled={allLocked} />
-                  <Row icon={LockOpen} label="Unlock selection" onClick={act(() => store.setLocked(false))} disabled={locked.length === 0} />
+                  <Row icon="lock" label="Lock selection" onClick={act(() => store.setLocked(true))} disabled={allLocked} />
+                  <Row icon="unlock" label="Unlock selection" onClick={act(() => store.setLocked(false))} disabled={locked.length === 0} />
                   <div className="cv-menu-sep" />
-                  <Row icon={Lock} label="Lock all on page" onClick={act(() => store.lockAllOnPage(true))} />
-                  <Row icon={LockOpen} label="Unlock all on page" onClick={act(() => store.lockAllOnPage(false))} />
+                  <Row icon="lock" label="Lock all on page" onClick={act(() => store.lockAllOnPage(true))} />
+                  <Row icon="unlock" label="Unlock all on page" onClick={act(() => store.lockAllOnPage(false))} />
                 </div>
               )}
             </div>
 
             <div className="cv-menu-sep" />
 
-            <Row icon={PaintBucket} label="Apply colors to page" onClick={act(onApplyColors)} />
-            <Row icon={Download} label="Download selection" onClick={act(onDownloadSelection)} />
+            <Row icon="paintBucket" label="Apply colors to page" onClick={act(onApplyColors)} />
+            <Row icon="download" label="Download selection" onClick={act(onDownloadSelection)} />
 
             <div className="cv-menu-sep" />
 
-            <Row icon={Wand2} label="Magic Write" onClick={act(onMagicWrite)} />
+            <Row icon="magic" label="Magic Write" onClick={act(onMagicWrite)} />
             <Row
-              icon={Languages}
+              icon="language"
               label="Translate text"
               disabled={!textLayers.some(e => !e.locked)}
               onClick={act(onTranslate)}

@@ -115,7 +115,7 @@ export function FormatGlyph({
 }) {
   const meta = formatVisual(formatId ?? name);
   const Icon = meta.icon;
-  const iconSize = size === 'micro' ? 9 : size === 'xs' ? 12 : size === 'sm' ? 15 : size === 'lg' ? 22 : 18;
+  const iconSize = size === 'micro' ? 10 : size === 'xs' ? 12 : size === 'sm' ? 15 : size === 'lg' ? 22 : 18;
   const marker = ratio && ratio !== 1
     ? (ratio > 1 ? { width: 11, height: 7 } : { width: 5, height: 11 })
     : { width: 8, height: 8 };

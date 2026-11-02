@@ -19,6 +19,7 @@ import { useToast } from '../components/Toast';
 import { FONTS } from '../lib/fonts';
 import { deleteComponent, listComponents, onComponentsChange, type SavedComponent } from '../lib/components';
 import { AiPanel } from './AiPanel';
+import { VellumIcon } from '../components/VellumIcon';
 
 export type PanelTab = 'templates' | 'ai' | 'elements' | 'text' | 'uploads' | 'background' | 'brand';
 
@@ -39,7 +40,7 @@ function PanelHead({ title, onClose, children }: { title: string; onClose: () =>
     <div className="lp-head">
       <h3>{title}</h3>
       {children}
-      <button className="lp-close" onClick={onClose} aria-label="Close panel"><X size={16} /></button>
+      <button className="lp-close" onClick={onClose} aria-label="Close panel"><VellumIcon name="close" size={16} /></button>
     </div>
   );
 }
@@ -90,8 +91,8 @@ export function LeftPanel({
         <PanelHead title="Start from a layout" onClose={onClose} />
         <div className="lp-scroll">
           <Link to="/templates" className="lp-banner">
-            <span><LayoutTemplate size={16} /> Browse all templates</span>
-            <ArrowUpRight size={14} />
+            <span><VellumIcon name="templates" size={16} /> Browse all templates</span>
+            <VellumIcon name="arrowUpRight" size={14} />
           </Link>
           <p className="lp-lede">Drop a ready-made composition onto this page, then make it yours.</p>
           <div className="layout-grid">
@@ -164,7 +165,7 @@ export function LeftPanel({
                         title={`Delete ${component.name}`}
                         aria-label={`Delete ${component.name}`}
                       >
-                        <Trash2 size={13} />
+                        <VellumIcon name="trash" size={13} />
                       </button>
                     </div>
                   );
@@ -407,10 +408,10 @@ export function LeftPanel({
             toast('Brand fonts applied');
           }}
         >
-          <Check size={14} /> Apply brand fonts to selection
+          <VellumIcon name="check" size={14} /> Apply brand fonts to selection
         </button>
         <button className="lp-action" onClick={() => store.setBackground({ kind: 'solid', color: brand.colors[1] ?? '#F4F1EA' })}>
-          <Palette size={14} /> Use brand background
+          <VellumIcon name="palette" size={14} /> Use brand background
         </button>
       </div>
     </div>
@@ -484,7 +485,7 @@ function UploadsPanel({ store, onClose }: { store: EditorStore; onClose: () => v
           tabIndex={0}
           onKeyDown={e => e.key === 'Enter' && inputRef.current?.click()}
         >
-          <Upload size={20} />
+          <VellumIcon name="upload" size={20} />
           <b>{busy ? 'Processing…' : 'Drop images here'}</b>
           <span>or click to choose · JPG, PNG, WebP, GIF</span>
         </div>
@@ -515,7 +516,7 @@ function UploadsPanel({ store, onClose }: { store: EditorStore; onClose: () => v
                       toast('Image removed');
                     }}
                   >
-                    <Trash2 size={12} />
+                    <VellumIcon name="trash" size={12} />
                   </button>
                 </div>
               ))}
@@ -620,7 +621,7 @@ function BackgroundControls({ store, brand, toast }: { store: EditorStore; brand
             ))}
           </div>
           <button className="lp-action" onClick={() => fileRef.current?.click()} disabled={busy}>
-            <ImagePlus size={14} /> {busy ? 'Uploading…' : 'Upload your own photo'}
+            <VellumIcon name="image" size={14} /> {busy ? 'Uploading…' : 'Upload your own photo'}
           </button>
           <input ref={fileRef} type="file" accept="image/*" hidden onChange={e => { if (e.target.files?.[0]) uploadBg(e.target.files[0]); e.target.value = ''; }} />
           <div className="lp-section-title">Overlay</div>
@@ -632,7 +633,7 @@ function BackgroundControls({ store, brand, toast }: { store: EditorStore; brand
 
       <div className="lp-section-title">Reset</div>
       <button className="lp-action" onClick={() => store.setBackground({ kind: 'solid', color: '#FFFFFF' })}>
-        <Palette size={14} /> White background
+        <VellumIcon name="palette" size={14} /> White background
       </button>
     </div>
   );

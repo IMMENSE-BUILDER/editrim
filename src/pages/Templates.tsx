@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowUpRight, Search, Shuffle, Sparkles } from 'lucide-react';
+
 import { SiteHeader, SiteFooter } from '../components/SiteChrome';
 import { TemplateCard } from '../components/TemplateCard';
+import { VellumIcon } from '../components/VellumIcon';
+import { FormatGlyph } from '../components/FormatGlyph';
 import { TEMPLATES, TEMPLATE_CATEGORIES } from '../lib/templates';
 
 export default function Templates() {
@@ -58,12 +60,12 @@ export default function Templates() {
                 aria-selected={category === c}
                 role="tab"
               >
-                {c}
+                <FormatGlyph name={c} size="micro" /> {c}
               </button>
             ))}
           </div>
           <div className="gallery-search">
-            <Search size={15} />
+            <VellumIcon name="search" size={15} />
             <input
               value={query}
               onChange={e => setQuery(e.target.value)}
@@ -105,10 +107,10 @@ export default function Templates() {
         </div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <button className="btn btn-secondary" onClick={surprise}>
-            <Shuffle size={15} /> Surprise me
+            <VellumIcon name="shuffle" size={15} /> Surprise me
           </button>
           <Link to="/editor/new" className="btn btn-primary">
-            Start from blank <ArrowUpRight size={16} />
+            Start from blank <VellumIcon name="arrowUpRight" size={16} />
           </Link>
         </div>
       </div>

@@ -5,6 +5,7 @@ import {
   Palette, PenLine, Play, ScanEye, Sparkles, Type, Wand2, Zap, LayoutGrid, MonitorPlay, Images,
 } from 'lucide-react';
 import { SiteHeader, SiteFooter } from '../components/SiteChrome';
+import { VellumIcon, type VellumIconName } from '../components/VellumIcon';
 import { PagePreview } from '../components/PagePreview';
 import { TemplateCard } from '../components/TemplateCard';
 import { TEMPLATES, getTemplate } from '../lib/templates';
@@ -101,7 +102,7 @@ export default function Landing() {
             <Link to="/#ai" className="hero-badge">
               <span className="chip chip-lime">New</span>
               AI Studio is here
-              <ArrowRight size={13} />
+              <VellumIcon name="arrowRight" size={13} />
             </Link>
             <h1 className="hero-title">
               Make it look<br />
@@ -115,16 +116,16 @@ export default function Landing() {
             <div className="hero-ctas">
               <Link to="/dashboard" className="btn btn-cobalt btn-lg">
                 Start designing
-                <ArrowUpRight size={17} />
+                <VellumIcon name="arrowUpRight" size={17} />
               </Link>
               <Link to="/templates" className="btn btn-secondary btn-lg">
                 Browse templates
               </Link>
             </div>
             <div className="hero-meta">
-              <span><Check size={14} /> Free forever</span>
-              <span><Check size={14} /> No sign-up</span>
-              <span><Check size={14} /> PNG, JPG &amp; PDF</span>
+              <span><VellumIcon name="check" size={14} /> Free forever</span>
+              <span><VellumIcon name="check" size={14} /> No sign-up</span>
+              <span><VellumIcon name="check" size={14} /> PNG, JPG &amp; PDF</span>
             </div>
           </div>
 
@@ -148,7 +149,7 @@ export default function Landing() {
               Snap to center
             </div>
             <div className="hero-float-chip hero-chip-type">
-              <Type size={15} /> 15 fonts, zero fuss
+              <VellumIcon name="type" size={15} /> 15 fonts, zero fuss
             </div>
           </div>
         </div>
@@ -207,7 +208,7 @@ export default function Landing() {
             <h2>Start here.<br /><span className="serif-italic">Make it yours.</span></h2>
           </div>
           <Link to="/templates" className="section-link">
-            All {TEMPLATES.length} templates <ArrowUpRight size={16} />
+            All {TEMPLATES.length} templates <VellumIcon name="arrowUpRight" size={16} />
           </Link>
         </div>
         <div className="featured-grid">
@@ -233,13 +234,13 @@ export default function Landing() {
             that gets out of the way. Familiar enough to use immediately, deep enough to keep going.
           </p>
           <ul className="check-list">
-            <li><Check size={15} /> Drag, resize and rotate with precision</li>
-            <li><Check size={15} /> Snap to edges, centres and other elements</li>
-            <li><Check size={15} /> 15 curated fonts, gradients and shadows</li>
-            <li><Check size={15} /> Undo, autosave and multi-page documents</li>
+            <li><VellumIcon name="check" size={15} /> Drag, resize and rotate with precision</li>
+            <li><VellumIcon name="check" size={15} /> Snap to edges, centres and other elements</li>
+            <li><VellumIcon name="check" size={15} /> 15 curated fonts, gradients and shadows</li>
+            <li><VellumIcon name="check" size={15} /> Undo, autosave and multi-page documents</li>
           </ul>
           <Link to="/editor/new" className="btn btn-primary" style={{ marginTop: 8 }}>
-            Open the editor <ArrowRight size={16} />
+            Open the editor <VellumIcon name="arrowRight" size={16} />
           </Link>
         </div>
 
@@ -252,8 +253,8 @@ export default function Landing() {
             </div>
             <div className="app-shot-body">
               <div className="app-shot-rail">
-                {[LayoutGrid, Type, Sparkles, Images, Palette].map((Icon, i) => (
-                  <span key={i} className={i === 3 ? 'active' : ''}><Icon size={15} /></span>
+                {(['templates', 'text', 'spark', 'image', 'palette'] as const).map((name, i) => (
+                  <span key={i} className={i === 3 ? 'active' : ''}><VellumIcon name={name} size={15} /></span>
                 ))}
               </div>
               <div className="app-shot-panel">
@@ -292,8 +293,8 @@ export default function Landing() {
               </div>
             </div>
           </div>
-          <div className="app-shot-chip app-shot-chip-one"><Zap size={14} /> Live snapping</div>
-          <div className="app-shot-chip app-shot-chip-two"><Download size={14} /> Export at 3×</div>
+          <div className="app-shot-chip app-shot-chip-one"><VellumIcon name="bolt" size={14} /> Live snapping</div>
+          <div className="app-shot-chip app-shot-chip-two"><VellumIcon name="download" size={14} /> Export at 3×</div>
         </div>
       </section>
 
@@ -309,17 +310,16 @@ export default function Landing() {
             </p>
             <div className="ai-capability-list">
               {[
-                { icon: Sparkles, title: 'AI design', body: 'A complete page from a brief — type, shapes and photo, all editable.' },
-                { icon: PenLine, title: 'AI writing', body: 'Generate, rewrite, shorten or expand copy in your brand voice.' },
-                { icon: Wand2, title: 'AI edits', body: 'Ask for a change and review the exact commands before they apply.' },
-                { icon: ImagePlus, title: 'AI illustrations', body: 'Flat vector artwork generated as safe, reusable SVG.' },
-                { icon: Languages, title: 'AI translation', body: 'Translate selected text into 16 languages without losing the layout.' },
-                { icon: ScanEye, title: 'AI review', body: 'An honest critique of hierarchy, contrast and legibility.' },
+                { icon: 'spark', title: 'AI design', body: 'A complete page from a brief — type, shapes and photo, all editable.' },
+                { icon: 'pencil', title: 'AI writing', body: 'Generate, rewrite, shorten or expand copy in your brand voice.' },
+                { icon: 'magic', title: 'AI edits', body: 'Ask for a change and review the exact commands before they apply.' },
+                { icon: 'image', title: 'AI illustrations', body: 'Flat vector artwork generated as safe, reusable SVG.' },
+                { icon: 'language', title: 'AI translation', body: 'Translate selected text into 16 languages without losing the layout.' },
+                { icon: 'scan', title: 'AI review', body: 'An honest critique of hierarchy, contrast and legibility.' },
               ].map(item => {
-                const Icon = item.icon;
                 return (
                   <div className="ai-capability" key={item.title}>
-                    <span><Icon size={15} /></span>
+                    <span><VellumIcon name={item.icon as VellumIconName} size={15} /></span>
                     <div><strong>{item.title}</strong><p>{item.body}</p></div>
                   </div>
                 );
@@ -327,7 +327,7 @@ export default function Landing() {
             </div>
             <div className="ai-section-actions">
               <Link to="/editor/new#ai" className="btn btn-cobalt">
-                Try AI Studio <ArrowUpRight size={16} />
+                Try AI Studio <VellumIcon name="arrowUpRight" size={16} />
               </Link>
               <span className="ai-powered"><span /> MiMo V2.6 Flash · Vercel AI Gateway</span>
             </div>
@@ -335,13 +335,13 @@ export default function Landing() {
 
           <div className="ai-demo">
             <div className="ai-demo-top">
-              <span className="ai-demo-brand"><Sparkles size={13} /> AI Studio</span>
+              <span className="ai-demo-brand"><VellumIcon name="spark" size={13} /> AI Studio</span>
               <span>WRITE</span>
             </div>
             <div className="ai-demo-prompt">
               <span className="ai-demo-label">YOUR BRIEF</span>
               <p>Write a launch line for a slow coffee brand called Bruma. Warm, editorial, confident.</p>
-              <div className="ai-demo-cta"><Sparkles size={13} /> Generate</div>
+              <div className="ai-demo-cta"><VellumIcon name="spark" size={13} /> Generate</div>
             </div>
             <div className="ai-demo-output">
               <div className="ai-demo-output-head">
@@ -354,7 +354,7 @@ export default function Landing() {
               </div>
             </div>
             <div className="ai-demo-foot">
-              <span><Check size={11} /> Editable before it lands</span>
+              <span><VellumIcon name="check" size={11} /> Editable before it lands</span>
               <span>MiMo V2.6 Flash</span>
             </div>
           </div>
@@ -393,7 +393,7 @@ export default function Landing() {
                 <strong>{current.note}</strong>
                 <span>{current.size} px</span>
               </div>
-              <div className="formats-badge"><Zap size={15} /> One-click resize</div>
+              <div className="formats-badge"><VellumIcon name="bolt" size={15} /> One-click resize</div>
             </div>
           </div>
         </div>
@@ -407,7 +407,7 @@ export default function Landing() {
         </div>
         <div className="bento">
           <div className="bento-card bento-brand">
-            <div className="bento-icon"><Palette size={18} /></div>
+            <div className="bento-icon"><VellumIcon name="palette" size={18} /></div>
             <h3>Your brand, on tap</h3>
             <p>Save colours and fonts once. Apply them to any element from the brand panel.</p>
             <div className="bento-swatches">
@@ -419,7 +419,7 @@ export default function Landing() {
             </div>
           </div>
           <div className="bento-card bento-multipage">
-            <div className="bento-icon"><Layers size={18} /></div>
+            <div className="bento-icon"><VellumIcon name="layers" size={18} /></div>
             <h3>Real multi-page</h3>
             <p>Build a whole deck, not one lonely slide. Reorder, duplicate and present pages.</p>
             <div className="bento-pages">
@@ -431,16 +431,16 @@ export default function Landing() {
             </div>
           </div>
           <div className="bento-card bento-present">
-            <div className="bento-icon light"><MonitorPlay size={18} /></div>
+            <div className="bento-icon light"><VellumIcon name="present" size={18} /></div>
             <h3>Present without leaving</h3>
             <p>Full-screen, keyboard-driven presentation mode. No export, no PowerPoint.</p>
             <div className="bento-present-screen">
               <PagePreview page={pitch.pages[0]} size={pitch.size} />
-              <span className="bento-play"><Play size={14} fill="currentColor" /></span>
+              <span className="bento-play"><VellumIcon name="play" size={14} fill="currentColor" /></span>
             </div>
           </div>
           <div className="bento-card bento-fonts">
-            <div className="bento-icon"><Type size={18} /></div>
+            <div className="bento-icon"><VellumIcon name="type" size={18} /></div>
             <h3>Type that behaves</h3>
             <p>Fifteen fonts, real weight and spacing controls, and text that wraps like it should.</p>
             <div className="bento-font-list">
@@ -452,7 +452,7 @@ export default function Landing() {
             </div>
           </div>
           <div className="bento-card bento-private">
-            <div className="bento-icon"><Lock size={18} /></div>
+            <div className="bento-icon"><VellumIcon name="lock" size={18} /></div>
             <h3>Yours, privately</h3>
             <p>Designs live in your browser, not on our servers. No account, no tracking, no upload.</p>
             <div className="bento-private-tags">
@@ -461,7 +461,7 @@ export default function Landing() {
             <div className="bento-private-badge"><span /><b>Local only</b></div>
           </div>
           <div className="bento-card bento-export">
-            <div className="bento-icon"><Download size={18} /></div>
+            <div className="bento-icon"><VellumIcon name="download" size={18} /></div>
             <h3>Export-ready</h3>
             <p>PNG, JPG and PDF at up to 3× resolution. Transparent background when you need it.</p>
             <div className="bento-export-chips">
@@ -520,18 +520,18 @@ export default function Landing() {
             <h2>Free. Actually free.</h2>
             <p>Every feature, every template, every export. No trial timer, no credit card, no “Pro” badge on the good fonts.</p>
             <Link to="/dashboard" className="btn btn-lime btn-lg">
-              Start designing <ArrowUpRight size={17} />
+              Start designing <VellumIcon name="arrowUpRight" size={17} />
             </Link>
             <span className="pricing-small">No account needed. Nothing to cancel.</span>
           </div>
           <div className="pricing-list">
-            <div className="pricing-row"><span>Unlimited designs</span><Check size={16} /></div>
-            <div className="pricing-row"><span>All 20 templates</span><Check size={16} /></div>
-            <div className="pricing-row"><span>Multi-page documents</span><Check size={16} /></div>
-            <div className="pricing-row"><span>PNG, JPG &amp; PDF export</span><Check size={16} /></div>
-            <div className="pricing-row"><span>Brand kits</span><Check size={16} /></div>
-            <div className="pricing-row"><span>AI writing, design &amp; review</span><Check size={16} /></div>
-            <div className="pricing-row"><span>Presentation mode</span><Check size={16} /></div>
+            <div className="pricing-row"><span>Unlimited designs</span><VellumIcon name="check" size={16} /></div>
+            <div className="pricing-row"><span>All 20 templates</span><VellumIcon name="check" size={16} /></div>
+            <div className="pricing-row"><span>Multi-page documents</span><VellumIcon name="check" size={16} /></div>
+            <div className="pricing-row"><span>PNG, JPG &amp; PDF export</span><VellumIcon name="check" size={16} /></div>
+            <div className="pricing-row"><span>Brand kits</span><VellumIcon name="check" size={16} /></div>
+            <div className="pricing-row"><span>AI writing, design &amp; review</span><VellumIcon name="check" size={16} /></div>
+            <div className="pricing-row"><span>Presentation mode</span><VellumIcon name="check" size={16} /></div>
             <div className="pricing-row muted"><span>Team collaboration</span><span className="chip">Later</span></div>
             <div className="pricing-row muted"><span>Cloud sync</span><span className="chip">Later</span></div>
           </div>
@@ -549,7 +549,7 @@ export default function Landing() {
             <div className={`faq-item ${faqOpen === i ? 'open' : ''}`} key={f.q}>
               <button onClick={() => setFaqOpen(faqOpen === i ? null : i)} aria-expanded={faqOpen === i}>
                 <span>{f.q}</span>
-                <ChevronDown size={18} />
+                <VellumIcon name="chevronDown" size={18} />
               </button>
               <div className="faq-answer"><p>{f.a}</p></div>
             </div>
@@ -564,10 +564,10 @@ export default function Landing() {
           <h2>Your next design<br />is <span className="serif-italic">already late.</span></h2>
           <div className="final-cta-actions">
             <Link to="/editor/new" className="btn btn-lime btn-lg">
-              Start from blank <ArrowUpRight size={17} />
+              Start from blank <VellumIcon name="arrowUpRight" size={17} />
             </Link>
             <Link to="/templates" className="btn final-btn-outline btn-lg">
-              Use a template <ArrowRight size={16} />
+              Use a template <VellumIcon name="arrowRight" size={16} />
             </Link>
           </div>
         </div>

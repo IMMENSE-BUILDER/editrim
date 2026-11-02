@@ -1,10 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  ArrowRight, ArrowUpRight, Clock, Copy, Download, FolderOpen, LayoutTemplate,
-  MoreHorizontal, Palette, Pencil, Plus, Search, Sparkles, Trash2, Wand2, X,
-} from 'lucide-react';
+
 import { Logo } from '../components/Brand';
+import { VellumIcon } from '../components/VellumIcon';
 import { NewDesignModal } from '../components/NewDesignModal';
 import { BrandKitModal } from '../components/BrandKitModal';
 import { Modal } from '../components/Modal';
@@ -125,13 +123,13 @@ export default function Dashboard() {
           <Logo size={32} tone="light" />
         </Link>
         <nav className="dash-nav">
-          <Link to="/dashboard" className="active"><FolderOpen size={17} /> Your designs</Link>
-          <Link to="/templates"><LayoutTemplate size={17} /> Templates</Link>
-          <Link to="/editor/new#ai"><Sparkles size={17} /> AI Studio</Link>
-          <button onClick={() => setBrandOpen(true)}><Palette size={17} /> Brand kit</button>
+          <Link to="/dashboard" className="active"><VellumIcon name="projects" size={17} /> Your designs</Link>
+          <Link to="/templates"><VellumIcon name="templates" size={17} /> Templates</Link>
+          <Link to="/editor/new#ai"><VellumIcon name="spark" size={17} /> AI Studio</Link>
+          <button onClick={() => setBrandOpen(true)}><VellumIcon name="palette" size={17} /> Brand kit</button>
         </nav>
         <button className="dash-new" onClick={() => setNewOpen(true)}>
-          <Plus size={17} /> New design
+          <VellumIcon name="plus" size={17} /> New design
         </button>
         <div className="dash-side-bottom">
           <div className="dash-storage">
@@ -141,7 +139,7 @@ export default function Dashboard() {
           </div>
           <div className="dash-side-note">
             <span>Vellum 1.0</span>
-            <a href="https://github.com/IMMENSE-BUILDER/vellum" target="_blank" rel="noreferrer">Source <ArrowUpRight size={11} /></a>
+            <a href="https://github.com/IMMENSE-BUILDER/vellum" target="_blank" rel="noreferrer">Source <VellumIcon name="arrowUpRight" size={11} /></a>
           </div>
         </div>
       </aside>
@@ -149,12 +147,12 @@ export default function Dashboard() {
       <main className="dash-main">
         <header className="dash-topbar">
           <div className="dash-search">
-            <Search size={16} />
+            <VellumIcon name="search" size={16} />
             <input value={query} onChange={e => setQuery(e.target.value)} placeholder="Search your designs" aria-label="Search your designs" />
-            {query && <button onClick={() => setQuery('')} aria-label="Clear search"><X size={14} /></button>}
+            {query && <button onClick={() => setQuery('')} aria-label="Clear search"><VellumIcon name="close" size={14} /></button>}
           </div>
           <div className="dash-top-actions">
-            <Link to="/templates" className="btn btn-ghost"><LayoutTemplate size={15} /> Templates</Link>
+            <Link to="/templates" className="btn btn-ghost"><VellumIcon name="templates" size={15} /> Templates</Link>
             <div className="dash-avatar" title="Local workspace">
               <span>V</span>
             </div>
@@ -170,10 +168,10 @@ export default function Dashboard() {
             </div>
             <div className="dash-heading-actions">
               <Link to="/editor/new#ai" className="btn btn-secondary dash-ai-btn">
-                <Sparkles size={15} /> AI Studio
+                <VellumIcon name="spark" size={15} /> AI Studio
               </Link>
               <button className="btn btn-cobalt" onClick={() => setNewOpen(true)}>
-                <Plus size={16} /> New design
+                <VellumIcon name="plus" size={16} /> New design
               </button>
             </div>
           </section>
@@ -186,7 +184,7 @@ export default function Dashboard() {
                   <b>{q.label}</b>
                   <small>{q.hint} · {q.w}×{q.h}</small>
                 </span>
-                <Plus size={15} className="quick-plus" />
+                <VellumIcon name="plus" size={15} className="quick-plus" />
               </button>
             ))}
           </section>
@@ -208,7 +206,7 @@ export default function Dashboard() {
                           <PagePreview page={design.pages[0]} size={design.size} />
                         </div>
                         <div className="design-hover">
-                          <span>Open in editor <ArrowUpRight size={13} /></span>
+                          <span>Open in editor <VellumIcon name="arrowUpRight" size={13} /></span>
                         </div>
                       </Link>
                       <div className="design-info">
@@ -224,16 +222,16 @@ export default function Dashboard() {
                             onClick={() => setMenuId(menuId === design.id ? null : design.id)}
                             aria-label={`Options for ${design.title}`}
                           >
-                            <MoreHorizontal size={17} />
+                            <VellumIcon name="more" size={17} />
                           </button>
                           {menuId === design.id && (
                             <div className="design-menu">
-                              <button onClick={() => { setMenuId(null); navigate(`/editor/${design.id}`); }}><Pencil size={14} /> Edit</button>
-                              <button onClick={() => openRename(design)}><Pencil size={14} /> Rename</button>
-                              <button onClick={() => onDuplicate(design)}><Copy size={14} /> Duplicate</button>
-                              <button onClick={() => onDownload(design)}><Download size={14} /> Download PNG</button>
-                              <button onClick={() => { setMenuId(null); navigate(`/present/${design.id}`); }}><LayoutTemplate size={14} /> Present</button>
-                              <button className="danger" onClick={() => { setDeleting(design); setMenuId(null); }}><Trash2 size={14} /> Delete</button>
+                              <button onClick={() => { setMenuId(null); navigate(`/editor/${design.id}`); }}><VellumIcon name="pencil" size={14} /> Edit</button>
+                              <button onClick={() => openRename(design)}><VellumIcon name="pencil" size={14} /> Rename</button>
+                              <button onClick={() => onDuplicate(design)}><VellumIcon name="duplicate" size={14} /> Duplicate</button>
+                              <button onClick={() => onDownload(design)}><VellumIcon name="download" size={14} /> Download PNG</button>
+                              <button onClick={() => { setMenuId(null); navigate(`/present/${design.id}`); }}><VellumIcon name="present" size={14} /> Present</button>
+                              <button className="danger" onClick={() => { setDeleting(design); setMenuId(null); }}><VellumIcon name="trash" size={14} /> Delete</button>
                             </div>
                           )}
                         </div>
@@ -242,7 +240,7 @@ export default function Dashboard() {
                   );
                 })}
                 <button className="design-card design-new-card" onClick={() => setNewOpen(true)}>
-                  <span className="design-new-icon"><Plus size={22} /></span>
+                  <span className="design-new-icon"><VellumIcon name="plus" size={22} /></span>
                   <span>Create a new design</span>
                   <small>Any size, blank or from a template</small>
                 </button>
@@ -254,7 +252,7 @@ export default function Dashboard() {
                 <div className="empty-card"><PagePreview page={TEMPLATES[0].pages[0]} size={TEMPLATES[0].size} /></div>
                 <div className="empty-card"><PagePreview page={TEMPLATES[6].pages[0]} size={TEMPLATES[6].size} /></div>
                 <div className="empty-card"><PagePreview page={TEMPLATES[8].pages[0]} size={TEMPLATES[8].size} /></div>
-                <span className="empty-spark"><Wand2 size={18} /></span>
+                <span className="empty-spark"><VellumIcon name="magic" size={18} /></span>
               </div>
               <h2>{query ? 'No designs match that search' : 'Your canvas is waiting'}</h2>
               <p>
@@ -263,7 +261,7 @@ export default function Dashboard() {
                   : 'Start from a blank canvas in any size, or borrow a layout from the template gallery. Everything autosaves as you work.'}
               </p>
               <div className="empty-actions">
-                <button className="btn btn-cobalt" onClick={() => setNewOpen(true)}><Plus size={16} /> New design</button>
+                <button className="btn btn-cobalt" onClick={() => setNewOpen(true)}><VellumIcon name="plus" size={16} /> New design</button>
                 <Link to="/templates" className="btn btn-secondary">Browse templates</Link>
               </div>
               <div className="empty-sizes">
@@ -280,7 +278,7 @@ export default function Dashboard() {
           <section className="dash-templates">
             <div className="designs-head">
               <h2>Or start from a template</h2>
-              <Link to="/templates" className="section-link">All templates <ArrowRight size={14} /></Link>
+              <Link to="/templates" className="section-link">All templates <VellumIcon name="arrowRight" size={14} /></Link>
             </div>
             <div className="dash-template-row">
               {TEMPLATES.slice(0, 5).map(t => (
@@ -294,7 +292,7 @@ export default function Dashboard() {
         </div>
 
         <button className="dash-brand-fab" onClick={() => setBrandOpen(true)}>
-          <Palette size={15} /> Brand kit
+          <VellumIcon name="palette" size={15} /> Brand kit
           <span>{brand.colors.length}</span>
         </button>
       </main>

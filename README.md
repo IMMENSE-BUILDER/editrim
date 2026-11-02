@@ -14,7 +14,8 @@ No account. No watermark. Your designs stay yours. AI runs through a serverless 
 - **59 canvas presets** plus custom dimensions up to 6000 × 6000.
 - **Canvas-style Home dashboard** at `/dashboard` — left rail with Create, Home, Projects, Templates, Brand, AI Studio, Print and More; a gradient “What will you design today?” hero; glowing universal search across designs, templates and actions; 13 creation shortcuts; Continue designing; Templates for you; and a full Projects view with rename, duplicate, download, present and delete.
 - **Functional starting points** — Presentation, Social media, Doc, Whiteboard, Upload, Custom size, Printables and Templates create real editable designs. Video, Sheet, Website and Magic Layers explain their honest scope instead of faking media tools. The Create modal is a **59-format design library** grouped into Social, Presentation, Print, Brand, Web and Docs, with search across every format.
-- **A real editor** — drag, resize, rotate, snap to guides, multi-select, group resize, align, distribute, layer, lock, hide, duplicate, copy/paste and undo/redo.
+- **A real editor** - drag, resize, rotate, snap to guides, multi-select, group resize, align, distribute, layer, lock, hide, duplicate, copy/paste and undo/redo.
+- **100-icon interface vocabulary** - one custom `VellumIcon` set covers navigation, actions, context menus, inspector controls, panels, present mode and every dialog; `FormatGlyph` gives all 59 formats their own tone, mark and aspect marker.
 - **Right-click canvas menu** — copy, copy/paste style, paste, duplicate and delete; Layer and Align-to-page submenus; group/ungroup; reusable components; local comment pins; lock controls; apply a palette from the selection to the page; download the selection as a transparent PNG; Magic Write and Translate powers.
 - **Typography** — 15 self-hosted fonts, weight, size, line-height, letter-spacing, alignment, uppercase, underline, highlight, outline and drop shadow.
 - **Shapes & graphics** — 12 vector shapes, lines, 30 line icons, nine built-in photos.
@@ -132,7 +133,7 @@ The app was tested end-to-end with Playwright against Chrome:
 
 ## Credits
 
-Templates and interface designed for this project. Photos via [Unsplash](https://unsplash.com). Fonts via [Fontsource](https://fontsource.org), plus [Geist Serif](https://vercel.com/font?type=serif) by Vercel under the SIL Open Font License (see `public/fonts/GeistSerif-LICENSE.txt`). Icons via [Lucide](https://lucide.dev). Built with React, Vite and Canvas 2D.
+Templates and interface designed for this project. Photos via [Unsplash](https://unsplash.com). Fonts via [Fontsource](https://fontsource.org), plus [Geist Serif](https://vercel.com/font?type=serif) by Vercel under the SIL Open Font License (see `public/fonts/GeistSerif-LICENSE.txt`). Design-content icons via [Lucide](https://lucide.dev); interface iconography is the custom Vellum set. Built with React, Vite and Canvas 2D.
 
 ## License
 
