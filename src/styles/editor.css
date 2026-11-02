@@ -1286,20 +1286,6 @@
   color: var(--muted) !important;
 }
 
-.cv-tip {
-  position: absolute;
-  right: 14px;
-  bottom: 20px;
-  z-index: 20;
-  font-size: 9.5px;
-  color: rgba(20, 19, 15, 0.48);
-  background: rgba(251, 250, 247, 0.7);
-  padding: 4px 8px;
-  border-radius: 5px;
-  pointer-events: none;
-  backdrop-filter: blur(4px);
-}
-
 /* ---------------- page strip ---------------- */
 .page-strip {
   flex: none;
@@ -2813,11 +2799,7 @@ input[type='range']::-moz-range-thumb {
     font-size: 8px;
   }
 
-  .cv-tip {
-    display: none;
-  }
-
-  .page-strip-info {
+    .page-strip-info {
     display: none;
   }
 

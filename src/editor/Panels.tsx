@@ -94,7 +94,6 @@ export function LeftPanel({
             <span><VellumIcon name="templates" size={16} /> Browse all templates</span>
             <VellumIcon name="arrowUpRight" size={14} />
           </Link>
-          <p className="lp-lede">Drop a ready-made composition onto this page, then make it yours.</p>
           <div className="layout-grid">
             {PAGE_LAYOUTS.map(layout => (
               <button
@@ -104,19 +103,15 @@ export function LeftPanel({
                   const result = layout.build(store.page, store.design.size, brand);
                   store.updatePage(p => ({ ...p, background: result.background, elements: [...p.elements, ...result.elements] }));
                   store.setSelectedIds(result.elements.map(e => e.id));
-                  toast('Layout added — now make it yours');
+                  toast('Layout added');
                 }}
               >
                 <div className={`layout-thumb lt-${layout.id}`}>
                   <span className="lt-a" /><span className="lt-b" /><span className="lt-c" /><span className="lt-d" />
                 </div>
                 <b>{layout.name}</b>
-                <small>{layout.description}</small>
               </button>
             ))}
-          </div>
-          <div className="lp-note">
-            Layouts adapt to <strong>{store.design.size.width} × {store.design.size.height}</strong>. Elements are added to this page; nothing is locked.
           </div>
         </div>
       </div>
@@ -233,10 +228,6 @@ export function LeftPanel({
               </button>
             ))}
           </div>
-
-          <div className="lp-note">
-            Photos are loaded from Unsplash. Everything else is drawn in the browser.
-          </div>
         </div>
       </div>
     );
@@ -317,7 +308,6 @@ export function LeftPanel({
               </button>
             ))}
           </div>
-          <div className="lp-note">Select text first to apply a brand font to it — or just click to add a new block.</div>
         </div>
       </div>
     );
@@ -374,7 +364,6 @@ export function LeftPanel({
             </button>
           ))}
         </div>
-        <div className="lp-note">Click a colour to apply it to the selection — or to the page background when nothing is selected.</div>
 
         <div className="lp-section-title">Type</div>
         {brand.fonts.map((f, i) => (
@@ -395,7 +384,6 @@ export function LeftPanel({
             <small>{i === 0 ? 'Heading' : 'Body'}</small>
           </button>
         ))}
-        <div className="lp-note">Brand kits live in this browser and are available in every design.</div>
 
         <div className="lp-section-title">Quick actions</div>
         <button
@@ -521,13 +509,8 @@ function UploadsPanel({ store, onClose }: { store: EditorStore; onClose: () => v
                 </div>
               ))}
             </div>
-            <div className="lp-note">Click an image to place it on the page. Uploads stay in this browser.</div>
           </>
-        ) : (
-          <div className="lp-note" style={{ marginTop: 20 }}>
-            Uploaded images are stored locally and never leave your device. They stay available across designs.
-          </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

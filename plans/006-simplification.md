@@ -41,6 +41,13 @@ Kept:
 - section headings, card metadata that identifies the thing, counts and actions
 - feature-scope explanations where they prevent false expectations
 
+## Templates and editor
+
+- Templates now opens with a plain **Templates** title and the working filters/search; the explanatory paragraph and eyebrow are gone.
+- The design editor no longer auto-toasts a tutorial, shows a pan/zoom hint over the canvas, or explains the page in the Templates panel.
+- Removed layout descriptions, the “adapts to / nothing is locked” note, upload/brand/colour/image notes, and the inspector’s double-click and selection hints.
+- The canvas keeps the real controls and the keyboard-shortcut button; the help copy now lives where help belongs.
+
 ## Implementation cleanup
 
 - Removed the CSS for deleted dropzone, quick-add, empty-library, library-tip, header-chip, stage-head, project-card, project-stats, shortcuts, tiny-badge and asset-note surfaces.
@@ -59,6 +66,6 @@ node scripts/polish-e2e.mjs       POLISH E2E OK
 node scripts/simplicity-e2e.mjs   SIMPLICITY E2E OK
 ```
 
-`simplicity-e2e.mjs` asserts that the removed copy does not return, that the video editor exposes only Media/Project panel headings, that no dropzone/quick-add/project-card/shortcut blocks exist, and that both routes fit at 1440 and 390.
+`simplicity-e2e.mjs` asserts that the removed copy does not return, that the video editor exposes only Media/Project panel headings, that Templates is a title-only browse screen, that the editor contains none of the removed tip/lede/note/hint blocks, and that all four routes fit at 1440 and 390.
 
 The video E2E continues to verify import, playback, text, image and audio editing, undo/redo, trim, split, persistence, WebM export and the mobile drawer layout.

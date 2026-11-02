@@ -758,10 +758,6 @@ export function Canvas({
         <span className="cv-ctrl-sep" />
         <button onClick={onOpenShortcuts} className="cv-help" title="Keyboard shortcuts">?</button>
       </div>
-
-      <div className="cv-tip">
-        {space ? 'Drag to pan' : 'Scroll to pan · ⌘/Ctrl + scroll to zoom · Space to pan'}
-      </div>
     </div>
   );
 }

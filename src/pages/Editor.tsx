@@ -475,20 +475,6 @@ function EditorWorkspace({ initial }: { initial: Design }) {
     return () => window.removeEventListener('keydown', onKey);
   }, [store, toast]);
 
-  /* ---------- first-run tip ---------- */
-  useEffect(() => {
-    if (localStorage.getItem('vellum.tip.seen')) return;
-    if (window.innerWidth < 900) {
-      localStorage.setItem('vellum.tip.seen', '1');
-      return;
-    }
-    const t = window.setTimeout(() => {
-      toast('Double-click text to edit it · press ? for shortcuts');
-      localStorage.setItem('vellum.tip.seen', '1');
-    }, 1200);
-    return () => window.clearTimeout(t);
-  }, [toast]);
-
   const saveNow = useCallback(() => {
     try {
       saveDesign(store.design);

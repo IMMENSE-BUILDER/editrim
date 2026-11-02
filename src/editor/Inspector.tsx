@@ -206,7 +206,6 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
               {imageBg && (
                 <>
                   <div className="insp-bg-photo"><PagePreview page={{ ...page, elements: [] }} size={design.size} /></div>
-                  <div className="insp-hint">Adjust overlays, blur and crop in the Background panel.</div>
                   <button className="btn btn-secondary btn-sm btn-block" onClick={onOpenBackground}>Edit background photo</button>
                 </>
               )}
@@ -221,10 +220,7 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                 <VellumIcon name="trash" size={14} /> Delete
               </button>
             </div>
-            <div className="insp-hint" style={{ marginTop: 12 }}>
-              Double-click any text on the canvas to edit it. Press <span className="kbd">?</span> for shortcuts.
-            </div>
-          </InspectorSection>
+                      </InspectorSection>
         </div>
       ) : (
         <div className="insp-scroll">
@@ -249,10 +245,6 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
 
           {!single && (
             <InspectorSection title="Selection">
-              <div className="insp-hint">
-                {selected.length} elements selected. Drag to move the group, or use the alignment and arrange tools below.
-                Shift-click adds or removes an element.
-              </div>
               <SliderField
                 label="Opacity"
                 value={Math.round(selected[0].opacity * 100)}

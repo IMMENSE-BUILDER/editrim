@@ -41,12 +41,7 @@ export default function Templates() {
       <SiteHeader />
 
       <div className="gallery-hero">
-        <span className="eyebrow"><span className="dot" /> Templates</span>
-        <h1>Start with something<br /><span className="serif-italic">already good.</span></h1>
-        <p>
-          Every template here was drawn by hand, built from real layers and left wide open
-          for you to change. Pick one, make it yours, and take the file with you.
-        </p>
+        <h1>Templates</h1>
       </div>
 
       <div className="gallery-bar">
