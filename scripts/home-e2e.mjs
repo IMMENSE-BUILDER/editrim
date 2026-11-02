@@ -93,7 +93,7 @@ await page.locator('.rail-nav button[title="Print-ready PDF"]').click();
 await wait(400);
 log('printModal', await page.locator('.modal-title').innerText());
 const printText = await page.locator('.modal').innerText();
-assert.ok(printText.includes('Vellum does not fulfil print orders'), 'print subtitle present');
+assert.ok(printText.includes('PDF'), 'print action present');
 await page.screenshot({ path: 'shots/home-print.png' });
 const downloadPromise = page.waitForEvent('download', { timeout: 60000 });
 await page.getByRole('button', { name: /Download PDF/i }).click();
@@ -150,7 +150,7 @@ await page.locator('.home-cat[title="Magic Layers"]').click();
 await wait(350);
 log('magicModal', await page.locator('.modal-title').innerText());
 assert.ok((await page.locator('.modal-title').innerText()).includes('vision model'));
-assert.ok((await page.locator('.home-feature-badge').innerText()).includes('Honest scope'));
+assert.ok((await page.locator('.home-modal-copy').innerText()).includes('image segmentation'));
 await page.getByRole('button', { name: 'Not now' }).click();
 await wait(300);
 

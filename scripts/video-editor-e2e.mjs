@@ -68,7 +68,7 @@ assert.equal(await p.locator('.vd-clip').count(), 1);
 assert.ok(Number(await p.locator('.video-editor').getAttribute('data-duration')) > 0.5);
 
 // Add and edit a text overlay.
-await p.locator('.vd-quick-add').filter({ hasText: 'Text overlay' }).click();
+await p.locator('.vd-library-actions .vd-ghost-btn').filter({ hasText: 'Text' }).click();
 await wait(400);
 assert.equal(await p.locator('.vd-clip-text').count(), 1);
 const textarea = p.locator('.vd-inspector textarea').first();

@@ -37,12 +37,12 @@ const contrast = await page.evaluate(() => {
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   };
   const bg = parse(getComputedStyle(document.querySelector('.home')).backgroundColor);
-  const fg = parse(getComputedStyle(document.querySelector('.home-eyebrow')).color);
+  const fg = parse(getComputedStyle(document.querySelector('.home-section-head h2')).color);
   const merged = blend(fg, bg);
   const L1 = lum(merged), L2 = lum(bg);
-  return { fg: getComputedStyle(document.querySelector('.home-eyebrow')).color, ratio: Number(((Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05)).toFixed(2)) };
+  return { fg: getComputedStyle(document.querySelector('.home-section-head h2')).color, ratio: Number(((Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05)).toFixed(2)) };
 });
-log('homeEyebrowContrast', contrast);
+log('homeHeadingContrast', contrast);
 assert.ok(contrast.ratio >= 4.5);
 await page.locator('.home-cat').first().focus();
 const focus = await page.locator('.home-cat').first().evaluate(el => getComputedStyle(el).outlineColor);

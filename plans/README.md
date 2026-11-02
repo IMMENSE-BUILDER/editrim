@@ -7,3 +7,4 @@
 | 003 | 100-icon Vellum vocabulary across every route, editor menu, panel and modal; format glyph polish | Implemented |
 | 004 | Vellum Ink v2 duotone rendering, first-paint icon stagger and hover/active motion for dashboard and Studio | Implemented |
 | 005 | Video Studio — media library, three-track timeline, text/image/audio editing, autosave and WebM export | Implemented |
+| 006 | Simplification pass — remove taglines, helper copy and secondary labels from Video Studio and dashboard | Implemented |

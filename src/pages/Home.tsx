@@ -612,7 +612,7 @@ export default function Home() {
               <>
                 <section className="home-section">
                   <div className="home-section-head">
-                    <div><span className="home-eyebrow">Pick up where you left off</span><h2>Continue designing</h2></div>
+                    <div><h2>Continue designing</h2></div>
                     <button onClick={() => setView('projects')}>See all <VellumIcon name="arrowUpRight" size={14} /></button>
                   </div>
                   {recent.length > 0 ? (
@@ -641,7 +641,7 @@ export default function Home() {
                   ) : (
                     <div className="home-empty-continue">
                       <span className="home-empty-icon"><VellumIcon name="magic" size={21} /></span>
-                      <div><strong>Your first canvas is waiting.</strong><p>Start from a blank page or borrow a layout. Your designs will appear here as you make them.</p></div>
+                      <div><strong>No designs</strong></div>
                       <button className="btn home-btn-primary" onClick={() => openCreate()}><VellumIcon name="plus" size={14} /> Create</button>
                       <Link to="/templates" className="btn home-btn-ghost">Browse templates</Link>
                     </div>
@@ -650,7 +650,7 @@ export default function Home() {
 
                 <section className="home-section">
                   <div className="home-section-head">
-                    <div><span className="home-eyebrow">Made to be made yours</span><h2>Templates for you</h2></div>
+                    <div><h2>Templates for you</h2></div>
                     <Link to="/templates">See all <VellumIcon name="arrowUpRight" size={14} /></Link>
                   </div>
                   <div className="home-template-strip">
@@ -669,12 +669,8 @@ export default function Home() {
                 </section>
 
                 <section className="home-section home-quiet-cta">
-                  <div>
-                    <span className="home-eyebrow">A little help from the machine</span>
-                    <h2>Start with a sentence.</h2>
-                    <p>AI Studio can draft a page, rewrite a line, illustrate an idea, or review the page you just made.</p>
-                  </div>
-                  <button className="home-btn-ai" onClick={() => navigate('/editor/new#ai')}><VellumIcon name="spark" size={15} /> AI Studio <VellumIcon name="arrowUpRight" size={14} /></button>
+                  <div><h2>AI Studio</h2></div>
+                  <button className="home-btn-ai" onClick={() => navigate('/editor/new#ai')}><VellumIcon name="spark" size={15} /> Open <VellumIcon name="arrowUpRight" size={14} /></button>
                 </section>
               </>
             )}
@@ -682,7 +678,7 @@ export default function Home() {
             {!hasSearch && view === 'projects' && (
               <section className="home-section home-projects-section">
                 <div className="home-section-head">
-                  <div><span className="home-eyebrow">Everything in this workspace</span><h2>Projects</h2></div>
+                  <div><h2>Projects</h2></div>
                   <div className="home-project-actions">
                     <span>{formatCount(entries.length, 'design', 'designs')} · {formatCount(pageCount, 'page', 'pages')}</span>
                     <button className="btn home-btn-primary" onClick={() => openCreate()}><VellumIcon name="plus" size={14} /> New design</button>
@@ -766,14 +762,12 @@ export default function Home() {
         ) : undefined}
       >
         <p className="home-modal-copy">{featureMeta?.body}</p>
-        <div className="home-feature-badge"><VellumIcon name="spark" size={14} /> Honest scope — no fake media tools.</div>
       </Modal>
 
       <Modal
         open={printOpen}
         onClose={() => setPrintOpen(false)}
         title="Print-ready PDF"
-        subtitle="Download a high-resolution PDF for a local printer. Vellum does not fulfil print orders."
         width={560}
         footer={
           <>
@@ -792,10 +786,9 @@ export default function Home() {
                 {entries.map(d => <option key={d.id} value={d.id}>{d.title} — {d.size.width}×{d.size.height}</option>)}
               </select>
             </label>
-            <div className="home-print-note"><VellumIcon name="print" size={15} /> Export uses all pages at 2× resolution. No bleed/crop marks in this build.</div>
           </>
         ) : (
-          <div className="home-modal-empty"><strong>No designs yet.</strong><p>Create a design first, then return here for a print-ready PDF.</p><button className="btn btn-primary" onClick={() => { setPrintOpen(false); openCreate(); }}>Create a design</button></div>
+          <div className="home-modal-empty"><strong>No designs yet.</strong><button className="btn btn-primary" onClick={() => { setPrintOpen(false); openCreate(); }}>Create a design</button></div>
         )}
       </Modal>
 
@@ -803,7 +796,6 @@ export default function Home() {
         open={helpOpen}
         onClose={() => setHelpOpen(false)}
         title="Welcome to Vellum"
-        subtitle="A local-first design studio with a real canvas and an AI copilot."
         width={640}
         footer={<button className="btn btn-cobalt" onClick={() => setHelpOpen(false)}>Back to work</button>}
       >
@@ -813,25 +805,23 @@ export default function Home() {
           <div><VellumIcon name="magic" size={17} /><strong>AI when you want it</strong><p>Design, edit, write, illustrate and review from the AI Studio tab in the editor.</p></div>
           <div><VellumIcon name="print" size={17} /><strong>Take it with you</strong><p>Export PNG, JPG or PDF. Use Print for a high-resolution PDF, all pages.</p></div>
         </div>
-        <p className="home-modal-copy">Tip: press <span className="kbd">/</span> to search anything, or click <strong>More</strong> in the rail for upload, custom size and help.</p>
       </Modal>
 
       <Modal
         open={moreOpen}
         onClose={() => setMoreOpen(false)}
         title="More ways to start"
-        subtitle="The small doors in."
         width={560}
       >
         <div className="home-more-grid">
-          <button onClick={() => { setMoreOpen(false); openCreate(); }}><VellumIcon name="templates" size={18} /><strong>Design library</strong><small>{SIZE_PRESETS.length} formats</small></button>
-          <button onClick={() => { setMoreOpen(false); navigate('/video'); }}><VellumIcon name="video" size={18} /><strong>Video studio</strong><small>Timeline editor</small></button>
-          <button onClick={() => { setMoreOpen(false); openCreate(true); }}><VellumIcon name="custom" size={18} /><strong>Custom size</strong><small>Any dimensions</small></button>
-          <button onClick={() => { setMoreOpen(false); fileRef.current?.click(); }}><VellumIcon name="upload" size={18} /><strong>Upload image</strong><small>Start from a photo</small></button>
-          <button onClick={() => { setMoreOpen(false); openPrint(); }}><VellumIcon name="print" size={18} /><strong>Print-ready PDF</strong><small>All pages at 2×</small></button>
-          <button onClick={() => { setMoreOpen(false); setBrandOpen(true); }}><VellumIcon name="palette" size={18} /><strong>Brand kit</strong><small>Colours, fonts &amp; voice</small></button>
-          <button onClick={() => { setMoreOpen(false); navigate('/editor/new#ai'); }}><VellumIcon name="spark" size={18} /><strong>AI Studio</strong><small>Draft, edit or review</small></button>
-          <button onClick={() => { setMoreOpen(false); setHelpOpen(true); }}><VellumIcon name="help" size={18} /><strong>Help</strong><small>How Vellum works</small></button>
+          <button onClick={() => { setMoreOpen(false); openCreate(); }}><VellumIcon name="templates" size={18} /><strong>Design library</strong></button>
+          <button onClick={() => { setMoreOpen(false); navigate('/video'); }}><VellumIcon name="video" size={18} /><strong>Video studio</strong></button>
+          <button onClick={() => { setMoreOpen(false); openCreate(true); }}><VellumIcon name="custom" size={18} /><strong>Custom size</strong></button>
+          <button onClick={() => { setMoreOpen(false); fileRef.current?.click(); }}><VellumIcon name="upload" size={18} /><strong>Upload image</strong></button>
+          <button onClick={() => { setMoreOpen(false); openPrint(); }}><VellumIcon name="print" size={18} /><strong>Print-ready PDF</strong></button>
+          <button onClick={() => { setMoreOpen(false); setBrandOpen(true); }}><VellumIcon name="palette" size={18} /><strong>Brand kit</strong></button>
+          <button onClick={() => { setMoreOpen(false); navigate('/editor/new#ai'); }}><VellumIcon name="spark" size={18} /><strong>AI Studio</strong></button>
+          <button onClick={() => { setMoreOpen(false); setHelpOpen(true); }}><VellumIcon name="help" size={18} /><strong>Help</strong></button>
         </div>
       </Modal>
 

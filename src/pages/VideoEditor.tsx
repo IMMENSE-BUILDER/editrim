@@ -68,12 +68,6 @@ const KIND_ICONS: Record<VideoClipKind, VellumIconName> = {
   audio: 'music',
 };
 
-function formatBytes(bytes: number): string {
-  if (!bytes) return '0 B';
-  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
-  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
-}
-
 function sourceDuration(project: VideoProject, clip: VideoClip): number {
   const asset = project.assets.find(item => item.id === clip.assetId);
   if (!asset) return clip.kind === 'video' || clip.kind === 'audio' ? 0 : 600;
@@ -234,7 +228,6 @@ export default function VideoEditor() {
 
   const duration = useMemo(() => projectDuration(project), [project]);
   const selectedClip = project.clips.find(clip => clip.id === selectedClipId) ?? null;
-  const selectedAsset = selectedClip?.assetId ? project.assets.find(asset => asset.id === selectedClip.assetId) : undefined;
   const contentDuration = Math.max(30, duration + 8);
   const contentWidth = Math.max(900, contentDuration * zoom);
   const clipCount = project.clips.length;
@@ -372,7 +365,7 @@ export default function VideoEditor() {
     }
     const projectDurationValue = projectDuration(projectRef.current);
     if (projectDurationValue <= 0) {
-      toast('Add a clip to the timeline first');
+      toast('Add a clip first');
       return;
     }
     audioGraphRef.current?.ctx.resume().catch(() => {});
@@ -441,10 +434,12 @@ export default function VideoEditor() {
     if (!ready) return;
     setSaveState('saving');
     const timer = window.setTimeout(() => {
-      setSaveState(saveVideoProject(projectRef.current) ? 'saved' : 'error');
+      const saved = saveVideoProject(projectRef.current);
+      setSaveState(saved ? 'saved' : 'error');
+      if (!saved) toast('Could not save');
     }, 450);
     return () => window.clearTimeout(timer);
-  }, [project, ready]);
+  }, [project, ready, toast]);
 
   useEffect(() => {
     let cancelled = false;
@@ -453,7 +448,7 @@ export default function VideoEditor() {
       if (loaded) {
         projectRef.current = loaded;
         setProject(loaded);
-        if (loaded.assets.some(asset => asset.missing)) toast('Some media files could not be restored. Re-import them to use them again.');
+        if (loaded.assets.some(asset => asset.missing)) toast('Some media is missing');
       }
       setReady(true);
     });
@@ -654,7 +649,7 @@ export default function VideoEditor() {
     if (!id) return;
     commit(current => ({ ...current, clips: current.clips.filter(clip => clip.id !== id) }));
     selectClip(null);
-    toast('Clip removed');
+    toast('Deleted');
   }, [commit, selectClip, toast]);
 
   const duplicateSelected = useCallback(() => {
@@ -676,11 +671,11 @@ export default function VideoEditor() {
     const current = projectRef.current;
     const clip = current.clips.find(item => item.id === id);
     if (!clip) {
-      toast('Select a clip to split');
+      toast('Select a clip first');
       return;
     }
     if (time <= clip.start + 0.08 || time >= clipEnd(clip) - 0.08) {
-      toast('Move the playhead inside the selected clip');
+      toast('Move playhead into the clip');
       return;
     }
     const leftDuration = time - clip.start;
@@ -698,7 +693,7 @@ export default function VideoEditor() {
       clips: current.clips.flatMap(item => item.id === clip.id ? [left, right] : [item]),
     });
     selectClip(right.id);
-    toast('Clip split at playhead');
+    toast('Split');
   }, [commit, selectClip, toast]);
 
   const addText = useCallback(() => {
@@ -711,7 +706,7 @@ export default function VideoEditor() {
     commit(current => ({ ...current, clips: [...current.clips, clip] }));
     selectClip(clip.id);
     setLibraryOpen(false);
-    toast('Text overlay added');
+    toast('Text added');
   }, [commit, selectClip, toast]);
 
   const applyAspect = useCallback((width: number, height: number) => {
@@ -741,11 +736,11 @@ export default function VideoEditor() {
             ? 'image'
             : null);
       if (!kind) {
-        toast(`"${file.name}" is not a video, image or audio file`);
+        toast('Unsupported file');
         continue;
       }
       if (file.size > 500 * 1024 * 1024) {
-        toast(`"${file.name}" is too large (500 MB limit)`);
+        toast('File is over 500 MB');
         continue;
       }
       const id = uid('media');
@@ -760,17 +755,17 @@ export default function VideoEditor() {
             ? file.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ').slice(0, 42)
             : current.name,
         }));
-        toast(`${file.name} imported`);
+        toast('Imported');
       } catch {
         URL.revokeObjectURL(src);
-        toast(`Could not read "${file.name}"`);
+        toast('Could not import');
       }
     }
   }, [commit, toast]);
 
   const addAssetToTimeline = useCallback((asset: VideoAsset) => {
     if (asset.missing || !asset.src) {
-      toast('This media file is missing. Re-import it.');
+      toast('Media is missing');
       return;
     }
     if (playingRef.current) {
@@ -801,7 +796,7 @@ export default function VideoEditor() {
     commit({ ...current, clips: [...current.clips, clip] });
     selectClip(clip.id);
     setLibraryOpen(false);
-    toast(`${asset.kind === 'image' ? 'Image' : asset.kind === 'video' ? 'Video' : 'Audio'} added to the timeline`);
+    toast('Added');
   }, [commit, selectClip, toast]);
 
   const removeAsset = useCallback((assetId: string) => {
@@ -813,7 +808,7 @@ export default function VideoEditor() {
     if (selectedClipRef.current && !projectRef.current.clips.some(clip => clip.id === selectedClipRef.current)) {
       selectClip(null);
     }
-    toast('Media removed from project');
+    toast('Removed');
   }, [commit, selectClip, toast]);
 
   const renameProject = useCallback((name: string) => {
@@ -833,7 +828,7 @@ export default function VideoEditor() {
     seekTo(0);
     setSaveState('saved');
     syncHistoryState();
-    toast('New video project');
+    toast('New project');
   }, [seekTo, selectClip, syncHistoryState, toast]);
 
   const startClipDrag = (event: React.PointerEvent, clip: VideoClip, mode: DragMode) => {
@@ -927,11 +922,11 @@ export default function VideoEditor() {
     const current = projectRef.current;
     const total = projectDuration(current);
     if (!total) {
-      toast('Add at least one clip before exporting');
+      toast('Add a clip first');
       return;
     }
     if (typeof MediaRecorder === 'undefined') {
-      toast('This browser cannot record video. Try Chrome or Edge.');
+      toast('Recording unsupported');
       return;
     }
     const canvas = canvasRef.current;
@@ -954,7 +949,7 @@ export default function VideoEditor() {
     if (!stream) {
       exportingRef.current = false;
       setExporting(false);
-      toast('Canvas recording is not supported in this browser');
+      toast('Recording unsupported');
       return;
     }
     if (graph && current.assets.some(asset => asset.kind !== 'image')) {
@@ -970,7 +965,7 @@ export default function VideoEditor() {
       exportingRef.current = false;
       setExporting(false);
       stream.getTracks().forEach(track => track.stop());
-      toast('Could not start the video recorder');
+      toast('Could not record');
       return;
     }
     const chunks: BlobPart[] = [];
@@ -978,7 +973,7 @@ export default function VideoEditor() {
     const stopped = new Promise<void>(resolve => { recorder.onstop = () => resolve(); });
     recorder.onerror = () => {
       exportCancelRef.current = true;
-      toast('The video recorder stopped unexpectedly');
+      toast('Recording failed');
     };
     recorder.start(250);
     const wallStart = performance.now();
@@ -998,9 +993,9 @@ export default function VideoEditor() {
       if (!cancelled && chunks.length) {
         const blob = new Blob(chunks, { type: mimeType || 'video/webm' });
         downloadBlob(blob, `${sanitizeVideoFilename(current.name)}.webm`);
-        toast(`Exported ${sanitizeVideoFilename(current.name)}.webm`);
+        toast('Exported');
       } else if (cancelled) {
-        toast('Export cancelled');
+        toast('Cancelled');
       }
       requestDraw();
     };
@@ -1033,8 +1028,6 @@ export default function VideoEditor() {
   }, []);
 
   const totalClips = project.clips.length;
-  const textClips = project.clips.filter(clip => clip.kind === 'text').length;
-  const mediaClips = project.clips.filter(clip => clip.kind !== 'text').length;
 
   return (
     <div
@@ -1058,17 +1051,12 @@ export default function VideoEditor() {
           <Logo size={26} wordmark={false} />
           <div className="vd-title-wrap">
             <input value={project.name} onChange={event => renameProject(event.target.value)} aria-label="Video project name" />
-            <span className={`vd-save is-${saveState}`}>
-              <VellumIcon name={saveState === 'error' ? 'alert' : 'cloud'} size={10} />
-              {saveState === 'saving' ? 'Saving' : saveState === 'error' ? 'Save failed' : 'Saved locally'}
-            </span>
+            <span className="vd-save-status" aria-live="polite">{saveState === 'saving' ? 'Saving' : saveState === 'error' ? 'Save failed' : 'Saved'}</span>
           </div>
         </div>
         <div className="vd-header-center">
           <IconButton icon="undo" label="Undo" onClick={undo} disabled={!historyState.canUndo} />
           <IconButton icon="redo" label="Redo" onClick={redo} disabled={!historyState.canRedo} />
-          <span className="vd-header-chip">{project.width} × {project.height}</span>
-          <span className="vd-header-chip vd-fps-chip">{project.fps} fps</span>
         </div>
         <div className="vd-right">
           <button className="vd-mobile-btn" onClick={() => { setLibraryOpen(v => !v); setInspectorOpen(false); }} title="Media library"><VellumIcon name="film" size={15} /><span>Media</span></button>
@@ -1083,7 +1071,7 @@ export default function VideoEditor() {
       <div className="vd-body">
         <aside className={`vd-panel vd-library ${libraryOpen ? 'is-open' : ''}`}>
           <div className="vd-panel-head">
-            <div><span className="vd-eyebrow">Project media</span><h2>Library</h2></div>
+            <h2>Media</h2>
             <button className="vd-panel-close" onClick={() => setLibraryOpen(false)} aria-label="Close media library"><VellumIcon name="close" size={15} /></button>
           </div>
           <input
@@ -1097,12 +1085,12 @@ export default function VideoEditor() {
               event.target.value = '';
             }}
           />
-          <button className="vd-dropzone" onClick={() => fileInputRef.current?.click()}>
-            <span className="vd-dropzone-icon"><VellumIcon name="upload" size={22} /></span>
-            <strong>Import media</strong>
-            <small>Video, image or audio · drop files anywhere</small>
-          </button>
-          {project.assets.length > 0 ? (
+          
+          <div className="vd-library-actions">
+            <button className="vd-primary-btn" onClick={() => fileInputRef.current?.click()}><VellumIcon name="upload" size={15} /> Import</button>
+            <button className="vd-ghost-btn" onClick={addText}><VellumIcon name="text" size={15} /> Text</button>
+          </div>
+          {project.assets.length > 0 && (
             <div className="vd-media-list">
               {project.assets.map(asset => (
                 <div
@@ -1120,7 +1108,6 @@ export default function VideoEditor() {
                   </div>
                   <div className="vd-media-meta">
                     <strong>{asset.name}</strong>
-                    <small>{asset.kind} · {formatBytes(asset.size)}</small>
                   </div>
                   <button
                     className="vd-media-remove"
@@ -1133,36 +1120,18 @@ export default function VideoEditor() {
                 </div>
               ))}
             </div>
-          ) : (
-            <div className="vd-empty-library">
-              <VellumIcon name="film" size={22} />
-              <p>No media yet. Import a video to start building.</p>
-            </div>
           )}
-          <div className="vd-panel-section">
-            <span className="vd-eyebrow">Quick add</span>
-            <button className="vd-quick-add" onClick={addText}><span><VellumIcon name="text" size={17} /></span><div><strong>Text overlay</strong><small>Add a title at the playhead</small></div></button>
-            <button className="vd-quick-add" onClick={() => fileInputRef.current?.click()}><span><VellumIcon name="image" size={17} /></span><div><strong>Image overlay</strong><small>Use a PNG, JPG or SVG</small></div></button>
-          </div>
-          <div className="vd-library-tip">
-            <VellumIcon name="spark" size={14} />
-            <span>Click any media card to place it on the timeline. Everything stays in your browser.</span>
-          </div>
-        </aside>
+                  </aside>
 
         <main className="vd-main">
           <div className="vd-stage" ref={stageRef}>
-            <div className="vd-stage-head">
-              <span><span className="vd-live-dot" /> Preview</span>
-              <span>{project.width} × {project.height} · {project.fps} fps</span>
-            </div>
+            
             <div className={`vd-canvas-wrap ${selectedClip && (selectedClip.kind === 'text' || selectedClip.kind === 'image') ? 'has-draggable-overlay' : ''}`} onPointerDown={startOverlayDrag}>
               <canvas ref={canvasRef} width={project.width} height={project.height} aria-label="Video preview" />
               {clipCount === 0 && (
                 <div className="vd-empty-stage">
                   <span className="vd-empty-mark"><VellumIcon name="film" size={30} /></span>
-                  <h2>Make your first cut.</h2>
-                  <p>Import a video, drop it on the timeline and add a title. No timeline theory required.</p>
+                  <h2>No clips</h2>
                   <div>
                     <button className="vd-primary-btn" onClick={() => fileInputRef.current?.click()}><VellumIcon name="upload" size={15} /> Import video</button>
                     <button className="vd-ghost-btn" onClick={addText}><VellumIcon name="text" size={15} /> Add text</button>
@@ -1194,7 +1163,7 @@ export default function VideoEditor() {
 
           <section className="vd-timeline" aria-label="Video timeline">
             <div className="vd-timeline-toolbar">
-              <div className="vd-timeline-title"><span className="vd-eyebrow">Timeline</span><strong>{totalClips} clips · {formatTimecode(duration, false)}</strong></div>
+              <div className="vd-timeline-title"><strong>Timeline</strong></div>
               <div className="vd-timeline-tools">
                 <IconButton icon="scissors" label="Split at playhead (S)" onClick={splitSelected} disabled={!selectedClip} />
                 <IconButton icon="duplicate" label="Duplicate selected (Ctrl+D)" onClick={duplicateSelected} disabled={!selectedClip} />
@@ -1204,17 +1173,16 @@ export default function VideoEditor() {
                 <button className={`vd-snap ${snap ? 'is-active' : ''}`} onClick={() => setSnap(value => !value)} title="Snap clips and playhead"><VellumIcon name="bolt" size={14} /> Snap</button>
                 <span className="vd-tool-sep" />
                 <IconButton icon="zoomOut" label="Zoom out timeline" onClick={() => setZoom(value => clamp(value - 12, 34, 180))} />
-                <span className="vd-zoom-label">{Math.round(zoom)} px/s</span>
                 <IconButton icon="zoomIn" label="Zoom in timeline" onClick={() => setZoom(value => clamp(value + 12, 34, 180))} />
               </div>
             </div>
             <div className="vd-timeline-body">
               <div className="vd-track-heads">
-                <div className="vd-track-head-spacer"><span>TRACKS</span></div>
+                <div className="vd-track-head-spacer" />
                 {project.tracks.map(track => (
                   <div className="vd-track-head" key={track.id}>
                     <span className={`vd-track-icon is-${track.kind}`}><VellumIcon name={TRACK_ICONS[track.kind]} size={15} /></span>
-                    <div><strong>{track.name}</strong><small>{project.clips.filter(clip => clip.trackId === track.id).length} clips</small></div>
+                    <div><strong>{track.name}</strong></div>
                     <div className="vd-track-actions">
                       {track.kind === 'audio' ? (
                         <IconButton icon={track.muted ? 'volumeOff' : 'volume'} label={track.muted ? 'Unmute track' : 'Mute track'} onClick={() => updateTrack(track.id, { muted: !track.muted })} active={!track.muted} />
@@ -1293,13 +1261,12 @@ export default function VideoEditor() {
                 </div>
               </div>
             </div>
-            {clipCount === 0 && <div className="vd-timeline-empty"><VellumIcon name="film" size={15} /> Drop media into the library, then click a card to add it here.</div>}
           </section>
         </main>
 
         <aside className={`vd-panel vd-inspector ${inspectorOpen ? 'is-open' : ''}`}>
           <div className="vd-panel-head">
-            <div><span className="vd-eyebrow">Inspector</span><h2>{selectedClip ? 'Clip properties' : 'Project'}</h2></div>
+            <h2>{selectedClip ? 'Clip' : 'Project'}</h2>
             <button className="vd-panel-close" onClick={() => setInspectorOpen(false)} aria-label="Close inspector"><VellumIcon name="close" size={15} /></button>
           </div>
           <div className="vd-inspector-scroll">
@@ -1307,14 +1274,14 @@ export default function VideoEditor() {
               <>
                 <div className="vd-selected-head">
                   <span className={`vd-selected-icon is-${selectedClip.kind}`}><VellumIcon name={KIND_ICONS[selectedClip.kind]} size={16} /></span>
-                  <div><strong>{selectedClip.kind === 'text' ? (selectedClip.text?.content ?? selectedClip.name) : selectedClip.name}</strong><small>{selectedClip.kind} clip · {formatTimecode(selectedClip.duration, false)}</small></div>
+                  <div><strong>{selectedClip.kind === 'text' ? (selectedClip.text?.content ?? selectedClip.name) : selectedClip.name}</strong></div>
                   <div className="vd-selected-actions">
                     <IconButton icon="duplicate" label="Duplicate clip" onClick={duplicateSelected} />
                     <IconButton icon="trash" label="Delete clip" onClick={deleteSelected} />
                   </div>
                 </div>
                 <div className="vd-inspector-section">
-                  <div className="vd-section-title"><span>Timing</span><button onClick={splitSelected}><VellumIcon name="scissors" size={12} /> Split</button></div>
+                  <div className="vd-section-title"><span>Timing</span></div>
                   <div className="vd-inspector-grid">
                     <Field label="Start"><input type="number" step="0.1" min={0} value={Number(selectedClip.start.toFixed(2))} onChange={event => updateClip(selectedClip.id, { start: Math.max(0, Number(event.target.value)) }, 'timing:start')} /></Field>
                     <Field label="Duration"><input type="number" step="0.1" min={0.2} value={Number(selectedClip.duration.toFixed(2))} onChange={event => updateClip(selectedClip.id, { duration: Math.max(0.2, Number(event.target.value)) }, 'timing:duration')} /></Field>
@@ -1337,7 +1304,7 @@ export default function VideoEditor() {
                 </div>
                 {selectedClip.kind === 'text' && selectedClip.text && (
                   <div className="vd-inspector-section">
-                    <div className="vd-section-title"><span>Text</span><span className="vd-tiny-badge">Editable</span></div>
+                    <div className="vd-section-title"><span>Text</span></div>
                     <Field label="Content"><textarea rows={3} value={selectedClip.text.content} onChange={event => updateText(selectedClip.id, { content: event.target.value }, 'content')} /></Field>
                     <Field label="Font">
                       <select
@@ -1384,32 +1351,19 @@ export default function VideoEditor() {
                       <label><input type="checkbox" checked={selectedClip.text.uppercase} onChange={event => updateText(selectedClip.id, { uppercase: event.target.checked }, 'uppercase')} /> Uppercase</label>
                       <label><input type="checkbox" checked={selectedClip.text.shadow} onChange={event => updateText(selectedClip.id, { shadow: event.target.checked }, 'shadow')} /> Shadow</label>
                     </div>
-                    <p className="vd-hint"><VellumIcon name="info" size={12} /> Drag the text directly on the preview to reposition it.</p>
-                  </div>
-                )}
-                {selectedAsset && (
-                  <div className="vd-inspector-section vd-asset-note">
-                    <span className="vd-eyebrow">Source</span>
-                    <div><VellumIcon name={KIND_ICONS[selectedAsset.kind]} size={14} /><strong>{selectedAsset.name}</strong></div>
-                    <small>{selectedAsset.kind} · {formatBytes(selectedAsset.size)} · {selectedAsset.width ? `${selectedAsset.width} × ${selectedAsset.height}` : 'audio'}</small>
                   </div>
                 )}
               </>
             ) : (
               <>
-                <div className="vd-project-card">
-                  <span className="vd-eyebrow">Project settings</span>
-                  <h3>{project.name}</h3>
-                  <p>Everything is saved in this browser. Export a WebM when you are done.</p>
-                </div>
+                
                 <div className="vd-inspector-section">
-                  <div className="vd-section-title"><span>Aspect ratio</span><span>{project.width} × {project.height}</span></div>
+                  <div className="vd-section-title"><span>Aspect</span><span>{project.width} × {project.height}</span></div>
                   <div className="vd-aspect-grid">
                     {VIDEO_ASPECTS.map(aspect => (
                       <button key={aspect.id} className={project.width === aspect.width && project.height === aspect.height ? 'is-active' : ''} onClick={() => applyAspect(aspect.width, aspect.height)}>
                         <span className={`vd-aspect-shape is-${aspect.id.replace(':', '-')}`} />
                         <b>{aspect.id}</b>
-                        <small>{aspect.label.split(' · ')[1]}</small>
                       </button>
                     ))}
                   </div>
@@ -1428,15 +1382,10 @@ export default function VideoEditor() {
                       <div className="vd-color-row"><input type="color" value={project.background} onChange={event => commit(current => ({ ...current, background: event.target.value }), 'project:background')} /><b>{project.background}</b></div>
                     </Field>
                   </div>
-                  <div className="vd-project-stats">
-                    <div><strong>{formatTimecode(duration)}</strong><span>duration</span></div>
-                    <div><strong>{totalClips}</strong><span>clips</span></div>
-                    <div><strong>{mediaClips}</strong><span>media</span></div>
-                    <div><strong>{textClips}</strong><span>text</span></div>
-                  </div>
+                  <div className="vd-project-meta">{formatTimecode(duration)} · {totalClips} clips</div>
                 </div>
                 <div className="vd-inspector-section">
-                  <div className="vd-section-title"><span>Track mix</span><span>Volume</span></div>
+                  <div className="vd-section-title"><span>Mix</span></div>
                   {project.tracks.map(track => (
                     <RangeField
                       key={track.id}
@@ -1451,16 +1400,7 @@ export default function VideoEditor() {
                   ))}
                 </div>
                 <div className="vd-inspector-section">
-                  <div className="vd-section-title"><span>Start over</span></div>
-                  <button className="vd-danger-link" onClick={newProject}><VellumIcon name="refresh" size={14} /> New video project</button>
-                </div>
-                <div className="vd-shortcuts">
-                  <span className="vd-eyebrow">Keyboard</span>
-                  <div><span>Play / pause</span><kbd>Space</kbd></div>
-                  <div><span>Split clip</span><kbd>S</kbd></div>
-                  <div><span>Delete clip</span><kbd>Del</kbd></div>
-                  <div><span>Add text</span><kbd>T</kbd></div>
-                  <div><span>Undo</span><kbd>⌘Z</kbd></div>
+                  <button className="vd-danger-link" onClick={newProject}><VellumIcon name="refresh" size={14} /> New project</button>
                 </div>
               </>
             )}
@@ -1520,12 +1460,11 @@ export default function VideoEditor() {
         <div className="vd-export-overlay" role="status" aria-live="polite">
           <div className="vd-export-card">
             <div className="vd-export-mark"><VellumIcon name="record" size={22} /></div>
-            <span className="vd-eyebrow">Rendering in real time</span>
-            <h2>Your video is taking shape.</h2>
-            <p>WebM export records the canvas and mixed audio at {project.fps} fps. Keep this tab open.</p>
+            <h2>Exporting</h2>
+            <p>WebM · {project.fps} fps</p>
             <div className="vd-export-progress"><i style={{ transform: `scaleX(${Math.max(0.01, exportProgress)})` }} /></div>
             <div className="vd-export-meta"><span>{Math.round(exportProgress * 100)}%</span><span>{formatTimecode(currentTime)} / {formatTimecode(duration)}</span></div>
-            <button className="vd-ghost-btn" onClick={cancelExport}>Cancel export</button>
+            <button className="vd-ghost-btn" onClick={cancelExport}>Cancel</button>
           </div>
         </div>
       )}
