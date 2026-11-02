@@ -623,7 +623,10 @@ export default function VideoEditor() {
   const selectClip = useCallback((id: string | null) => {
     selectedClipRef.current = id;
     setSelectedClipId(id);
-    if (id) setInspectorOpen(true);
+    if (id) {
+      setInspectorOpen(true);
+      setLibraryOpen(false);
+    }
   }, []);
 
   const updateClip = useCallback((id: string, patch: Partial<VideoClip>, groupKey?: string) => {
@@ -1068,8 +1071,8 @@ export default function VideoEditor() {
           <span className="vd-header-chip vd-fps-chip">{project.fps} fps</span>
         </div>
         <div className="vd-right">
-          <button className="vd-mobile-btn" onClick={() => setLibraryOpen(v => !v)} title="Media library"><VellumIcon name="film" size={15} /><span>Media</span></button>
-          <button className="vd-mobile-btn" onClick={() => setInspectorOpen(v => !v)} title="Properties"><VellumIcon name="sliders" size={15} /><span>Edit</span></button>
+          <button className="vd-mobile-btn" onClick={() => { setLibraryOpen(v => !v); setInspectorOpen(false); }} title="Media library"><VellumIcon name="film" size={15} /><span>Media</span></button>
+          <button className="vd-mobile-btn" onClick={() => { setInspectorOpen(v => !v); setLibraryOpen(false); }} title="Properties"><VellumIcon name="sliders" size={15} /><span>Edit</span></button>
           <button className="vd-import-btn" onClick={() => fileInputRef.current?.click()}><VellumIcon name="upload" size={15} /><span>Import</span></button>
           <button className="vd-export-btn" onClick={exportVideo} disabled={!clipCount || exporting}>
             <VellumIcon name="download" size={15} /><span>{exporting ? 'Rendering' : 'Export'}</span>

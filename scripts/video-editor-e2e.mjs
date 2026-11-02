@@ -239,6 +239,8 @@ assert.equal(overflow, false);
 assert.ok((await p.locator('.vd-mobile-btn:visible').count()) >= 2);
 await p.locator('.vd-mobile-btn').filter({ hasText: 'Media' }).click();
 await wait(300);
+assert.equal(await p.locator('.vd-library.is-open').count(), 1);
+assert.equal(await p.locator('.vd-inspector.is-open').count(), 0);
 await p.screenshot({ path: 'shots/video-editor-mobile-390.png' });
 
 console.log('errors', errors);
