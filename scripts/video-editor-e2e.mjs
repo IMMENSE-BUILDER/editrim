@@ -253,6 +253,7 @@ await p.screenshot({ path: 'shots/video-editor-final-1440.png' });
 await p.locator('.vd-back').click();
 await p.waitForSelector('.videos-page', { timeout: 15000 });
 await wait(500);
+assert.equal(await p.locator('.toast').count(), 0);
 assert.equal(await p.locator('.video-card').count(), 1);
 const cardTitle = await p.locator('.video-card-meta strong').innerText();
 console.log('library card', cardTitle);

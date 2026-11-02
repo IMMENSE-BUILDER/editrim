@@ -97,7 +97,7 @@ docs/            feature research and AI architecture notes
 scripts/         Playwright QA scripts used during development
 ```
 
-See [docs/AI-RESEARCH.md](docs/AI-RESEARCH.md) for the Canva/advanced-feature research, honest competitive matrix, and the AI architecture decisions. See [docs/ENGINE-SCHEMA.md](docs/ENGINE-SCHEMA.md) for the core canvas, typography, timeline, vector, color, presentation, layout and brand schemas.
+See [docs/AI-RESEARCH.md](docs/AI-RESEARCH.md) for the Canva/advanced-feature research, honest competitive matrix, and the AI architecture decisions. See [docs/VIDEO-RESEARCH.md](docs/VIDEO-RESEARCH.md) for the lightweight video-editor research. See [docs/ENGINE-SCHEMA.md](docs/ENGINE-SCHEMA.md) for the core canvas, typography, timeline, vector, color, presentation, layout and brand schemas.
 
 ## Privacy & limits
 
@@ -123,7 +123,7 @@ The app was tested end-to-end with Playwright against Chrome:
 - share link preview and editable import
 - present mode navigation
 - dashboard rename, duplicate, delete and search
-- Home dashboard: hero CTA routing, 13 categories, Presentation/Doc/Whiteboard/Video storyboard/Sheet/Website creation, image upload, print modal, universal search, project menus, More/Help popovers and a 390 px mobile layout
+- Home dashboard: search-first routing, 13 categories, Presentation/Doc/Whiteboard/Video Studio/Sheet/Website creation, image upload, print modal, universal search, project menus, More/Help popovers and a 390 px mobile layout
 - Design library: 59 formats across six groups including Desktop/Phone Wallpaper, Facebook Post/Cover/Story/Event, Photo Collage, Certificate, Invoice, Letterhead, Brochure, Postcard, Book/Magazine Cover, Podcast/Album Cover, App Icon, YouTube Banner, Link in Bio, Code, Doc, Document, Sheet, Whiteboard, Mobile/Landscape Video, Newsletter and Your Story; searchable across all formats
 - Editor right-click menu: copy/paste, copy/paste style, duplicate/delete, layer and align submenus, group/ungroup, component save + insert + persistence, comment add/resolve/delete + pin, lock/unlock, palette apply + undo, selection PNG download, and Magic Write/Translate handoff to AI Studio
 - Motion and accessibility polish: reduced-motion without losing colour feedback, toast exit, origin-aware menus, modal focus trap/restore, button press states, 4.79:1 Home label contrast, and no horizontal overflow at 390 px

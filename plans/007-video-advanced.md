@@ -54,3 +54,17 @@ The expanded video E2E verifies:
 - WebM export download
 - library search, duplicate, delete and reload
 - 390px mobile layout with no overflow
+
+## Live verification
+
+Production run on `https://vellum-delta-dun.vercel.app`:
+
+- new video created from the **Videos** library
+- WebM fixture imported and added
+- speed changed **5× source → 2.5s timeline**
+- colour correction applied
+- text motion set to **Rise**
+- WebM export downloaded successfully (697 KB)
+- search and empty-search states verified in the library
+- 390px layout has no horizontal overflow
+- no console errors; /api/ai remains `200` on `xiaomi/mimo-v2.6-flash`

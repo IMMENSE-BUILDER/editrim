@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import type { ReactNode } from 'react';
 import { VellumIcon } from './VellumIcon';
 
@@ -11,6 +12,7 @@ const EXIT_MS = 190;
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<Toast[]>([]);
+  const location = useLocation();
   const idRef = useRef(0);
   const timers = useRef(new Map<number, number[]>());
 
@@ -31,6 +33,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     timers.current.forEach(ids => ids.forEach(id => window.clearTimeout(id)));
     timers.current.clear();
   }, []);
+
+  useEffect(() => {
+    setItems([]);
+  }, [location.pathname]);
 
   const api = useMemo(() => ({ toast }), [toast]);
 
