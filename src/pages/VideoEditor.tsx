@@ -1223,9 +1223,9 @@ export default function VideoEditor() {
                         const clipDuration = preview?.duration ?? clip.duration;
                         const asset = clip.assetId ? project.assets.find(item => item.id === clip.assetId) : undefined;
                         const width = Math.max(18, clipDuration * zoom);
-                        const backgroundImage = clip.kind === 'text'
-                          ? undefined
-                          : asset?.thumbnail ? `linear-gradient(90deg, rgba(11,9,17,.22), rgba(11,9,17,.72)), url(${asset.thumbnail})` : undefined;
+                        const backgroundImage = clip.kind === 'image' && asset?.thumbnail
+                          ? `linear-gradient(90deg, rgba(11,9,17,.22), rgba(11,9,17,.72)), url(${asset.thumbnail})`
+                          : undefined;
                         return (
                           <div
                             key={clip.id}
