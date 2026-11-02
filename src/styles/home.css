@@ -2040,3 +2040,24 @@
 .home-more-grid button:first-child small {
   margin-left: auto;
 }
+
+.home-template-meta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.rail-nav button.active {
+  position: relative;
+}
+
+.rail-nav button.active::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 13px;
+  bottom: 13px;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--h-lilac);
+}

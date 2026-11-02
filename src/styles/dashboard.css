@@ -878,14 +878,20 @@
   margin-bottom: 12px;
 }
 
-.size-card-shape {
-  width: auto;
-  height: 32px;
-  max-width: 52px;
-  border: 1.5px solid var(--ink);
-  border-radius: 2px;
+.size-card-go {
+  margin-left: auto;
   flex: none;
-  background: var(--lime-soft);
+  color: var(--muted-2);
+  opacity: 0;
+  transform: translateX(-3px);
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease-out), color var(--dur) var(--ease);
+}
+
+.size-card:hover .size-card-go,
+.size-card:focus-visible .size-card-go {
+  opacity: 1;
+  transform: none;
+  color: var(--cobalt);
 }
 
 .size-card-body {
@@ -893,6 +899,7 @@
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  flex: 1;
 }
 
 .size-card-name {

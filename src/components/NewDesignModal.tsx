@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, LayoutGrid, Plus, Search, X } from 'lucide-react';
 import { Modal } from './Modal';
+import { FormatGlyph } from './FormatGlyph';
 import { GROUP_ORDER, SIZE_PRESETS, type SizePreset } from '../lib/presets';
 import { createDesign } from '../lib/storage';
 import type { Design } from '../lib/types';
@@ -129,11 +130,12 @@ export function NewDesignModal({
                 onClick={() => start(p.w, p.h, p.name, p.name)}
                 style={{ animationDelay: `${Math.min(i, 8) * 18}ms` }}
               >
-                <span className="size-card-shape" style={{ aspectRatio: `${p.w} / ${p.h}` }} />
+                <FormatGlyph formatId={p.id} ratio={p.w / p.h} />
                 <span className="size-card-body">
                   <span className="size-card-name">{p.name}</span>
                   <span className="size-card-hint">{query.trim() ? `${p.group} · ${p.hint} · ` : `${p.hint} · `}{p.w}×{p.h}</span>
                 </span>
+                <ArrowRight size={14} className="size-card-go" />
               </button>
             ))}
           </div>

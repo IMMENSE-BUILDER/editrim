@@ -18,6 +18,7 @@ for (const g of tabs) {
   await p.waitForTimeout(150);
   const names = await p.locator('.size-card-name').allInnerTexts();
   console.log(g, names.length, names);
+  assert.equal(await p.locator('.size-card .format-glyph').count(), names.length);
   all.push(...names);
 }
 const requested = ['Desktop Wallpaper','Facebook Post','Photo Collage','Menu','Phone Wallpaper','Facebook Cover','Business Card','Certificate','Banner','Invoice','Letterhead','Logo','Whiteboard','Resume','YouTube Thumbnail','Invitation','Brochure','Link in Bio','Code','Doc','Mobile Video','Sheet','Email','Presentation','Document','Poster','Flyer','Website','Instagram Post','Landscape Video','Your Story','Facebook Story','Facebook Event Cover','X / Twitter Header','Threads Post','Bluesky Post','Keynote 16:10','Postcard','Book Cover','Magazine Cover','Recipe Card','YouTube Banner','Podcast Cover','Album Cover','App Icon','GitHub Social','Google Business Cover','Etsy Banner','Newsletter','Contract','Proposal'];

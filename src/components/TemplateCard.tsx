@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import type { Template } from '../lib/types';
 import { PagePreview } from './PagePreview';
+import { FormatGlyph } from './FormatGlyph';
 
 export function TemplateCard({
   template,
@@ -51,7 +52,7 @@ export function TemplateCard({
         <div className="template-card-meta">
           <div>
             <div className="template-card-name">{template.name}</div>
-            <div className="template-card-cat">{template.category}</div>
+            <div className="template-card-cat"><FormatGlyph name={template.category} size="xs" /> {template.category}</div>
           </div>
           <span className="template-card-size">{template.size.width} × {template.size.height}</span>
         </div>

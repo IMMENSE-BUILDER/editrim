@@ -14,6 +14,7 @@ import { NewDesignModal } from '../components/NewDesignModal';
 import { BrandKitModal } from '../components/BrandKitModal';
 import { Modal } from '../components/Modal';
 import { PagePreview } from '../components/PagePreview';
+import { FormatGlyph } from '../components/FormatGlyph';
 import { useToast } from '../components/Toast';
 import {
   addAsset, createDesign, deleteDesign, duplicateDesign, getBrand, getDesign,
@@ -564,8 +565,6 @@ export default function Home() {
                   <div className="home-result-group">
                     <h3>Formats</h3>
                     {searchPresets.map(preset => {
-                      const meta = typeMeta(preset.name);
-                      const Icon = meta.icon;
                       return (
                         <button
                           key={preset.id}
@@ -575,7 +574,7 @@ export default function Home() {
                             startBlank(preset.w, preset.h, `Untitled ${preset.name.toLowerCase()}`, preset.name);
                           }}
                         >
-                          <span className="home-result-action-icon" style={{ color: meta.color }}><Icon size={17} /></span>
+                          <FormatGlyph formatId={preset.id} size="sm" ratio={preset.w / preset.h} />
                           <span><strong>{preset.name}</strong><small>{preset.group} · {preset.w}×{preset.h} · {preset.hint}</small></span>
                           <ArrowUpRight size={14} />
                         </button>
@@ -673,7 +672,7 @@ export default function Home() {
                           </div>
                         </div>
                         <strong>{t.name}</strong>
-                        <span>{t.category} · {formatCount(t.pages.length, 'page', 'pages')}</span>
+                        <span className="home-template-meta"><FormatGlyph name={t.category} size="micro" /> {t.category} · {formatCount(t.pages.length, 'page', 'pages')}</span>
                       </Link>
                     ))}
                   </div>
