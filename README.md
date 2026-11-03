@@ -12,10 +12,11 @@ No account. No watermark. Your designs stay yours. AI runs through a serverless 
 
 - **20 hand-built templates** across Instagram, stories, presentations, posters, resumes, menus, invitations, business cards, YouTube, banners and podcasts.
 - **59 canvas presets** plus custom dimensions up to 6000 × 6000.
-- **Canvas-style Home dashboard** at `/dashboard` — left rail with Create, Home, Projects, Templates, Brand, AI Studio, Print and More; a gradient “What will you design today?” hero; glowing universal search across designs, templates and actions; 13 creation shortcuts; Continue designing; Templates for you; and a full Projects view with rename, duplicate, download, present and delete.
+- **Canvas-style Home dashboard** at `/dashboard` — left rail with Create, Home, Projects, Templates, Brand, AI Studio, Print and More; a gradient “What will you design today?” hero; glowing universal search across designs, templates and actions; 14 creation shortcuts; Continue designing; Templates for you; and a full Projects view with rename, duplicate, download, present and delete.
 - **Functional starting points** — Presentation, Social media, Doc, Whiteboard, Upload, Custom size, Printables and Templates create real editable designs. Video, Sheet, Website and Magic Layers explain their honest scope instead of faking media tools. The Create modal is a **59-format design library** grouped into Social, Presentation, Print, Brand, Web and Docs, with search across every format.
 - **A real editor** - drag, resize, rotate, snap to guides, multi-select, group resize, align, distribute, layer, lock, hide, duplicate, copy/paste and undo/redo.
-- **100-icon interface vocabulary** - one custom `VellumIcon` set covers navigation, actions, context menus, inspector controls, panels, present mode and every dialog; every glyph has a subtle two-layer ink echo and animates on first paint, hover and active state in the dashboard and Studio. `FormatGlyph` gives all 59 formats their own tone, mark and aspect marker.
+- **120+ icon interface vocabulary** - one custom `VellumIcon` set covers navigation, actions, context menus, inspector controls, panels, present mode and every dialog; every glyph has a subtle two-layer ink echo and animates on first paint, hover and active state in the dashboard and Studio. `FormatGlyph` gives all 59 formats their own tone, mark and aspect marker.
+- **Photo Editor** - open Photo from the dashboard or More menu to import a JPEG, PNG, WebP or GIF, then edit it locally: sixteen tonal and colour controls with a live histogram, cropping with aspect presets, rotation and flipping, nine filter presets, draggable text layers, hold-to-compare with the original, undo/redo and PNG/JPEG/WebP export. The photo and edit stack restore from browser storage.
 - **Video Studio** - open Video from the dashboard or More menu to import local video, image and audio files, build a three-track timeline, trim/split/duplicate clips, add text and image overlays, mix volume, preview, autosave and export a real WebM with mixed audio. The `/videos` library keeps multiple projects with search, rename, duplicate and delete. Clip tools include speed, colour correction, video zoom and text motion presets. The last project reopens from browser storage.
 - **Right-click canvas menu** — copy, copy/paste style, paste, duplicate and delete; Layer and Align-to-page submenus; group/ungroup; reusable components; local comment pins; lock controls; apply a palette from the selection to the page; download the selection as a transparent PNG; Magic Write and Translate powers.
 - **Typography** — 15 self-hosted fonts, weight, size, line-height, letter-spacing, alignment, uppercase, underline, highlight, outline and drop shadow.
@@ -97,7 +98,7 @@ docs/            feature research and AI architecture notes
 scripts/         Playwright QA scripts used during development
 ```
 
-See [docs/AI-RESEARCH.md](docs/AI-RESEARCH.md) for the Canva/advanced-feature research, honest competitive matrix, and the AI architecture decisions. See [docs/VIDEO-RESEARCH.md](docs/VIDEO-RESEARCH.md) for the lightweight video-editor research. See [docs/ENGINE-SCHEMA.md](docs/ENGINE-SCHEMA.md) for the core canvas, typography, timeline, vector, color, presentation, layout and brand schemas.
+See [docs/AI-RESEARCH.md](docs/AI-RESEARCH.md) for the Canva/advanced-feature research, honest competitive matrix, and the AI architecture decisions. See [docs/VIDEO-RESEARCH.md](docs/VIDEO-RESEARCH.md) for the lightweight video-editor research and [docs/PHOTO-RESEARCH.md](docs/PHOTO-RESEARCH.md) for the photo-editor research. See [docs/ENGINE-SCHEMA.md](docs/ENGINE-SCHEMA.md) for the core canvas, typography, timeline, vector, color, presentation, layout and brand schemas.
 
 ## Privacy & limits
 
@@ -123,7 +124,7 @@ The app was tested end-to-end with Playwright against Chrome:
 - share link preview and editable import
 - present mode navigation
 - dashboard rename, duplicate, delete and search
-- Home dashboard: search-first routing, 13 categories, Presentation/Doc/Whiteboard/Video Studio/Sheet/Website creation, image upload, print modal, universal search, project menus, More/Help popovers and a 390 px mobile layout
+- Home dashboard: search-first routing, 14 categories, Presentation/Doc/Whiteboard/Photo Editor/Video Studio/Sheet/Website creation, image upload, print modal, universal search, project menus, More/Help popovers and a 390 px mobile layout
 - Design library: 59 formats across six groups including Desktop/Phone Wallpaper, Facebook Post/Cover/Story/Event, Photo Collage, Certificate, Invoice, Letterhead, Brochure, Postcard, Book/Magazine Cover, Podcast/Album Cover, App Icon, YouTube Banner, Link in Bio, Code, Doc, Document, Sheet, Whiteboard, Mobile/Landscape Video, Newsletter and Your Story; searchable across all formats
 - Editor right-click menu: copy/paste, copy/paste style, duplicate/delete, layer and align submenus, group/ungroup, component save + insert + persistence, comment add/resolve/delete + pin, lock/unlock, palette apply + undo, selection PNG download, and Magic Write/Translate handoff to AI Studio
 - Motion and accessibility polish: reduced-motion without losing colour feedback, toast exit, origin-aware menus, modal focus trap/restore, button press states, 4.79:1 Home label contrast, and no horizontal overflow at 390 px

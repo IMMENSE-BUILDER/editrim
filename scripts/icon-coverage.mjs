@@ -55,6 +55,7 @@ const videoId = await p.evaluate(async () => {
   return storage.createVideoProject('Icon check').id;
 });
 const video = await audit(p, 'video 1440', `${base}/video/${videoId}`);
+const photo = await audit(p, 'photo 1440', `${base}/photo`);
 
 await p.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
 await p.waitForTimeout(500);
@@ -117,6 +118,7 @@ const mvideoId = await mp.evaluate(async () => {
   return storage.createVideoProject('Icon check').id;
 });
 const mvideo = await audit(mp, 'video 390', `${base}/video/${mvideoId}`);
+const mphoto = await audit(mp, 'photo 390', `${base}/photo`);
 await mp.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
 await mp.waitForTimeout(400);
 await mp.locator('.rail-create').click();
@@ -134,7 +136,8 @@ assert.ok(shared.count >= 4, 'shared view icon coverage');
 assert.ok(notfound.count >= 1, '404 icon coverage');
 assert.ok(videos.count >= 4, 'video library icon coverage');
 assert.ok(video.count >= 20, 'video editor icon coverage');
-assert.ok(mlanding.count >= 12 && mhome.count >= 15 && mtemplates.glyphs >= 12 && meditor.count >= 10 && mpresent.count >= 4 && mvideos.count >= 4 && mvideo.count >= 15, 'mobile icon coverage');
+assert.ok(photo.count >= 10, 'photo editor icon coverage');
+assert.ok(mlanding.count >= 12 && mhome.count >= 15 && mtemplates.glyphs >= 12 && meditor.count >= 10 && mpresent.count >= 4 && mvideos.count >= 4 && mvideo.count >= 15 && mphoto.count >= 8, 'mobile icon coverage');
 
 // Editor surfaces: context menu, AI panel, export and share dialogs
 await p.goto(`${base}/editor/new?template=cafe-opening`, { waitUntil: 'networkidle' });

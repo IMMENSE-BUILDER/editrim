@@ -336,6 +336,7 @@ export default function Home() {
   const actions: { label: string; hint: string; icon: VellumIconName; run: () => void }[] = [
     { label: 'Create a presentation', hint: '16:9 deck', icon: 'present', run: () => startBlank(1920, 1080, 'Untitled presentation', 'Presentation') },
     { label: 'Open video studio', hint: 'Timeline, clips, audio and text overlays', icon: 'video', run: () => navigate('/videos') },
+    { label: 'Open photo editor', hint: 'Exposure, crop, filters, text and export', icon: 'photo', run: () => navigate('/photo') },
     { label: 'Browse design library', hint: `${SIZE_PRESETS.length} formats, from social to print`, icon: 'templates', run: () => openCreate() },
     { label: 'Open AI Studio', hint: 'Design, write, edit or review with AI', icon: 'spark', run: () => navigate('/editor/new#ai') },
     { label: 'Upload an image', hint: 'Turn a photo into a new design', icon: 'upload', run: () => fileRef.current?.click() },
@@ -362,6 +363,7 @@ export default function Home() {
     { id: 'presentation', label: 'Presentation', icon: 'present', tone: 'orange', run: () => startBlank(1920, 1080, 'Untitled presentation', 'Presentation') },
     { id: 'social', label: 'Social media', icon: 'social', tone: 'coral', run: () => startBlank(1080, 1080, 'Untitled social post', 'Instagram') },
     { id: 'video', label: 'Video', icon: 'video', tone: 'pink', run: () => navigate('/video') },
+    { id: 'photo', label: 'Photo', icon: 'photo', tone: 'teal', run: () => navigate('/photo') },
     { id: 'printables', label: 'Printables', icon: 'printable', tone: 'violet', run: () => navigate('/templates?category=Poster') },
     { id: 'doc', label: 'Doc', icon: 'doc', tone: 'teal', run: startDoc },
     { id: 'whiteboard', label: 'Whiteboard', icon: 'board', tone: 'green', run: startWhiteboard },
@@ -810,6 +812,7 @@ export default function Home() {
         <div className="home-more-grid">
           <button onClick={() => { setMoreOpen(false); openCreate(); }}><VellumIcon name="templates" size={18} /><strong>Design library</strong></button>
           <button onClick={() => { setMoreOpen(false); navigate('/video'); }}><VellumIcon name="video" size={18} /><strong>Video studio</strong></button>
+          <button onClick={() => { setMoreOpen(false); navigate('/photo'); }}><VellumIcon name="photo" size={18} /><strong>Photo editor</strong></button>
           <button onClick={() => { setMoreOpen(false); openCreate(true); }}><VellumIcon name="custom" size={18} /><strong>Custom size</strong></button>
           <button onClick={() => { setMoreOpen(false); fileRef.current?.click(); }}><VellumIcon name="upload" size={18} /><strong>Upload image</strong></button>
           <button onClick={() => { setMoreOpen(false); openPrint(); }}><VellumIcon name="print" size={18} /><strong>Print-ready PDF</strong></button>

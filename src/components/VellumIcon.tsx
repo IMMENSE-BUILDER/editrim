@@ -19,7 +19,9 @@ export type VellumIconName =
   | 'paintbrush' | 'language' | 'minus' | 'zoomIn' | 'zoomOut' | 'rotate' | 'clock'
   | 'info' | 'scan' | 'sidebar' | 'sidebarOpen' | 'refresh' | 'camera'
   | 'film' | 'music' | 'volume' | 'volumeOff' | 'scissors' | 'split'
-  | 'skipStart' | 'skipEnd' | 'loop' | 'record' | 'waveform';
+  | 'skipStart' | 'skipEnd' | 'loop' | 'record' | 'waveform'
+  | 'photo' | 'crop' | 'flipX' | 'flipY' | 'sun' | 'contrast' | 'thermometer'
+  | 'histogram' | 'compare' | 'droplet';
 
 const ICONS: Record<VellumIconName, string[]> = {
   home: ['M3 10.8 12 3.5l9 7.3V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-9.2Z', 'M9.5 21v-6h5v6'],
@@ -133,6 +135,28 @@ const ICONS: Record<VellumIconName, string[]> = {
   loop: ['M17 2l4 4-4 4', 'M3 11V9a4 4 0 0 1 4-4h14', 'M7 22l-4-4 4-4', 'M21 13v2a4 4 0 0 1-4 4H3'],
   record: ['M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16z', 'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6z'],
   waveform: ['M3 10v4M7 7v10M11 4v16M15 8v8M19 6v12M23 10v4'],
+  photo: [
+    'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z',
+    'M14.31 8 20.05 17.94',
+    'M9.69 8h11.48',
+    'M7.38 12 4.51 6.96',
+    'M9.69 16H3.95',
+    'M14.31 16l2.87 5.04',
+    'M16.62 12l2.87-5.04',
+  ],
+  crop: ['M6 2v14a2 2 0 0 0 2 2h14', 'M2 6h14a2 2 0 0 1 2 2v14'],
+  flipX: ['M12 3v18', 'M8 7 3 12l5 5', 'M16 7l5 5-5 5'],
+  flipY: ['M3 12h18', 'M7 8l5-5 5 5', 'M7 16l5 5 5-5'],
+  sun: [
+    'M12 7.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9z',
+    'M12 2v2M12 20v2M4 12H2M22 12h-2',
+    'M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19',
+  ],
+  contrast: ['M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z', 'M12 3v18', 'M12 8a4 4 0 0 1 0 8z'],
+  thermometer: ['M14 14.8V5a2 2 0 1 0-4 0v9.8a4 4 0 1 0 4 0z', 'M12 9v6'],
+  histogram: ['M3 20h18', 'M6 20v-9h3v9', 'M11 20V5h3v15', 'M16 20v-6h3v6'],
+  compare: ['M12 3v18', 'M8 8 4 12l4 4', 'M16 8l4 4-4 4'],
+  droplet: ['M12 3s6 6.4 6 10.4A6 6 0 0 1 6 13.4C6 9.4 12 3 12 3z'],
 };
 
 export function VellumIcon({

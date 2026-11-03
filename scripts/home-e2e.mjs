@@ -95,6 +95,16 @@ await page.locator('.videos-back').click();
 await page.waitForSelector('.home', { timeout: 15000 });
 await wait(500);
 
+// photo editor opens from the dashboard
+await page.locator('.home-cat[title="Photo"]').click();
+await page.waitForSelector('.photo-editor', { timeout: 15000 });
+await wait(400);
+log('photoEditor', await page.locator('.ph-empty h2').innerText());
+assert.equal(await page.locator('.ph-rail-btn').count(), 4);
+await page.locator('.ph-back').click();
+await page.waitForSelector('.home', { timeout: 15000 });
+await wait(500);
+
 // print modal
 await page.locator('.rail-nav button[title="Print-ready PDF"]').click();
 await wait(400);
@@ -234,7 +244,7 @@ log('mobileMetrics', mobileMetrics);
 assert.equal(mobileMetrics.scrollWidth, mobileMetrics.clientWidth);
 assert.equal(mobileMetrics.railHeight, 60);
 assert.ok(mobileMetrics.navWidth > 200);
-assert.equal(mobileMetrics.categories, 13);
+assert.equal(mobileMetrics.categories, 14);
 await mp.screenshot({ path: 'shots/home-mobile.png' });
 log('mobileErrors', mobileErrors);
 assert.equal(mobileErrors.length, 0);

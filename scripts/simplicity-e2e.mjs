@@ -92,11 +92,25 @@ assert.equal(editor.hints, 0);
 assert.equal(editor.overflow, false);
 assert.ok(!editor.text.includes('Double-click text to edit'));
 
+await p.goto(`${base}/photo`, { waitUntil: 'networkidle' });
+await p.waitForTimeout(600);
+const photo = await p.evaluate(() => ({
+  text: document.body.innerText,
+  rail: document.querySelectorAll('.ph-rail-btn').length,
+  overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+}));
+console.log('photo', photo);
+assert.equal(photo.rail, 4);
+assert.equal(photo.overflow, false);
+for (const copy of ['Drag the handles to crop', 'Choose a photo to start', 'Select a layer to edit', 'JPEG, PNG, WebP']) {
+  assert.ok(!photo.text.includes(copy), `photo copy remains: ${copy}`);
+}
+
 const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, deviceScaleFactor: 2 });
 const mp = await mobile.newPage();
 mp.on('pageerror', e => errors.push(e.message));
 mp.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
-for (const route of ['/videos', '/dashboard', '/templates', '/editor/new?template=cafe-opening']) {
+for (const route of ['/videos', '/dashboard', '/templates', '/photo', '/editor/new?template=cafe-opening']) {
   await mp.goto(`${base}${route}`, { waitUntil: 'networkidle' });
   await mp.waitForTimeout(500);
   const overflow = await mp.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
