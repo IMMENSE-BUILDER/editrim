@@ -483,6 +483,76 @@
   color: var(--muted);
 }
 
+/* Short laptop windows: lift the hero so the headline, subhead and CTA row
+   are all visible without scrolling. Tall screens keep the roomier layout. */
+@media (min-width: 901px) and (max-height: 820px) {
+  .hero {
+    padding-top: 22px;
+  }
+
+  .hero-grid {
+    min-height: 0;
+    align-items: start;
+  }
+
+  .hero-copy {
+    padding-bottom: 18px;
+  }
+
+  .hero-badge {
+    margin-bottom: 18px;
+  }
+
+  .hero-title {
+    font-size: clamp(46px, 5.5vw, 78px);
+    margin-bottom: 18px;
+  }
+
+  .hero-sub {
+    font-size: 15.5px;
+    line-height: 1.55;
+    margin-bottom: 22px;
+  }
+
+  .hero-ctas {
+    margin-bottom: 18px;
+  }
+
+  .hero-stats {
+    margin-top: 18px;
+    padding: 16px 0 18px;
+  }
+}
+
+@media (min-width: 901px) and (max-height: 680px) {
+  .hero {
+    padding-top: 14px;
+  }
+
+  .hero-badge {
+    height: 30px;
+    margin-bottom: 14px;
+  }
+
+  .hero-title {
+    font-size: clamp(42px, 5vw, 66px);
+    margin-bottom: 14px;
+  }
+
+  .hero-sub {
+    font-size: 14.5px;
+    margin-bottom: 18px;
+  }
+
+  .hero-ctas {
+    margin-bottom: 14px;
+  }
+
+  .hero-meta {
+    font-size: 11px;
+  }
+}
+
 /* ---------------- marquee ---------------- */
 .marquee {
   margin-top: 10px;
