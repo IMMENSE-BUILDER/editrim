@@ -138,12 +138,14 @@ The panel shows stage, code, HTTP status, request ID, model, and a **Copy diagno
 - AI Review: visual snapshot + scene summary → accurate, specific critique with score/strengths/improvements.
 - Error UI: simulated gateway 502 and network failure, with stage/code/request ID and retry.
 - Model switch verified from `/api/ai` health and responses: `xiaomi/mimo-v2.6-flash`.
-- Home dashboard: functional workspace at `/dashboard` with 13 creation shortcuts, universal search, recent designs, template shelf, project menus and print-ready PDF. Doc, Whiteboard, Sheet, Website and Video storyboard shortcuts create real editable layouts; they are not collaborative apps or media renderers.
+- Home dashboard: functional workspace at `/dashboard` with 14 creation shortcuts, universal search, recent designs, template shelf, project menus and print-ready PDF. Doc, Whiteboard, Sheet and Website shortcuts create real editable layouts; Photo opens the photo editor, Video opens Video Studio, and Magic Layers explains its scope. Sheet and Website are not spreadsheet or hosting engines.
+- Photo editor at `/photo` and Video Studio at `/videos`: deterministic Canvas 2D tools for stills and clips, verified by `scripts/photo-editor-e2e.mjs` and `scripts/video-editor-e2e.mjs`. They are deliberately not AI features and are documented in `docs/PHOTO-RESEARCH.md` and `docs/VIDEO-RESEARCH.md`.
 - Editor context menu: copy/copy style/paste/paste style, layer and page-align submenus, grouping, reusable local components, comment pins with resolve/delete, lock controls, palette extraction and page recolouring, selection-only PNG export, plus Magic Write/Translate entry points into AI Studio.
 
 ### Not implemented (honest limits)
 
 - Background remover, Magic Eraser/Edit/Expand/Grab, Magic Layers.
+- Generative photo edits (object removal, inpainting, background removal). `/photo` ships deterministic tonal, crop, filter and text tools — real controls, not a model.
 - Raster image/video/audio generation.
 - Real-time collaboration, comments, approvals, cloud sync.
 - Social scheduling, print fulfilment, Canva's asset library.

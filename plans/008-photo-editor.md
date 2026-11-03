@@ -80,3 +80,24 @@ The photo E2E verifies:
 - 390 px layout: bottom tool bar, scrollable inspector, export dialog inside the viewport, no horizontal overflow
 - drag-and-drop import replaces the photo and resets the edit stack
 - dashboard Photo category opens the editor with the restored photo
+
+## Live verification
+
+Production run on `https://vellum-delta-dun.vercel.app`:
+
+- `/photo` served the new build with 16 sliders and the Photo title.
+- Imported the 1600 × 1067 fixture; adjustments set to exposure **+0.5**, contrast **+22**, temperature **−30**, vignette **40**, grain **18**.
+- Hold-to-compare showed the "Original" badge and restored the edit on release.
+- 16:9 crop rotated 90° → crop `{ w: 1, h: 0.375 }` in rotated space, exactly 16:9 in pixels.
+- Cinematic filter applied; a text layer "LIVE" added.
+- PNG export downloaded at **1067 × 600**, 604 KB, matching the dialog.
+- Reload restored the filter, text layer and crop.
+- 390 px viewport: bottom rail at 56 px, canvas 370 px wide, no horizontal overflow.
+- Dashboard Photo category reopened the editor with the restored photo.
+- `/api/ai` returned `200`; no console errors.
+
+## See also
+
+- [docs/PHOTO-RESEARCH.md](../docs/PHOTO-RESEARCH.md) — product research and excluded scope.
+- [docs/ENGINE-SCHEMA.md](../docs/ENGINE-SCHEMA.md) — photo/video document formats and storage keys.
+- [plans/007-video-advanced.md](007-video-advanced.md) — the sibling video studio.

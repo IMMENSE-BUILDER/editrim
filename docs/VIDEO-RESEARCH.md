@@ -27,3 +27,9 @@ Research sources (public product pages, captured with Chromium):
 - `/video/:id` editor with media, preview/timeline and properties.
 - Speed (0.5×–2×), colour correction (brightness/contrast/saturation/blur), video zoom and text motion (fade/rise/pop).
 - Existing trim, split, image/text/audio overlays, fades, undo/redo, autosave, WebM export and responsive drawers retained.
+
+## See also
+
+- [plans/007-video-advanced.md](../plans/007-video-advanced.md) — implementation and verification record.
+- [PHOTO-RESEARCH.md](PHOTO-RESEARCH.md) — the sibling photo editor.
+- [ENGINE-SCHEMA.md](ENGINE-SCHEMA.md) — video project keys and media storage.

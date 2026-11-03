@@ -1,7 +1,7 @@
 # Vellum — Product Brief
 
 ## What it is
-Vellum is a browser-based design studio: a complete, working alternative to Canva for social posts, stories, presentations, posters, resumes, menus, invitations and brand assets. No install, no account. Designs live in the browser and export as PNG, JPG or PDF. An AI Studio adds editable copy, layouts, command-based edits, vector illustrations, translation and visual critique through a serverless Vercel AI Gateway proxy.
+Vellum is a browser-based design studio: a complete, working alternative to Canva for social posts, stories, presentations, posters, resumes, menus, invitations and brand assets. No install, no account. Designs live in the browser and export as PNG, JPG or PDF. An AI Studio adds editable copy, layouts, command-based edits, vector illustrations, translation and visual critique through a serverless Vercel AI Gateway proxy. A photo editor and a video studio handle local stills and clips on the same device.
 
 ## Who it is for
 People who need polished visuals without a design background: small-business owners, students, creators, and teams making a last-minute deck or launch post.
@@ -11,12 +11,15 @@ People who need polished visuals without a design background: small-business own
 - **Template gallery (`/templates`)** — Experience. Let the work lead; browse and start from real templates.
 - **Dashboard (`/dashboard`)** — Operate. Reach a recent design or start a new one in one click.
 - **Editor (`/editor/:id`)** — Operate. Fast, quiet, predictable. The design is the hero; the chrome recedes.
+- **Video library (`/videos`)** — Operate. Find, create, rename, duplicate or delete video projects before opening one.
+- **Video editor (`/video/:id`)** — Operate. Media, preview/timeline and clip properties in three regions.
+- **Photo editor (`/photo`)** — Operate. One photo, four modes: Adjust, Crop, Filters, Text.
 - **Present (`/present/:id`)** — Experience. Full-bleed pages, minimal controls.
 
 ## Core promises
-1. **Real editing, not a mockup.** Move, resize, rotate, snap, layer, align, style text, upload images, undo/redo, multi-page, present, export.
-2. **Start fast.** 20 hand-built templates across 12 categories, 59 size presets, blank canvases and a browser video studio.
-3. **Yours.** Projects autosave locally, export without watermarks, work offline after first load.
+1. **Real editing, not a mockup.** Move, resize, rotate, snap, layer, align, style text, upload images, undo/redo, multi-page, present, export — plus a photo editor that processes real pixels and a video studio that exports a real WebM.
+2. **Start fast.** 20 hand-built templates across 12 categories, 59 size presets, blank canvases, a browser photo editor and a browser video studio.
+3. **Yours.** Projects autosave locally, export without watermarks, work offline after first load. Imported photos and video media never leave the device.
 4. **No dark patterns.** No sign-up wall, no paywall. AI is opt-in, previewed before it changes anything, and honestly scoped. Everything shown is usable.
 
 ## AI Studio
@@ -29,7 +32,7 @@ People who need polished visuals without a design background: small-business own
 
 ## Non-goals
 - Multiplayer collaboration, cloud sync, social scheduling, print fulfilment or billing.
-- Image segmentation/inpainting, AI video/audio, or Magic Layers without a suitable media model. These are not faked.
+- Image segmentation/inpainting, AI video/audio, or Magic Layers without a suitable media model. These are not faked. The photo editor's adjustments and the video studio's filters are deterministic maths, not AI.
 - Claiming a feature exists when it does not.
 
 ## Success

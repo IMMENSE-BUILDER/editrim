@@ -31,3 +31,11 @@ Public product pages captured while scoping this feature:
 - Filters: nine preset looks rendered as live thumbnails.
 - Text: multiple layers with font, weight, size, colour, alignment, opacity, rotation and canvas dragging.
 - Export: PNG, JPEG or WebP at full or half scale with a quality control.
+
+## See also
+
+- [plans/008-photo-editor.md](../plans/008-photo-editor.md) — implementation, storage keys and the verification record.
+- [VIDEO-RESEARCH.md](VIDEO-RESEARCH.md) — the sibling studio's research and excluded scope.
+- [ENGINE-SCHEMA.md](ENGINE-SCHEMA.md) — the `PhotoSession`, `PhotoSettings` and storage formats.
+
+Live: `https://vellum-delta-dun.vercel.app/photo`.

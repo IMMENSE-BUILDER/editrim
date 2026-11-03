@@ -1,6 +1,6 @@
 # Vellum
 
-**A complete design studio in your browser.** Vellum is a working, local-first alternative to Canva for social posts, stories, presentations, posters, resumes, menus, invitations and brand assets — now with an AI studio that can design, write, edit, illustrate and review.
+**A complete design studio in your browser.** Vellum is a working, local-first alternative to Canva for social posts, stories, presentations, posters, resumes, menus, invitations and brand assets — now with an AI studio that can design, write, edit, illustrate and review, plus local photo and video studios.
 
 No account. No watermark. Your designs stay yours. AI runs through a serverless proxy, never from a key in the browser.
 
@@ -13,11 +13,11 @@ No account. No watermark. Your designs stay yours. AI runs through a serverless 
 - **20 hand-built templates** across Instagram, stories, presentations, posters, resumes, menus, invitations, business cards, YouTube, banners and podcasts.
 - **59 canvas presets** plus custom dimensions up to 6000 × 6000.
 - **Canvas-style Home dashboard** at `/dashboard` — left rail with Create, Home, Projects, Templates, Brand, AI Studio, Print and More; a gradient “What will you design today?” hero; glowing universal search across designs, templates and actions; 14 creation shortcuts; Continue designing; Templates for you; and a full Projects view with rename, duplicate, download, present and delete.
-- **Functional starting points** — Presentation, Social media, Doc, Whiteboard, Upload, Custom size, Printables and Templates create real editable designs. Video, Sheet, Website and Magic Layers explain their honest scope instead of faking media tools. The Create modal is a **59-format design library** grouped into Social, Presentation, Print, Brand, Web and Docs, with search across every format.
-- **A real editor** - drag, resize, rotate, snap to guides, multi-select, group resize, align, distribute, layer, lock, hide, duplicate, copy/paste and undo/redo.
-- **120+ icon interface vocabulary** - one custom `VellumIcon` set covers navigation, actions, context menus, inspector controls, panels, present mode and every dialog; every glyph has a subtle two-layer ink echo and animates on first paint, hover and active state in the dashboard and Studio. `FormatGlyph` gives all 59 formats their own tone, mark and aspect marker.
-- **Photo Editor** - open Photo from the dashboard or More menu to import a JPEG, PNG, WebP or GIF, then edit it locally: sixteen tonal and colour controls with a live histogram, cropping with aspect presets, rotation and flipping, nine filter presets, draggable text layers, hold-to-compare with the original, undo/redo and PNG/JPEG/WebP export. The photo and edit stack restore from browser storage.
-- **Video Studio** - open Video from the dashboard or More menu to import local video, image and audio files, build a three-track timeline, trim/split/duplicate clips, add text and image overlays, mix volume, preview, autosave and export a real WebM with mixed audio. The `/videos` library keeps multiple projects with search, rename, duplicate and delete. Clip tools include speed, colour correction, video zoom and text motion presets. The last project reopens from browser storage.
+- **Functional starting points** — Presentation, Social media, Doc, Whiteboard, Upload, Custom size, Printables and Templates create real editable designs. Photo opens the photo editor, Video opens Video Studio, and Sheet, Website and Magic Layers explain their honest scope instead of faking media tools. The Create modal is a **59-format design library** grouped into Social, Presentation, Print, Brand, Web and Docs, with search across every format.
+- **A real editor** — drag, resize, rotate, snap to guides, multi-select, group resize, align, distribute, layer, lock, hide, duplicate, copy/paste and undo/redo.
+- **120+ icon interface vocabulary** — one custom `VellumIcon` set covers navigation, actions, context menus, inspector controls, panels, present mode and every dialog; every glyph has a subtle two-layer ink echo and animates on first paint, hover and active state in the dashboard and Studio. `FormatGlyph` gives all 59 formats their own tone, mark and aspect marker.
+- **Photo editor** — `/photo` imports a JPEG, PNG, WebP or GIF and edits it locally: sixteen tonal and colour controls with a live histogram, cropping with aspect presets, rotation and flipping, nine filter presets, draggable text layers, hold-to-compare with the original, undo/redo and PNG/JPEG/WebP export. The source file and the edit stack restore from browser storage. Reachable from the Photo category, dashboard search and the More menu.
+- **Video Studio** — `/videos` keeps multiple projects with search, rename, duplicate and delete. `/video/:id` imports local video, image and audio files, builds a three-track timeline, trims, splits and duplicates clips, adds text and image overlays, mixes volume, previews, autosaves and exports a real WebM with mixed audio. Clip tools include speed, colour correction, video zoom and text motion presets. The last project reopens from browser storage.
 - **Right-click canvas menu** — copy, copy/paste style, paste, duplicate and delete; Layer and Align-to-page submenus; group/ungroup; reusable components; local comment pins; lock controls; apply a palette from the selection to the page; download the selection as a transparent PNG; Magic Write and Translate powers.
 - **Typography** — 15 self-hosted fonts, weight, size, line-height, letter-spacing, alignment, uppercase, underline, highlight, outline and drop shadow.
 - **Shapes & graphics** — 12 vector shapes, lines, 30 line icons, nine built-in photos.
@@ -74,9 +74,10 @@ Build command `npm run build`, output `dist`. The AI function gets a 60s max dur
 - React Router
 - Self-hosted Google fonts via Fontsource
 - Canvas 2D renderer for exports (text wrapping, gradients, shadows, image filters)
+- Canvas 2D photo pipeline: rotate/flip → exact source crop → tonal pass → text, with a draft preview while controls move and a full-resolution export
 - jsPDF for PDF export
 - LZ-String for share links
-- IndexedDB for uploads, localStorage for designs and brand kit
+- IndexedDB for uploads, photo sources and video media; localStorage for designs, brand kit, photo sessions and video projects
 - **Vercel AI Gateway + Xiaomi MiMo V2.6 Flash** via a serverless AI proxy and matching Vite dev middleware
 - JSON command bus for AI edits: schema validation, locked-node protection, one-step undo
 - DOMParser allowlist sanitiser for AI-authored SVG
@@ -88,17 +89,26 @@ Build command `npm run build`, output `dist`. The AI function gets a 60s max dur
 src/
   components/    shared UI, page renderer, modals
   editor/        canvas interactions, inspector, AI Studio, panels, state/history
+  hooks/         shared React hooks
   lib/           types, templates, renderer, AI schemas/commands, storage, export
   lib/engine/    canvas, typography, timeline, vector, color, presentation, layout, brand schemas
-  pages/         landing, home dashboard, templates, editor, present, shared view
+  lib/photo/     photo settings, crop maths, pixel pipeline and IndexedDB source
+  lib/video/     video project storage, media cache and canvas renderer
+  pages/         landing, home dashboard, templates, editor, video library/editor, photo editor, present, shared view
   styles/        design tokens and surface styles
 server/          shared AI core (prompts, gateway call, validation)
 api/             Vercel serverless AI endpoint
-docs/            feature research and AI architecture notes
-scripts/         Playwright QA scripts used during development
+docs/            feature research, engine schema and AI architecture notes
+scripts/         Playwright QA scripts and fixtures used during development
 ```
 
-See [docs/AI-RESEARCH.md](docs/AI-RESEARCH.md) for the Canva/advanced-feature research, honest competitive matrix, and the AI architecture decisions. See [docs/VIDEO-RESEARCH.md](docs/VIDEO-RESEARCH.md) for the lightweight video-editor research and [docs/PHOTO-RESEARCH.md](docs/PHOTO-RESEARCH.md) for the photo-editor research. See [docs/ENGINE-SCHEMA.md](docs/ENGINE-SCHEMA.md) for the core canvas, typography, timeline, vector, color, presentation, layout and brand schemas.
+Further reading:
+
+- [docs/AI-RESEARCH.md](docs/AI-RESEARCH.md) — Canva/advanced-feature research, the honest competitive matrix and the AI architecture decisions.
+- [docs/ENGINE-SCHEMA.md](docs/ENGINE-SCHEMA.md) — core canvas, typography, timeline, vector, color, presentation, layout and brand schemas, plus the local photo/video document formats.
+- [docs/VIDEO-RESEARCH.md](docs/VIDEO-RESEARCH.md) — video-editor research and the deliberately excluded scope.
+- [docs/PHOTO-RESEARCH.md](docs/PHOTO-RESEARCH.md) — photo-editor research, adopted control set and excluded AI imagery tools.
+- [plans/008-photo-editor.md](plans/008-photo-editor.md) — photo editor implementation and verification record.
 
 ## Privacy & limits
 
@@ -106,11 +116,13 @@ Vellum is local-first:
 
 - Designs live in your browser's local storage. Clearing site data removes them.
 - Uploaded images live in IndexedDB on this device and are never uploaded to a server.
+- An imported photo is stored as a single source blob in IndexedDB, with its edit stack in local storage. Both are local; nothing is sent anywhere.
+- Video projects keep their media blobs in IndexedDB and project JSON in local storage; nothing is uploaded.
 - Designs do not sync across devices. Share links carry a snapshot of the design inside the URL, not on a server.
 - Template photos are loaded from Unsplash. Uploads and exports work offline once the page is loaded; remote photos need a connection.
 - **AI is opt-in per action.** Text actions send your prompt plus a compact scene description. AI Review renders a temporary snapshot of the current page and sends it for visual inspection. Vellum does not store prompts, scenes or snapshots; Vercel AI Gateway may process them under its own terms.
 - AI results are drafts. They are previewed before insertion, and AI edits are shown as explicit commands before they can be applied. AI can be wrong.
-- **Not implemented:** image segmentation (background remover/Magic Eraser), inpainting, generated video/audio, real-time multiplayer, cloud sync, social scheduling, print fulfilment, and Canva's asset library. The UI does not pretend they exist.
+- **Not implemented:** image segmentation (background remover/Magic Eraser), inpainting, generated video/audio, real-time multiplayer, cloud sync, social scheduling, print fulfilment, and Canva's asset library. The UI does not pretend they exist. The photo editor's adjustments are deterministic Canvas maths, not generative AI.
 
 ## QA
 
@@ -126,6 +138,8 @@ The app was tested end-to-end with Playwright against Chrome:
 - dashboard rename, duplicate, delete and search
 - Home dashboard: search-first routing, 14 categories, Presentation/Doc/Whiteboard/Photo Editor/Video Studio/Sheet/Website creation, image upload, print modal, universal search, project menus, More/Help popovers and a 390 px mobile layout
 - Design library: 59 formats across six groups including Desktop/Phone Wallpaper, Facebook Post/Cover/Story/Event, Photo Collage, Certificate, Invoice, Letterhead, Brochure, Postcard, Book/Magazine Cover, Podcast/Album Cover, App Icon, YouTube Banner, Link in Bio, Code, Doc, Document, Sheet, Whiteboard, Mobile/Landscape Video, Newsletter and Your Story; searchable across all formats
+- Photo editor: empty state, import, 16 adjustments with pixel-level assertions, blur edge-energy, compare, undo/redo, crop + rotate/flip geometry, filter presets, text layers, drag-and-drop replace, reload restore, PNG/JPEG/WebP export and a 390 px layout
+- Video studio: multi-project library, media import, timeline trim/split, speed, colour correction, text motion, reload restore, WebM export and a 390 px layout
 - Editor right-click menu: copy/paste, copy/paste style, duplicate/delete, layer and align submenus, group/ungroup, component save + insert + persistence, comment add/resolve/delete + pin, lock/unlock, palette apply + undo, selection PNG download, and Magic Write/Translate handoff to AI Studio
 - Motion and accessibility polish: reduced-motion without losing colour feedback, toast exit, origin-aware menus, modal focus trap/restore, button press states, 4.79:1 Home label contrast, and no horizontal overflow at 390 px
 - Engine schema audit: 59 canvas formats, print DPI mappings, 16 font assets, 6 text-effect presets, 8 type pairings, 5 transitions, 35 vectors in 6 clusters, 10 mood palettes, 7 slide archetypes, 3 chart wrappers, reflow without overflow and enforced brand locks

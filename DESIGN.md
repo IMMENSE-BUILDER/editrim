@@ -24,6 +24,14 @@ Editorial studio meets precision tool. Warm paper, ink-black type, one electric 
 - Motion 120–240ms. Tokens: `--dur-fast` 120ms, `--dur` 180ms, `--dur-slow` 240ms; `--ease` for hover/colour, `--ease-out` for entrances and press feedback, `--ease-in-out` for on-screen movement. Purposeful only: panel reveal, selection, toast, hero drift. Reduced-motion keeps colour/opacity feedback and removes movement.
 - Editor chrome: 56px top bar, 68px rail + 300px panel, 264px inspector, bottom page strip. Neutral, no gradients.
 
+## Media studios (photo and video)
+- The photo editor shares Video Studio's dark shell rather than the paper editor: `#0B0A0F` canvas, `#131219` panels, `rgba(244,241,234,.1)` lines and `#F4F1EA` text. Lime `#D8F55A` is the only active accent; cobalt `#5B7CFF` is reserved for focused text inputs.
+- **Photo editor:** 58px header (back, name + save status, undo/redo/compare, import/reset/export), 78px tool rail, flexible stage, 322px inspector. At 900px and below the rail becomes a 56px bottom bar and the inspector a 41dvh panel; the header drops the logo, save label and secondary buttons rather than shrinking hit areas.
+- The image is the only colour in the room: neutral chrome, a faint checkerboard stage and a soft shadow under the photo. Controls stay at 10–11px with 8.5px uppercase group labels.
+- Functional labels only — no taglines or helper paragraphs. Adjustment group headers carry a Vellum icon (sun, droplet, scan, histogram); presets, sliders and layers speak for themselves.
+- Crop overlay: 1px paper frame, lime corner handles, thirds guides and a 62% shade outside the box. Text layers show a dashed box that turns solid lime when selected, with a single dot handle.
+- Focus is always visible: 2px lime outline with a 2px offset on keyboard focus.
+
 ## Do not
 - No generic purple SaaS gradient, no glassmorphism everywhere, no emoji as feature icons.
 - No centered-everything marketing page; use an asymmetric editorial grid.

@@ -1,5 +1,7 @@
 # Plans
 
+Implementation records. Each plan lists what shipped, the files involved and the checks that were run.
+
 | # | Plan | Status |
 |---|---|---|
 | 001 | Motion & interaction polish (tokens, toast exit, popover origins, reduced motion, press feedback, contrast) | Implemented |

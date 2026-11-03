@@ -27,6 +27,41 @@ Static checks: `npx tsc --noEmit`, `npm run build`
 
 The new schema layer extends these rather than replacing them.
 
+## Local media documents
+
+The photo and video studios are separate documents that live outside the design engine. Both are browser-local.
+
+### Photo — `src/lib/photo/`
+
+| Piece | Shape |
+|---|---|
+| `PhotoAdjustments` | 16 numbers: exposure, contrast, highlights, shadows, whites, blacks, temperature, tint, vibrance, saturation, clarity, sharpen, blur, vignette, grain, fade |
+| `PhotoTransform` | `rotate` (0/90/180/270), `flipX`, `flipY` |
+| `PhotoCrop` | normalised `x`, `y`, `w`, `h` against the **rotated** image |
+| `PhotoTextLayer` | `id`, `text`, `x`, `y`, `size`, `color`, `fontFamily`, `weight`, `align`, `opacity`, `rotation` |
+| `PhotoSettings` | `adjustments`, `transform`, `crop`, `filter` (preset id or `custom`), `text[]` |
+| `PhotoSession` | `name`, `sourceKey`, `width`, `height`, `settings`, `updatedAt` |
+
+Storage:
+
+- IndexedDB `vellum-photo-source` → store `source` → key `current` (the imported blob).
+- localStorage `vellum_photo_session_v1` (the session above).
+- Importing a new photo replaces the source and resets the settings; the previously stored session is overwritten.
+
+Geometry invariant: crop coordinates are normalised to the rotated canvas. `sourceCropRect()` inverse-maps the crop through flip and rotation to an exact source rectangle before extraction, so rotate → crop → export stays pixel-aligned.
+
+### Video — `src/lib/video/`
+
+| Piece | Key / shape |
+|---|---|
+| Project index | localStorage `vellum_video_projects_v1` — id, name, width/height, duration, clip count, asset count, poster, timestamps |
+| Project JSON | localStorage `vellum_video_project_v2_<id>` |
+| Last opened | localStorage `vellum_video_last_id_v1` |
+| Media blobs | IndexedDB `vellum-video-media` |
+| Legacy | `vellum_video_project_v1` is migrated into the index on first load |
+
+Project tracks are `video`, `overlay` and `audio`. Clips carry `start`, `duration`, `inPoint`, `speed` (0.5×–2×), `opacity`, `volume`, fades, `scale` (video zoom), `filters` (brightness/contrast/saturation/blur) and optional text with a motion preset (`none`/`fade`/`rise`/`pop`).
+
 ## Audit invariants
 
 `validateEngineSchema()` checks:
