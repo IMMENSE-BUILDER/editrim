@@ -9,6 +9,7 @@ import { FONT_CSS_STACK } from '../lib/fonts';
 import { paintToCss } from '../lib/render';
 import { measureTextHeight } from '../lib/render';
 import { clamp, rotatePoint, rotatedBBox, round, unionRect } from '../lib/utils';
+import '../styles/canvas-craft.css';
 
 type Handle = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w';
 
@@ -57,6 +58,20 @@ const isTypingTarget = (t: EventTarget | null) => {
   return !!el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.tagName === 'SELECT' || el.isContentEditable);
 };
 
+/** Screen-space slop before a background drag becomes a marquee. */
+const MARQUEE_THRESHOLD = 4;
+
+const rectFromPoints = (a: Point, b: Point, maxW: number, maxH: number): Rect => {
+  const x1 = clamp(Math.min(a.x, b.x), 0, maxW);
+  const y1 = clamp(Math.min(a.y, b.y), 0, maxH);
+  const x2 = clamp(Math.max(a.x, b.x), 0, maxW);
+  const y2 = clamp(Math.max(a.y, b.y), 0, maxH);
+  return { x: x1, y: y1, w: x2 - x1, h: y2 - y1 };
+};
+
+const rectsIntersect = (a: Rect, b: Rect) =>
+  a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+
 export function Canvas({
   design,
   page,
@@ -79,6 +94,8 @@ export function Canvas({
   const [panning, setPanning] = useState(false);
   const [guides, setGuides] = useState<{ x: number | null; y: number | null }>({ x: null, y: null });
   const [hint, setHint] = useState<{ text: string; x: number; y: number } | null>(null);
+  const [marquee, setMarquee] = useState<Rect | null>(null);
+  const marqueeCleanup = useRef<(() => void) | null>(null);
   const fittedFor = useRef('');
 
   const size = design.size;
@@ -144,6 +161,84 @@ export function Canvas({
     const r = pageRef.current?.getBoundingClientRect();
     if (!r || !view.zoom) return { x: 0, y: 0 };
     return { x: (clientX - r.left) / view.zoom, y: (clientY - r.top) / view.zoom };
+  };
+
+  // A marquee can be interrupted by unmount (route change, page switch) — drop its listeners.
+  useEffect(
+    () => () => {
+      marqueeCleanup.current?.();
+      marqueeCleanup.current = null;
+    },
+    [],
+  );
+
+  /* ---------- marquee selection ---------- */
+  const startMarquee = (e: React.PointerEvent) => {
+    const startClient = { x: e.clientX, y: e.clientY };
+    const start = toPage(e.clientX, e.clientY);
+    const additive = e.shiftKey;
+    const baseSelection = selectedIds;
+    let active = false;
+
+    const cleanup = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      window.removeEventListener('pointercancel', cancel);
+      window.removeEventListener('keydown', onKey, true);
+      if (marqueeCleanup.current === cleanup) marqueeCleanup.current = null;
+      setMarquee(null);
+    };
+
+    const cancel = () => {
+      active = false;
+      cleanup();
+    };
+
+    const onKey = (ev: KeyboardEvent) => {
+      if (ev.key !== 'Escape') return;
+      ev.preventDefault();
+      // Editor.tsx clears the selection on Escape — cancel the marquee first.
+      ev.stopImmediatePropagation();
+      cancel();
+    };
+
+    const move = (ev: PointerEvent) => {
+      if (!active && Math.hypot(ev.clientX - startClient.x, ev.clientY - startClient.y) < MARQUEE_THRESHOLD) return;
+      active = true;
+      setMarquee(rectFromPoints(start, toPage(ev.clientX, ev.clientY), size.width, size.height));
+    };
+
+    const up = (ev: PointerEvent) => {
+      const wasActive = active;
+      const point = toPage(ev.clientX, ev.clientY);
+      cleanup();
+      if (!wasActive) {
+        // A plain click on the page background still deselects, as before.
+        setSelectedIds([]);
+        return;
+      }
+      const rect = rectFromPoints(start, point, size.width, size.height);
+      const hits = page.elements
+        .filter(el => !el.hidden && rectsIntersect(rotatedBBox(el), rect))
+        .map(el => el.id);
+      setSelectedIds(additive ? [...new Set([...baseSelection, ...hits])] : hits);
+    };
+
+    marqueeCleanup.current?.();
+    marqueeCleanup.current = cleanup;
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+    window.addEventListener('pointercancel', cancel);
+    window.addEventListener('keydown', onKey, true);
+  };
+
+  const onPageDown = (e: React.PointerEvent) => {
+    if (e.button !== 0 || space || e.altKey) return;
+    // Elements, handles, pins and the text editor stop propagation, so anything
+    // arriving here landed on bare page background.
+    e.stopPropagation();
+    setEditingId(null);
+    startMarquee(e);
   };
 
   /* ---------- wheel zoom / pan ---------- */
@@ -585,6 +680,7 @@ export function Canvas({
         <div
           className="cv-page"
           ref={pageRef}
+          onPointerDown={onPageDown}
           style={{ width: size.width, height: size.height }}
         >
           <div className="cv-page-clip">
@@ -594,6 +690,7 @@ export function Canvas({
               return (
                 <div
                   key={el.id}
+                  data-element-id={el.id}
                   className={`cv-el ${selectedIds.includes(el.id) ? 'is-selected' : ''} ${el.locked ? 'is-locked' : ''}`}
                   style={{
                     left: el.x,
@@ -643,6 +740,20 @@ export function Canvas({
               {pin.count > 1 && <span>{pin.count}</span>}
             </button>
           ))}
+
+          {marquee && (
+            <div
+              className="cv-marquee"
+              aria-hidden="true"
+              style={{
+                left: marquee.x,
+                top: marquee.y,
+                width: marquee.w,
+                height: marquee.h,
+                borderWidth: 1 / view.zoom,
+              }}
+            />
+          )}
 
           {guides.x !== null && (
             <div className="cv-guide cv-guide-x" style={{ left: guides.x, width: 1 / view.zoom, height: size.height }} />

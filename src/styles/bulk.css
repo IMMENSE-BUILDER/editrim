@@ -1,0 +1,544 @@
+/* Bulk create — CSV rows to pages.
+   Scoped to .bulk-* inside the modal. Colours come from base tokens; dark
+   overrides only adjust surfaces that need their own depth. */
+
+.bulk {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---------- step rail ---------- */
+
+.bulk-steps {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.bulk-step {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted-2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.bulk-step + .bulk-step::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  margin-right: 3px;
+  background: var(--line);
+}
+
+.bulk-step-dot {
+  display: inline-grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+
+.bulk-step.is-active {
+  color: var(--ink);
+}
+
+.bulk-step.is-active .bulk-step-dot {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.bulk-step.is-done {
+  color: var(--ink-soft);
+}
+
+.bulk-step.is-done .bulk-step-dot {
+  border-color: transparent;
+  background: var(--lime);
+  color: var(--ink);
+}
+
+/* ---------- data step ---------- */
+
+.bulk-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 20px 20px;
+  border: 1.5px dashed var(--line-strong);
+  border-radius: 14px;
+  background: var(--paper);
+  text-align: center;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.bulk-drop.is-dragging {
+  border-color: var(--cobalt);
+  background: var(--cobalt-soft);
+}
+
+.bulk-drop-icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-bottom: 2px;
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: var(--shadow-xs);
+  color: var(--ink-soft);
+}
+
+.bulk-drop.is-dragging .bulk-drop-icon {
+  color: var(--cobalt);
+}
+
+.bulk-drop-title {
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bulk-drop-hint {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.bulk-drop .btn {
+  margin-top: 8px;
+}
+
+.bulk-file {
+  display: none;
+}
+
+.bulk-or {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted-2);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.bulk-or::before,
+.bulk-or::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.bulk-paste-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: -8px;
+}
+
+.bulk-textarea {
+  min-height: 130px;
+  font-family: 'Space Grotesk', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  tab-size: 2;
+  resize: vertical;
+}
+
+.bulk-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: -4px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.bulk-meta strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.bulk-meta .chip {
+  margin-left: auto;
+}
+
+.bulk-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+.bulk-error,
+.bulk-warn {
+  display: block;
+  margin: 0;
+  padding: 9px 11px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.bulk-error {
+  background: var(--coral-soft);
+  color: var(--danger);
+  box-shadow: inset 2px 0 0 var(--danger);
+}
+
+.bulk-warn {
+  background: var(--lime-soft);
+  color: var(--ink-soft);
+  box-shadow: inset 2px 0 0 var(--lime);
+}
+
+.bulk-table-wrap {
+  max-height: 190px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--card);
+}
+
+.bulk-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+}
+
+.bulk-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+  background: var(--chrome-2);
+  color: var(--ink-soft);
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.bulk-table td {
+  max-width: 190px;
+  padding: 7px 10px;
+  overflow: hidden;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bulk-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.bulk-table td.is-empty {
+  color: var(--muted-2);
+}
+
+.bulk-table .bulk-row-num {
+  width: 34px;
+  color: var(--muted-2);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* ---------- map step ---------- */
+
+.bulk-tokens {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 9px;
+  background: var(--cobalt-soft);
+  color: var(--cobalt-dark);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.bulk-tokens > svg {
+  flex: none;
+}
+
+.bulk-token {
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: var(--card);
+  color: var(--cobalt-dark);
+  font-family: 'Space Grotesk', ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10.5px;
+}
+
+.bulk-tokens-note {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.bulk-map-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.bulk-map-head > div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.bulk-map-head .btn {
+  flex: none;
+  margin-top: -3px;
+}
+
+.bulk-map {
+  max-height: 330px;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  overscroll-behavior: contain;
+}
+
+.bulk-map-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 196px;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.bulk-map-row:last-child {
+  border-bottom: 0;
+}
+
+.bulk-map-row:hover {
+  background: var(--chrome-2);
+}
+
+.bulk-map-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bulk-map-name {
+  overflow: hidden;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bulk-map-snippet {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bulk-map-select {
+  height: 32px;
+  font-size: 12px;
+}
+
+.bulk-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 34px 20px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+.bulk-empty strong {
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- preview step ---------- */
+
+.bulk-preview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 216px;
+  gap: 20px;
+  align-items: start;
+}
+
+.bulk-preview-left {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.bulk-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.bulk-stepper-label {
+  min-width: 96px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.bulk-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  padding: 14px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+}
+
+.bulk-frame {
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: var(--shadow-md);
+}
+
+.bulk-applied-head {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.bulk-applied {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: 330px;
+  overflow-y: auto;
+}
+
+.bulk-applied li {
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--card);
+}
+
+.bulk-applied-name {
+  display: block;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bulk-applied-value {
+  display: block;
+  overflow: hidden;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bulk-applied-value.is-empty {
+  color: var(--muted-2);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.bulk-back {
+  margin-right: auto;
+}
+
+/* ---------- dark surfaces ---------- */
+
+/* Base rules resolve through theme tokens; the white preview page gets a
+   hairline so it doesn't float against the dark stage. */
+:root[data-theme='dark'] .bulk-frame {
+  box-shadow: var(--shadow-md), 0 0 0 1px var(--line);
+}
+
+/* ---------- small screens ---------- */
+
+@media (max-width: 720px) {
+  .bulk-preview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bulk-map-row {
+    grid-template-columns: minmax(0, 1fr) 140px;
+  }
+
+  .bulk-step-label {
+    font-size: 10px;
+  }
+
+  .bulk-stage {
+    min-height: 210px;
+  }
+}
+
+@media (max-width: 560px) {
+  .bulk-modal .modal-footer {
+    flex-wrap: wrap;
+  }
+
+  .bulk-modal .modal-footer .bulk-back {
+    margin-right: 0;
+  }
+
+  .bulk-modal .modal-footer .btn {
+    flex: 1 1 auto;
+    padding: 0 14px;
+  }
+
+  .bulk-step + .bulk-step::before {
+    width: 10px;
+  }
+}

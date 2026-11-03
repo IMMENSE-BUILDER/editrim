@@ -14,20 +14,23 @@ No account. No watermark. Your designs stay yours. AI runs through a serverless 
 - **59 canvas presets** plus custom dimensions up to 6000 × 6000.
 - **Canvas-style Home dashboard** at `/dashboard` — left rail with Create, Home, Projects, Templates, Brand, AI Studio, Print and More; a gradient “What will you design today?” hero; glowing universal search across designs, templates and actions; 14 creation shortcuts; Continue designing; Templates for you; and a full Projects view with rename, duplicate, download, present and delete.
 - **Functional starting points** — Presentation, Social media, Doc, Whiteboard, Upload, Custom size, Printables and Templates create real editable designs. Photo opens the photo editor, Video opens Video Studio, and Sheet, Website and Magic Layers explain their honest scope instead of faking media tools. The Create modal is a **59-format design library** grouped into Social, Presentation, Print, Brand, Web and Docs, with search across every format.
-- **A real editor** — drag, resize, rotate, snap to guides, multi-select, group resize, align, distribute, layer, lock, hide, duplicate, copy/paste and undo/redo.
+- **A real editor** — drag, resize, rotate, snap to guides, marquee select, multi-select, group resize, align to page or selection, distribute, tidy up, layer, lock, hide, duplicate, copy/paste and undo/redo.
 - **120+ icon interface vocabulary** — one custom `EditrimIcon` set covers navigation, actions, context menus, inspector controls, panels, present mode and every dialog; every glyph has a subtle two-layer ink echo, a bespoke hover gesture and a different press reply chosen from what it does, and the whole set enters with a first-paint stagger. `FormatGlyph` gives all 59 formats their own tone, mark and aspect marker.
 - **Photo editor** — `/photo` imports a JPEG, PNG, WebP or GIF and edits it locally: sixteen tonal and colour controls with a live histogram, cropping with aspect presets, rotation and flipping, nine filter presets, draggable text layers, hold-to-compare with the original, undo/redo and PNG/JPEG/WebP export. The source file and the edit stack restore from browser storage. Reachable from the Photo category, dashboard search and the More menu.
 - **Light and dark themes** — a labelled switch at the bottom of the dashboard rail flips the whole product between warm paper and deep ink: marketing, templates, dashboard, editor, modals, AI panels and shared view. The choice is stored on the device, applied before first paint, reflected in `color-scheme` and the browser theme colour, and cross-fades only when motion is allowed.
 - **Video Studio** — `/videos` keeps multiple projects with search, rename, duplicate and delete. `/video/:id` imports local video, image and audio files, builds a three-track timeline, trims, splits and duplicates clips, adds text and image overlays, mixes volume, previews, autosaves and exports a real WebM with mixed audio. Clip tools include speed, colour correction, video zoom and text motion presets. The last project reopens from browser storage.
 - **Right-click canvas menu** — copy, copy/paste style, paste, duplicate and delete; Layer and Align-to-page submenus; group/ungroup; reusable components; local comment pins; lock controls; apply a palette from the selection to the page; download the selection as a transparent PNG; Magic Write and Translate powers.
-- **Typography** — 15 self-hosted fonts, weight, size, line-height, letter-spacing, alignment, uppercase, underline, highlight, outline and drop shadow.
+- **Typography** — 15 self-hosted fonts, weight, size, line-height, letter-spacing, alignment, vertical alignment, uppercase, underline, highlight, outline and drop shadow, plus six one-click text effects (Outline, Shadow, Glow, Highlight, Pill).
 - **Shapes & graphics** — 12 vector shapes, lines, 30 line icons, nine built-in photos.
-- **Images** — drag and drop your own, automatic compression, fit/fill, corner radius, flips, brightness/contrast/saturation/blur/grayscale filters.
-- **Pages** — multi-page documents with duplicate, reorder and delete.
-- **Brand kit** — saved colours and fonts, available in every design.
-- **One-click resize** — content scales proportionally and re-centres on any new canvas.
-- **Export** — PNG, JPG and PDF at 1×/2×/3×, transparent PNG, multi-page PDF.
-- **Present mode** — full-screen, keyboard-driven, autoplay and page progress.
+- **Images** — drag and drop your own, automatic compression, replace in place, fit/fill, corner radius, flips, crop zoom and pan, eight frame masks (circle, triangle, diamond, hexagon, star, blob, heart), overlay colour and strength, brightness/contrast/saturation/blur/grayscale/sepia/hue filters and auto-enhance.
+- **Pages** — multi-page documents with duplicate, reorder and delete, per-page speaker notes and fade/slide/zoom transitions.
+- **Brand hub** — name, colours, heading and body fonts, brand voice, logo uploads and named palettes; apply the kit to one page or the whole design in one undoable step, and run Brand check to find off-brand colours and fonts with a Fix all action.
+- **Resize & variants** — pick up to six channel sizes (Instagram, Story, LinkedIn, X, Facebook, A4, Letter, 16:9, 4:3, blog, YouTube) and create real, linked variant designs with an anchor-aware reflow that re-wraps text and keeps images composed.
+- **Export suite** — PNG, JPG, WebP, vector SVG and PDF; 1×/2×/3× resolution, transparent backgrounds, JPG/WebP quality, multi-page files, and a print PDF with 0/3/5 mm bleed, crop marks and 150/300 DPI rendering.
+- **Present mode** — full-screen, keyboard-driven, autoplay, page progress, speaker-notes overlay, page transitions, black screen, a presenter window with timer, next-slide preview and notes, and cross-window sync.
+- **Version history** — automatic snapshots and named checkpoints stored in IndexedDB, with thumbnails, restore, save-a-copy and delete, capped at 40 versions per design.
+- **Bulk create** — paste or upload a CSV, map columns to text layers (or use `{{tokens}}`), preview each row and generate up to 100 real pages.
+- **Quick actions and inline AI** — a Ctrl K / `/` command palette for every tool, and selection-anchored Rewrite, Shorten, Expand, Tone and Translate actions on any text box with an explicit preview before applying.
 - **Share links** — the entire design is compressed into the URL; anyone can view a read-only copy and import an editable one.
 - **Autosave** to local storage, with uploaded images stored in IndexedDB.
 - **AI Studio (6 tools)** powered by **Xiaomi MiMo V2.6 Flash** through **Vercel AI Gateway**:
@@ -76,9 +79,9 @@ Build command `npm run build`, output `dist`. The AI function gets a 60s max dur
 - Self-hosted Google fonts via Fontsource
 - Canvas 2D renderer for exports (text wrapping, gradients, shadows, image filters)
 - Canvas 2D photo pipeline: rotate/flip → exact source crop → tonal pass → text, with a draft preview while controls move and a full-resolution export
-- jsPDF for PDF export
+- jsPDF for raster PDF export, including print bleed and crop marks
 - LZ-String for share links
-- IndexedDB for uploads, photo sources and video media; localStorage for designs, brand kit, photo sessions and video projects
+- IndexedDB for uploads, photo sources, video media and version-history snapshots; localStorage for designs, brand kit, photo sessions and video projects
 - **Vercel AI Gateway + Xiaomi MiMo V2.6 Flash** via a serverless AI proxy and matching Vite dev middleware
 - JSON command bus for AI edits: schema validation, locked-node protection, one-step undo
 - DOMParser allowlist sanitiser for AI-authored SVG
@@ -91,7 +94,7 @@ src/
   components/    shared UI, page renderer, modals
   editor/        canvas interactions, inspector, AI Studio, panels, state/history
   hooks/         shared React hooks
-  lib/           types, templates, renderer, AI schemas/commands, storage, export
+  lib/           types, templates, renderer, SVG renderer, AI schemas/commands, storage, export, resize, brand apply, bulk CSV, version history
   lib/engine/    canvas, typography, timeline, vector, color, presentation, layout, brand schemas
   lib/photo/     photo settings, crop maths, pixel pipeline and IndexedDB source
   lib/video/     video project storage, media cache and canvas renderer
@@ -138,6 +141,12 @@ The app was tested end-to-end with Playwright against Chrome:
 - uploads persisted through reload
 - share link preview and editable import
 - present mode navigation
+- Studio pro audit: Resize variants create linked designs; text effects apply stroke and highlight; image crop zoom and circle mask transform the layer; marquee selects six layers; tidy up repositions a selection; autosave writes a version snapshot; command palette opens history; export produces real SVG (text and clip paths) and WebP; speaker notes render in present mode; presenter timer runs at `/present/:id?presenter=1`
+- Studio responsive audit: command palette, resize studio and export modal fit at 1440, 1366, 1024 and 390 px, in light and dark, with no horizontal overflow
+- Version history: IndexedDB snapshots, checkpoint creation, dedupe, restore, save-a-copy, delete, 40-version cap and fail-soft storage
+- Bulk create: RFC4180 CSV parsing, delimiter detection, quoted fields/newlines, `{{token}}` merge, column mapping, auto-match, 100-row cap, live row preview and generated pages
+- Brand hub: logo upload to IndexedDB, named palettes, apply-to-page/all-pages with undo, off-brand colour/font audit and Fix all
+- Export suite: PNG 2160×2160, JPG `ffd8`, WebP `RIFF/WEBP`, SVG with `<text>`/`<clipPath>` and no `<foreignObject>`, standard and print PDF (`%PDF`, larger MediaBox with 3 mm bleed)
 - dashboard rename, duplicate, delete and search
 - Home dashboard: search-first routing, 14 categories, Presentation/Doc/Whiteboard/Photo Editor/Video Studio/Sheet/Website creation, image upload, print modal, universal search, project menus, More/Help popovers and a 390 px mobile layout
 - Design library: 59 formats across six groups including Desktop/Phone Wallpaper, Facebook Post/Cover/Story/Event, Photo Collage, Certificate, Invoice, Letterhead, Brochure, Postcard, Book/Magazine Cover, Podcast/Album Cover, App Icon, YouTube Banner, Link in Bio, Code, Doc, Document, Sheet, Whiteboard, Mobile/Landscape Video, Newsletter and Your Story; searchable across all formats

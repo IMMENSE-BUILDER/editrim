@@ -4484,3 +4484,38 @@ input[type='range']::-moz-range-thumb {
 .ed-rail > button.active:nth-child(n) .editrim-icon {
   animation-delay: 0ms;
 }
+
+/* Image crop and frame masks */
+.insp-mask-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.insp-mask-grid button {
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--muted);
+  font: 500 11px/1 var(--sans);
+  cursor: pointer;
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+
+.insp-mask-grid button:hover {
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+
+.insp-mask-grid button.active {
+  border-color: var(--cobalt);
+  color: var(--cobalt);
+  background: var(--cobalt-soft);
+}
+
+:root[data-theme='dark'] .insp-mask-grid button.active {
+  background: rgba(113, 137, 255, 0.16);
+}
+

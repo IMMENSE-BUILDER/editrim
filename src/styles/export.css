@@ -1,0 +1,75 @@
+/* Export suite — five formats, per-format options, print setup. */
+
+.export-formats.export-formats-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.export-formats-5 .export-format {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 12px 9px 11px;
+  gap: 3px;
+}
+
+.export-formats-5 .export-format svg:first-child {
+  margin-bottom: 2px;
+}
+
+.export-formats-5 .export-format b {
+  font-size: 12px;
+}
+
+.export-formats-5 .export-format span {
+  margin: 0;
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.export-formats-5 .export-check {
+  right: 7px;
+  top: 7px;
+}
+
+.export-quality {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 176px;
+  flex: none;
+}
+
+.export-quality input[type='range'] {
+  flex: 1;
+  min-width: 0;
+}
+
+.export-quality-value {
+  min-width: 32px;
+  text-align: right;
+  font-size: 10px;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.export-option-row .switch:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .export-formats.export-formats-5 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .export-formats-5 .export-format {
+    padding: 11px 9px;
+  }
+
+  .export-quality {
+    width: auto;
+    flex: 1;
+    max-width: 180px;
+  }
+}

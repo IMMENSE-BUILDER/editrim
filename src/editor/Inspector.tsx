@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   AlignCenter, AlignHorizontalJustifyCenter, AlignHorizontalJustifyEnd, AlignHorizontalJustifyStart,
   AlignHorizontalSpaceBetween, AlignLeft, AlignRight, AlignVerticalJustifyCenter, AlignVerticalJustifyEnd,
@@ -6,7 +6,7 @@ import {
   Copy, Eye, EyeOff, Image as ImageIcon, Lock, LockOpen, Maximize2, Palette, Shapes,
   Sparkles, Trash2, Type, Unlock, Wand2,
 } from 'lucide-react';
-import type { El, ImageElement, ShapeElement, TextElement } from '../lib/types';
+import type { El, ImageElement, Page, ShapeElement, TextElement } from '../lib/types';
 import type { BrandKit } from '../lib/types';
 import type { EditorStore } from './useEditor';
 import {
@@ -14,6 +14,9 @@ import {
 } from './controls';
 import { fontByFamily } from '../lib/fonts';
 import { PALETTES } from '../lib/palettes';
+import { addAsset } from '../lib/storage';
+import { compressImage } from '../lib/utils';
+import { useToast } from '../components/Toast';
 import { PagePreview } from '../components/PagePreview';
 import { EditrimIcon } from '../components/EditrimIcon';
 
@@ -35,6 +38,9 @@ const typeIcon = (el: El) => {
 
 export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenResize, onOpenBrand }: Props) {
   const [tab, setTab] = useState<'design' | 'layers'>('design');
+  const [alignTarget, setAlignTarget] = useState<'page' | 'selection'>('page');
+  const { toast } = useToast();
+  const replaceImageRef = useRef<HTMLInputElement>(null);
   const { page, selected, selectedIds, design } = store;
   const single = selected.length === 1 ? selected[0] : null;
   const none = selected.length === 0;
@@ -137,6 +143,29 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                 onChange={e => store.setPageName(e.target.value)}
                 onBlur={e => store.setPageName(e.target.value)}
               />
+            </label>
+            <label className="field" style={{ marginBottom: 14 }}>
+              <span className="field-label">Speaker notes</span>
+              <textarea
+                className="input insp-notes"
+                rows={3}
+                value={page.notes ?? ''}
+                placeholder="Shown only in presenter view."
+                onChange={e => store.updatePage(p => ({ ...p, notes: e.target.value }), { merge: 'page-notes' })}
+              />
+            </label>
+            <label className="field" style={{ marginBottom: 14 }}>
+              <span className="field-label">Page transition</span>
+              <select
+                className="input"
+                value={page.transition ?? 'none'}
+                onChange={e => store.updatePage(p => ({ ...p, transition: e.target.value as Page['transition'] }))}
+              >
+                <option value="none">None</option>
+                <option value="fade">Fade</option>
+                <option value="slide">Slide</option>
+                <option value="zoom">Zoom</option>
+              </select>
             </label>
             <div className="insp-size-row">
               <div>
@@ -292,6 +321,66 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                   onChange={v => patch({ align: v } as Partial<TextElement>)}
                 />
               </div>
+              <div className="insp-row" style={{ marginTop: 8 }}>
+                <Segmented
+                  value={text.valign}
+                  options={[
+                    { value: 'top', label: 'Top' },
+                    { value: 'middle', label: 'Middle' },
+                    { value: 'bottom', label: 'Bottom' },
+                  ]}
+                  onChange={v => patch({ valign: v } as Partial<TextElement>)}
+                />
+              </div>
+              <div className="insp-subhead">Text effects</div>
+              <div className="insp-effect-grid">
+                {([
+                  ['none', 'None'],
+                  ['outline', 'Outline'],
+                  ['shadow', 'Shadow'],
+                  ['glow', 'Glow'],
+                  ['highlight', 'Highlight'],
+                  ['pill', 'Pill'],
+                ] as const).map(([kind, label]) => (
+                  <button
+                    key={kind}
+                    className={
+                      kind === 'none'
+                        ? (!text.strokeWidth && !text.shadow && text.background?.kind !== 'solid' ? 'active' : '')
+                        : kind === 'pill'
+                          ? (text.background?.kind === 'solid' && (text.backgroundRadius ?? 0) > 100 ? 'active' : '')
+                          : kind === 'highlight'
+                            ? (text.background?.kind === 'solid' && (text.backgroundRadius ?? 0) <= 100 ? 'active' : '')
+                            : kind === 'outline'
+                              ? (Boolean(text.strokeWidth) && !text.shadow ? 'active' : '')
+                              : ''
+                    }
+                    onClick={() => {
+                      if (kind === 'none') {
+                        patch({ strokeWidth: 0, shadow: null, background: { kind: 'none' }, padding: 0, backgroundRadius: 0 } as Partial<TextElement>);
+                      } else if (kind === 'outline') {
+                        patch({ strokeColor: '#14130F', strokeWidth: Math.max(1, Math.round(text.fontSize * 0.03)), shadow: null, background: { kind: 'none' } } as Partial<TextElement>);
+                      } else if (kind === 'shadow') {
+                        patch({ strokeWidth: 0, shadow: { x: 0, y: 6, blur: 18, color: 'rgba(20,19,15,0.35)' }, background: { kind: 'none' } } as Partial<TextElement>);
+                      } else if (kind === 'glow') {
+                        patch({ strokeWidth: 0, shadow: { x: 0, y: 0, blur: 22, color: brand.colors[1] ?? '#D8F55A' }, background: { kind: 'none' } } as Partial<TextElement>);
+                      } else if (kind === 'highlight') {
+                        patch({ shadow: null, background: { kind: 'solid', color: brand.colors[1] ?? '#D8F55A' }, backgroundRadius: 4, padding: 6, color: '#14130F' } as Partial<TextElement>);
+                      } else {
+                        patch({ shadow: null, background: { kind: 'solid', color: '#14130F' }, backgroundRadius: 999, padding: 14, color: '#F4F1EA' } as Partial<TextElement>);
+                      }
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {text.strokeWidth ? (
+                <div style={{ marginTop: 8 }}>
+                  <ColorField label="Outline colour" value={text.strokeColor ?? '#14130F'} onChange={c => patch({ strokeColor: c } as Partial<TextElement>)} />
+                  <NumberField label="Outline" value={text.strokeWidth} min={0} max={24} step={0.5} onChange={n => patch({ strokeWidth: n } as Partial<TextElement>, 'stroke-width')} />
+                </div>
+              ) : null}
               <div className="insp-toggle-row">
                 <button className={text.italic ? 'active' : ''} onClick={() => patch({ italic: !text.italic } as Partial<TextElement>)}><em>I</em></button>
                 <button className={text.underline ? 'active' : ''} onClick={() => patch({ underline: !text.underline } as Partial<TextElement>)}><u>U</u></button>
@@ -335,6 +424,36 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
 
           {image && (
             <InspectorSection title="Image">
+              <div className="insp-row" style={{ marginBottom: 8 }}>
+                <button className="btn btn-secondary btn-sm" onClick={() => replaceImageRef.current?.click()}>
+                  <EditrimIcon name="upload" size={13} /> Replace
+                </button>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => patch({ filters: { ...image.filters, brightness: 108, contrast: 108, saturate: 112 } } as Partial<ImageElement>)}
+                >
+                  Auto enhance
+                </button>
+              </div>
+              <input
+                ref={replaceImageRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={async e => {
+                  const file = e.target.files?.[0];
+                  e.currentTarget.value = '';
+                  if (!file) return;
+                  try {
+                    const data = await compressImage(file, 2000, 0.9);
+                    const src = await addAsset(file.name, data);
+                    patch({ src } as Partial<ImageElement>);
+                    toast('Image replaced');
+                  } catch {
+                    toast('Could not replace that image', 'error');
+                  }
+                }}
+              />
               <ToggleRow label="Flip horizontally" checked={Boolean(image.flipX)} onChange={v => patch({ flipX: v } as Partial<ImageElement>)} />
               <ToggleRow label="Flip vertically" checked={Boolean(image.flipY)} onChange={v => patch({ flipY: v } as Partial<ImageElement>)} />
               <div className="insp-row" style={{ marginTop: 10 }}>
@@ -345,6 +464,70 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                 />
               </div>
               <NumberField label="Corner radius" value={image.radius} min={0} max={500} onChange={n => patch({ radius: n } as Partial<ImageElement>, 'img-radius')} />
+              <div className="insp-subhead">Crop & frame</div>
+              <SliderField
+                label="Zoom"
+                value={Math.round((image.zoom ?? 1) * 100)}
+                min={100}
+                max={300}
+                onChange={v => {
+                  const zoom = v / 100;
+                  const limit = (zoom - 1) / (2 * zoom);
+                  patch({
+                    zoom,
+                    offsetX: Math.max(-limit, Math.min(limit, image.offsetX ?? 0)),
+                    offsetY: Math.max(-limit, Math.min(limit, image.offsetY ?? 0)),
+                  } as Partial<ImageElement>, 'img-zoom');
+                }}
+                format={v => `${v}%`}
+              />
+              {(() => {
+                const zoom = Math.max(1, image.zoom ?? 1);
+                const limit = Math.round(((zoom - 1) / (2 * zoom)) * 100);
+                return (
+                  <>
+                    <SliderField
+                      label="Pan X"
+                      value={Math.round((image.offsetX ?? 0) * 100)}
+                      min={-limit}
+                      max={limit}
+                      onChange={v => patch({ offsetX: v / 100 } as Partial<ImageElement>, 'img-pan-x')}
+                      format={v => `${v}%`}
+                    />
+                    <SliderField
+                      label="Pan Y"
+                      value={Math.round((image.offsetY ?? 0) * 100)}
+                      min={-limit}
+                      max={limit}
+                      onChange={v => patch({ offsetY: v / 100 } as Partial<ImageElement>, 'img-pan-y')}
+                      format={v => `${v}%`}
+                    />
+                  </>
+                );
+              })()}
+              <div className="insp-mask-grid">
+                {([
+                  ['none', 'None'], ['rect', 'Rect'], ['ellipse', 'Circle'], ['triangle', 'Tri'],
+                  ['diamond', 'Diamond'], ['hexagon', 'Hex'], ['star', 'Star'], ['blob', 'Blob'], ['heart', 'Heart'],
+                ] as const).map(([kind, label]) => (
+                  <button
+                    key={kind}
+                    className={(image.mask ?? 'none') === kind ? 'active' : ''}
+                    onClick={() => patch({ mask: kind } as Partial<ImageElement>)}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {(image.zoom ?? 1) !== 1 || image.offsetX || image.offsetY || image.mask ? (
+                <button
+                  className="insp-link"
+                  style={{ marginTop: 8 }}
+                  onClick={() => patch({ zoom: 1, offsetX: 0, offsetY: 0, mask: 'none' } as Partial<ImageElement>)}
+                >
+                  Reset crop and frame
+                </button>
+              ) : null}
               <div className="insp-subhead">Filters</div>
               {(['brightness', 'contrast', 'saturate', 'blur'] as const).map(key => (
                 <SliderField
@@ -357,6 +540,22 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                 />
               ))}
               <SliderField label="Grayscale" value={image.filters.grayscale} min={0} max={100} onChange={v => patch({ filters: { ...image.filters, grayscale: v } } as Partial<ImageElement>, 'filter-gray')} />
+              <SliderField label="Sepia" value={image.filters.sepia} min={0} max={100} onChange={v => patch({ filters: { ...image.filters, sepia: v } } as Partial<ImageElement>, 'filter-sepia')} />
+              <SliderField label="Hue" value={image.filters.hue} min={-180} max={180} onChange={v => patch({ filters: { ...image.filters, hue: v } } as Partial<ImageElement>, 'filter-hue')} format={v => `${v}°`} />
+              <div className="insp-subhead">Overlay</div>
+              <ColorField
+                label="Colour"
+                value={image.overlay ?? '#14130F'}
+                onChange={c => patch({ overlay: c, overlayOpacity: image.overlayOpacity ?? 0.25 } as Partial<ImageElement>)}
+              />
+              <SliderField
+                label="Strength"
+                value={Math.round((image.overlayOpacity ?? 0) * 100)}
+                min={0}
+                max={100}
+                onChange={v => patch({ overlay: image.overlay ?? '#14130F', overlayOpacity: v / 100 } as Partial<ImageElement>, 'img-overlay')}
+                format={v => `${v}%`}
+              />
             </InspectorSection>
           )}
 
@@ -378,18 +577,34 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
               <button onClick={() => store.reorder('back')} title="Send to back"><EditrimIcon name="chevronsDown" size={15} /></button>
             </div>
             <div className="insp-align">
-              <button onClick={() => store.align('left')} title="Align left"><EditrimIcon name="alignHorizontalStart" size={15} /></button>
-              <button onClick={() => store.align('hcenter')} title="Centre horizontally"><EditrimIcon name="alignHorizontalCenter" size={15} /></button>
-              <button onClick={() => store.align('right')} title="Align right"><EditrimIcon name="alignHorizontalEnd" size={15} /></button>
-              <button onClick={() => store.align('top')} title="Align top"><EditrimIcon name="alignVerticalStart" size={15} /></button>
-              <button onClick={() => store.align('vcenter')} title="Centre vertically"><EditrimIcon name="alignVerticalCenter" size={15} /></button>
-              <button onClick={() => store.align('bottom')} title="Align bottom"><EditrimIcon name="alignVerticalEnd" size={15} /></button>
+              <button onClick={() => store.align('left', alignTarget)} title="Align left"><EditrimIcon name="alignHorizontalStart" size={15} /></button>
+              <button onClick={() => store.align('hcenter', alignTarget)} title="Centre horizontally"><EditrimIcon name="alignHorizontalCenter" size={15} /></button>
+              <button onClick={() => store.align('right', alignTarget)} title="Align right"><EditrimIcon name="alignHorizontalEnd" size={15} /></button>
+              <button onClick={() => store.align('top', alignTarget)} title="Align top"><EditrimIcon name="alignVerticalStart" size={15} /></button>
+              <button onClick={() => store.align('vcenter', alignTarget)} title="Centre vertically"><EditrimIcon name="alignVerticalCenter" size={15} /></button>
+              <button onClick={() => store.align('bottom', alignTarget)} title="Align bottom"><EditrimIcon name="alignVerticalEnd" size={15} /></button>
             </div>
+            {selected.length >= 2 && (
+              <div className="insp-align-target">
+                <button className={alignTarget === 'page' ? 'active' : ''} onClick={() => setAlignTarget('page')}>Page</button>
+                <button className={alignTarget === 'selection' ? 'active' : ''} onClick={() => setAlignTarget('selection')}>Selection</button>
+              </div>
+            )}
             {selected.length >= 3 && (
               <div className="insp-align" style={{ marginTop: 6 }}>
                 <button onClick={() => store.distribute('h')} title="Distribute horizontally"><EditrimIcon name="distributeH" size={15} /></button>
                 <button onClick={() => store.distribute('v')} title="Distribute vertically"><EditrimIcon name="distributeV" size={15} /></button>
               </div>
+            )}
+            {selected.length >= 2 && (
+              <button
+                className="btn btn-secondary btn-sm btn-block"
+                style={{ marginTop: 6 }}
+                onClick={() => store.tidyUp()}
+                title="Arrange the selection into an even grid"
+              >
+                <EditrimIcon name="elements" size={13} /> Tidy up
+              </button>
             )}
             <div className="insp-duo">
               <button className="btn btn-secondary btn-sm" onClick={() => store.duplicateSelected()}><EditrimIcon name="duplicate" size={13} /> Duplicate</button>

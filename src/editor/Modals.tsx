@@ -1,11 +1,38 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { EditrimIcon } from '../components/EditrimIcon';
+import { EditrimIcon, type EditrimIconName } from '../components/EditrimIcon';
 import { Modal } from '../components/Modal';
 import type { Design } from '../lib/types';
 import { exportDesign, type ExportFormat } from '../lib/export';
 import { useToast } from '../components/Toast';
 import { buildShareLink } from '../lib/share';
+import '../styles/export.css';
+
+const FORMATS: { id: ExportFormat; label: string; note: string; icon: EditrimIconName }[] = [
+  { id: 'png', label: 'PNG', note: 'Lossless · alpha', icon: 'image' },
+  { id: 'jpg', label: 'JPG', note: 'Smaller file', icon: 'camera' },
+  { id: 'pdf', label: 'PDF', note: 'Print · bleed', icon: 'doc' },
+  { id: 'webp', label: 'WebP', note: 'Web-ready · small', icon: 'website' },
+  { id: 'svg', label: 'SVG', note: 'Vector text & shapes', icon: 'code' },
+];
+
+const PAPER: [string, number, number][] = [
+  ['A3', 297, 420],
+  ['A4', 210, 297],
+  ['A5', 148, 210],
+  ['A6', 105, 148],
+  ['Letter', 215.9, 279.4],
+];
+
+/** Trim size in millimetres, named when it matches a standard sheet. */
+function paperLabel(width: number, height: number) {
+  const mmW = (width * 0.75) / 2.83465;
+  const mmH = (height * 0.75) / 2.83465;
+  const match = PAPER.find(
+    ([, a, b]) => (Math.abs(mmW - a) <= 3 && Math.abs(mmH - b) <= 3) || (Math.abs(mmW - b) <= 3 && Math.abs(mmH - a) <= 3),
+  );
+  return match ? match[0] : `${Math.round(mmW)} × ${Math.round(mmH)} mm`;
+}
 
 export function ExportModal({
   open,
@@ -23,6 +50,11 @@ export function ExportModal({
   const [scale, setScale] = useState(2);
   const [pages, setPages] = useState<'current' | 'all'>('current');
   const [transparent, setTransparent] = useState(false);
+  const [quality, setQuality] = useState(0.92);
+  const [pdfMode, setPdfMode] = useState<'standard' | 'print'>('standard');
+  const [bleedMm, setBleedMm] = useState<0 | 3 | 5>(3);
+  const [cropMarks, setCropMarks] = useState(true);
+  const [dpi, setDpi] = useState<150 | 300>(300);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -32,13 +64,42 @@ export function ExportModal({
       setScale(2);
       setPages('current');
       setTransparent(false);
+      setQuality(0.92);
+      setPdfMode('standard');
+      setBleedMm(3);
+      setCropMarks(true);
+      setDpi(300);
     }
   }, [open]);
+
+  const raster = format === 'png' || format === 'jpg' || format === 'webp';
+  const print = format === 'pdf' && pdfMode === 'print';
+
+  const summary = useMemo(() => {
+    if (format === 'pdf') {
+      const bleed = print ? bleedMm : 0;
+      return `${paperLabel(design.size.width, design.size.height)}${bleed ? ` · ${bleed} mm bleed` : ''} · PDF`;
+    }
+    if (format === 'svg') return `${design.size.width} × ${design.size.height} px · SVG`;
+    const w = Math.round(design.size.width * scale);
+    const h = Math.round(design.size.height * scale);
+    return `${w} × ${h} px · ${format.toUpperCase()}`;
+  }, [format, print, bleedMm, design.size.width, design.size.height, scale]);
 
   const run = async () => {
     setBusy(true);
     try {
-      const result = await exportDesign(design, pageIndex, { format, scale, pages, transparent });
+      const result = await exportDesign(design, pageIndex, {
+        format,
+        scale,
+        pages,
+        transparent,
+        quality,
+        pdfMode,
+        bleedMm,
+        cropMarks,
+        dpi,
+      });
       toast(result.files > 1 ? `${result.files} pages downloaded` : `${format.toUpperCase()} downloaded`);
       onClose();
     } catch (err) {
@@ -48,8 +109,10 @@ export function ExportModal({
     }
   };
 
-  const outW = Math.round(design.size.width * (format === 'pdf' ? 1 : scale));
-  const outH = Math.round(design.size.height * (format === 'pdf' ? 1 : scale));
+  const pickBleed = (mm: 0 | 3 | 5) => {
+    setBleedMm(mm);
+    if (mm === 0) setCropMarks(false);
+  };
 
   return (
     <Modal
@@ -57,12 +120,10 @@ export function ExportModal({
       onClose={onClose}
       title="Download"
       subtitle="Take the design with you — no watermark, no sign-up."
-      width={600}
+      width={620}
       footer={
         <>
-          <span className="export-note">
-            {format === 'pdf' ? `${pages === 'all' ? design.pages.length : 1} page PDF` : `${outW} × ${outH} px`} · {format.toUpperCase()}
-          </span>
+          <span className="export-note">{summary}</span>
           <button className="btn btn-cobalt" onClick={run} disabled={busy}>
             {busy ? <Loader2 size={16} className="spin" /> : <EditrimIcon name="download" size={16} />}
             {busy ? 'Exporting…' : 'Download'}
@@ -70,21 +131,15 @@ export function ExportModal({
         </>
       }
     >
-      <div className="export-formats">
-        {[
-          { id: 'png' as ExportFormat, label: 'PNG', note: 'Best quality · transparency', icon: 'image' as const },
-          { id: 'jpg' as ExportFormat, label: 'JPG', note: 'Smaller file · no transparency', icon: 'camera' as const },
-          { id: 'pdf' as ExportFormat, label: 'PDF', note: 'Print-ready · all pages', icon: 'doc' as const },
-        ].map(f => {
-          return (
-            <button key={f.id} className={`export-format ${format === f.id ? 'active' : ''}`} onClick={() => setFormat(f.id)}>
-              <EditrimIcon name={f.icon} size={19} />
-              <b>{f.label}</b>
-              <span>{f.note}</span>
-              {format === f.id && <EditrimIcon name="check" size={15} className="export-check" />}
-            </button>
-          );
-        })}
+      <div className="export-formats export-formats-5">
+        {FORMATS.map(f => (
+          <button key={f.id} className={`export-format ${format === f.id ? 'active' : ''}`} onClick={() => setFormat(f.id)}>
+            <EditrimIcon name={f.icon} size={19} />
+            <b>{f.label}</b>
+            <span>{f.note}</span>
+            {format === f.id && <EditrimIcon name="check" size={15} className="export-check" />}
+          </button>
+        ))}
       </div>
 
       <div className="export-options">
@@ -95,15 +150,19 @@ export function ExportModal({
             <button className={pages === 'all' ? 'active' : ''} onClick={() => setPages('all')}>All {design.pages.length}</button>
           </div>
         </div>
-        <div className="export-option-row">
-          <span>Resolution</span>
-          <div className="segmented">
-            {[1, 2, 3].map(s => (
-              <button key={s} className={scale === s ? 'active' : ''} onClick={() => setScale(s)}>{s}×</button>
-            ))}
+
+        {raster && (
+          <div className="export-option-row">
+            <span>Resolution</span>
+            <div className="segmented">
+              {[1, 2, 3].map(s => (
+                <button key={s} className={scale === s ? 'active' : ''} onClick={() => setScale(s)}>{s}×</button>
+              ))}
+            </div>
           </div>
-        </div>
-        {format === 'png' && (
+        )}
+
+        {(format === 'png' || format === 'webp') && (
           <div className="export-option-row">
             <span>Transparent background</span>
             <button className={`switch ${transparent ? 'on' : ''}`} onClick={() => setTransparent(v => !v)} aria-pressed={transparent}>
@@ -111,13 +170,77 @@ export function ExportModal({
             </button>
           </div>
         )}
+
+        {(format === 'jpg' || format === 'webp') && (
+          <div className="export-option-row">
+            <span>Quality</span>
+            <div className="export-quality">
+              <input
+                type="range"
+                min={50}
+                max={100}
+                step={1}
+                value={Math.round(quality * 100)}
+                onChange={e => setQuality(Number(e.target.value) / 100)}
+                aria-label="Quality"
+              />
+              <span className="export-quality-value">{Math.round(quality * 100)}%</span>
+            </div>
+          </div>
+        )}
+
+        {format === 'pdf' && (
+          <div className="export-option-row">
+            <span>PDF mode</span>
+            <div className="segmented">
+              <button className={pdfMode === 'standard' ? 'active' : ''} onClick={() => setPdfMode('standard')}>Standard</button>
+              <button className={pdfMode === 'print' ? 'active' : ''} onClick={() => setPdfMode('print')}>Print</button>
+            </div>
+          </div>
+        )}
+
+        {print && (
+          <>
+            <div className="export-option-row">
+              <span>Bleed</span>
+              <div className="segmented">
+                {([0, 3, 5] as const).map(mm => (
+                  <button key={mm} className={bleedMm === mm ? 'active' : ''} onClick={() => pickBleed(mm)}>
+                    {mm === 0 ? 'None' : `${mm} mm`}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="export-option-row">
+              <span>Crop marks</span>
+              <button
+                className={`switch ${cropMarks ? 'on' : ''}`}
+                onClick={() => setCropMarks(v => !v)}
+                aria-pressed={cropMarks}
+                disabled={bleedMm === 0}
+              >
+                <i />
+              </button>
+            </div>
+            <div className="export-option-row">
+              <span>DPI</span>
+              <div className="segmented">
+                {([150, 300] as const).map(d => (
+                  <button key={d} className={dpi === d ? 'active' : ''} onClick={() => setDpi(d)}>{d}</button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
-      {format === 'png' && pages === 'all' && (
-        <div className="export-warning">Multi-page PNG downloads one numbered file per page.</div>
+      {print && <div className="export-warning">Print PDF is raster at {dpi} DPI with bleed and crop marks.</div>}
+      {format === 'pdf' && !print && (
+        <div className="export-warning">Standard PDF is a 2× raster of each page, sized to the design.</div>
       )}
-      {format === 'pdf' && (
-        <div className="export-warning">PDF is exported at 2× for print. Each page keeps the design’s exact ratio.</div>
+      {format === 'svg' && <div className="export-warning">Text and shapes stay vector; photos are embedded.</div>}
+      {format !== 'pdf' && pages === 'all' && (
+        <div className="export-warning">Multi-page {format.toUpperCase()} downloads one numbered file per page.</div>
       )}
     </Modal>
   );
@@ -296,6 +419,7 @@ export function ShortcutsModal({ open, onClose }: { open: boolean; onClose: () =
     { title: 'Edit', items: [['Undo', '⌘/Ctrl Z'], ['Redo', '⌘/Ctrl ⇧ Z'], ['Duplicate', '⌘/Ctrl D'], ['Copy / paste', '⌘/Ctrl C / V'], ['Delete', '⌫ / Del'], ['Nudge', 'Arrow keys']] },
     { title: 'Text & selection', items: [['Edit text', 'Double-click'], ['Multi-select', 'Shift + click'], ['Constrain move', 'Shift + drag'], ['Resize from centre-ish', 'Shift + corner'], ['Snap rotation', 'Shift + rotate']] },
     { title: 'Layers & actions', items: [['Context menu', 'Right-click'], ['Copy style', 'Ctrl+Alt+C'], ['Paste style', 'Ctrl+Alt+V'], ['Group', 'Ctrl+G'], ['Ungroup', 'Ctrl+Shift+G'], ['Create component', 'Ctrl+Alt+K'], ['Comment', 'Ctrl+Alt+N']] },
+    { title: 'Studio', items: [['Quick actions', 'Ctrl K'], ['Command search', '/'], ['Version history', 'Clock'], ['Resize & variants', 'Resize'], ['Bulk create', 'CSV']] },
   ];
   return (
     <Modal open={open} onClose={onClose} title="Keyboard shortcuts" subtitle="The fast way around the canvas." width={640}>

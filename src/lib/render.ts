@@ -1,4 +1,4 @@
-import type { Background, DesignSize, El, ImageElement, Page, Paint, Shadow, ShapeElement, TextElement } from './types';
+import type { Background, DesignSize, El, ImageElement, MaskKind, Page, Paint, Shadow, ShapeElement, TextElement } from './types';
 import { resolveSrc } from './storage';
 import { FONT_CSS_STACK } from './fonts';
 import { iconById } from './icons';
@@ -233,6 +233,19 @@ function shapePath(ctx: CanvasRenderingContext2D, el: ShapeElement, w: number, h
   }
 }
 
+function clipToMask(ctx: CanvasRenderingContext2D, mask: MaskKind | undefined, w: number, h: number, radius: number) {
+  if (!mask || mask === 'rect') {
+    roundRect(ctx, 0, 0, w, h, radius);
+    return;
+  }
+  if (mask === 'none') {
+    ctx.beginPath();
+    ctx.rect(0, 0, w, h);
+    return;
+  }
+  shapePath(ctx, { shape: mask, radius } as ShapeElement, w, h);
+}
+
 function wrapLines(ctx: CanvasRenderingContext2D, text: string, maxWidth: number): string[] {
   const paragraphs = text.split('\n');
   const lines: string[] = [];
@@ -345,13 +358,16 @@ function drawImageEl(
 ) {
   const radius = Math.max(0, el.radius);
   ctx.save();
-  roundRect(ctx, 0, 0, el.w, el.h, radius);
+  clipToMask(ctx, el.mask, el.w, el.h, radius);
   ctx.clip();
   const f = el.filters;
   const filter = `brightness(${f.brightness}%) contrast(${f.contrast}%) saturate(${f.saturate}%) blur(${f.blur * scale}px) grayscale(${f.grayscale}%) sepia(${f.sepia}%) hue-rotate(${f.hue}deg)`;
   ctx.filter = filter;
+  const zoom = Math.max(1, el.zoom ?? 1);
   ctx.translate(el.w / 2, el.h / 2);
   ctx.scale(el.flipX ? -1 : 1, el.flipY ? -1 : 1);
+  ctx.scale(zoom, zoom);
+  ctx.translate(-(el.offsetX ?? 0) * el.w, -(el.offsetY ?? 0) * el.h);
   const iw = img.naturalWidth || img.width;
   const ih = img.naturalHeight || img.height;
   const ratio = el.fit === 'contain' ? Math.min(el.w / iw, el.h / ih) : Math.max(el.w / iw, el.h / ih);
@@ -361,7 +377,7 @@ function drawImageEl(
   ctx.restore();
   if (el.overlay && el.overlayOpacity) {
     ctx.save();
-    roundRect(ctx, 0, 0, el.w, el.h, radius);
+    clipToMask(ctx, el.mask, el.w, el.h, radius);
     ctx.clip();
     ctx.globalAlpha = el.overlayOpacity;
     ctx.fillStyle = el.overlay;

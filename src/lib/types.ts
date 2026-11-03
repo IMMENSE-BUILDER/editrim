@@ -90,6 +90,9 @@ export type ImageFilters = {
   hue: number;
 };
 
+/** Frame shapes an image can be clipped to. */
+export type MaskKind = 'none' | 'rect' | 'ellipse' | 'triangle' | 'diamond' | 'hexagon' | 'star' | 'blob' | 'heart';
+
 export type ImageElement = BaseElement & {
   type: 'image';
   src: string;
@@ -100,6 +103,13 @@ export type ImageElement = BaseElement & {
   flipY?: boolean;
   overlay?: string;
   overlayOpacity?: number;
+  /** Crop: zoom the photo inside its frame, 1 = untouched. */
+  zoom?: number;
+  /** Crop pan, as a fraction of the frame size. Clamped to the zoomed image. */
+  offsetX?: number;
+  offsetY?: number;
+  /** Non-rectangular frame. Image edges are clipped to this shape. */
+  mask?: MaskKind;
 };
 
 export type IconElement = BaseElement & {
@@ -116,7 +126,13 @@ export type Page = {
   name: string;
   background: Background;
   elements: El[];
+  /** Speaker notes, shown in presenter view. */
+  notes?: string;
+  /** How this page enters when presenting. */
+  transition?: PageTransition;
 };
+
+export type PageTransition = 'none' | 'fade' | 'slide' | 'zoom';
 
 export type DesignSize = { name: string; width: number; height: number };
 
@@ -130,6 +146,12 @@ export type Design = {
   createdAt: number;
   updatedAt: number;
   templateId?: string;
+  /** Set when this design was produced by Resize from another design. */
+  variantOf?: string;
+  /** Shared id across every resize variant of one design. */
+  rootId?: string;
+  /** Brand kit captured when the design was created, for consistent reuse. */
+  brandKitId?: string;
 };
 
 export type CanvasComment = {
@@ -160,6 +182,10 @@ export type BrandKit = {
   colors: string[];
   fonts: string[];
   voice: string;
+  /** Logo and brand asset references — `asset:<id>` or a data URL. */
+  logos?: string[];
+  /** Named colour sets inside one kit, applied as a group. */
+  palettes?: { name: string; colors: string[] }[];
 };
 
 export type Point = { x: number; y: number };

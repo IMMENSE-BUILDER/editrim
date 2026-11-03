@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import {
@@ -20,6 +20,8 @@ import { FONTS } from '../lib/fonts';
 import { deleteComponent, listComponents, onComponentsChange, type SavedComponent } from '../lib/components';
 import { AiPanel } from './AiPanel';
 import { EditrimIcon } from '../components/EditrimIcon';
+import { useResolvedSrc } from '../hooks/useResolvedSrc';
+import { applyBrandToDesign, auditBrand, type BrandIssue } from '../lib/brandApply';
 
 export type PanelTab = 'templates' | 'ai' | 'elements' | 'text' | 'uploads' | 'background' | 'brand';
 
@@ -63,8 +65,47 @@ export function LeftPanel({
   const { toast } = useToast();
   const page = store.page;
   const [components, setComponents] = useState<SavedComponent[]>(() => listComponents());
+  const [brandScope, setBrandScope] = useState<'page' | 'all'>('page');
 
   useEffect(() => onComponentsChange(() => setComponents(listComponents())), []);
+
+  /** Brand check runs off the live design, so it follows every edit and kit change. */
+  const brandAudit = useMemo(() => {
+    if (tab !== 'brand') return { issues: [] as BrandIssue[], colorCount: 0, fontCount: 0 };
+    const indexes = brandScope === 'all' ? store.design.pages.map((_, i) => i) : [store.pageIndex];
+    const issues: BrandIssue[] = [];
+    const colors = new Set<string>();
+    const fonts = new Set<string>();
+    for (const index of indexes) {
+      const result = auditBrand(store.design, brand, index);
+      result.issues.forEach(issue => {
+        issues.push(issue);
+        if (issue.kind === 'color') colors.add(issue.current.trim().toLowerCase());
+        else fonts.add(issue.current);
+      });
+    }
+    return { issues, colorCount: colors.size, fontCount: fonts.size };
+  }, [tab, brand, brandScope, store.design, store.pageIndex]);
+
+  /* Brand tab actions */
+  const insertLogo = (src: string) => {
+    const el = createImage(src, store.page, store.design.size);
+    el.name = 'Brand logo';
+    el.fit = 'contain';
+    store.addElements([el]);
+    toast('Logo inserted');
+  };
+
+  const runBrandApply = (mode: 'apply' | 'fix') => {
+    const result = applyBrandToDesign(store.design, brand, brandScope, store.pageIndex);
+    if (!result.changed) {
+      toast('Nothing to change');
+      return;
+    }
+    store.restoreDesign(result.design);
+    const layers = `${result.changed} ${result.changed === 1 ? 'layer' : 'layers'}`;
+    toast(mode === 'fix' ? `Fixed ${layers}` : `Restyled ${layers}`);
+  };
 
   const insertComponent = (component: SavedComponent) => {
     const groupId = uid('g');
@@ -328,6 +369,8 @@ export function LeftPanel({
     );
   }
 
+  const brandLogos = brand.logos ?? [];
+
   return (
     <div className="lp">
       <PanelHead title="Brand kit" onClose={onClose} />
@@ -385,6 +428,73 @@ export function LeftPanel({
           </button>
         ))}
 
+        <div className="lp-section-title">
+          Logos
+          <button type="button" className="brand-manage" onClick={onOpenBrand}>Manage</button>
+        </div>
+        {brandLogos.length ? (
+          <div className="brand-logo-strip">
+            {brandLogos.map((src, i) => (
+              <BrandLogoButton key={`${src}-${i}`} src={src} index={i} onInsert={insertLogo} />
+            ))}
+          </div>
+        ) : (
+          <button type="button" className="lp-action" onClick={onOpenBrand}>
+            <EditrimIcon name="upload" size={14} /> Add a logo
+          </button>
+        )}
+
+        <div className="lp-section-title">Apply brand to</div>
+        <div className="brand-apply-scope">
+          <Segmented
+            value={brandScope}
+            options={[
+              { value: 'page', label: 'This page' },
+              { value: 'all', label: 'All pages' },
+            ]}
+            onChange={setBrandScope}
+          />
+        </div>
+        <button type="button" className="lp-action brand-apply-btn" onClick={() => runBrandApply('apply')}>
+          <EditrimIcon name="spark" size={14} /> Apply to design
+        </button>
+
+        <div className="lp-section-title">
+          Brand check
+          {brandAudit.issues.length > 0 && (
+            <button type="button" className="brand-check-fix" onClick={() => runBrandApply('fix')}>Fix all</button>
+          )}
+        </div>
+        <div className="brand-check">
+          {brandAudit.issues.length === 0 ? (
+            <div className="brand-check-empty"><EditrimIcon name="check" size={13} /> On brand</div>
+          ) : (
+            <>
+              <div className="brand-check-count">
+                {brandAudit.colorCount} {brandAudit.colorCount === 1 ? 'colour' : 'colours'} · {brandAudit.fontCount} {brandAudit.fontCount === 1 ? 'font' : 'fonts'} off brand
+              </div>
+              <ul className="brand-check-list">
+                {brandAudit.issues.slice(0, 4).map((issue, i) => (
+                  <li className="brand-check-item" key={`${issue.pageId}-${issue.elementId}-${issue.kind}-${i}`}>
+                    <span className="brand-check-name">{issue.elementName}</span>
+                    <span className="brand-check-flow">
+                      <span className="brand-check-dash" aria-hidden="true">—</span>
+                      {issue.kind === 'color' && <i className="brand-check-dot" style={{ background: issue.current }} />}
+                      <span>{issue.current}</span>
+                      <span aria-hidden="true">→</span>
+                      {issue.kind === 'color' && <i className="brand-check-dot" style={{ background: issue.suggested }} />}
+                      <span className="brand-check-to">{issue.suggested}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              {brandAudit.issues.length > 4 && (
+                <span className="brand-check-more">+{brandAudit.issues.length - 4} more — Fix all sorts them</span>
+              )}
+            </>
+          )}
+        </div>
+
         <div className="lp-section-title">Quick actions</div>
         <button
           className="lp-action"
@@ -403,6 +513,33 @@ export function LeftPanel({
         </button>
       </div>
     </div>
+  );
+}
+
+/* ---------------- Brand ---------------- */
+
+function BrandLogoButton({
+  src,
+  index,
+  onInsert,
+}: {
+  src: string;
+  index: number;
+  onInsert: (src: string) => void;
+}) {
+  const resolved = useResolvedSrc(src);
+  const label = `Logo ${index + 1}`;
+  return (
+    <button
+      type="button"
+      className="brand-logo-pick"
+      title={`Insert ${label.toLowerCase()}`}
+      onClick={() => resolved && onInsert(resolved)}
+      disabled={!resolved}
+    >
+      {resolved ? <img src={resolved} alt={label} /> : <span className="brand-logo-placeholder" />}
+      <span>Insert</span>
+    </button>
   );
 }
 

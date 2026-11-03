@@ -1,5 +1,5 @@
 /* ============================================================
-   Present, shared view, 404
+   Present — audience stage, presenter view
    ============================================================ */
 
 body.presenting {
@@ -12,15 +12,24 @@ body:has(.present) .toast-stack {
 }
 
 .present {
+  --stage: #0b0a08;
+  --stage-panel: rgba(22, 20, 16, 0.82);
+  --stage-line: rgba(255, 255, 255, 0.12);
+  --stage-soft: rgba(244, 241, 234, 0.55);
   position: fixed;
   inset: 0;
-  background: #0b0a08;
+  background: var(--stage);
   color: #f4f1ea;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+:root[data-theme='dark'] .present {
+  --stage: #07060b;
+  --stage-panel: rgba(18, 17, 23, 0.86);
 }
 
 .present-stage {
@@ -33,6 +42,7 @@ body:has(.present) .toast-stack {
 }
 
 .present-page {
+  position: relative;
   background: #fff;
   box-shadow: 0 40px 90px rgba(0, 0, 0, 0.55), 0 4px 14px rgba(0, 0, 0, 0.3);
   flex: none;
@@ -44,6 +54,35 @@ body:has(.present) .toast-stack {
   height: 100%;
 }
 
+/* ---------------- transitions ---------------- */
+.present-page.is-entering[data-transition='fade'] {
+  animation: present-enter-fade 280ms var(--ease-out) both;
+}
+
+.present-page.is-entering[data-transition='slide'] {
+  animation: present-enter-slide 280ms var(--ease-out) both;
+}
+
+.present-page.is-entering[data-transition='zoom'] {
+  animation: present-enter-zoom 280ms var(--ease-out) both;
+}
+
+@keyframes present-enter-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes present-enter-slide {
+  from { opacity: 0; transform: translateX(5%); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes present-enter-zoom {
+  from { opacity: 0; transform: scale(0.93); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---------------- exit ---------------- */
 .present-exit {
   position: absolute;
   top: 18px;
@@ -56,7 +95,7 @@ body:has(.present) .toast-stack {
   padding: 0 12px;
   border-radius: 99px;
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--stage-line);
   color: rgba(244, 241, 234, 0.7);
   font-size: 11px;
   backdrop-filter: blur(8px);
@@ -74,29 +113,48 @@ body:has(.present) .toast-stack {
   color: #fff;
 }
 
+/* ---------------- progress dots ---------------- */
 .present-progress {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
+  left: 50%;
+  bottom: 74px;
+  transform: translateX(-50%);
+  height: 12px;
+  max-width: min(72vw, 540px);
   display: flex;
-  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  overflow: hidden;
   z-index: 15;
-  background: rgba(255, 255, 255, 0.06);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.present.show-controls .present-progress,
+.present:hover .present-progress {
+  opacity: 1;
 }
 
 .present-progress button {
-  flex: 1;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.14);
-  transition: background 0.2s;
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.24);
+  transition: width 0.22s var(--ease-out), background 0.2s;
+}
+
+.present-progress button:hover {
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .present-progress button.active {
+  width: 20px;
   background: var(--lime);
 }
 
+/* ---------------- side arrows ---------------- */
 .present-nav {
   position: absolute;
   inset: 0;
@@ -136,6 +194,7 @@ body:has(.present) .toast-stack {
   cursor: default;
 }
 
+/* ---------------- bottom bar ---------------- */
 .present-bar {
   position: absolute;
   bottom: 18px;
@@ -147,8 +206,8 @@ body:has(.present) .toast-stack {
   height: 42px;
   padding: 0 10px;
   border-radius: 99px;
-  background: rgba(22, 20, 16, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--stage-panel);
+  border: 1px solid var(--stage-line);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(12px);
   z-index: 20;
@@ -164,15 +223,22 @@ body:has(.present) .toast-stack {
 .present-tool {
   width: 28px;
   height: 28px;
+  flex: none;
   border-radius: 50%;
   display: grid;
   place-items: center;
   color: rgba(244, 241, 234, 0.7);
+  transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 
 .present-tool:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
+}
+
+.present-tool.is-on {
+  color: var(--lime);
+  background: rgba(216, 245, 90, 0.14);
 }
 
 .present-count {
@@ -197,13 +263,14 @@ body:has(.present) .toast-stack {
 .present-tools {
   display: flex;
   gap: 2px;
-  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  border-left: 1px solid var(--stage-line);
   padding-left: 6px;
 }
 
+/* ---------------- keyboard hint ---------------- */
 .present-hint {
   position: absolute;
-  bottom: 72px;
+  top: 18px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -215,14 +282,415 @@ body:has(.present) .toast-stack {
   transition: opacity 0.3s;
 }
 
-.present-hint kbd {
+.present-hint kbd,
+.present-help kbd {
   display: inline-block;
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 3px;
   padding: 1px 4px;
   margin-right: 3px;
+  font-family: var(--sans);
   font-size: 8px;
   color: rgba(244, 241, 234, 0.6);
+}
+
+/* ---------------- notes card ---------------- */
+.present-notes {
+  position: absolute;
+  left: 20px;
+  bottom: 20px;
+  z-index: 30;
+  width: min(340px, calc(100vw - 40px));
+  padding: 12px 14px 14px;
+  border-radius: 12px;
+  background: rgba(18, 17, 15, 0.92);
+  border: 1px solid var(--stage-line);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  animation: present-card-in 180ms var(--ease-out);
+}
+
+.present-notes header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.present-notes header > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lime);
+}
+
+.present-notes p {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: rgba(244, 241, 234, 0.78);
+  white-space: pre-wrap;
+  max-height: 30vh;
+  overflow-y: auto;
+}
+
+@keyframes present-card-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+/* ---------------- shortcut overlay ---------------- */
+.present-help-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(8, 7, 6, 0.62);
+  backdrop-filter: blur(4px);
+  animation: present-enter-fade 160ms var(--ease-out);
+}
+
+.present-help {
+  width: min(430px, 100%);
+  padding: 18px 20px 16px;
+  border-radius: 16px;
+  background: rgba(20, 18, 15, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+  color: #f4f1ea;
+}
+
+.present-help header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.present-help h2 {
+  font-family: var(--display);
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+
+.present-help-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 11.5px;
+  color: rgba(244, 241, 234, 0.72);
+}
+
+.present-help-keys {
+  display: flex;
+  align-items: center;
+}
+
+.present-help-keys kbd {
+  margin: 0 0 0 4px;
+}
+
+/* ---------------- black screen ---------------- */
+.present-black {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: #000;
+  cursor: pointer;
+}
+
+/* ============================================================
+   Presenter view
+   ============================================================ */
+
+.present-presenter {
+  background: var(--paper-deep);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.presenter-top {
+  flex: none;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 18px;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+}
+
+.presenter-top-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.presenter-mark {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: var(--lime);
+  color: #14130f;
+}
+
+.presenter-top-left strong {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.presenter-page-name {
+  padding-left: 10px;
+  border-left: 1px solid var(--line);
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.presenter-top-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+}
+
+.presenter-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.presenter-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--coral);
+  box-shadow: 0 0 0 3px rgba(255, 106, 70, 0.18);
+  animation: present-live-pulse 2s ease-in-out infinite;
+}
+
+@keyframes present-live-pulse {
+  50% { opacity: 0.35; }
+}
+
+.present-presenter .present-tool {
+  color: var(--muted);
+}
+
+.present-presenter .present-tool:hover {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  color: var(--ink);
+}
+
+.presenter-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 62% 1fr;
+}
+
+.presenter-stage {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 28px;
+  overflow: hidden;
+}
+
+.presenter-stage .present-page {
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24), 0 3px 10px rgba(0, 0, 0, 0.14);
+}
+
+.presenter-stage.is-blank .present-page {
+  visibility: hidden;
+}
+
+.presenter-blank {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: #000;
+  cursor: pointer;
+}
+
+.presenter-rail {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--paper);
+  border-left: 1px solid var(--line);
+}
+
+.presenter-card {
+  flex: none;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-xs);
+}
+
+.presenter-clock {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 8px 8px 14px;
+}
+
+.presenter-clock-face {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--ink);
+}
+
+.presenter-clock-time {
+  font-family: 'Space Grotesk', var(--sans);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.presenter-clock-slide {
+  margin-left: auto;
+  padding-left: 12px;
+  border-left: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.presenter-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 8px;
+  font-size: 8.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.presenter-next-thumb {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+
+.presenter-next-empty {
+  aspect-ratio: 16 / 9;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  color: var(--muted);
+  background: var(--chrome-2);
+}
+
+.presenter-next-name {
+  display: block;
+  margin-top: 7px;
+  font-size: 10.5px;
+  color: var(--ink-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.presenter-notes {
+  flex: 1 1 auto;
+  min-height: 104px;
+  display: flex;
+  flex-direction: column;
+}
+
+.presenter-notes p {
+  flex: 1;
+  min-height: 0;
+  max-height: 180px;
+  overflow-y: auto;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  white-space: pre-wrap;
+}
+
+.presenter-controls {
+  flex: none;
+  display: flex;
+  gap: 8px;
+}
+
+.presenter-controls .btn {
+  flex: 1;
+}
+
+.presenter-tools {
+  flex: none;
+  display: flex;
+  gap: 6px;
+}
+
+.presenter-tool {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 30px;
+  border-radius: 8px;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--muted);
+  box-shadow: inset 0 0 0 1px var(--line);
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.presenter-tool:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+.presenter-tool.is-on {
+  color: var(--coral);
+  box-shadow: inset 0 0 0 1px currentColor;
 }
 
 .present-missing,
@@ -510,6 +978,16 @@ body:has(.present) .toast-stack {
   margin-top: 18px;
 }
 
+/* ---------------- motion + small screens ---------------- */
+@media (prefers-reduced-motion: reduce) {
+  .present-page[data-transition],
+  .present-notes,
+  .present-help-scrim,
+  .presenter-dot {
+    animation: none !important;
+  }
+}
+
 @media (max-width: 900px) {
   .shared-body {
     grid-template-columns: 1fr;
@@ -541,6 +1019,21 @@ body:has(.present) .toast-stack {
   .present-hint {
     display: none;
   }
+
+  .presenter-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+  }
+
+  .presenter-stage {
+    padding: 14px 16px;
+  }
+
+  .presenter-rail {
+    max-height: 46vh;
+    border-left: none;
+    border-top: 1px solid var(--line);
+  }
 }
 
 @media (max-width: 600px) {
@@ -570,5 +1063,9 @@ body:has(.present) .toast-stack {
   .present-exit {
     top: 10px;
     right: 10px;
+  }
+
+  .present-progress {
+    bottom: 64px;
   }
 }

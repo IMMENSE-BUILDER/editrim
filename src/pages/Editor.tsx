@@ -11,12 +11,18 @@ import { EditrimIcon, type EditrimIconName } from '../components/EditrimIcon';
 import { Modal } from '../components/Modal';
 import { PagePreview } from '../components/PagePreview';
 import { BrandKitModal } from '../components/BrandKitModal';
+import { ResizeStudio } from '../components/ResizeStudio';
+import { HistoryDrawer } from '../components/HistoryDrawer';
+import { BulkCreateModal } from '../components/BulkCreateModal';
+import { CommandBar } from '../components/CommandBar';
+import { InlineAiBar } from '../components/InlineAiBar';
 import { useToast } from '../components/Toast';
 import { Canvas } from '../editor/Canvas';
 import { Inspector } from '../editor/Inspector';
 import { LeftPanel, type PanelTab } from '../editor/Panels';
 import { ExportModal, ResizeModal, ShareModal, ShortcutsModal } from '../editor/Modals';
 import { CanvasContextMenu, type CanvasMenuState } from '../editor/ContextMenu';
+import { createShape, createText } from '../editor/factory';
 import { useEditor } from '../editor/useEditor';
 import { createDesign, fromTemplate, getBrand, getDesign, saveDesign } from '../lib/storage';
 import { getTemplate } from '../lib/templates';
@@ -24,6 +30,9 @@ import { exportSelection } from '../lib/export';
 import { copyStyle, pasteStyle, type StylePayload } from '../lib/styleClipboard';
 import { saveComponent } from '../lib/components';
 import { applyPaletteToPage, paletteFromElements } from '../lib/colors';
+import { recordAutoSnapshot } from '../lib/versionHistory';
+import { toggleTheme } from '../lib/theme';
+import type { StudioCommand } from '../lib/commands';
 import type { BrandKit, Design, El, Point } from '../lib/types';
 import { clamp, rotatedBBox, timeAgo, uid, unionRect } from '../lib/utils';
 
@@ -113,6 +122,10 @@ function EditorWorkspace({ initial }: { initial: Design }) {
   const [exportOpen, setExportOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [resizeOpen, setResizeOpen] = useState(false);
+  const [resizeStudioOpen, setResizeStudioOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [commandOpen, setCommandOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const [saveState, setSaveState] = useState<'saved' | 'saving' | 'error'>('saved');
@@ -128,6 +141,8 @@ function EditorWorkspace({ initial }: { initial: Design }) {
   const errorShown = useRef(false);
 
   const design = store.design;
+  const designLive = useRef(design);
+  designLive.current = design;
 
   const copySelection = useCallback(() => {
     if (!store.selected.length) return;
@@ -332,6 +347,16 @@ function EditorWorkspace({ initial }: { initial: Design }) {
     return () => window.clearTimeout(t);
   }, [design, toast]);
 
+  /* ---------- version history ---------- */
+  useEffect(() => {
+    const first = window.setTimeout(() => { void recordAutoSnapshot(designLive.current); }, 4000);
+    const timer = window.setInterval(() => { void recordAutoSnapshot(designLive.current); }, 120_000);
+    return () => {
+      window.clearTimeout(first);
+      window.clearInterval(timer);
+    };
+  }, []);
+
   /* ---------- keyboard ---------- */
   useEffect(() => {
     const isTyping = (t: EventTarget | null) => {
@@ -347,6 +372,17 @@ function EditorWorkspace({ initial }: { initial: Design }) {
       const mod = e.metaKey || e.ctrlKey;
       const key = e.key.toLowerCase();
       const code = e.code;
+
+      if (mod && key === 'k') {
+        e.preventDefault();
+        setCommandOpen(v => !v);
+        return;
+      }
+      if (!mod && !e.shiftKey && key === '/') {
+        e.preventDefault();
+        setCommandOpen(true);
+        return;
+      }
 
       if (mod && key === 'z') {
         e.preventDefault();
@@ -498,6 +534,176 @@ function EditorWorkspace({ initial }: { initial: Design }) {
 
   const selectedText = store.selected.length === 1 && store.selected[0].type === 'text' ? store.selected[0] : null;
 
+  const openVariant = useCallback((id: string) => {
+    saveNow();
+    setResizeStudioOpen(false);
+    if (id === design.id) return;
+    navigate(`/editor/${id}`);
+  }, [design.id, navigate, saveNow]);
+
+  const applyInlineAi = useCallback((next: string, mode: 'replace' | 'insert') => {
+    if (!selectedText) return;
+    if (mode === 'replace') {
+      store.patchElement(selectedText.id, { text: next } as Partial<El>);
+      toast('Text replaced — undo with Ctrl+Z');
+      return;
+    }
+    const copy = {
+      ...structuredClone(selectedText),
+      id: uid('text'),
+      y: selectedText.y + selectedText.h + 20,
+      text: next,
+    } as El;
+    store.addElements([copy]);
+    toast('Added as a new text layer');
+  }, [selectedText, store, toast]);
+
+  const commands: StudioCommand[] = [
+    {
+      id: 'add-heading',
+      label: 'Add a heading',
+      hint: 'Text',
+      group: 'Insert',
+      icon: 'text',
+      keywords: ['title', 'type', 'text'],
+      run: () => store.addElements([createText('heading', store.page, design.size, brand)]),
+    },
+    {
+      id: 'add-body',
+      label: 'Add body text',
+      hint: 'Text',
+      group: 'Insert',
+      icon: 'type',
+      keywords: ['paragraph', 'copy'],
+      run: () => store.addElements([createText('body', store.page, design.size, brand)]),
+    },
+    {
+      id: 'add-shape',
+      label: 'Add a rectangle',
+      hint: 'Shape',
+      group: 'Insert',
+      icon: 'elements',
+      keywords: ['box', 'square'],
+      run: () => store.addElements([createShape('rect', store.page, design.size, brand)]),
+    },
+    {
+      id: 'add-page',
+      label: 'Add a page',
+      hint: 'Page',
+      group: 'Insert',
+      icon: 'plus',
+      keywords: ['new', 'slide'],
+      run: () => store.addPage(),
+    },
+    {
+      id: 'resize',
+      label: 'Resize & variants',
+      hint: 'Magic resize',
+      group: 'Design',
+      icon: 'fit',
+      keywords: ['magic', 'switch', 'format', 'instagram', 'story'],
+      run: () => setResizeStudioOpen(true),
+    },
+    {
+      id: 'bulk',
+      label: 'Bulk create from CSV',
+      hint: 'Data merge',
+      group: 'Design',
+      icon: 'sheet',
+      keywords: ['csv', 'list', 'names', 'certificates'],
+      run: () => setBulkOpen(true),
+    },
+    {
+      id: 'history',
+      label: 'Version history',
+      hint: 'Restore a save',
+      group: 'Design',
+      icon: 'clock',
+      keywords: ['backup', 'snapshot', 'undo'],
+      run: () => setHistoryOpen(true),
+    },
+    {
+      id: 'templates',
+      label: 'Browse templates',
+      group: 'Design',
+      icon: 'templates',
+      keywords: ['layout', 'start'],
+      run: () => setPanel('templates'),
+    },
+    {
+      id: 'brand',
+      label: 'Open brand kit',
+      group: 'Design',
+      icon: 'brand',
+      keywords: ['colors', 'fonts', 'logo'],
+      run: () => setBrandOpen(true),
+    },
+    {
+      id: 'background',
+      label: 'Change background',
+      group: 'Design',
+      icon: 'background',
+      keywords: ['color', 'gradient', 'photo'],
+      run: () => setPanel('background'),
+    },
+    {
+      id: 'ai',
+      label: 'Open AI Studio',
+      group: 'AI',
+      icon: 'spark',
+      keywords: ['generate', 'write', 'review'],
+      run: () => setPanel('ai'),
+    },
+    {
+      id: 'present',
+      label: 'Present this design',
+      group: 'Share',
+      icon: 'play',
+      keywords: ['slideshow', 'fullscreen'],
+      run: present,
+    },
+    {
+      id: 'share',
+      label: 'Share a view link',
+      group: 'Share',
+      icon: 'share',
+      keywords: ['url', 'link', 'send'],
+      run: openShare,
+    },
+    {
+      id: 'export',
+      label: 'Download',
+      group: 'Share',
+      icon: 'download',
+      keywords: ['export', 'png', 'pdf', 'svg'],
+      run: () => setExportOpen(true),
+    },
+    {
+      id: 'theme',
+      label: 'Toggle light and dark',
+      group: 'Workspace',
+      icon: 'moon',
+      keywords: ['theme', 'appearance', 'night'],
+      run: () => toggleTheme(),
+    },
+    {
+      id: 'fit',
+      label: 'Fit canvas to screen',
+      group: 'Workspace',
+      icon: 'fit',
+      keywords: ['zoom', 'center'],
+      run: () => window.dispatchEvent(new CustomEvent('editrim:fit')),
+    },
+    {
+      id: 'shortcuts',
+      label: 'Keyboard shortcuts',
+      group: 'Workspace',
+      icon: 'help',
+      keywords: ['keys', 'help'],
+      run: () => setShortcutsOpen(true),
+    },
+  ];
+
   return (
     <div className={`editor ${inspectorOpen ? 'show-inspector' : ''}`}>
       <header className="ed-topbar">
@@ -526,11 +732,21 @@ function EditorWorkspace({ initial }: { initial: Design }) {
             {design.size.width} × {design.size.height}
             <EditrimIcon name="fit" size={12} />
           </button>
+          <button className="ed-tool-pill" onClick={() => setResizeStudioOpen(true)} title="Resize & variants">
+            <EditrimIcon name="magic" size={13} />
+            <span>Resize</span>
+          </button>
         </div>
 
         <div className="ed-top-right">
           <button className="ed-ico ed-insp-toggle" onClick={() => setInspectorOpen(v => !v)} title="Design controls">
             <EditrimIcon name="sliders" size={17} />
+          </button>
+          <button className="ed-ico" onClick={() => setCommandOpen(true)} title="Quick actions (Ctrl K)">
+            <EditrimIcon name="search" size={17} />
+          </button>
+          <button className="ed-ico" onClick={() => setHistoryOpen(true)} title="Version history">
+            <EditrimIcon name="clock" size={17} />
           </button>
           <button className="ed-ico ed-help" onClick={() => setShortcutsOpen(true)} title="Keyboard shortcuts"><EditrimIcon name="help" size={17} /></button>
           <button className="ed-action" onClick={present}><EditrimIcon name="play" size={14} /> <span>Present</span></button>
@@ -625,6 +841,9 @@ function EditorWorkspace({ initial }: { initial: Design }) {
                 </div>
               ))}
               <button className="page-add" onClick={() => store.addPage()} title="Add page"><EditrimIcon name="plus" size={17} /><span>Add page</span></button>
+              <button className="page-bulk-btn" onClick={() => setBulkOpen(true)} title="Bulk create pages from a CSV">
+                <EditrimIcon name="sheet" size={16} /><span>Bulk create</span>
+              </button>
             </div>
             <div className="page-strip-info">
               <span>Page {store.activePage + 1} of {design.pages.length}</span>
@@ -647,6 +866,37 @@ function EditorWorkspace({ initial }: { initial: Design }) {
       <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} design={design} />
       <ResizeModal open={resizeOpen} onClose={() => setResizeOpen(false)} design={design} onResize={(w, h) => { store.resizeDesign(w, h); setPanel(null); toast('Canvas resized — content scaled to fit'); }} />
       <ShortcutsModal open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
+      <ResizeStudio
+        open={resizeStudioOpen}
+        onClose={() => setResizeStudioOpen(false)}
+        design={design}
+        onOpenVariant={openVariant}
+      />
+      <HistoryDrawer
+        open={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        design={design}
+        onRestore={next => {
+          store.restoreDesign(next);
+          setHistoryOpen(false);
+          toast('Version restored — undo with Ctrl+Z');
+        }}
+      />
+      <BulkCreateModal
+        open={bulkOpen}
+        onClose={() => setBulkOpen(false)}
+        page={store.page}
+        size={design.size}
+        onGenerate={pages => {
+          store.addPages(pages);
+          setBulkOpen(false);
+          toast(`${pages.length} ${pages.length === 1 ? 'page' : 'pages'} added`);
+        }}
+      />
+      <CommandBar open={commandOpen} onClose={() => setCommandOpen(false)} commands={commands} />
+      {selectedText && !store.editingId && (
+        <InlineAiBar text={selectedText} brandVoice={brand.voice} onApply={applyInlineAi} />
+      )}
       {contextMenu && (
         <CanvasContextMenu
           menu={contextMenu}

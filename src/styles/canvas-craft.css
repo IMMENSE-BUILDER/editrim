@@ -1,0 +1,26 @@
+/* ==========================================================================
+   Canvas craft — marquee selection
+   Kept out of editor.css so the canvas surface can evolve on its own.
+   ========================================================================== */
+
+.cv-marquee {
+  position: absolute;
+  z-index: 26;
+  box-sizing: border-box;
+  border: 1px solid var(--cobalt);
+  border-radius: 0;
+  /* 20% soft cobalt wash over a faint cobalt base, so the fill keeps its
+     presence on white pages and in dark mode without hiding the artwork. */
+  background: color-mix(
+    in srgb,
+    var(--cobalt-soft) 20%,
+    color-mix(in srgb, var(--cobalt) 8%, transparent)
+  );
+  pointer-events: none;
+}
+
+/* A canvas drag should never start a native text selection or text drag. */
+.cv-viewport {
+  user-select: none;
+  -webkit-user-select: none;
+}

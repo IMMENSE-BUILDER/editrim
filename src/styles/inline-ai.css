@@ -1,0 +1,419 @@
+.iai-bar {
+  position: fixed;
+  z-index: 320;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  transform: translate(-50%, -100%);
+  animation: iai-fade-in var(--dur) var(--ease-out);
+}
+
+.iai-bar.is-below {
+  transform: translate(-50%, 0);
+}
+
+.iai-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  background: var(--card);
+  color: var(--ink);
+  font: 650 11px/1 var(--sans);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+}
+
+.iai-trigger .editrim-icon {
+  color: var(--cobalt);
+}
+
+.iai-trigger:hover {
+  border-color: var(--cobalt);
+  color: var(--cobalt);
+}
+
+.iai-pill {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 4px;
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  box-shadow: var(--shadow-md);
+  animation: iai-pill-in var(--dur-slow) var(--ease-out);
+}
+
+.iai-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px 0 7px;
+  color: var(--cobalt);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.iai-brand .editrim-icon {
+  color: var(--cobalt);
+}
+
+.iai-divider {
+  flex: none;
+  width: 1px;
+  height: 18px;
+  margin: 0 3px;
+  background: var(--line);
+}
+
+.iai-menu-wrap {
+  position: relative;
+  display: flex;
+}
+
+.iai-action {
+  height: 28px;
+  padding: 0 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+
+.iai-action .editrim-icon {
+  color: var(--muted);
+  transition: color var(--dur-fast) var(--ease);
+}
+
+.iai-action:hover:not(:disabled) {
+  background: var(--chrome-2);
+  color: var(--ink);
+}
+
+.iai-action:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.iai-action.is-open,
+.iai-action.is-loading {
+  background: var(--cobalt-soft);
+  color: var(--cobalt);
+}
+
+.iai-action.is-open .editrim-icon,
+.iai-action.is-loading .spin {
+  color: var(--cobalt);
+}
+
+.iai-action .spin {
+  flex: none;
+}
+
+.iai-close {
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--muted);
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+
+.iai-close:hover {
+  background: var(--chrome-2);
+  color: var(--ink);
+}
+
+.iai-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  z-index: 4;
+  min-width: 170px;
+  max-height: 262px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 5px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
+  transform: translateX(-50%);
+  animation: iai-menu-in var(--dur-fast) var(--ease-out);
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.iai-menu button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  color: var(--ink-soft);
+  font-size: 11px;
+  text-align: left;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+
+.iai-menu button:hover {
+  background: var(--chrome-2);
+  color: var(--ink);
+}
+
+.iai-menu button.is-selected {
+  background: var(--cobalt-soft);
+  color: var(--cobalt);
+}
+
+.iai-menu button .editrim-icon {
+  flex: none;
+  color: var(--cobalt);
+}
+
+.iai-result,
+.iai-error {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  z-index: 2;
+  width: min(400px, calc(100vw - 24px));
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  transform: translateX(-50%);
+  animation: iai-pop-in var(--dur) var(--ease-out);
+}
+
+.iai-result.is-below,
+.iai-error.is-below {
+  top: calc(100% + var(--iai-drop, 8px));
+  bottom: auto;
+}
+
+.iai-result-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 11px;
+  border-bottom: 1px solid var(--line);
+  background: var(--chrome);
+}
+
+.iai-result-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--cobalt);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.iai-result-label .editrim-icon {
+  color: var(--cobalt);
+}
+
+.iai-result-delta {
+  flex: none;
+  color: var(--muted-2);
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.iai-result-text {
+  max-height: 160px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 10px 12px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.iai-result-text:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: -2px;
+}
+
+.iai-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 7px 9px;
+  border-top: 1px solid var(--line);
+}
+
+.iai-btn {
+  height: 27px;
+  padding: 0 9px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 6px;
+  background: var(--chrome-2);
+  color: var(--ink-soft);
+  font-size: 10px;
+  font-weight: 550;
+  white-space: nowrap;
+  transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+}
+
+.iai-btn:hover:not(:disabled) {
+  background: var(--line);
+  color: var(--ink);
+}
+
+.iai-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.iai-btn.is-primary {
+  background: var(--cobalt);
+  color: #fff;
+}
+
+.iai-btn.is-primary:hover:not(:disabled) {
+  background: var(--cobalt);
+  filter: brightness(1.06);
+  color: #fff;
+}
+
+:root[data-theme='dark'] .iai-btn.is-primary {
+  color: #121116;
+}
+
+:root[data-theme='dark'] .iai-btn.is-primary:hover:not(:disabled) {
+  color: #121116;
+}
+
+.iai-btn.is-ghost {
+  background: transparent;
+  color: var(--muted);
+}
+
+.iai-btn.is-ghost:hover:not(:disabled) {
+  background: var(--chrome-2);
+  color: var(--ink);
+}
+
+.iai-btn .editrim-icon {
+  flex: none;
+}
+
+.iai-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(400px, calc(100vw - 24px));
+  padding: 7px 8px 7px 11px;
+}
+
+.iai-error > span {
+  flex: 1;
+  min-width: 0;
+  color: var(--danger);
+  font-size: 10.5px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.iai-error .iai-btn {
+  flex: none;
+}
+
+.iai-action:focus-visible,
+.iai-close:focus-visible,
+.iai-menu button:focus-visible,
+.iai-btn:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 1px;
+}
+
+@keyframes iai-fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes iai-pill-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.985);
+  }
+}
+
+@keyframes iai-menu-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes iai-pop-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 5px) scale(0.985);
+  }
+}
+
+@media (max-width: 560px) {
+  .iai-bar {
+    max-width: calc(100vw - 16px);
+  }
+
+  .iai-pill {
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 14px;
+  }
+
+  .iai-divider {
+    display: none;
+  }
+
+  .iai-result,
+  .iai-error {
+    width: calc(100vw - 16px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .iai-bar,
+  .iai-pill,
+  .iai-menu,
+  .iai-result,
+  .iai-error {
+    animation: none;
+  }
+
+  .iai-action,
+  .iai-action .editrim-icon,
+  .iai-close,
+  .iai-menu button,
+  .iai-btn {
+    transition: none;
+  }
+}

@@ -47,6 +47,7 @@ import './styles/dashboard.css';
 import './styles/editor.css';
 import './styles/icon-motion.css';
 import './styles/theme.css';
+import './styles/studio.css';
 import { migrateLegacyStorage } from './lib/migrate';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);

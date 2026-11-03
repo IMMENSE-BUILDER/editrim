@@ -1,26 +1,114 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { EditrimIcon } from './EditrimIcon';
 import { Modal } from './Modal';
-import { getBrand, saveBrand, DEFAULT_BRAND } from '../lib/storage';
+import { addAsset, getBrand, saveBrand, DEFAULT_BRAND } from '../lib/storage';
+import { compressImage } from '../lib/utils';
 import { FONTS } from '../lib/fonts';
 import type { BrandKit } from '../lib/types';
 import { useToast } from './Toast';
+import { useResolvedSrc } from '../hooks/useResolvedSrc';
+import '../styles/brand-hub.css';
+
+const MAX_LOGOS = 4;
+
+/** Stored kits predate logos/palettes — normalise before editing or saving. */
+function withCollections(kit: BrandKit): BrandKit {
+  return { ...kit, logos: kit.logos ?? [], palettes: kit.palettes ?? [] };
+}
+
+function LogoTile({ src, index, onRemove }: { src: string; index: number; onRemove: () => void }) {
+  const resolved = useResolvedSrc(src);
+  return (
+    <div className="brand-logo-tile">
+      {resolved ? <img src={resolved} alt={`Logo ${index + 1}`} /> : <span className="brand-logo-placeholder" />}
+      <button
+        type="button"
+        className="brand-logo-remove"
+        onClick={onRemove}
+        aria-label={`Remove logo ${index + 1}`}
+      >
+        <EditrimIcon name="close" size={11} />
+      </button>
+    </div>
+  );
+}
 
 export function BrandKitModal({ open, onClose, onSaved }: { open: boolean; onClose: () => void; onSaved?: () => void }) {
   const { toast } = useToast();
-  const [kit, setKit] = useState<BrandKit>(() => getBrand());
+  const [kit, setKit] = useState<BrandKit>(() => withCollections(getBrand()));
+  const [paletteName, setPaletteName] = useState('');
+  const [logoBusy, setLogoBusy] = useState(false);
+  const logoInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (open) setKit(getBrand());
+    if (open) {
+      setKit(withCollections(getBrand()));
+      setPaletteName('');
+      setLogoBusy(false);
+    }
   }, [open]);
 
   const update = (patch: Partial<BrandKit>) => setKit(k => ({ ...k, ...patch }));
 
+  const logos = kit.logos ?? [];
+  const palettes = kit.palettes ?? [];
+
   const save = () => {
-    saveBrand(kit);
+    saveBrand(withCollections(kit));
     toast('Brand kit updated');
     onSaved?.();
     onClose();
+  };
+
+  const pickLogo = () => logoInput.current?.click();
+
+  const uploadLogos = async (files: FileList | null) => {
+    if (!files || !files.length) return;
+    const images = Array.from(files).filter(file => file.type.startsWith('image/'));
+    if (!images.length) {
+      toast('Choose an image file', 'error');
+      return;
+    }
+    const room = MAX_LOGOS - logos.length;
+    if (room <= 0) {
+      toast(`Up to ${MAX_LOGOS} logos`, 'error');
+      return;
+    }
+    setLogoBusy(true);
+    try {
+      const refs: string[] = [];
+      for (const file of images.slice(0, room)) {
+        const data = await compressImage(file, 512, 0.92);
+        refs.push(await addAsset(file.name || 'logo', data));
+      }
+      setKit(k => ({ ...k, logos: [...(k.logos ?? []), ...refs].slice(0, MAX_LOGOS) }));
+      if (images.length > room) toast(`Up to ${MAX_LOGOS} logos — the rest were skipped`, 'error');
+      else toast(`${refs.length} ${refs.length === 1 ? 'logo' : 'logos'} added`);
+    } catch {
+      toast('That logo could not be added', 'error');
+    } finally {
+      setLogoBusy(false);
+    }
+  };
+
+  const applyPalette = (palette: { name: string; colors: string[] }) => {
+    update({ colors: palette.colors.slice(0, 8) });
+    toast(`“${palette.name}” applied`);
+  };
+
+  const savePalette = () => {
+    const name = paletteName.trim();
+    if (!name) return;
+    const entry = { name, colors: kit.colors.slice(0, 8) };
+    setKit(k => {
+      const list = k.palettes ?? [];
+      const at = list.findIndex(p => p.name.toLowerCase() === name.toLowerCase());
+      return {
+        ...k,
+        palettes: at >= 0 ? list.map((p, i) => (i === at ? entry : p)) : [...list, entry],
+      };
+    });
+    setPaletteName('');
   };
 
   return (
@@ -28,13 +116,20 @@ export function BrandKitModal({ open, onClose, onSaved }: { open: boolean; onClo
       open={open}
       onClose={onClose}
       title="Brand kit"
-      subtitle="Keep your colours and type in one place. Available in every design."
+      subtitle="Keep your colours, type and logos in one place. Available in every design."
       footer={
         <>
           <button
             className="btn btn-ghost"
             onClick={() => {
-              setKit({ ...DEFAULT_BRAND, colors: [...DEFAULT_BRAND.colors], fonts: [...DEFAULT_BRAND.fonts] });
+              setKit({
+                ...DEFAULT_BRAND,
+                colors: [...DEFAULT_BRAND.colors],
+                fonts: [...DEFAULT_BRAND.fonts],
+                logos: [],
+                palettes: [],
+              });
+              setPaletteName('');
             }}
           >
             <EditrimIcon name="undo" size={14} /> Reset
@@ -85,7 +180,59 @@ export function BrandKitModal({ open, onClose, onSaved }: { open: boolean; onClo
         )}
       </div>
 
-      <div className="brand-fonts">
+      <div className="field" style={{ marginBottom: 10 }}>
+        <span className="field-label">Palettes</span>
+      </div>
+      {palettes.length ? (
+        <div className="brand-palette-list">
+          {palettes.map(p => (
+            <div className="brand-palette-row" key={p.name}>
+              <button
+                type="button"
+                className="brand-palette-main"
+                onClick={() => applyPalette(p)}
+                title={`Use ${p.name}`}
+              >
+                <span className="brand-palette-swatches">
+                  {p.colors.slice(0, 8).map((c, i) => <i key={i} style={{ background: c }} />)}
+                </span>
+                <span className="brand-palette-name">{p.name}</span>
+              </button>
+              <button
+                type="button"
+                className="brand-palette-remove"
+                onClick={() => update({ palettes: palettes.filter(x => x.name !== p.name) })}
+                aria-label={`Delete ${p.name}`}
+              >
+                <EditrimIcon name="trash" size={12} />
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="brand-palette-empty">No palettes yet — save the colours above as a set.</p>
+      )}
+      <div className="brand-palette-save">
+        <input
+          className="input"
+          value={paletteName}
+          placeholder="Palette name"
+          aria-label="Palette name"
+          onChange={e => setPaletteName(e.target.value)}
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              savePalette();
+            }
+          }}
+        />
+        <button type="button" className="btn btn-ghost btn-sm" onClick={savePalette} disabled={!paletteName.trim()}>
+          <EditrimIcon name="plus" size={13} /> Add
+        </button>
+      </div>
+      <span className="brand-palette-hint">Save current colours as a palette — click one to load it back.</span>
+
+      <div className="brand-fonts" style={{ marginTop: 22 }}>
         <div className="field">
           <label className="field-label" htmlFor="brand-heading">Heading font</label>
           <select
@@ -109,7 +256,51 @@ export function BrandKitModal({ open, onClose, onSaved }: { open: boolean; onClo
           </select>
         </div>
       </div>
-      <div className="brand-preview" style={{ fontFamily: `"${kit.fonts[0]}", sans-serif` }}>
+
+      <div className="field" style={{ marginBottom: 10 }}>
+        <span className="field-label">Logos <span className="brand-optional">{logos.length}/{MAX_LOGOS}</span></span>
+      </div>
+      <input
+        ref={logoInput}
+        type="file"
+        accept="image/*"
+        multiple
+        hidden
+        aria-label="Upload brand logo"
+        data-testid="brand-logo-input"
+        onChange={e => {
+          void uploadLogos(e.target.files);
+          e.target.value = '';
+        }}
+      />
+      {logos.length ? (
+        <div className="brand-logo-grid">
+          {logos.map((src, i) => (
+            <LogoTile
+              key={`${src}-${i}`}
+              src={src}
+              index={i}
+              onRemove={() => update({ logos: logos.filter((_, j) => j !== i) })}
+            />
+          ))}
+          {logos.length < MAX_LOGOS && (
+            <button type="button" className="brand-logo-add" onClick={pickLogo} disabled={logoBusy} aria-label="Upload logo">
+              <EditrimIcon name="upload" size={15} />
+              <span>{logoBusy ? '…' : 'Add'}</span>
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className="brand-logo-empty">
+          <EditrimIcon name="image" size={18} />
+          <span>No logo yet.</span>
+          <button type="button" className="btn btn-ghost btn-sm" onClick={pickLogo} disabled={logoBusy}>
+            <EditrimIcon name="upload" size={14} /> {logoBusy ? 'Adding…' : 'Upload logo'}
+          </button>
+        </div>
+      )}
+
+      <div className="brand-preview" style={{ marginTop: 20, fontFamily: `"${kit.fonts[0]}", sans-serif` }}>
         <span style={{ color: kit.colors[0] }}>Aa</span>
         <div>
           <strong style={{ color: kit.colors[0] }}>{kit.name || 'Your brand'}</strong>

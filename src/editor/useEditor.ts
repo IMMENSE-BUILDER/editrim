@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import type { Background, CanvasComment, Design, El, Page } from '../lib/types';
 import { rotatedBBox, unionRect, uid } from '../lib/utils';
+import { computeTidyPositions } from '../lib/tidy';
 import { newPage } from '../lib/storage';
 
 type UpdateOpts = { transient?: boolean; merge?: string };
@@ -298,6 +299,25 @@ export function useEditor(initial: Design) {
     [selected, updateElements],
   );
 
+  /** Re-flow the selection into an even grid as a single undo step. */
+  const tidyUp = useCallback(() => {
+    if (selected.length < 2) return false;
+    if (selected.some(el => el.locked)) return false;
+    const placements = computeTidyPositions(selected);
+    if (!placements.length) return false;
+    const updates: Record<string, Partial<El>> = {};
+    placements.forEach(placement => {
+      updates[placement.id] = {
+        x: placement.x,
+        y: placement.y,
+        w: placement.w,
+        h: placement.h,
+      };
+    });
+    updateElements(updates);
+    return true;
+  }, [selected, updateElements]);
+
   const reorder = useCallback(
     (mode: 'front' | 'back' | 'forward' | 'backward') => {
       if (!selectedIds.length) return;
@@ -522,6 +542,26 @@ export function useEditor(initial: Design) {
     [apply],
   );
 
+  /** Replace the whole design in one undo step — used by version restore and brand apply. */
+  const restoreDesign = useCallback(
+    (next: Design) => {
+      apply(() => structuredClone(next));
+      setSelectedIds([]);
+      setEditingId(null);
+      setActivePageState(prev => Math.min(prev, next.pages.length - 1));
+    },
+    [apply],
+  );
+
+  /** Append generated pages (bulk create) as one undo step. */
+  const addPages = useCallback(
+    (pages: Page[]) => {
+      if (!pages.length) return;
+      apply(d => ({ ...d, pages: [...d.pages, ...structuredClone(pages)] }));
+    },
+    [apply],
+  );
+
   return {
     design,
     page,
@@ -547,6 +587,7 @@ export function useEditor(initial: Design) {
     align,
     centerOnPage,
     distribute,
+    tidyUp,
     reorder,
     toggleLock,
     toggleHidden,
@@ -568,6 +609,8 @@ export function useEditor(initial: Design) {
     setBackground,
     setPageName,
     setTitle,
+    restoreDesign,
+    addPages,
     undo,
     redo,
     pushHistory,

@@ -1,0 +1,416 @@
+/* Brand kit 2.0 — logos, palettes, apply + brand check. Tokens only. */
+
+/* The legacy 4-up colour grid lets the "Add" tile's aspect ratio inflate a
+   column; pin equal tracks so swatch labels stay on one baseline. */
+.brand-colors {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.brand-colors > * {
+  min-width: 0;
+}
+
+.brand-color-add {
+  aspect-ratio: auto;
+  min-height: 100px;
+}
+
+@media (max-width: 600px) {
+  .brand-colors {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* ---------------- modal: logos ---------------- */
+.brand-logo-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.brand-logo-tile {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.brand-logo-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 6px;
+}
+
+.brand-logo-placeholder {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--line-strong);
+  animation: brand-pulse 1.2s var(--ease-in-out) infinite;
+}
+
+.brand-logo-remove {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: var(--paper);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.brand-logo-tile:hover .brand-logo-remove,
+.brand-logo-tile:focus-within .brand-logo-remove {
+  opacity: 1;
+}
+
+.brand-logo-remove:hover {
+  background: var(--danger);
+}
+
+.brand-logo-add {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  border: 1px dashed var(--line-strong);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  font-size: 8.5px;
+  line-height: 1;
+  color: var(--muted);
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.brand-logo-add:hover:not(:disabled) {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.brand-logo-add:disabled {
+  opacity: 0.5;
+}
+
+.brand-logo-empty {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.brand-logo-empty > span {
+  flex: 1;
+  min-width: 0;
+}
+
+.brand-logo-empty > svg {
+  color: var(--muted-2);
+  flex: none;
+}
+
+/* ---------------- modal: palettes ---------------- */
+.brand-palette-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.brand-palette-empty {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+.brand-palette-row {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease);
+}
+
+.brand-palette-row:hover {
+  border-color: var(--line-strong);
+}
+
+.brand-palette-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  text-align: left;
+  transition: background var(--dur) var(--ease);
+}
+
+.brand-palette-main:hover {
+  background: var(--paper);
+}
+
+.brand-palette-swatches {
+  display: flex;
+  gap: 2px;
+  flex: none;
+}
+
+.brand-palette-swatches i {
+  display: block;
+  width: 10px;
+  height: 18px;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.brand-palette-name {
+  font-size: 11.5px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand-palette-remove {
+  flex: none;
+  width: 30px;
+  display: grid;
+  place-items: center;
+  color: var(--muted-2);
+  transition: color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.brand-palette-remove:hover {
+  color: var(--danger);
+  background: var(--paper);
+}
+
+.brand-palette-save {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.brand-palette-save .input {
+  flex: 1;
+  min-width: 0;
+  height: 34px;
+  font-size: 12px;
+}
+
+.brand-palette-hint {
+  display: block;
+  margin-top: 6px;
+  font-size: 9.5px;
+  color: var(--muted-2);
+}
+
+/* ---------------- panel: logos ---------------- */
+.brand-manage {
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.brand-manage:hover {
+  background: var(--cobalt-soft);
+}
+
+.brand-logo-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.brand-logo-pick {
+  flex: none;
+  width: 64px;
+  height: 70px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 5px;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.brand-logo-pick:hover:not(:disabled) {
+  border-color: var(--cobalt);
+  background: var(--cobalt-soft);
+}
+
+.brand-logo-pick:disabled {
+  opacity: 0.5;
+}
+
+.brand-logo-pick img {
+  width: 100%;
+  height: 44px;
+  object-fit: contain;
+}
+
+.brand-logo-pick span {
+  font-size: 8.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.brand-logo-pick:hover:not(:disabled) span {
+  color: var(--cobalt);
+}
+
+.brand-logo-pick .brand-logo-placeholder {
+  margin: 15px 0;
+}
+
+/* ---------------- panel: apply ---------------- */
+.brand-apply-scope {
+  margin-bottom: 8px;
+}
+
+.brand-apply-btn {
+  justify-content: center;
+  font-weight: 600;
+}
+
+/* ---------------- panel: brand check ---------------- */
+.brand-check-fix {
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cobalt);
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.brand-check-fix:hover {
+  background: var(--cobalt-soft);
+}
+
+.brand-check {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  padding: 9px 10px;
+}
+
+.brand-check-count {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+
+.brand-check-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.brand-check-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+  font-size: 9.5px;
+  color: var(--muted);
+}
+
+.brand-check-name {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 55%;
+  color: var(--ink-soft);
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brand-check-flow {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+  font-size: 8.5px;
+  color: var(--muted);
+}
+
+.brand-check-dash {
+  color: var(--muted-2);
+  margin-right: 1px;
+}
+
+.brand-check-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px var(--line-strong);
+  flex: none;
+}
+
+.brand-check-to {
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.brand-check-empty {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--sage);
+}
+
+.brand-check-more {
+  display: block;
+  margin-top: 6px;
+  font-size: 9px;
+  color: var(--muted-2);
+}
+
+@keyframes brand-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-logo-placeholder {
+    animation: none;
+  }
+}

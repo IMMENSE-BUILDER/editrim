@@ -154,9 +154,25 @@ function TextView({ el }: { el: TextElement }) {
   );
 }
 
+function imageClipPath(el: ImageElement): string {
+  const mask = el.mask ?? 'none';
+  if (mask === 'none') return `inset(0 round ${el.radius}px)`;
+  if (mask === 'ellipse') return 'ellipse(50% 50% at 50% 50%)';
+  if (mask === 'star') {
+    const points = starPoints(el.w, el.h)
+      .split(' ')
+      .map(pair => pair.split(',').map(Number))
+      .map(([x, y]) => `${x} ${y}`);
+    return `path('M ${points.join(' L ')} Z')`;
+  }
+  const path = shapePath({ w: el.w, h: el.h, shape: mask } as ShapeElement);
+  return path ? `path('${path}')` : `inset(0 round ${el.radius}px)`;
+}
+
 function ImageView({ el }: { el: ImageElement }) {
   const src = useResolvedSrc(el.src);
   const f = el.filters;
+  const zoom = Math.max(1, el.zoom ?? 1);
   return (
     <div
       style={{
@@ -164,6 +180,7 @@ function ImageView({ el }: { el: ImageElement }) {
         width: '100%',
         height: '100%',
         borderRadius: el.radius,
+        clipPath: imageClipPath(el),
         overflow: 'hidden',
         background: '#e9e6dd',
       }}
@@ -180,7 +197,7 @@ function ImageView({ el }: { el: ImageElement }) {
             height: '100%',
             objectFit: el.fit,
             filter: `brightness(${f.brightness}%) contrast(${f.contrast}%) saturate(${f.saturate}%) blur(${f.blur}px) grayscale(${f.grayscale}%) sepia(${f.sepia}%) hue-rotate(${f.hue}deg)`,
-            transform: `scale(${el.flipX ? -1 : 1}, ${el.flipY ? -1 : 1})`,
+            transform: `scale(${el.flipX ? -1 : 1}, ${el.flipY ? -1 : 1}) scale(${zoom}) translate(${(el.offsetX ?? 0) * 100}%, ${(el.offsetY ?? 0) * 100}%)`,
           }}
         />
       ) : (
