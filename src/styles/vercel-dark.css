@@ -13,8 +13,9 @@
   --h-text: #ededed;
   --h-muted: #a1a1a1;
   --h-muted-2: #737373;
-  --h-lilac: #8a63ff;
-  --h-purple: #8a63ff;
+  --h-lilac: #ededed;
+  --h-purple: #ededed;
+  --h-coral: #ededed;
   background: #000;
 }
 
@@ -47,14 +48,14 @@
 }
 
 :root[data-theme='dark'] .home-search-wrap:focus-within {
-  border-color: #8a63ff;
-  box-shadow: 0 0 0 1px rgba(138, 99, 255, 0.35);
+  border-color: #ededed;
+  box-shadow: 0 0 0 1px rgba(237, 237, 237, 0.35);
 }
 
 :root[data-theme='dark'] .home-search-wrap input {
   font-size: 14px;
   color: #ededed;
-  caret-color: #8a63ff;
+  caret-color: #ededed;
 }
 
 :root[data-theme='dark'] .home-search-wrap input::placeholder {
@@ -101,32 +102,32 @@
   background: #0a0a0a;
   border: 1px solid #262626;
   border-radius: 10px;
-  color: #8a63ff;
+  color: #ededed;
   box-shadow: none;
 }
 
 :root[data-theme='dark'] .home-cat:hover .home-cat-icon {
   background: #141414;
-  border-color: #8a63ff;
-  color: #8a63ff;
+  border-color: #ededed;
+  color: #ededed;
   box-shadow: none;
 }
 
 :root[data-theme='dark'] .home-cat:hover .home-cat-icon .editrim-icon {
-  color: #8a63ff;
+  color: #ededed;
 }
 
 :root[data-theme='dark'] .home-cat.is-outline .home-cat-icon {
   background: transparent;
   border: 1px dashed #333;
-  color: #8a63ff;
+  color: #ededed;
 }
 
 :root[data-theme='dark'] .home-cat.is-outline:hover .home-cat-icon {
   background: #141414;
   border-style: solid;
-  border-color: #8a63ff;
-  color: #8a63ff;
+  border-color: #ededed;
+  color: #ededed;
 }
 
 /* Cards and thumbnails. */
@@ -161,14 +162,14 @@
 
 :root[data-theme='dark'] .home-new-card:hover {
   background: #111;
-  border-color: #8a63ff;
+  border-color: #ededed;
 }
 
 :root[data-theme='dark'] .home-new-card-icon {
   background: #111;
   border: 1px solid #333;
   border-radius: 8px;
-  color: #8a63ff;
+  color: #ededed;
 }
 
 :root[data-theme='dark'] .home-empty-continue {
@@ -184,14 +185,14 @@
 
 :root[data-theme='dark'] .home-project-add:hover {
   background: #111;
-  border-color: #8a63ff;
+  border-color: #ededed;
 }
 
 :root[data-theme='dark'] .home-project-add > span {
   background: #111;
   border: 1px solid #333;
   border-radius: 8px;
-  color: #8a63ff;
+  color: #ededed;
 }
 
 /* White primary actions, Vercel-style. */
@@ -283,7 +284,7 @@
 :root[data-theme='dark'] .home-result-action-icon {
   background: #111;
   border: 1px solid #262626;
-  color: #8a63ff;
+  color: #ededed;
 }
 
 :root[data-theme='dark'] .home-uploading {
@@ -292,16 +293,106 @@
 }
 
 :root[data-theme='dark'] .home-help {
-  background: #8a63ff;
+  background: #ededed;
   box-shadow: none;
+  color: #000;
+}
+
+:root[data-theme='dark'] .home-help .editrim-icon {
+  color: #000;
 }
 
 :root[data-theme='dark'] .home-help:hover {
-  background: #7a4ff0;
+  background: #fff;
   box-shadow: none;
 }
 
 :root[data-theme='dark'] .rail-avatar {
-  background: #8a63ff;
+  background: #ededed;
+  color: #000;
   box-shadow: none;
+}
+
+/* Monochrome icon pass: white glyphs, black on white actions. */
+:root[data-theme='dark'] .home-rail .editrim-icon {
+  color: #ededed;
+}
+
+:root[data-theme='dark'] .rail-create .editrim-icon,
+:root[data-theme='dark'] .rail-create-icon .editrim-icon {
+  color: #000;
+}
+
+:root[data-theme='dark'] .rail-nav button.active::before {
+  background: #ededed;
+}
+
+:root[data-theme='dark'] .rail-nav .editrim-icon,
+:root[data-theme='dark'] .rail-bottom .editrim-icon {
+  opacity: 0.72;
+}
+
+:root[data-theme='dark'] .rail-nav button.active .editrim-icon,
+:root[data-theme='dark'] .rail-nav a.active .editrim-icon,
+:root[data-theme='dark'] .rail-bottom button:hover .editrim-icon {
+  opacity: 1;
+}
+
+:root[data-theme='dark'] .home-search-wrap > .editrim-icon {
+  color: #ededed;
+}
+
+:root[data-theme='dark'] .home-section-head > button .editrim-icon,
+:root[data-theme='dark'] .home-section-head > a .editrim-icon {
+  color: #a1a1a1;
+}
+
+:root[data-theme='dark'] .home-more-grid svg {
+  color: #ededed;
+}
+
+:root[data-theme='dark'] .home-new-card:hover .home-new-card-icon {
+  background: #ededed;
+  color: #000;
+}
+
+:root[data-theme='dark'] .home-result-row.action:hover .home-result-action-icon {
+  background: #ededed;
+  color: #000;
+}
+
+:root[data-theme='dark'] .home :focus-visible {
+  outline-color: #ededed;
+}
+
+/* Monochrome status and theme controls. */
+:root[data-theme='dark'] .rail-theme-track {
+  background: #333;
+  box-shadow: inset 0 0 0 1px #444;
+}
+
+:root[data-theme='dark'] .rail-theme.is-dark .rail-theme-track {
+  background: #ededed;
+}
+
+:root[data-theme='dark'] .rail-theme.is-dark .rail-theme-track i {
+  background: #000;
+}
+
+:root[data-theme='dark'] .rail-bell > i {
+  background: #ededed;
+  box-shadow: 0 0 0 2px #000;
+}
+
+:root[data-theme='dark'] .home-workspace-label i {
+  background: #ededed;
+  box-shadow: none;
+}
+
+/* Content-format badges also go grayscale in the dark workspace. */
+:root[data-theme='dark'] .home-design-meta .format-glyph,
+:root[data-theme='dark'] .home-template-meta .format-glyph,
+:root[data-theme='dark'] .home-result-row .format-glyph {
+  filter: grayscale(1);
+  opacity: 0.72;
 }
