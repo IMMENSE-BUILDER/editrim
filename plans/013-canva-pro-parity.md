@@ -87,6 +87,20 @@ node scripts/e2e.mjs                     E2E OK
 
 `studio-responsive.mjs` fits the palette, resize studio and export modal at 1440, 1366, 1024 and 390 px in both themes with no horizontal overflow.
 
+## Deployment
+
+Commit `1c15382` is live at **https://editrim.vercel.app** (production bundle `assets/index-B7Nrv-jZ.js`). A live smoke test on the deployed build verified:
+
+- the editor loads a template and exposes Resize & variants, Version history, Brand, Download and the AI trigger;
+- `Ctrl K` opens the command palette and runs Resize;
+- Resize shows 22 target cards across Social, Presentation, Print and Web with the custom-size row;
+- Export lists five formats in the order PNG, JPG, PDF, WebP, SVG;
+- Brand shows Apply to design and Brand check;
+- the inline AI trigger expands to five actions;
+- marquee selects multiple layers and Tidy up is present;
+- presenter view shows a running timer and notes;
+- `/api/ai` returns 200 and the page logs no errors.
+
 ## Honest exclusions
 
 Deliberately not built because they need media models, servers or print partners: background remover, inpainting, Magic Layers, AI video/audio, real-time collaboration, cloud sync, social scheduling, print fulfilment, and a stock library. They remain listed as non-goals rather than simulated. SVG text keeps live font names rather than embedding font files; photos are embedded. PDF remains raster, including the print mode.
