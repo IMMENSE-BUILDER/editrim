@@ -12,3 +12,4 @@ Implementation records. Each plan lists what shipped, the files involved and the
 | 006 | Simplification pass — remove taglines, helper copy and secondary labels from Video Studio and dashboard | Implemented |
 | 007 | Video Studio v2 — project library, speed, colour correction, video zoom and text motion | Implemented |
 | 008 | Photo Editor — adjustments, crop/rotate/flip, filters, text layers, compare, undo/redo and PNG/JPEG/WebP export | Implemented |
+| 009 | Icon choreography — a bespoke hover gesture and a distinct press reply for all 121 glyphs | Implemented |

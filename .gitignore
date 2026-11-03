@@ -2,6 +2,7 @@ node_modules/
 dist/
 shots/
 dev.log
+dev-run.log
 preview.log
 playwright-report/
 test-results/

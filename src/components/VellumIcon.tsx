@@ -183,11 +183,13 @@ export function VellumIcon({
       aria-hidden="true"
       {...rest}
     >
-      <g className="vellum-icon-echo" transform="translate(0.55 0.75)">
-        {paths.map((d, index) => <path key={`echo-${index}`} d={d} />)}
-      </g>
-      <g className="vellum-icon-main">
-        {paths.map((d, index) => <path key={index} d={d} />)}
+      <g className="vellum-icon-ink">
+        <g className="vellum-icon-echo" transform="translate(0.55 0.75)">
+          {paths.map((d, index) => <path key={`echo-${index}`} d={d} />)}
+        </g>
+        <g className="vellum-icon-main">
+          {paths.map((d, index) => <path key={index} d={d} />)}
+        </g>
       </g>
     </svg>
   );

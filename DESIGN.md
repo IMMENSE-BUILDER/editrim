@@ -22,6 +22,7 @@ Editorial studio meets precision tool. Warm paper, ink-black type, one electric 
 - Radius: 10px controls, 16px cards, 24px hero panels. Never pill everything; pills only for tags/chips.
 - Borders 1px, shadows soft and warm (`0 1px 2px rgba(30,26,16,.06)`), larger lift only on hover cards.
 - Motion 120–240ms. Tokens: `--dur-fast` 120ms, `--dur` 180ms, `--dur-slow` 240ms; `--ease` for hover/colour, `--ease-out` for entrances and press feedback, `--ease-in-out` for on-screen movement. Purposeful only: panel reveal, selection, toast, hero drift. Reduced-motion keeps colour/opacity feedback and removes movement.
+- Icon choreography: every glyph has a meaning-specific hover gesture and a shorter, differently-axed press reply (see `docs/ICON-CHOREOGRAPHY.md`). Only `transform`/`opacity`, 160–580ms, no layout. The echo/mask pair moves as one ink group so the duotone never splits.
 - Editor chrome: 56px top bar, 68px rail + 300px panel, 264px inspector, bottom page strip. Neutral, no gradients.
 
 ## Media studios (photo and video)

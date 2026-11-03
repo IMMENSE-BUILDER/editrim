@@ -1,0 +1,688 @@
+/* ==========================================================================
+   Icon choreography
+   --------------------------------------------------------------------------
+   Every Vellum glyph has its own hover gesture and its own press answer.
+   The gesture is chosen from what the icon means:
+     home lifts, download drops, undo rewinds, eye blinks, flipX mirrors,
+     thermometer rises, crop frames, bell swings, trash rattles, and so on.
+   Hover is a one-shot performance that resolves back to rest. Press is a
+   shorter, compressed reply with a different direction or axis, so a click
+   never looks like a second hover.
+
+   Mechanics
+   - `--im-hover` / `--im-press` hold the animation shorthand per glyph.
+   - Interactive ancestors (button, link, role=button) trigger them, so the
+     whole hit area works, not only the 24px glyph.
+   - Only `transform` and `opacity` animate. Nothing here affects layout.
+   - `transform-box: fill-box` makes each glyph rotate and squash around its
+     own geometry instead of the SVG viewport.
+   ========================================================================== */
+
+.vellum-icon-ink {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: transform 240ms var(--ease-out);
+}
+
+:is(button:not(:disabled), a, [role='button']:not([aria-disabled='true']), [role='tab']:not([aria-disabled='true']), summary):hover .vellum-icon-ink,
+.vellum-icon:hover .vellum-icon-ink {
+  animation: var(--im-hover);
+}
+
+:is(button:not(:disabled), a, [role='button']:not([aria-disabled='true']), [role='tab']:not([aria-disabled='true']), summary):focus-visible .vellum-icon-ink {
+  animation: var(--im-hover);
+}
+
+:is(button:not(:disabled), a, [role='button']:not([aria-disabled='true']), [role='tab']:not([aria-disabled='true']), summary):active .vellum-icon-ink,
+.vellum-icon:active .vellum-icon-ink {
+  animation: var(--im-press);
+}
+
+/* The echo layer answers with ink weight instead of geometry. */
+:is(button:not(:disabled), a, [role='button']:not([aria-disabled='true']), [role='tab']:not([aria-disabled='true']), summary):hover .vellum-icon-echo,
+.vellum-icon:hover .vellum-icon-echo {
+  opacity: 0.24;
+}
+
+:is(button:not(:disabled), a, [role='button']:not([aria-disabled='true']), [role='tab']:not([aria-disabled='true']), summary):active .vellum-icon-echo,
+.vellum-icon:active .vellum-icon-echo {
+  opacity: 0.32;
+}
+
+/* Axes: alignment and edge tools squash toward their own guide. */
+.vellum-icon[data-vellum-icon='alignLeft'] .vellum-icon-ink,
+.vellum-icon[data-vellum-icon='alignHorizontalStart'] .vellum-icon-ink,
+.vellum-icon[data-vellum-icon='sidebar'] .vellum-icon-ink {
+  transform-origin: left center;
+}
+
+.vellum-icon[data-vellum-icon='alignRight'] .vellum-icon-ink,
+.vellum-icon[data-vellum-icon='alignHorizontalEnd'] .vellum-icon-ink {
+  transform-origin: right center;
+}
+
+.vellum-icon[data-vellum-icon='alignTop'] .vellum-icon-ink,
+.vellum-icon[data-vellum-icon='alignVerticalStart'] .vellum-icon-ink,
+.vellum-icon[data-vellum-icon='bell'] .vellum-icon-ink {
+  transform-origin: center top;
+}
+
+.vellum-icon[data-vellum-icon='alignBottom'] .vellum-icon-ink,
+.vellum-icon[data-vellum-icon='alignVerticalEnd'] .vellum-icon-ink,
+.vellum-icon[data-vellum-icon='histogram'] .vellum-icon-ink,
+.vellum-icon[data-vellum-icon='thermometer'] .vellum-icon-ink {
+  transform-origin: center bottom;
+}
+
+/* ---------------------------------------------------------------- workspace */
+
+/* home — the roof lifts, the whole mark settles back. */
+.vellum-icon[data-vellum-icon='home'] { --im-hover: im-home-h 480ms var(--ease-out) both; --im-press: im-home-p 190ms var(--ease-in-out) both; }
+@keyframes im-home-h { 0%, 100% { transform: none; } 35% { transform: translateY(-2px) scale(1.07); } 70% { transform: translateY(.5px) scale(.99); } }
+@keyframes im-home-p { 0% { transform: none; } 55% { transform: translateY(1.2px) scale(.92); } 100% { transform: translateY(.8px) scale(.94); } }
+
+/* projects — the folder opens toward its contents. */
+.vellum-icon[data-vellum-icon='projects'] { --im-hover: im-projects-h 500ms var(--ease-out) both; --im-press: im-projects-p 200ms var(--ease-in-out) both; }
+@keyframes im-projects-h { 0%, 100% { transform: none; } 40% { transform: rotate(-5deg) translate(-1.2px, -.4px) scale(1.05); } 75% { transform: rotate(1deg); } }
+@keyframes im-projects-p { 0% { transform: none; } 50% { transform: rotate(2deg) scale(.92); } 100% { transform: rotate(1deg) scale(.94); } }
+
+/* templates — the two tiles trade places with a small tilt. */
+.vellum-icon[data-vellum-icon='templates'] { --im-hover: im-templates-h 460ms var(--ease-out) both; --im-press: im-templates-p 190ms var(--ease-in-out) both; }
+@keyframes im-templates-h { 0%, 100% { transform: none; } 40% { transform: rotate(2.5deg) scale(1.06); } 72% { transform: rotate(-1deg) scale(1.01); } }
+@keyframes im-templates-p { 0% { transform: none; } 55% { transform: rotate(-3deg) scale(.9); } 100% { transform: rotate(-1deg) scale(.93); } }
+
+/* brand — the mountain rises out of the baseline. */
+.vellum-icon[data-vellum-icon='brand'] { --im-hover: im-brand-h 470ms var(--ease-out) both; --im-press: im-brand-p 200ms var(--ease-in-out) both; }
+@keyframes im-brand-h { 0%, 100% { transform: none; } 38% { transform: translateY(-2.2px) scale(1.05); } 70% { transform: translateY(.4px); } }
+@keyframes im-brand-p { 0% { transform: none; } 55% { transform: translateY(1px) scaleY(.88); } 100% { transform: translateY(.6px) scaleY(.9); } }
+
+/* spark — a quick flare with a twist. */
+.vellum-icon[data-vellum-icon='spark'] { --im-hover: im-spark-h 520ms cubic-bezier(.34, 1.56, .64, 1) both; --im-press: im-spark-p 180ms var(--ease-in-out) both; }
+@keyframes im-spark-h { 0%, 100% { transform: none; } 35% { transform: rotate(24deg) scale(1.12); } 70% { transform: rotate(-6deg) scale(1.02); } }
+@keyframes im-spark-p { 0% { transform: none; } 45% { transform: rotate(-14deg) scale(.86); } 100% { transform: rotate(-6deg) scale(.92); } }
+
+/* print — the sheet feeds upward through the roller. */
+.vellum-icon[data-vellum-icon='print'] { --im-hover: im-print-h 500ms var(--ease-out) both; --im-press: im-print-p 210ms var(--ease-in-out) both; }
+@keyframes im-print-h { 0%, 100% { transform: none; } 40% { transform: translateY(-2px) scaleY(1.05); } 72% { transform: translateY(0); } }
+@keyframes im-print-p { 0% { transform: none; } 55% { transform: scaleY(.86) translateY(.6px); } 100% { transform: scaleY(.9) translateY(.6px); } }
+
+/* more — the three dots fan apart, then click shut. */
+.vellum-icon[data-vellum-icon='more'] { --im-hover: im-more-h 420ms var(--ease-out) both; --im-press: im-more-p 170ms var(--ease-in-out) both; }
+@keyframes im-more-h { 0%, 100% { transform: none; } 40% { transform: scaleX(1.2); } 70% { transform: scaleX(.98); } }
+@keyframes im-more-p { 0% { transform: none; } 55% { transform: scaleX(.8); } 100% { transform: scaleX(.86); } }
+
+/* elements — the shapes orbit one step. */
+.vellum-icon[data-vellum-icon='elements'] { --im-hover: im-elements-h 480ms var(--ease-out) both; --im-press: im-elements-p 200ms var(--ease-in-out) both; }
+@keyframes im-elements-h { 0%, 100% { transform: none; } 40% { transform: rotate(10deg) scale(1.05); } 72% { transform: rotate(-2deg); } }
+@keyframes im-elements-p { 0% { transform: none; } 50% { transform: rotate(-5deg) scale(.9); } 100% { transform: rotate(-2deg) scale(.94); } }
+
+/* text — the baseline rises, then gets stamped. */
+.vellum-icon[data-vellum-icon='text'] { --im-hover: im-text-h 440ms var(--ease-out) both; --im-press: im-text-p 180ms var(--ease-in-out) both; }
+@keyframes im-text-h { 0%, 100% { transform: none; } 40% { transform: translateY(-1.6px); } 72% { transform: translateY(.2px); } }
+@keyframes im-text-p { 0% { transform: none; } 55% { transform: scaleY(.84) translateY(.6px); } 100% { transform: scaleY(.88) translateY(.4px); } }
+
+/* uploads — the tray bounces under new files. */
+.vellum-icon[data-vellum-icon='uploads'] { --im-hover: im-uploads-h 500ms var(--ease-out) both; --im-press: im-uploads-p 190ms var(--ease-in-out) both; }
+@keyframes im-uploads-h { 0%, 100% { transform: none; } 40% { transform: translateY(-2.2px) rotate(-3deg); } 72% { transform: translateY(0); } }
+@keyframes im-uploads-p { 0% { transform: none; } 55% { transform: translateY(1.6px) scale(.9); } 100% { transform: translateY(1px) scale(.93); } }
+
+/* background — the horizon pans sideways. */
+.vellum-icon[data-vellum-icon='background'] { --im-hover: im-background-h 520ms var(--ease-out) both; --im-press: im-background-p 200ms var(--ease-in-out) both; }
+@keyframes im-background-h { 0%, 100% { transform: none; } 45% { transform: translateX(2.4px) scale(1.04); } 75% { transform: translateX(.4px); } }
+@keyframes im-background-p { 0% { transform: none; } 55% { transform: translateX(-1.4px) scale(.93); } 100% { transform: translateX(-.8px) scale(.95); } }
+
+/* present — the screen blooms toward the audience. */
+.vellum-icon[data-vellum-icon='present'] { --im-hover: im-present-h 470ms var(--ease-out) both; --im-press: im-present-p 190ms var(--ease-in-out) both; }
+@keyframes im-present-h { 0%, 100% { transform: none; } 38% { transform: scale(1.09) translateY(-1px); } 70% { transform: scale(.99); } }
+@keyframes im-present-p { 0% { transform: none; } 55% { transform: scale(.86); } 100% { transform: scale(.9); } }
+
+/* share — the three nodes push outward. */
+.vellum-icon[data-vellum-icon='share'] { --im-hover: im-share-h 500ms var(--ease-out) both; --im-press: im-share-p 200ms var(--ease-in-out) both; }
+@keyframes im-share-h { 0%, 100% { transform: none; } 40% { transform: scale(1.1) rotate(7deg); } 72% { transform: rotate(-1deg); } }
+@keyframes im-share-p { 0% { transform: none; } 50% { transform: scale(.88) rotate(-5deg); } 100% { transform: scale(.92) rotate(-2deg); } }
+
+/* -------------------------------------------------------------- file actions */
+
+/* download — the arrow drops into the tray. */
+.vellum-icon[data-vellum-icon='download'] { --im-hover: im-download-h 480ms var(--ease-out) both; --im-press: im-download-p 190ms var(--ease-in-out) both; }
+@keyframes im-download-h { 0%, 100% { transform: none; } 40% { transform: translateY(2.4px); } 70% { transform: translateY(-.3px); } }
+@keyframes im-download-p { 0% { transform: none; } 50% { transform: translateY(1.4px) scaleY(.84); } 100% { transform: translateY(1px) scaleY(.88); } }
+
+/* undo — the arrow rewinds behind itself. */
+.vellum-icon[data-vellum-icon='undo'] { --im-hover: im-undo-h 500ms var(--ease-out) both; --im-press: im-undo-p 200ms var(--ease-in-out) both; }
+@keyframes im-undo-h { 0%, 100% { transform: none; } 45% { transform: rotate(-26deg); } 75% { transform: rotate(4deg); } }
+@keyframes im-undo-p { 0% { transform: none; } 50% { transform: rotate(9deg) scale(.88); } 100% { transform: rotate(4deg) scale(.93); } }
+
+/* redo — mirrored rewind. */
+.vellum-icon[data-vellum-icon='redo'] { --im-hover: im-redo-h 500ms var(--ease-out) both; --im-press: im-redo-p 200ms var(--ease-in-out) both; }
+@keyframes im-redo-h { 0%, 100% { transform: none; } 45% { transform: rotate(26deg); } 75% { transform: rotate(-4deg); } }
+@keyframes im-redo-p { 0% { transform: none; } 50% { transform: rotate(-9deg) scale(.88); } 100% { transform: rotate(-4deg) scale(.93); } }
+
+/* help — the question mark leans in. */
+.vellum-icon[data-vellum-icon='help'] { --im-hover: im-help-h 480ms var(--ease-out) both; --im-press: im-help-p 210ms var(--ease-in-out) both; }
+@keyframes im-help-h { 0%, 100% { transform: none; } 40% { transform: rotate(9deg) scale(1.06); } 72% { transform: rotate(-2deg); } }
+@keyframes im-help-p { 0% { transform: none; } 55% { transform: rotate(-7deg) scale(.9); } 100% { transform: rotate(-3deg) scale(.94); } }
+
+/* bell — a full swing from the crown. */
+.vellum-icon[data-vellum-icon='bell'] { --im-hover: im-bell-h 560ms cubic-bezier(.36, .07, .19, .97) both; --im-press: im-bell-p 200ms var(--ease-in-out) both; }
+@keyframes im-bell-h { 0% { transform: none; } 25% { transform: rotate(-13deg); } 50% { transform: rotate(10deg); } 75% { transform: rotate(-4deg); } 100% { transform: none; } }
+@keyframes im-bell-p { 0% { transform: none; } 50% { transform: rotate(5deg) scale(.9); } 100% { transform: rotate(2deg) scale(.94); } }
+
+/* plus — a quarter turn makes a plus into an x. */
+.vellum-icon[data-vellum-icon='plus'] { --im-hover: im-plus-h 480ms cubic-bezier(.34, 1.36, .64, 1) both; --im-press: im-plus-p 190ms var(--ease-in-out) both; }
+@keyframes im-plus-h { 0%, 100% { transform: none; } 50% { transform: rotate(90deg) scale(1.07); } }
+@keyframes im-plus-p { 0% { transform: none; } 55% { transform: rotate(45deg) scale(.84); } 100% { transform: rotate(30deg) scale(.9); } }
+
+/* search — the lens sweeps across the surface. */
+.vellum-icon[data-vellum-icon='search'] { --im-hover: im-search-h 500ms var(--ease-out) both; --im-press: im-search-p 180ms var(--ease-in-out) both; }
+@keyframes im-search-h { 0%, 100% { transform: none; } 35% { transform: translate(1.8px, -1.2px) rotate(-6deg); } 70% { transform: translate(-.6px, .4px); } }
+@keyframes im-search-p { 0% { transform: none; } 55% { transform: translate(-1px, 1px) scale(.9); } 100% { transform: scale(.94); } }
+
+/* fit — the frame opens to its corners. */
+.vellum-icon[data-vellum-icon='fit'] { --im-hover: im-fit-h 460ms var(--ease-out) both; --im-press: im-fit-p 190ms var(--ease-in-out) both; }
+@keyframes im-fit-h { 0%, 100% { transform: none; } 40% { transform: scale(1.13); } 70% { transform: scale(.99); } }
+@keyframes im-fit-p { 0% { transform: none; } 55% { transform: scale(.87); } 100% { transform: scale(.91); } }
+
+/* ------------------------------------------------------------ transport */
+
+/* play — the triangle leans into the next frame. */
+.vellum-icon[data-vellum-icon='play'] { --im-hover: im-play-h 440ms var(--ease-out) both; --im-press: im-play-p 170ms var(--ease-in-out) both; }
+@keyframes im-play-h { 0%, 100% { transform: none; } 40% { transform: translateX(2.2px) scale(1.06); } 72% { transform: translateX(0); } }
+@keyframes im-play-p { 0% { transform: none; } 55% { transform: translateX(.6px) scale(.84); } 100% { transform: translateX(.3px) scale(.9); } }
+
+/* pause — the two bars squeeze together. */
+.vellum-icon[data-vellum-icon='pause'] { --im-hover: im-pause-h 420ms var(--ease-out) both; --im-press: im-pause-p 170ms var(--ease-in-out) both; }
+@keyframes im-pause-h { 0%, 100% { transform: none; } 45% { transform: scaleX(.84); } 75% { transform: scaleX(1.02); } }
+@keyframes im-pause-p { 0% { transform: none; } 100% { transform: scaleX(.68); } }
+
+/* close — one quarter turn, then a smaller turn under the finger. */
+.vellum-icon[data-vellum-icon='close'] { --im-hover: im-close-h 460ms var(--ease-out) both; --im-press: im-close-p 180ms var(--ease-in-out) both; }
+@keyframes im-close-h { 0%, 100% { transform: none; } 55% { transform: rotate(90deg); } }
+@keyframes im-close-p { 0% { transform: none; } 50% { transform: rotate(45deg) scale(.82); } 100% { transform: rotate(35deg) scale(.88); } }
+
+/* chevrons — each one travels toward the edge it points at. */
+.vellum-icon[data-vellum-icon='chevronLeft'] { --im-hover: im-chevronLeft-h 420ms var(--ease-out) both; --im-press: im-chevronLeft-p 170ms var(--ease-in-out) both; }
+@keyframes im-chevronLeft-h { 0%, 100% { transform: none; } 45% { transform: translateX(-2.6px); } 75% { transform: translateX(.4px); } }
+@keyframes im-chevronLeft-p { 0% { transform: none; } 55% { transform: translateX(-1px) scaleX(.8); } 100% { transform: translateX(-.6px) scaleX(.86); } }
+
+.vellum-icon[data-vellum-icon='chevronRight'] { --im-hover: im-chevronRight-h 420ms var(--ease-out) both; --im-press: im-chevronRight-p 170ms var(--ease-in-out) both; }
+@keyframes im-chevronRight-h { 0%, 100% { transform: none; } 45% { transform: translateX(2.6px); } 75% { transform: translateX(-.4px); } }
+@keyframes im-chevronRight-p { 0% { transform: none; } 55% { transform: translateX(1px) scaleX(.8); } 100% { transform: translateX(.6px) scaleX(.86); } }
+
+.vellum-icon[data-vellum-icon='chevronUp'] { --im-hover: im-chevronUp-h 420ms var(--ease-out) both; --im-press: im-chevronUp-p 170ms var(--ease-in-out) both; }
+@keyframes im-chevronUp-h { 0%, 100% { transform: none; } 45% { transform: translateY(-2.6px); } 75% { transform: translateY(.4px); } }
+@keyframes im-chevronUp-p { 0% { transform: none; } 55% { transform: translateY(-1px) scaleY(.8); } 100% { transform: translateY(-.6px) scaleY(.86); } }
+
+.vellum-icon[data-vellum-icon='chevronDown'] { --im-hover: im-chevronDown-h 420ms var(--ease-out) both; --im-press: im-chevronDown-p 170ms var(--ease-in-out) both; }
+@keyframes im-chevronDown-h { 0%, 100% { transform: none; } 45% { transform: translateY(2.6px); } 75% { transform: translateY(-.4px); } }
+@keyframes im-chevronDown-p { 0% { transform: none; } 55% { transform: translateY(1px) scaleY(.8); } 100% { transform: translateY(.6px) scaleY(.86); } }
+
+/* bolt — the strike flashes and points down. */
+.vellum-icon[data-vellum-icon='bolt'] { --im-hover: im-bolt-h 480ms cubic-bezier(.34, 1.56, .64, 1) both; --im-press: im-bolt-p 180ms var(--ease-in-out) both; }
+@keyframes im-bolt-h { 0%, 100% { transform: none; } 40% { transform: rotate(-9deg) scale(1.12); } 72% { transform: rotate(2deg); } }
+@keyframes im-bolt-p { 0% { transform: none; } 50% { transform: translateY(1.6px) scale(.88); } 100% { transform: translateY(1px) scale(.92); } }
+
+/* alert — a warning wobble. */
+.vellum-icon[data-vellum-icon='alert'] { --im-hover: im-alert-h 540ms cubic-bezier(.36, .07, .19, .97) both; --im-press: im-alert-p 190ms var(--ease-in-out) both; }
+@keyframes im-alert-h { 0% { transform: none; } 22% { transform: rotate(7deg); } 45% { transform: rotate(-6deg); } 70% { transform: rotate(3deg); } 100% { transform: none; } }
+@keyframes im-alert-p { 0% { transform: none; } 50% { transform: scale(.85); } 100% { transform: scale(.9); } }
+
+/* arrows — horizontal ones slide out and snap back on press. */
+.vellum-icon[data-vellum-icon='arrowRight'] { --im-hover: im-arrowRight-h 440ms var(--ease-out) both; --im-press: im-arrowRight-p 170ms var(--ease-in-out) both; }
+@keyframes im-arrowRight-h { 0%, 100% { transform: none; } 45% { transform: translateX(2.8px); } 75% { transform: translateX(-.3px); } }
+@keyframes im-arrowRight-p { 0% { transform: none; } 45% { transform: translateX(-1.2px) scaleX(.85); } 100% { transform: translateX(.2px) scaleX(.94); } }
+
+.vellum-icon[data-vellum-icon='arrowLeft'] { --im-hover: im-arrowLeft-h 440ms var(--ease-out) both; --im-press: im-arrowLeft-p 170ms var(--ease-in-out) both; }
+@keyframes im-arrowLeft-h { 0%, 100% { transform: none; } 45% { transform: translateX(-2.8px); } 75% { transform: translateX(.3px); } }
+@keyframes im-arrowLeft-p { 0% { transform: none; } 45% { transform: translateX(1.2px) scaleX(.85); } 100% { transform: translateX(-.2px) scaleX(.94); } }
+
+/* arrowUpRight — external travel, then a recoil. */
+.vellum-icon[data-vellum-icon='arrowUpRight'] { --im-hover: im-arrowUpRight-h 460ms var(--ease-out) both; --im-press: im-arrowUpRight-p 180ms var(--ease-in-out) both; }
+@keyframes im-arrowUpRight-h { 0%, 100% { transform: none; } 45% { transform: translate(2.2px, -2.2px); } 75% { transform: translate(-.2px, .2px); } }
+@keyframes im-arrowUpRight-p { 0% { transform: none; } 55% { transform: translate(-1px, 1px) scale(.9); } 100% { transform: translate(-.4px, .4px); } }
+
+/* check — a confident stamp with a tiny overshoot. */
+.vellum-icon[data-vellum-icon='check'] { --im-hover: im-check-h 460ms cubic-bezier(.34, 1.56, .64, 1) both; --im-press: im-check-p 170ms var(--ease-in-out) both; }
+@keyframes im-check-h { 0%, 100% { transform: none; } 40% { transform: scale(1.2) rotate(-7deg); } 72% { transform: scale(.98); } }
+@keyframes im-check-p { 0% { transform: none; } 50% { transform: scale(.8) rotate(3deg); } 100% { transform: scale(.86) rotate(1deg); } }
+
+/* shuffle — the crossed paths shift. */
+.vellum-icon[data-vellum-icon='shuffle'] { --im-hover: im-shuffle-h 500ms var(--ease-out) both; --im-press: im-shuffle-p 200ms var(--ease-in-out) both; }
+@keyframes im-shuffle-h { 0%, 100% { transform: none; } 40% { transform: translateX(1.8px) rotate(6deg); } 74% { transform: translateX(-.3px) rotate(-1deg); } }
+@keyframes im-shuffle-p { 0% { transform: none; } 50% { transform: rotate(-7deg) scale(.9); } 100% { transform: rotate(-3deg) scale(.94); } }
+
+/* cloud — floats, then flattens under pressure. */
+.vellum-icon[data-vellum-icon='cloud'] { --im-hover: im-cloud-h 520ms var(--ease-out) both; --im-press: im-cloud-p 200ms var(--ease-in-out) both; }
+@keyframes im-cloud-h { 0%, 100% { transform: none; } 45% { transform: translateY(-2.2px); } 75% { transform: translateY(.3px); } }
+@keyframes im-cloud-p { 0% { transform: none; } 50% { transform: scaleY(.84) translateY(1px); } 100% { transform: scaleY(.88) translateY(1px); } }
+
+/* lock — the shackle lifts, then the whole lock snaps shut. */
+.vellum-icon[data-vellum-icon='lock'] { --im-hover: im-lock-h 480ms var(--ease-out) both; --im-press: im-lock-p 190ms var(--ease-in-out) both; }
+@keyframes im-lock-h { 0%, 100% { transform: none; } 40% { transform: translateY(-1.6px) rotate(-3deg); } 72% { transform: translateY(.2px); } }
+@keyframes im-lock-p { 0% { transform: none; } 50% { transform: translateY(1.2px) scale(.89); } 100% { transform: translateY(.8px) scale(.93); } }
+
+/* unlock — the shackle swings free. */
+.vellum-icon[data-vellum-icon='unlock'] { --im-hover: im-unlock-h 500ms var(--ease-out) both; --im-press: im-unlock-p 190ms var(--ease-in-out) both; }
+@keyframes im-unlock-h { 0%, 100% { transform: none; } 40% { transform: rotate(9deg) translateY(-1px); } 72% { transform: rotate(-2deg); } }
+@keyframes im-unlock-p { 0% { transform: none; } 50% { transform: rotate(-5deg) scale(.9); } 100% { transform: rotate(-2deg) scale(.94); } }
+
+/* eye — opens wide, then blinks shut. */
+.vellum-icon[data-vellum-icon='eye'] { --im-hover: im-eye-h 440ms var(--ease-out) both; --im-press: im-eye-p 170ms var(--ease-in-out) both; }
+@keyframes im-eye-h { 0%, 100% { transform: none; } 40% { transform: scale(1.15); } 70% { transform: scaleY(.98); } }
+@keyframes im-eye-p { 0% { transform: none; } 45% { transform: scaleY(.45) scaleX(1.1); } 100% { transform: scaleY(.55) scaleX(1.06); } }
+
+/* eyeOff — the slash tilts across a half-closed eye. */
+.vellum-icon[data-vellum-icon='eyeOff'] { --im-hover: im-eyeOff-h 480ms var(--ease-out) both; --im-press: im-eyeOff-p 190ms var(--ease-in-out) both; }
+@keyframes im-eyeOff-h { 0%, 100% { transform: none; } 40% { transform: rotate(-9deg) scale(1.05); } 72% { transform: rotate(2deg); } }
+@keyframes im-eyeOff-p { 0% { transform: none; } 50% { transform: scaleY(.7) rotate(5deg); } 100% { transform: scaleY(.78) rotate(2deg); } }
+
+/* double chevrons — a longer throw than a single chevron. */
+.vellum-icon[data-vellum-icon='chevronsUp'] { --im-hover: im-chevronsUp-h 460ms var(--ease-out) both; --im-press: im-chevronsUp-p 170ms var(--ease-in-out) both; }
+@keyframes im-chevronsUp-h { 0%, 100% { transform: none; } 40% { transform: translateY(-3.2px); } 72% { transform: translateY(.4px); } }
+@keyframes im-chevronsUp-p { 0% { transform: none; } 50% { transform: translateY(-1px) scaleY(.76); } 100% { transform: translateY(-.5px) scaleY(.84); } }
+
+.vellum-icon[data-vellum-icon='chevronsDown'] { --im-hover: im-chevronsDown-h 460ms var(--ease-out) both; --im-press: im-chevronsDown-p 170ms var(--ease-in-out) both; }
+@keyframes im-chevronsDown-h { 0%, 100% { transform: none; } 40% { transform: translateY(3.2px); } 72% { transform: translateY(-.4px); } }
+@keyframes im-chevronsDown-p { 0% { transform: none; } 50% { transform: translateY(1px) scaleY(.76); } 100% { transform: translateY(.5px) scaleY(.84); } }
+
+/* ---------------------------------------------------------- editing actions */
+
+/* comment — the bubble lifts and flattens like speech. */
+.vellum-icon[data-vellum-icon='comment'] { --im-hover: im-comment-h 480ms var(--ease-out) both; --im-press: im-comment-p 190ms var(--ease-in-out) both; }
+@keyframes im-comment-h { 0%, 100% { transform: none; } 40% { transform: scale(1.09) translateY(-1.4px); } 72% { transform: translateY(.2px); } }
+@keyframes im-comment-p { 0% { transform: none; } 50% { transform: scaleY(.86) scaleX(1.04); } 100% { transform: scaleY(.9) scaleX(1.02); } }
+
+/* page — the sheet peels at its corner. */
+.vellum-icon[data-vellum-icon='page'] { --im-hover: im-page-h 460ms var(--ease-out) both; --im-press: im-page-p 190ms var(--ease-in-out) both; }
+@keyframes im-page-h { 0%, 100% { transform: none; } 45% { transform: rotate(-3.5deg) translateY(-1.2px); } 75% { transform: rotate(1deg); } }
+@keyframes im-page-p { 0% { transform: none; } 55% { transform: scaleY(.88) rotate(1deg); } 100% { transform: scaleY(.92); } }
+
+/* duplicate — the copy steps out from the original. */
+.vellum-icon[data-vellum-icon='duplicate'] { --im-hover: im-duplicate-h 480ms var(--ease-out) both; --im-press: im-duplicate-p 190ms var(--ease-in-out) both; }
+@keyframes im-duplicate-h { 0%, 100% { transform: none; } 45% { transform: translate(2px, -2px); } 75% { transform: translate(-.2px, .2px); } }
+@keyframes im-duplicate-p { 0% { transform: none; } 50% { transform: translate(-1.2px, 1.2px) scale(.93); } 100% { transform: translate(-.6px, .6px) scale(.96); } }
+
+/* copy — a shorter offset copy. */
+.vellum-icon[data-vellum-icon='copy'] { --im-hover: im-copy-h 460ms var(--ease-out) both; --im-press: im-copy-p 180ms var(--ease-in-out) both; }
+@keyframes im-copy-h { 0%, 100% { transform: none; } 40% { transform: translate(1.6px, -1.6px) scale(1.04); } 72% { transform: translate(0); } }
+@keyframes im-copy-p { 0% { transform: none; } 55% { transform: translate(-.5px, .5px) scale(.9); } 100% { transform: translate(-.2px, .2px) scale(.94); } }
+
+/* pencil — the nib writes a stroke. */
+.vellum-icon[data-vellum-icon='pencil'] { --im-hover: im-pencil-h 500ms var(--ease-out) both; --im-press: im-pencil-p 180ms var(--ease-in-out) both; }
+@keyframes im-pencil-h { 0%, 100% { transform: none; } 40% { transform: rotate(-11deg) translate(1.2px, -1.2px); } 72% { transform: rotate(1deg); } }
+@keyframes im-pencil-p { 0% { transform: none; } 50% { transform: rotate(3deg) scale(.85); } 100% { transform: rotate(1deg) scale(.9); } }
+
+/* external — the arrow escapes the frame. */
+.vellum-icon[data-vellum-icon='external'] { --im-hover: im-external-h 480ms var(--ease-out) both; --im-press: im-external-p 180ms var(--ease-in-out) both; }
+@keyframes im-external-h { 0%, 100% { transform: none; } 45% { transform: translate(2.4px, -2.4px); } 75% { transform: translate(-.2px, .2px); } }
+@keyframes im-external-p { 0% { transform: none; } 50% { transform: translate(-1px, 1px) scale(.89); } 100% { transform: translate(-.4px, .4px); } }
+
+/* trash — a rattle, then the bin takes the weight. */
+.vellum-icon[data-vellum-icon='trash'] { --im-hover: im-trash-h 540ms cubic-bezier(.36, .07, .19, .97) both; --im-press: im-trash-p 190ms var(--ease-in-out) both; }
+@keyframes im-trash-h { 0% { transform: none; } 22% { transform: rotate(-7deg); } 45% { transform: rotate(5deg); } 68% { transform: rotate(-3deg); } 100% { transform: none; } }
+@keyframes im-trash-p { 0% { transform: none; } 55% { transform: scaleY(.84) scaleX(1.05); } 100% { transform: scaleY(.88) scaleX(1.02); } }
+
+/* palette — the palette turns to offer a colour. */
+.vellum-icon[data-vellum-icon='palette'] { --im-hover: im-palette-h 520ms var(--ease-out) both; --im-press: im-palette-p 190ms var(--ease-in-out) both; }
+@keyframes im-palette-h { 0%, 100% { transform: none; } 45% { transform: rotate(15deg) scale(1.05); } }
+@keyframes im-palette-p { 0% { transform: none; } 50% { transform: rotate(-8deg) scale(.89); } 100% { transform: rotate(-3deg) scale(.93); } }
+
+/* magic — the wand waves, then sparks forward. */
+.vellum-icon[data-vellum-icon='magic'] { --im-hover: im-magic-h 520ms var(--ease-out) both; --im-press: im-magic-p 200ms cubic-bezier(.34, 1.56, .64, 1) both; }
+@keyframes im-magic-h { 0%, 100% { transform: none; } 40% { transform: rotate(-17deg) scale(1.08); } 72% { transform: rotate(3deg); } }
+@keyframes im-magic-p { 0% { transform: none; } 40% { transform: rotate(9deg) scale(1.14); } 100% { transform: rotate(4deg) scale(.94); } }
+
+/* image — zooms toward the viewer. */
+.vellum-icon[data-vellum-icon='image'] { --im-hover: im-image-h 460ms var(--ease-out) both; --im-press: im-image-p 180ms var(--ease-in-out) both; }
+@keyframes im-image-h { 0%, 100% { transform: none; } 40% { transform: scale(1.11); } 72% { transform: scale(.99); } }
+@keyframes im-image-p { 0% { transform: none; } 55% { transform: scale(.87); } 100% { transform: scale(.91); } }
+
+/* code — the brackets open. */
+.vellum-icon[data-vellum-icon='code'] { --im-hover: im-code-h 440ms var(--ease-out) both; --im-press: im-code-p 170ms var(--ease-in-out) both; }
+@keyframes im-code-h { 0%, 100% { transform: none; } 45% { transform: scaleX(1.14); } 75% { transform: scaleX(.99); } }
+@keyframes im-code-p { 0% { transform: none; } 55% { transform: scaleX(.86); } 100% { transform: scaleX(.9); } }
+
+/* sheet — the grid scrolls one cell sideways. */
+.vellum-icon[data-vellum-icon='sheet'] { --im-hover: im-sheet-h 440ms var(--ease-out) both; --im-press: im-sheet-p 180ms var(--ease-in-out) both; }
+@keyframes im-sheet-h { 0%, 100% { transform: none; } 45% { transform: translateX(1.8px); } 75% { transform: translateX(-.3px); } }
+@keyframes im-sheet-p { 0% { transform: none; } 50% { transform: scale(.91); } 100% { transform: scale(.94); } }
+
+/* video — the playhead nudges into the clip. */
+.vellum-icon[data-vellum-icon='video'] { --im-hover: im-video-h 460ms var(--ease-out) both; --im-press: im-video-p 180ms var(--ease-in-out) both; }
+@keyframes im-video-h { 0%, 100% { transform: none; } 45% { transform: translateX(1.8px) scale(1.05); } 75% { transform: translateX(0); } }
+@keyframes im-video-p { 0% { transform: none; } 50% { transform: scale(.87); } 100% { transform: scale(.91); } }
+
+/* doc — the page lifts, then is pressed flat. */
+.vellum-icon[data-vellum-icon='doc'] { --im-hover: im-doc-h 480ms var(--ease-out) both; --im-press: im-doc-p 190ms var(--ease-in-out) both; }
+@keyframes im-doc-h { 0%, 100% { transform: none; } 45% { transform: translateY(-1.7px) rotate(-2.5deg); } 75% { transform: rotate(.5deg); } }
+@keyframes im-doc-p { 0% { transform: none; } 55% { transform: translateY(1px) scaleY(.87); } 100% { transform: scaleY(.91); } }
+
+/* website — the browser window lifts a pixel. */
+.vellum-icon[data-vellum-icon='website'] { --im-hover: im-website-h 460ms var(--ease-out) both; --im-press: im-website-p 190ms var(--ease-in-out) both; }
+@keyframes im-website-h { 0%, 100% { transform: none; } 40% { transform: translateY(-1.2px) scale(1.06); } 72% { transform: scale(.99); } }
+@keyframes im-website-p { 0% { transform: none; } 55% { transform: scale(.88); } 100% { transform: scale(.92); } }
+
+/* layers — the stack spreads and collapses. */
+.vellum-icon[data-vellum-icon='layers'] { --im-hover: im-layers-h 500ms var(--ease-out) both; --im-press: im-layers-p 190ms var(--ease-in-out) both; }
+@keyframes im-layers-h { 0%, 100% { transform: none; } 45% { transform: translateY(-2.2px) scale(1.05); } 75% { transform: translateY(.2px); } }
+@keyframes im-layers-p { 0% { transform: none; } 55% { transform: scaleY(.82); } 100% { transform: scaleY(.87); } }
+
+/* sliders — the knobs slide to a new value. */
+.vellum-icon[data-vellum-icon='sliders'] { --im-hover: im-sliders-h 460ms var(--ease-out) both; --im-press: im-sliders-p 180ms var(--ease-in-out) both; }
+@keyframes im-sliders-h { 0%, 100% { transform: none; } 45% { transform: translateX(2px); } 75% { transform: translateX(-.3px); } }
+@keyframes im-sliders-p { 0% { transform: none; } 55% { transform: scaleX(.86); } 100% { transform: scaleX(.9); } }
+
+/* menu — the lines lean, then pinch. */
+.vellum-icon[data-vellum-icon='menu'] { --im-hover: im-menu-h 440ms var(--ease-out) both; --im-press: im-menu-p 170ms var(--ease-in-out) both; }
+@keyframes im-menu-h { 0%, 100% { transform: none; } 45% { transform: translateX(1.8px); } 75% { transform: translateX(-.2px); } }
+@keyframes im-menu-p { 0% { transform: none; } 55% { transform: scaleX(.8); } 100% { transform: scaleX(.86); } }
+
+/* custom — the crop corners open. */
+.vellum-icon[data-vellum-icon='custom'] { --im-hover: im-custom-h 460ms var(--ease-out) both; --im-press: im-custom-p 180ms var(--ease-in-out) both; }
+@keyframes im-custom-h { 0%, 100% { transform: none; } 40% { transform: scale(1.12); } 72% { transform: scale(.99); } }
+@keyframes im-custom-p { 0% { transform: none; } 55% { transform: scale(.86); } 100% { transform: scale(.9); } }
+
+/* upload — the arrow rises from the tray. */
+.vellum-icon[data-vellum-icon='upload'] { --im-hover: im-upload-h 460ms var(--ease-out) both; --im-press: im-upload-p 180ms var(--ease-in-out) both; }
+@keyframes im-upload-h { 0%, 100% { transform: none; } 45% { transform: translateY(-2.4px); } 75% { transform: translateY(.3px); } }
+@keyframes im-upload-p { 0% { transform: none; } 55% { transform: translateY(1.2px) scaleY(.85); } 100% { transform: translateY(.8px) scaleY(.89); } }
+
+/* type — the letterform widens, then gets inked. */
+.vellum-icon[data-vellum-icon='type'] { --im-hover: im-type-h 450ms var(--ease-out) both; --im-press: im-type-p 180ms var(--ease-in-out) both; }
+@keyframes im-type-h { 0%, 100% { transform: none; } 45% { transform: scaleX(1.1); } 75% { transform: scaleX(.99); } }
+@keyframes im-type-p { 0% { transform: none; } 55% { transform: scaleY(.84); } 100% { transform: scaleY(.88); } }
+
+/* social — a heartbeat with one rebound. */
+.vellum-icon[data-vellum-icon='social'] { --im-hover: im-social-h 520ms cubic-bezier(.34, 1.56, .64, 1) both; --im-press: im-social-p 180ms var(--ease-in-out) both; }
+@keyframes im-social-h { 0% { transform: none; } 30% { transform: scale(1.2); } 60% { transform: scale(.98); } 80% { transform: scale(1.06); } 100% { transform: none; } }
+@keyframes im-social-p { 0% { transform: none; } 50% { transform: scale(.84); } 100% { transform: scale(.9); } }
+
+/* printable — the sheet slides out of the printer. */
+.vellum-icon[data-vellum-icon='printable'] { --im-hover: im-printable-h 480ms var(--ease-out) both; --im-press: im-printable-p 190ms var(--ease-in-out) both; }
+@keyframes im-printable-h { 0%, 100% { transform: none; } 45% { transform: translateY(-1.6px) rotate(2.5deg); } 75% { transform: rotate(-.5deg); } }
+@keyframes im-printable-p { 0% { transform: none; } 55% { transform: scaleY(.86); } 100% { transform: scaleY(.9); } }
+
+/* board — the whiteboard slides into view. */
+.vellum-icon[data-vellum-icon='board'] { --im-hover: im-board-h 460ms var(--ease-out) both; --im-press: im-board-p 180ms var(--ease-in-out) both; }
+@keyframes im-board-h { 0%, 100% { transform: none; } 45% { transform: translateX(2.2px); } 75% { transform: translateX(-.3px); } }
+@keyframes im-board-p { 0% { transform: none; } 55% { transform: scale(.89); } 100% { transform: scale(.93); } }
+
+/* --------------------------------------------------------------- alignment */
+
+/* alignLeft — nudges toward the guide, press squashes against it. */
+.vellum-icon[data-vellum-icon='alignLeft'] { --im-hover: im-alignLeft-h 440ms var(--ease-out) both; --im-press: im-alignLeft-p 180ms var(--ease-in-out) both; }
+@keyframes im-alignLeft-h { 0%, 100% { transform: none; } 45% { transform: translateX(-2.2px); } 75% { transform: translateX(.2px); } }
+@keyframes im-alignLeft-p { 0% { transform: none; } 55% { transform: scaleX(.9); } 100% { transform: scaleX(.93); } }
+
+.vellum-icon[data-vellum-icon='alignCenter'] { --im-hover: im-alignCenter-h 440ms var(--ease-out) both; --im-press: im-alignCenter-p 180ms var(--ease-in-out) both; }
+@keyframes im-alignCenter-h { 0%, 100% { transform: none; } 45% { transform: scaleY(1.09); } 75% { transform: scaleY(.99); } }
+@keyframes im-alignCenter-p { 0% { transform: none; } 55% { transform: scaleY(.86); } 100% { transform: scaleY(.9); } }
+
+.vellum-icon[data-vellum-icon='alignRight'] { --im-hover: im-alignRight-h 440ms var(--ease-out) both; --im-press: im-alignRight-p 180ms var(--ease-in-out) both; }
+@keyframes im-alignRight-h { 0%, 100% { transform: none; } 45% { transform: translateX(2.2px); } 75% { transform: translateX(-.2px); } }
+@keyframes im-alignRight-p { 0% { transform: none; } 55% { transform: scaleX(.9); } 100% { transform: scaleX(.93); } }
+
+.vellum-icon[data-vellum-icon='alignTop'] { --im-hover: im-alignTop-h 440ms var(--ease-out) both; --im-press: im-alignTop-p 180ms var(--ease-in-out) both; }
+@keyframes im-alignTop-h { 0%, 100% { transform: none; } 45% { transform: translateY(-2.2px); } 75% { transform: translateY(.2px); } }
+@keyframes im-alignTop-p { 0% { transform: none; } 55% { transform: scaleY(.9); } 100% { transform: scaleY(.93); } }
+
+.vellum-icon[data-vellum-icon='alignMiddle'] { --im-hover: im-alignMiddle-h 440ms var(--ease-out) both; --im-press: im-alignMiddle-p 180ms var(--ease-in-out) both; }
+@keyframes im-alignMiddle-h { 0%, 100% { transform: none; } 45% { transform: scaleX(1.09); } 75% { transform: scaleX(.99); } }
+@keyframes im-alignMiddle-p { 0% { transform: none; } 55% { transform: scaleX(.86); } 100% { transform: scaleX(.9); } }
+
+.vellum-icon[data-vellum-icon='alignBottom'] { --im-hover: im-alignBottom-h 440ms var(--ease-out) both; --im-press: im-alignBottom-p 180ms var(--ease-in-out) both; }
+@keyframes im-alignBottom-h { 0%, 100% { transform: none; } 45% { transform: translateY(2.2px); } 75% { transform: translateY(-.2px); } }
+@keyframes im-alignBottom-p { 0% { transform: none; } 55% { transform: scaleY(.9); } 100% { transform: scaleY(.93); } }
+
+.vellum-icon[data-vellum-icon='alignHorizontalStart'] { --im-hover: im-alignHorizontalStart-h 450ms var(--ease-out) both; --im-press: im-alignHorizontalStart-p 180ms var(--ease-in-out) both; }
+@keyframes im-alignHorizontalStart-h { 0%, 100% { transform: none; } 45% { transform: translateX(-2.4px); } 75% { transform: translateX(.2px); } }
+@keyframes im-alignHorizontalStart-p { 0% { transform: none; } 55% { transform: scaleX(.88); } 100% { transform: scaleX(.92); } }
+
+.vellum-icon[data-vellum-icon='alignHorizontalCenter'] { --im-hover: im-alignHorizontalCenter-h 450ms var(--ease-out) both; --im-press: im-alignHorizontalCenter-p 180ms var(--ease-in-out) both; }
+@keyframes im-alignHorizontalCenter-h { 0%, 100% { transform: none; } 45% { transform: scaleX(1.07); } 75% { transform: scaleX(.99); } }
+@keyframes im-alignHorizontalCenter-p { 0% { transform: none; } 55% { transform: scaleX(.85); } 100% { transform: scaleX(.89); } }
+
+.vellum-icon[data-vellum-icon='alignHorizontalEnd'] { --im-hover: im-alignHorizontalEnd-h 450ms var(--ease-out) both; --im-press: im-alignHorizontalEnd-p 180ms var(--ease-in-out) both; }
+@keyframes im-alignHorizontalEnd-h { 0%, 100% { transform: none; } 45% { transform: translateX(2.4px); } 75% { transform: translateX(-.2px); } }
+@keyframes im-alignHorizontalEnd-p { 0% { transform: none; } 55% { transform: scaleX(.88); } 100% { transform: scaleX(.92); } }
+
+.vellum-icon[data-vellum-icon='alignVerticalStart'] { --im-hover: im-alignVerticalStart-h 450ms var(--ease-out) both; --im-press: im-alignVerticalStart-p 180ms var(--ease-in-out) both; }
+@keyframes im-alignVerticalStart-h { 0%, 100% { transform: none; } 45% { transform: translateY(-2.4px); } 75% { transform: translateY(.2px); } }
+@keyframes im-alignVerticalStart-p { 0% { transform: none; } 55% { transform: scaleY(.88); } 100% { transform: scaleY(.92); } }
+
+.vellum-icon[data-vellum-icon='alignVerticalCenter'] { --im-hover: im-alignVerticalCenter-h 450ms var(--ease-out) both; --im-press: im-alignVerticalCenter-p 180ms var(--ease-in-out) both; }
+@keyframes im-alignVerticalCenter-h { 0%, 100% { transform: none; } 45% { transform: scaleY(1.07); } 75% { transform: scaleY(.99); } }
+@keyframes im-alignVerticalCenter-p { 0% { transform: none; } 55% { transform: scaleY(.85); } 100% { transform: scaleY(.89); } }
+
+.vellum-icon[data-vellum-icon='alignVerticalEnd'] { --im-hover: im-alignVerticalEnd-h 450ms var(--ease-out) both; --im-press: im-alignVerticalEnd-p 180ms var(--ease-in-out) both; }
+@keyframes im-alignVerticalEnd-h { 0%, 100% { transform: none; } 45% { transform: translateY(2.4px); } 75% { transform: translateY(-.2px); } }
+@keyframes im-alignVerticalEnd-p { 0% { transform: none; } 55% { transform: scaleY(.88); } 100% { transform: scaleY(.92); } }
+
+.vellum-icon[data-vellum-icon='distributeH'] { --im-hover: im-distributeH-h 460ms var(--ease-out) both; --im-press: im-distributeH-p 180ms var(--ease-in-out) both; }
+@keyframes im-distributeH-h { 0%, 100% { transform: none; } 45% { transform: scaleX(1.1); } 75% { transform: scaleX(.99); } }
+@keyframes im-distributeH-p { 0% { transform: none; } 55% { transform: scaleX(.9); } 100% { transform: scaleX(.93); } }
+
+.vellum-icon[data-vellum-icon='distributeV'] { --im-hover: im-distributeV-h 460ms var(--ease-out) both; --im-press: im-distributeV-p 180ms var(--ease-in-out) both; }
+@keyframes im-distributeV-h { 0%, 100% { transform: none; } 45% { transform: scaleY(1.1); } 75% { transform: scaleY(.99); } }
+@keyframes im-distributeV-p { 0% { transform: none; } 55% { transform: scaleY(.9); } 100% { transform: scaleY(.93); } }
+
+/* --------------------------------------------------------------- layering */
+
+/* layerFront — forward in z, then settle back. */
+.vellum-icon[data-vellum-icon='layerFront'] { --im-hover: im-layerFront-h 480ms var(--ease-out) both; --im-press: im-layerFront-p 190ms var(--ease-in-out) both; }
+@keyframes im-layerFront-h { 0%, 100% { transform: none; } 45% { transform: translateY(-2.2px) scale(1.04); } 75% { transform: translateY(.2px); } }
+@keyframes im-layerFront-p { 0% { transform: none; } 55% { transform: translateY(1px) scale(.91); } 100% { transform: translateY(.6px) scale(.94); } }
+
+/* layerBack — backward in z. */
+.vellum-icon[data-vellum-icon='layerBack'] { --im-hover: im-layerBack-h 480ms var(--ease-out) both; --im-press: im-layerBack-p 190ms var(--ease-in-out) both; }
+@keyframes im-layerBack-h { 0%, 100% { transform: none; } 45% { transform: translateY(2.2px) scale(1.04); } 75% { transform: translateY(-.2px); } }
+@keyframes im-layerBack-p { 0% { transform: none; } 55% { transform: translateY(-1px) scale(.91); } 100% { transform: translateY(-.6px) scale(.94); } }
+
+/* group — four handles pull inward. */
+.vellum-icon[data-vellum-icon='group'] { --im-hover: im-group-h 470ms var(--ease-out) both; --im-press: im-group-p 180ms var(--ease-in-out) both; }
+@keyframes im-group-h { 0%, 100% { transform: none; } 45% { transform: scale(1.08); } 75% { transform: scale(.99); } }
+@keyframes im-group-p { 0% { transform: none; } 55% { transform: scale(.87) rotate(3deg); } 100% { transform: scale(.91) rotate(1deg); } }
+
+/* ungroup — the handles separate. */
+.vellum-icon[data-vellum-icon='ungroup'] { --im-hover: im-ungroup-h 470ms var(--ease-out) both; --im-press: im-ungroup-p 180ms var(--ease-in-out) both; }
+@keyframes im-ungroup-h { 0%, 100% { transform: none; } 45% { transform: scale(1.1) rotate(-3.5deg); } 75% { transform: rotate(1deg); } }
+@keyframes im-ungroup-p { 0% { transform: none; } 55% { transform: scale(.89) rotate(2deg); } 100% { transform: scale(.93) rotate(1deg); } }
+
+/* clipboard — the board comes forward. */
+.vellum-icon[data-vellum-icon='clipboard'] { --im-hover: im-clipboard-h 480ms var(--ease-out) both; --im-press: im-clipboard-p 190ms var(--ease-in-out) both; }
+@keyframes im-clipboard-h { 0%, 100% { transform: none; } 45% { transform: translateY(-1.6px) rotate(-2.5deg); } 75% { transform: rotate(.5deg); } }
+@keyframes im-clipboard-p { 0% { transform: none; } 55% { transform: scaleY(.87); } 100% { transform: scaleY(.91); } }
+
+/* component — the diamond turns to a new angle. */
+.vellum-icon[data-vellum-icon='component'] { --im-hover: im-component-h 520ms cubic-bezier(.34, 1.36, .64, 1) both; --im-press: im-component-p 190ms var(--ease-in-out) both; }
+@keyframes im-component-h { 0%, 100% { transform: none; } 45% { transform: rotate(45deg); } }
+@keyframes im-component-p { 0% { transform: none; } 55% { transform: rotate(-22deg) scale(.89); } 100% { transform: rotate(-14deg) scale(.93); } }
+
+/* paintBucket — tips to pour. */
+.vellum-icon[data-vellum-icon='paintBucket'] { --im-hover: im-paintBucket-h 520ms cubic-bezier(.34, 1.36, .64, 1) both; --im-press: im-paintBucket-p 200ms var(--ease-in-out) both; }
+@keyframes im-paintBucket-h { 0%, 100% { transform: none; } 40% { transform: rotate(-13deg); } 70% { transform: rotate(2deg); } }
+@keyframes im-paintBucket-p { 0% { transform: none; } 45% { transform: scale(1.12) rotate(5deg); } 100% { transform: scale(1.02) rotate(2deg); } }
+
+/* paintbrush — draws a short stroke. */
+.vellum-icon[data-vellum-icon='paintbrush'] { --im-hover: im-paintbrush-h 500ms var(--ease-out) both; --im-press: im-paintbrush-p 180ms var(--ease-in-out) both; }
+@keyframes im-paintbrush-h { 0%, 100% { transform: none; } 40% { transform: rotate(-13deg) translate(1px, -1px); } 72% { transform: rotate(1deg); } }
+@keyframes im-paintbrush-p { 0% { transform: none; } 50% { transform: scale(.84) rotate(5deg); } 100% { transform: scale(.9) rotate(2deg); } }
+
+/* language — the globe rotates a step. */
+.vellum-icon[data-vellum-icon='language'] { --im-hover: im-language-h 520ms var(--ease-out) both; --im-press: im-language-p 190ms var(--ease-in-out) both; }
+@keyframes im-language-h { 0%, 100% { transform: none; } 45% { transform: rotate(12deg); } 75% { transform: rotate(-2deg); } }
+@keyframes im-language-p { 0% { transform: none; } 55% { transform: scale(.87) rotate(-4deg); } 100% { transform: scale(.92) rotate(-1deg); } }
+
+/* minus — the rule stretches, then pinches. */
+.vellum-icon[data-vellum-icon='minus'] { --im-hover: im-minus-h 420ms var(--ease-out) both; --im-press: im-minus-p 170ms var(--ease-in-out) both; }
+@keyframes im-minus-h { 0%, 100% { transform: none; } 45% { transform: scaleX(1.26); } 75% { transform: scaleX(.98); } }
+@keyframes im-minus-p { 0% { transform: none; } 100% { transform: scaleX(.74); } }
+
+/* zoomIn — the lens grows. */
+.vellum-icon[data-vellum-icon='zoomIn'] { --im-hover: im-zoomIn-h 460ms var(--ease-out) both; --im-press: im-zoomIn-p 180ms var(--ease-in-out) both; }
+@keyframes im-zoomIn-h { 0%, 100% { transform: none; } 45% { transform: scale(1.15); } 75% { transform: scale(.99); } }
+@keyframes im-zoomIn-p { 0% { transform: none; } 55% { transform: scale(.86); } 100% { transform: scale(.9); } }
+
+/* zoomOut — the lens shrinks, press pushes it away. */
+.vellum-icon[data-vellum-icon='zoomOut'] { --im-hover: im-zoomOut-h 460ms var(--ease-out) both; --im-press: im-zoomOut-p 180ms var(--ease-in-out) both; }
+@keyframes im-zoomOut-h { 0%, 100% { transform: none; } 45% { transform: scale(.88); } 75% { transform: scale(1.01); } }
+@keyframes im-zoomOut-p { 0% { transform: none; } 55% { transform: scale(1.12); } 100% { transform: scale(1.02); } }
+
+/* rotate — turns toward the next quarter. */
+.vellum-icon[data-vellum-icon='rotate'] { --im-hover: im-rotate-h 520ms var(--ease-out) both; --im-press: im-rotate-p 190ms var(--ease-in-out) both; }
+@keyframes im-rotate-h { 0%, 100% { transform: none; } 45% { transform: rotate(30deg); } 75% { transform: rotate(-3deg); } }
+@keyframes im-rotate-p { 0% { transform: none; } 55% { transform: rotate(-18deg) scale(.88); } 100% { transform: rotate(-8deg) scale(.93); } }
+
+/* clock — the hands advance. */
+.vellum-icon[data-vellum-icon='clock'] { --im-hover: im-clock-h 500ms var(--ease-out) both; --im-press: im-clock-p 190ms var(--ease-in-out) both; }
+@keyframes im-clock-h { 0%, 100% { transform: none; } 45% { transform: rotate(13deg); } 75% { transform: rotate(-1deg); } }
+@keyframes im-clock-p { 0% { transform: none; } 55% { transform: rotate(-7deg) scale(.91); } 100% { transform: rotate(-3deg) scale(.95); } }
+
+/* info — the dot pops. */
+.vellum-icon[data-vellum-icon='info'] { --im-hover: im-info-h 440ms var(--ease-out) both; --im-press: im-info-p 180ms var(--ease-in-out) both; }
+@keyframes im-info-h { 0%, 100% { transform: none; } 40% { transform: scale(1.1); } 72% { transform: scale(.99); } }
+@keyframes im-info-p { 0% { transform: none; } 55% { transform: scale(.85); } 100% { transform: scale(.9); } }
+
+/* scan — the focus frame opens. */
+.vellum-icon[data-vellum-icon='scan'] { --im-hover: im-scan-h 460ms var(--ease-out) both; --im-press: im-scan-p 180ms var(--ease-in-out) both; }
+@keyframes im-scan-h { 0%, 100% { transform: none; } 45% { transform: scale(1.11); } 75% { transform: scale(.99); } }
+@keyframes im-scan-p { 0% { transform: none; } 55% { transform: scale(.89); } 100% { transform: scale(.93); } }
+
+/* sidebar — the panel edge slides. */
+.vellum-icon[data-vellum-icon='sidebar'] { --im-hover: im-sidebar-h 460ms var(--ease-out) both; --im-press: im-sidebar-p 180ms var(--ease-in-out) both; }
+@keyframes im-sidebar-h { 0%, 100% { transform: none; } 45% { transform: translateX(2px); } 75% { transform: translateX(-.2px); } }
+@keyframes im-sidebar-p { 0% { transform: none; } 55% { transform: scaleX(.86); } 100% { transform: scaleX(.9); } }
+
+/* sidebarOpen — the arrow pushes the panel open. */
+.vellum-icon[data-vellum-icon='sidebarOpen'] { --im-hover: im-sidebarOpen-h 460ms var(--ease-out) both; --im-press: im-sidebarOpen-p 180ms var(--ease-in-out) both; }
+@keyframes im-sidebarOpen-h { 0%, 100% { transform: none; } 45% { transform: translateX(3.2px); } 75% { transform: translateX(-.4px); } }
+@keyframes im-sidebarOpen-p { 0% { transform: none; } 55% { transform: translateX(-1.2px) scale(.89); } 100% { transform: translateX(-.5px) scale(.93); } }
+
+/* refresh — a full-ish rotation, press whips it back. */
+.vellum-icon[data-vellum-icon='refresh'] { --im-hover: im-refresh-h 540ms var(--ease-out) both; --im-press: im-refresh-p 200ms var(--ease-in-out) both; }
+@keyframes im-refresh-h { 0%, 100% { transform: none; } 45% { transform: rotate(42deg); } 75% { transform: rotate(-4deg); } }
+@keyframes im-refresh-p { 0% { transform: none; } 55% { transform: rotate(-32deg) scale(.88); } 100% { transform: rotate(-14deg) scale(.93); } }
+
+/* --------------------------------------------------------------- media */
+
+/* camera — the body dips as the shutter fires. */
+.vellum-icon[data-vellum-icon='camera'] { --im-hover: im-camera-h 470ms var(--ease-out) both; --im-press: im-camera-p 180ms var(--ease-in-out) both; }
+@keyframes im-camera-h { 0%, 100% { transform: none; } 40% { transform: translateY(-1px) scale(1.06); } 72% { transform: scale(.99); } }
+@keyframes im-camera-p { 0% { transform: none; } 55% { transform: scaleY(.85); } 100% { transform: scaleY(.89); } }
+
+/* film — the strip advances a frame. */
+.vellum-icon[data-vellum-icon='film'] { --im-hover: im-film-h 460ms var(--ease-out) both; --im-press: im-film-p 180ms var(--ease-in-out) both; }
+@keyframes im-film-h { 0%, 100% { transform: none; } 45% { transform: translateX(2px); } 75% { transform: translateX(-.3px); } }
+@keyframes im-film-p { 0% { transform: none; } 55% { transform: scaleX(.88); } 100% { transform: scaleX(.92); } }
+
+/* music — the notes bob on the beat. */
+.vellum-icon[data-vellum-icon='music'] { --im-hover: im-music-h 500ms cubic-bezier(.34, 1.36, .64, 1) both; --im-press: im-music-p 190ms var(--ease-in-out) both; }
+@keyframes im-music-h { 0%, 100% { transform: none; } 40% { transform: translateY(-2.2px) rotate(-7deg); } 72% { transform: rotate(1deg); } }
+@keyframes im-music-p { 0% { transform: none; } 55% { transform: translateY(1px) scale(.87); } 100% { transform: scale(.92); } }
+
+/* volume — the waves widen. */
+.vellum-icon[data-vellum-icon='volume'] { --im-hover: im-volume-h 480ms var(--ease-out) both; --im-press: im-volume-p 180ms var(--ease-in-out) both; }
+@keyframes im-volume-h { 0%, 100% { transform: none; } 45% { transform: scale(1.1) translateX(1px); } 75% { transform: scale(.99); } }
+@keyframes im-volume-p { 0% { transform: none; } 55% { transform: scale(.87); } 100% { transform: scale(.91); } }
+
+/* volumeOff — the muted speaker shakes its head. */
+.vellum-icon[data-vellum-icon='volumeOff'] { --im-hover: im-volumeOff-h 500ms var(--ease-out) both; --im-press: im-volumeOff-p 190ms var(--ease-in-out) both; }
+@keyframes im-volumeOff-h { 0%, 100% { transform: none; } 40% { transform: rotate(-7deg) scale(1.04); } 72% { transform: rotate(2deg); } }
+@keyframes im-volumeOff-p { 0% { transform: none; } 50% { transform: rotate(7deg) scale(.86); } 100% { transform: rotate(3deg) scale(.91); } }
+
+/* scissors — a snip of the blades. */
+.vellum-icon[data-vellum-icon='scissors'] { --im-hover: im-scissors-h 480ms var(--ease-out) both; --im-press: im-scissors-p 180ms var(--ease-in-out) both; }
+@keyframes im-scissors-h { 0%, 100% { transform: none; } 40% { transform: rotate(11deg); } 72% { transform: rotate(-3deg); } }
+@keyframes im-scissors-p { 0% { transform: none; } 55% { transform: rotate(-9deg) scale(.85); } 100% { transform: rotate(-4deg) scale(.9); } }
+
+/* split — the halves part at the cut. */
+.vellum-icon[data-vellum-icon='split'] { --im-hover: im-split-h 460ms var(--ease-out) both; --im-press: im-split-p 180ms var(--ease-in-out) both; }
+@keyframes im-split-h { 0%, 100% { transform: none; } 45% { transform: scaleX(1.14); } 75% { transform: scaleX(.99); } }
+@keyframes im-split-p { 0% { transform: none; } 55% { transform: scaleX(.84); } 100% { transform: scaleX(.89); } }
+
+/* skip edges — travel toward the boundary. */
+.vellum-icon[data-vellum-icon='skipStart'] { --im-hover: im-skipStart-h 440ms var(--ease-out) both; --im-press: im-skipStart-p 170ms var(--ease-in-out) both; }
+@keyframes im-skipStart-h { 0%, 100% { transform: none; } 45% { transform: translateX(-2.4px); } 75% { transform: translateX(.3px); } }
+@keyframes im-skipStart-p { 0% { transform: none; } 55% { transform: translateX(-1.2px) scaleX(.82); } 100% { transform: translateX(-.6px) scaleX(.88); } }
+
+.vellum-icon[data-vellum-icon='skipEnd'] { --im-hover: im-skipEnd-h 440ms var(--ease-out) both; --im-press: im-skipEnd-p 170ms var(--ease-in-out) both; }
+@keyframes im-skipEnd-h { 0%, 100% { transform: none; } 45% { transform: translateX(2.4px); } 75% { transform: translateX(-.3px); } }
+@keyframes im-skipEnd-p { 0% { transform: none; } 55% { transform: translateX(1.2px) scaleX(.82); } 100% { transform: translateX(.6px) scaleX(.88); } }
+
+/* loop — the arrows chase their own tail. */
+.vellum-icon[data-vellum-icon='loop'] { --im-hover: im-loop-h 540ms var(--ease-out) both; --im-press: im-loop-p 200ms var(--ease-in-out) both; }
+@keyframes im-loop-h { 0%, 100% { transform: none; } 45% { transform: rotate(26deg); } 75% { transform: rotate(-4deg); } }
+@keyframes im-loop-p { 0% { transform: none; } 55% { transform: rotate(-20deg) scale(.88); } 100% { transform: rotate(-8deg) scale(.93); } }
+
+/* record — the dot swells, press collapses it. */
+.vellum-icon[data-vellum-icon='record'] { --im-hover: im-record-h 480ms var(--ease-out) both; --im-press: im-record-p 170ms var(--ease-in-out) both; }
+@keyframes im-record-h { 0%, 100% { transform: none; } 40% { transform: scale(1.16); } 72% { transform: scale(.99); } }
+@keyframes im-record-p { 0% { transform: none; } 55% { transform: scale(.78); } 100% { transform: scale(.84); } }
+
+/* waveform — the levels jump, then flatten. */
+.vellum-icon[data-vellum-icon='waveform'] { --im-hover: im-waveform-h 500ms var(--ease-out) both; --im-press: im-waveform-p 180ms var(--ease-in-out) both; }
+@keyframes im-waveform-h { 0%, 100% { transform: none; } 40% { transform: scaleY(1.2); } 70% { transform: scaleY(.98); } }
+@keyframes im-waveform-p { 0% { transform: none; } 100% { transform: scaleY(.68); } }
+
+/* photo — the aperture ring turns. */
+.vellum-icon[data-vellum-icon='photo'] { --im-hover: im-photo-h 540ms var(--ease-out) both; --im-press: im-photo-p 190ms var(--ease-in-out) both; }
+@keyframes im-photo-h { 0%, 100% { transform: none; } 45% { transform: rotate(38deg); } 75% { transform: rotate(-3deg); } }
+@keyframes im-photo-p { 0% { transform: none; } 55% { transform: rotate(-22deg) scale(.88); } 100% { transform: rotate(-10deg) scale(.93); } }
+
+/* crop — the frame closes in on the subject. */
+.vellum-icon[data-vellum-icon='crop'] { --im-hover: im-crop-h 460ms var(--ease-out) both; --im-press: im-crop-p 180ms var(--ease-in-out) both; }
+@keyframes im-crop-h { 0%, 100% { transform: none; } 45% { transform: scale(.89); } 75% { transform: scale(1.01); } }
+@keyframes im-crop-p { 0% { transform: none; } 45% { transform: scale(1.1); } 100% { transform: scale(1.02); } }
+
+/* flip — a full mirror on hover, a squeeze on press. */
+.vellum-icon[data-vellum-icon='flipX'] { --im-hover: im-flipX-h 560ms var(--ease-out) both; --im-press: im-flipX-p 180ms var(--ease-in-out) both; }
+@keyframes im-flipX-h { 0%, 100% { transform: none; } 45% { transform: scaleX(-1); } 72% { transform: scaleX(.96); } }
+@keyframes im-flipX-p { 0% { transform: none; } 55% { transform: scaleX(.68); } 100% { transform: scaleX(.8); } }
+
+.vellum-icon[data-vellum-icon='flipY'] { --im-hover: im-flipY-h 560ms var(--ease-out) both; --im-press: im-flipY-p 180ms var(--ease-in-out) both; }
+@keyframes im-flipY-h { 0%, 100% { transform: none; } 45% { transform: scaleY(-1); } 72% { transform: scaleY(.96); } }
+@keyframes im-flipY-p { 0% { transform: none; } 55% { transform: scaleY(.68); } 100% { transform: scaleY(.8); } }
+
+/* --------------------------------------------------------------- tone tools */
+
+/* sun — the rays rotate outward. */
+.vellum-icon[data-vellum-icon='sun'] { --im-hover: im-sun-h 520ms var(--ease-out) both; --im-press: im-sun-p 190ms var(--ease-in-out) both; }
+@keyframes im-sun-h { 0%, 100% { transform: none; } 45% { transform: rotate(34deg) scale(1.1); } 75% { transform: rotate(-2deg); } }
+@keyframes im-sun-p { 0% { transform: none; } 55% { transform: rotate(-8deg) scale(.85); } 100% { transform: scale(.9); } }
+
+/* contrast — the disc turns to show its other half. */
+.vellum-icon[data-vellum-icon='contrast'] { --im-hover: im-contrast-h 540ms var(--ease-out) both; --im-press: im-contrast-p 190ms var(--ease-in-out) both; }
+@keyframes im-contrast-h { 0%, 100% { transform: none; } 45% { transform: rotate(180deg); } }
+@keyframes im-contrast-p { 0% { transform: none; } 55% { transform: rotate(22deg) scale(.88); } 100% { transform: rotate(10deg) scale(.93); } }
+
+/* thermometer — the mercury rises, press pushes it down. */
+.vellum-icon[data-vellum-icon='thermometer'] { --im-hover: im-thermometer-h 500ms var(--ease-out) both; --im-press: im-thermometer-p 190ms var(--ease-in-out) both; }
+@keyframes im-thermometer-h { 0%, 100% { transform: none; } 45% { transform: translateY(-2.4px); } 75% { transform: translateY(.3px); } }
+@keyframes im-thermometer-p { 0% { transform: none; } 55% { transform: translateY(1.4px) scaleY(.88); } 100% { transform: translateY(.8px) scaleY(.92); } }
+
+/* histogram — the bars grow from the floor, press flattens them. */
+.vellum-icon[data-vellum-icon='histogram'] { --im-hover: im-histogram-h 480ms var(--ease-out) both; --im-press: im-histogram-p 180ms var(--ease-in-out) both; }
+@keyframes im-histogram-h { 0%, 100% { transform: none; } 40% { transform: scaleY(1.16); } 72% { transform: scaleY(.99); } }
+@keyframes im-histogram-p { 0% { transform: none; } 55% { transform: scaleY(.8); } 100% { transform: scaleY(.86); } }
+
+/* compare — the two panels push apart. */
+.vellum-icon[data-vellum-icon='compare'] { --im-hover: im-compare-h 460ms var(--ease-out) both; --im-press: im-compare-p 180ms var(--ease-in-out) both; }
+@keyframes im-compare-h { 0%, 100% { transform: none; } 45% { transform: scaleX(1.12); } 75% { transform: scaleX(.99); } }
+@keyframes im-compare-p { 0% { transform: none; } 55% { transform: scaleX(.86); } 100% { transform: scaleX(.9); } }
+
+/* droplet — falls, then splashes on press. */
+.vellum-icon[data-vellum-icon='droplet'] { --im-hover: im-droplet-h 500ms var(--ease-out) both; --im-press: im-droplet-p 200ms cubic-bezier(.34, 1.56, .64, 1) both; }
+@keyframes im-droplet-h { 0%, 100% { transform: none; } 40% { transform: translateY(2.4px) scale(1.04); } 72% { transform: translateY(-.2px); } }
+@keyframes im-droplet-p { 0% { transform: none; } 45% { transform: scale(1.16); } 100% { transform: scale(.94); } }
+
+/* --------------------------------------------------------------- reduced */
+
+@media (prefers-reduced-motion: reduce) {
+  .vellum-icon,
+  .vellum-icon-ink,
+  .vellum-icon-echo {
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

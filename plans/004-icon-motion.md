@@ -2,6 +2,8 @@
 
 Second generation of the interface icon system. Built on `501e28d`.
 
+> Follow-up: [009-icon-choreography.md](009-icon-choreography.md) replaces the generic hover lifts with a bespoke gesture and press reply for every glyph, and moves the duotone pair into one ink group. The first-paint stagger and active-tab pop described here still apply.
+
 ## Icon redesign
 
 Every `VellumIcon` now renders as a two-layer ink mark:
