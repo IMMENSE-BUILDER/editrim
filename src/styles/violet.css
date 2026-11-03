@@ -1,0 +1,216 @@
+/* ============================================================
+   Violet accent + dashboard icon system
+   One accent (#8A63FF) for the landing hero and every dashboard
+   icon surface, replacing the scattered blue/cobalt treatment.
+   ============================================================ */
+
+:root {
+  --violet: #8a63ff;
+  --violet-deep: #7647f5;
+  --violet-light: #9b7bff;
+  --violet-soft: #f1ecff;
+}
+
+:root[data-theme='dark'] {
+  --violet: #8a63ff;
+  --violet-deep: #9b7bff;
+  --violet-light: #ab8fff;
+  --violet-soft: rgba(138, 99, 255, 0.16);
+}
+
+/* ---------------- landing hero ---------------- */
+
+.hero-accent {
+  color: var(--violet);
+}
+
+.hero-ctas .btn-cobalt {
+  background: var(--violet);
+  color: #14130f;
+  box-shadow: 0 10px 26px rgba(138, 99, 255, 0.26);
+}
+
+.hero-ctas .btn-cobalt:hover {
+  background: var(--violet-light);
+  color: #14130f;
+  box-shadow: 0 12px 30px rgba(138, 99, 255, 0.34);
+}
+
+.hero-meta .editrim-icon {
+  color: var(--violet);
+}
+
+.hero-chip-cursor {
+  background: var(--violet);
+}
+
+/* ---------------- dashboard icon tokens ---------------- */
+
+.home {
+  --h-icon: #8a63ff;
+  --h-icon-soft: rgba(138, 99, 255, 0.13);
+  --h-icon-line: rgba(138, 99, 255, 0.34);
+}
+
+:root[data-theme='light'] .home {
+  --h-icon: #6d4aff;
+  --h-icon-soft: rgba(109, 74, 255, 0.15);
+  --h-icon-line: rgba(109, 74, 255, 0.32);
+}
+
+.home-cat .home-cat-icon svg {
+  stroke-width: 2;
+}
+
+/* Category tiles: one rounded-square violet system for every format. */
+.home-cat .home-cat-icon,
+.home-cat[class*='tone-'] .home-cat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background:
+    linear-gradient(150deg, rgba(255, 255, 255, 0.18), transparent 55%),
+    var(--h-icon-soft);
+  border: 1px solid var(--h-icon-line);
+  color: var(--h-icon);
+  box-shadow:
+    0 7px 18px rgba(18, 9, 48, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.home-cat:hover .home-cat-icon {
+  background: var(--h-icon);
+  border-color: var(--h-icon);
+  color: #fff;
+  box-shadow: 0 12px 26px rgba(138, 99, 255, 0.34);
+}
+
+.home-cat:hover .home-cat-icon .editrim-icon {
+  color: #fff;
+}
+
+.home-cat.is-outline .home-cat-icon {
+  background: transparent;
+  border: 1.5px dashed var(--h-icon-line);
+  color: var(--h-icon);
+  box-shadow: none;
+}
+
+.home-cat.is-outline:hover .home-cat-icon {
+  background: var(--h-icon);
+  border-style: solid;
+  border-color: var(--h-icon);
+  color: #fff;
+}
+
+/* Rail: violet create tile, violet active state and hover replies. */
+.rail-create-icon {
+  border-radius: 13px;
+  background: var(--h-purple);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(138, 99, 255, 0.34);
+}
+
+.rail-create:hover .rail-create-icon {
+  background: #7a4ff0;
+  box-shadow: 0 9px 24px rgba(138, 99, 255, 0.45);
+}
+
+.rail-nav button.active {
+  background: var(--h-icon-soft);
+  color: var(--h-text);
+}
+
+.rail-nav button.active::before {
+  background: var(--h-icon);
+}
+
+.rail-nav button.active svg,
+.rail-nav button.active .editrim-icon,
+.rail-nav a.active .editrim-icon {
+  color: var(--h-icon);
+}
+
+.rail-nav button:hover .editrim-icon,
+.rail-nav a:hover .editrim-icon,
+.rail-bottom button:hover .editrim-icon {
+  color: var(--h-icon);
+}
+
+/* Search, section arrows, More, search results and empty states. */
+.home-search-wrap > .editrim-icon {
+  color: var(--h-icon);
+}
+
+.home-search-wrap:focus-within > .editrim-icon {
+  color: var(--h-icon);
+}
+
+.home-section-head > button .editrim-icon,
+.home-section-head > a .editrim-icon {
+  color: var(--h-icon);
+}
+
+.home-more-grid svg {
+  color: var(--h-icon);
+}
+
+.home-more-grid button:hover {
+  border-color: var(--h-icon-line);
+  background: var(--h-icon-soft);
+}
+
+.home-result-action-icon {
+  background: var(--h-icon-soft);
+  color: var(--h-icon);
+}
+
+.home-result-row.action:hover .home-result-action-icon {
+  background: var(--h-icon);
+  color: #fff;
+}
+
+.home-new-card-icon {
+  border-radius: 12px;
+  border-color: var(--h-icon-line);
+  background: var(--h-icon-soft);
+  color: var(--h-icon);
+}
+
+.home-new-card:hover .home-new-card-icon {
+  background: var(--h-icon);
+  color: #fff;
+}
+
+.home-project-add > span {
+  border-radius: 12px;
+  border-color: var(--h-icon-line);
+  background: var(--h-icon-soft);
+  color: var(--h-icon);
+}
+
+.home-project-add:hover {
+  border-color: var(--h-icon-line);
+  background: var(--h-icon-soft);
+}
+
+/* Filled violet buttons read better with ink than white. */
+.home-btn-primary {
+  background: var(--h-purple);
+  color: #14130f !important;
+}
+
+.home-btn-primary:hover {
+  background: var(--violet-light);
+  color: #14130f !important;
+}
+
+:root[data-theme='light'] .home-btn-primary {
+  background: #8a63ff;
+  color: #14130f;
+}
+
+:root[data-theme='light'] .home-btn-primary:hover {
+  background: #9b7bff;
+  color: #14130f;
+}
