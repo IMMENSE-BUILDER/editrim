@@ -49,9 +49,9 @@ const styleOf = (selector, property) => page.locator(selector).first().evaluate(
 );
 
 // ---------------------------------------------------------------- light first
-await page.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
+await page.goto(`${base}/dashboard`, { waitUntil: 'domcontentloaded' });
 await page.evaluate(() => localStorage.removeItem('vellum_theme_v1'));
-await page.reload({ waitUntil: 'networkidle' });
+await page.reload({ waitUntil: 'domcontentloaded' });
 await wait(700);
 
 assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'light');
@@ -115,7 +115,7 @@ await wait(600);
 assert.equal(await styleOf('.home', 'backgroundColor'), darkHome);
 
 // ------------------------------------------------------------------ landing
-await page.goto(`${base}/`, { waitUntil: 'networkidle' });
+await page.goto(`${base}/`, { waitUntil: 'domcontentloaded' });
 await wait(900);
 const headerBg = await styleOf('.site-header', 'backgroundColor');
 const navColor = await styleOf('.site-nav a', 'color');
@@ -137,7 +137,7 @@ assert.ok(contrast(footerLink, footerBg) >= 4.5, 'footer link contrast');
 await page.screenshot({ path: 'shots/theme-audit-landing-dark.png' });
 
 // ---------------------------------------------------------------- templates
-await page.goto(`${base}/templates`, { waitUntil: 'networkidle' });
+await page.goto(`${base}/templates`, { waitUntil: 'domcontentloaded' });
 await wait(800);
 const galleryBar = await styleOf('.gallery-bar', 'backgroundColor');
 const filterColor = await styleOf('.gallery-filter:not(.active)', 'color');
@@ -154,7 +154,7 @@ assert.ok(activeFilterRatio >= 4.5, 'active gallery filter contrast');
 await page.screenshot({ path: 'shots/theme-audit-templates-dark.png' });
 
 // ------------------------------------------------------------------- editor
-await page.goto(`${base}/editor/new?template=cafe-opening`, { waitUntil: 'networkidle' });
+await page.goto(`${base}/editor/new?template=cafe-opening`, { waitUntil: 'domcontentloaded' });
 await wait(1000);
 const topbar = await styleOf('.ed-topbar', 'backgroundColor');
 const panel = await styleOf('.lp', 'backgroundColor');
@@ -178,8 +178,31 @@ assert.ok(contrast(modalText, modalBg) >= 4.5, 'export modal title contrast');
 await page.screenshot({ path: 'shots/theme-audit-editor-dark.png' });
 await page.keyboard.press('Escape');
 
+// ------------------------------------------------------ modals and details
+await page.goto(`${base}/dashboard`, { waitUntil: 'domcontentloaded' });
+await wait(700);
+await page.locator('.rail-nav button[title="Brand kit"]').click();
+await wait(500);
+const brandSelect = await page.locator('.modal .select').first().evaluate(el => {
+  const style = getComputedStyle(el);
+  return {
+    color: style.color,
+    background: style.backgroundColor,
+    repeat: style.backgroundRepeat,
+    image: style.backgroundImage.startsWith('url('),
+  };
+});
+console.log('brand select dark', brandSelect);
+assert.ok(lum(parse(brandSelect.background)) < 0.03, 'brand select is dark');
+assert.ok(contrast(brandSelect.color, brandSelect.background) >= 4.5, 'brand select text contrast');
+assert.equal(brandSelect.repeat, 'no-repeat', 'select chevron does not tile');
+assert.equal(brandSelect.image, true, 'select keeps its chevron');
+await page.locator('.modal-header .btn-icon').click();
+await wait(350);
+assert.equal(await page.locator('.modal').count(), 0, 'brand modal closed');
+
 // ------------------------------------------------------------------- shared
-await page.goto(`${base}/view`, { waitUntil: 'networkidle' });
+await page.goto(`${base}/view`, { waitUntil: 'domcontentloaded' });
 await wait(700);
 const sharedTop = await styleOf('.shared-top', 'backgroundColor');
 const sharedBg = await styleOf('.shared-shell', 'backgroundColor');
@@ -189,7 +212,7 @@ assert.ok(lum(parse(sharedTop)) < 0.05, 'shared header is dark');
 assert.ok(contrast(sharedTitle, sharedBg) >= 4.5, 'shared title contrast');
 
 // --------------------------------------------------------------- back to light
-await page.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
+await page.goto(`${base}/dashboard`, { waitUntil: 'domcontentloaded' });
 await wait(700);
 await page.locator('.rail-theme').click();
 await wait(600);
@@ -203,9 +226,9 @@ await page.screenshot({ path: 'shots/theme-audit-dashboard-light.png' });
 const mobile = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, deviceScaleFactor: 2 });
 const mp = await mobile.newPage();
 mp.on('pageerror', error => errors.push(error.message));
-await mp.goto(`${base}/`, { waitUntil: 'networkidle' });
+await mp.goto(`${base}/`, { waitUntil: 'domcontentloaded' });
 await mp.evaluate(() => localStorage.setItem('vellum_theme_v1', 'dark'));
-await mp.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
+await mp.goto(`${base}/dashboard`, { waitUntil: 'domcontentloaded' });
 await mp.waitForTimeout(700);
 const mobileState = await mp.evaluate(() => {
   const toggle = document.querySelector('.rail-theme');
@@ -229,7 +252,7 @@ await mobile.close();
 // --------------------------------------------------------------- reduced motion
 const reduced = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
 const rp = await reduced.newPage();
-await rp.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
+await rp.goto(`${base}/dashboard`, { waitUntil: 'domcontentloaded' });
 await rp.waitForTimeout(600);
 await rp.locator('.rail-theme').click();
 await rp.waitForTimeout(60);

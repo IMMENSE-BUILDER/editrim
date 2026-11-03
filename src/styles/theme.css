@@ -647,7 +647,7 @@ html.theme-switching *::after {
 
 :root[data-theme='dark'] .input,
 :root[data-theme='dark'] .select {
-  background: #1c1a24;
+  background-color: #1c1a24;
   border-color: var(--line);
   color: var(--ink);
 }
@@ -658,6 +658,8 @@ html.theme-switching *::after {
 
 :root[data-theme='dark'] .select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a49f93' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
 }
 
 :root[data-theme='dark'] .select option {
