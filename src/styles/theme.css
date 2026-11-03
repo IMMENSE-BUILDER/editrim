@@ -854,3 +854,24 @@ html.theme-switching *::after {
 :root[data-theme='dark'] .home .modal .size-card-name {
   color: var(--ink);
 }
+
+:root[data-theme='dark'] .home-more-grid button {
+  background: #1c1a24;
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+:root[data-theme='dark'] .home-more-grid button:hover {
+  background: #26242e;
+  border-color: var(--cobalt);
+}
+
+:root[data-theme='dark'] .home-more-grid button:first-child {
+  background: linear-gradient(100deg, rgba(138, 99, 255, 0.16), rgba(255, 255, 255, 0.02));
+  border-color: rgba(185, 167, 255, 0.3);
+}
+
+:root[data-theme='dark'] .home-delete {
+  background: #1c1a24;
+  border-color: var(--line);
+}

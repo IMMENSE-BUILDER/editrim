@@ -201,6 +201,18 @@ await page.locator('.modal-header .btn-icon').click();
 await wait(350);
 assert.equal(await page.locator('.modal').count(), 0, 'brand modal closed');
 
+await page.locator('.home-cat[title="More"]').click();
+await wait(500);
+const moreButton = await page.locator('.home-more-grid button').nth(1).evaluate(el => {
+  const style = getComputedStyle(el);
+  return { bg: style.backgroundColor, color: style.color };
+});
+console.log('more tile dark', moreButton);
+assert.ok(lum(parse(moreButton.bg)) < 0.03, 'more tile is dark');
+assert.ok(contrast(moreButton.color, moreButton.bg) >= 4.5, 'more tile text contrast');
+await page.locator('.modal-header .btn-icon').click();
+await wait(300);
+
 // ------------------------------------------------------------------- shared
 await page.goto(`${base}/view`, { waitUntil: 'domcontentloaded' });
 await wait(700);
