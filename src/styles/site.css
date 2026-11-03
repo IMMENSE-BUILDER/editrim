@@ -348,7 +348,7 @@
   width: 322px;
   top: 42px;
   left: 16px;
-  transform: rotate(-5.5deg);
+  transform: none;
   z-index: 3;
   animation: float-a 9s ease-in-out infinite;
 }
@@ -357,7 +357,7 @@
   width: 238px;
   top: 168px;
   right: 18px;
-  transform: rotate(5deg);
+  transform: none;
   z-index: 4;
   animation: float-b 11s ease-in-out infinite;
 }
@@ -366,7 +366,7 @@
   width: 232px;
   bottom: 8px;
   left: 154px;
-  transform: rotate(3.5deg);
+  transform: none;
   z-index: 2;
   animation: float-c 10s ease-in-out infinite;
 }
@@ -442,18 +442,18 @@
 }
 
 @keyframes float-a {
-  0%, 100% { transform: rotate(-5.5deg) translateY(0); }
-  50% { transform: rotate(-4.8deg) translateY(-9px); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-9px); }
 }
 
 @keyframes float-b {
-  0%, 100% { transform: rotate(5deg) translateY(0); }
-  50% { transform: rotate(5.8deg) translateY(-11px); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-11px); }
 }
 
 @keyframes float-c {
-  0%, 100% { transform: rotate(3.5deg) translateY(0); }
-  50% { transform: rotate(2.6deg) translateY(-7px); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
 }
 
 .hero-stats {
