@@ -95,9 +95,9 @@ assert.ok(await page.locator('.cv-el img').count() >= 1, 'upload survives reload
 await page.click('.ed-back');
 await wait(800);
 assert.ok(page.url().includes('/dashboard'));
-const cards = await page.locator('.design-card').count();
+const cards = await page.locator('.home-design-card').count();
 log('dashboardCards', cards);
-await page.getByRole('button', { name: /New design/i }).first().click();
+await page.locator('.rail-create').click();
 await wait(400);
 await page.screenshot({ path: 'shots/new-design-modal.png' });
 await page.getByRole('tab', { name: 'Presentation' }).click();
@@ -109,13 +109,14 @@ assert.ok(page.url().includes('/editor/d_'));
 // brand kit
 await page.click('.ed-back');
 await wait(600);
-await page.getByRole('button', { name: /Brand kit/i }).first().click();
+await page.locator('.rail-nav button[title="Brand kit"]').click();
 await wait(400);
 const brandInput = page.locator('#brand-name');
 await brandInput.fill('Acme Studio');
 await page.locator('.modal-footer .btn-cobalt').click();
 await wait(600);
-log('brandSaved', await page.locator('.dash-brand-fab').innerText());
+log('brandSaved', await page.evaluate(() => JSON.parse(localStorage.getItem('editrim.brand.v1') || '{}').name ?? null));
+assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('editrim.brand.v1') || '{}').name), 'Acme Studio');
 
 // share + import copy
 await page.goto('http://127.0.0.1:5173/editor/new?template=north-mark', { waitUntil: 'networkidle' });
