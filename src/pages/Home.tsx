@@ -11,7 +11,7 @@ import {
   Sparkles, Table2, Trash2, Upload, UtensilsCrossed, Wand2, X, Crown,
 } from 'lucide-react';
 import { BrandMark } from '../components/Brand';
-import { VellumIcon, type VellumIconName } from '../components/VellumIcon';
+import { EditrimIcon, type EditrimIconName } from '../components/EditrimIcon';
 import { NewDesignModal } from '../components/NewDesignModal';
 import { BrandKitModal } from '../components/BrandKitModal';
 import { Modal } from '../components/Modal';
@@ -152,7 +152,7 @@ export default function Home() {
 
   useEffect(() => {
     reload();
-    document.title = view === 'projects' ? 'Projects — Vellum' : 'Home — Vellum';
+    document.title = view === 'projects' ? 'Projects — Editrim' : 'Home — Editrim';
   }, [view]);
 
   useEffect(() => {
@@ -334,7 +334,7 @@ export default function Home() {
     return SIZE_PRESETS.filter(p => `${p.name} ${p.group} ${p.hint}`.toLowerCase().includes(q)).slice(0, 6);
   }, [query]);
 
-  const actions: { label: string; hint: string; icon: VellumIconName; run: () => void }[] = [
+  const actions: { label: string; hint: string; icon: EditrimIconName; run: () => void }[] = [
     { label: 'Create a presentation', hint: '16:9 deck', icon: 'present', run: () => startBlank(1920, 1080, 'Untitled presentation', 'Presentation') },
     { label: 'Open video studio', hint: 'Timeline, clips, audio and text overlays', icon: 'video', run: () => navigate('/videos') },
     { label: 'Open photo editor', hint: 'Exposure, crop, filters, text and export', icon: 'photo', run: () => navigate('/photo') },
@@ -359,7 +359,7 @@ export default function Home() {
     else if (searchActions[0]) searchActions[0].run();
   };
 
-  const categories: { id: string; label: string; icon: VellumIconName; tone: string; outline?: boolean; run: () => void }[] = [
+  const categories: { id: string; label: string; icon: EditrimIconName; tone: string; outline?: boolean; run: () => void }[] = [
     { id: 'templates', label: 'Templates', icon: 'templates', tone: 'purple', run: () => navigate('/templates') },
     { id: 'presentation', label: 'Presentation', icon: 'present', tone: 'orange', run: () => startBlank(1920, 1080, 'Untitled presentation', 'Presentation') },
     { id: 'social', label: 'Social media', icon: 'social', tone: 'coral', run: () => startBlank(1080, 1080, 'Untitled social post', 'Instagram') },
@@ -394,7 +394,7 @@ export default function Home() {
     magic: {
       title: 'Magic Layers needs a vision model.',
       subtitle: 'A text model cannot separate a flat image into editable objects.',
-      body: 'Vellum will not pretend to do image segmentation. For now, use AI Illustration for vector art, or start from a template and rebuild the composition with real layers.',
+      body: 'Editrim will not pretend to do image segmentation. For now, use AI Illustration for vector art, or start from a template and rebuild the composition with real layers.',
       primary: 'Open AI Studio',
       run: () => { setFeature(null); navigate('/editor/new#ai'); },
     },
@@ -404,35 +404,35 @@ export default function Home() {
     <div className={`home ${collapsed ? 'rail-collapsed' : ''}`}>
       <aside className="home-rail">
         <button className="rail-collapse" onClick={() => setCollapsed(v => !v)} aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}>
-          {collapsed ? <VellumIcon name="sidebarOpen" size={17} /> : <VellumIcon name="sidebar" size={17} />}
+          {collapsed ? <EditrimIcon name="sidebarOpen" size={17} /> : <EditrimIcon name="sidebar" size={17} />}
         </button>
 
         <button className="rail-create" onClick={() => openCreate()} title="Open design library">
-          <span className="rail-create-icon"><VellumIcon name="plus" size={20} /></span>
+          <span className="rail-create-icon"><EditrimIcon name="plus" size={20} /></span>
           <span className="rail-label">Create</span>
         </button>
 
         <nav className="rail-nav" aria-label="Workspace">
           <button className={view === 'home' ? 'active' : ''} onClick={() => setView('home')} title="Home">
-            <VellumIcon name="home" size={19} /><span className="rail-label">Home</span>
+            <EditrimIcon name="home" size={19} /><span className="rail-label">Home</span>
           </button>
           <button className={view === 'projects' ? 'active' : ''} onClick={() => setView('projects')} title="Projects">
-            <VellumIcon name="projects" size={19} /><span className="rail-label">Projects</span>
+            <EditrimIcon name="projects" size={19} /><span className="rail-label">Projects</span>
           </button>
           <Link to="/templates" title="Templates">
-            <VellumIcon name="templates" size={19} /><span className="rail-label">Templates</span>
+            <EditrimIcon name="templates" size={19} /><span className="rail-label">Templates</span>
           </Link>
           <button onClick={() => setBrandOpen(true)} title="Brand kit">
-            <VellumIcon name="brand" size={19} /><span className="rail-label">Brand</span>
+            <EditrimIcon name="brand" size={19} /><span className="rail-label">Brand</span>
           </button>
           <button onClick={() => navigate('/editor/new#ai')} title="AI Studio">
-            <VellumIcon name="spark" size={19} /><span className="rail-label">AI Studio</span>
+            <EditrimIcon name="spark" size={19} /><span className="rail-label">AI Studio</span>
           </button>
           <button onClick={openPrint} title="Print-ready PDF">
-            <VellumIcon name="print" size={19} /><span className="rail-label">Print</span>
+            <EditrimIcon name="print" size={19} /><span className="rail-label">Print</span>
           </button>
           <button onClick={() => setRailPopover(railPopover === 'more' ? null : 'more')} title="More" aria-expanded={railPopover === 'more'}>
-            <VellumIcon name="more" size={19} /><span className="rail-label">More</span>
+            <EditrimIcon name="more" size={19} /><span className="rail-label">More</span>
           </button>
         </nav>
 
@@ -448,7 +448,7 @@ export default function Home() {
             aria-label="Notifications"
             aria-expanded={railPopover === 'notifications'}
           >
-            <VellumIcon name="bell" size={18} />
+            <EditrimIcon name="bell" size={18} />
             {!notificationsRead && <i />}
           </button>
           <button
@@ -458,14 +458,14 @@ export default function Home() {
             aria-label="Open profile menu"
             aria-expanded={railPopover === 'avatar'}
           >
-            V
+            E
           </button>
         </div>
 
         {railPopover && <div className="rail-popover-backdrop" onClick={() => setRailPopover(null)} />}
         {railPopover === 'notifications' && (
           <div className="rail-popover rail-notifications">
-            <div className="rail-popover-head"><strong>Updates</strong><button onClick={() => setRailPopover(null)}><VellumIcon name="close" size={14} /></button></div>
+            <div className="rail-popover-head"><strong>Updates</strong><button onClick={() => setRailPopover(null)}><EditrimIcon name="close" size={14} /></button></div>
             <div className="rail-popover-item"><span className="rail-popover-dot" /><div><strong>Your designs are local</strong><p>Everything autosaves in this browser. Nothing is uploaded.</p></div></div>
             <div className="rail-popover-item"><span className="rail-popover-dot" /><div><strong>AI Studio is ready</strong><p>Design, edit, write and review with MiMo V2.6 Flash.</p></div></div>
             <div className="rail-popover-item"><span className="rail-popover-dot" /><div><strong>Find anything</strong><p>Press <span className="kbd">/</span> to search designs, templates and actions.</p></div></div>
@@ -473,22 +473,22 @@ export default function Home() {
         )}
         {railPopover === 'avatar' && (
           <div className="rail-popover rail-profile">
-            <div className="rail-popover-head"><strong>Local workspace</strong><button onClick={() => setRailPopover(null)}><VellumIcon name="close" size={14} /></button></div>
-            <div className="rail-profile-id"><span>V</span><div><strong>You</strong><p>{formatCount(entries.length, 'design', 'designs')} · {formatCount(pageCount, 'page', 'pages')}</p></div></div>
+            <div className="rail-popover-head"><strong>Local workspace</strong><button onClick={() => setRailPopover(null)}><EditrimIcon name="close" size={14} /></button></div>
+            <div className="rail-profile-id"><span>E</span><div><strong>You</strong><p>{formatCount(entries.length, 'design', 'designs')} · {formatCount(pageCount, 'page', 'pages')}</p></div></div>
             <div className="rail-storage"><div><span>Local storage</span><span>{formatBytes(usage)}</span></div><i><b style={{ width: `${Math.min(100, (usage / (5 * 1024 * 1024)) * 100)}%` }} /></i></div>
-            <button onClick={() => { setRailPopover(null); setView('projects'); }}><VellumIcon name="projects" size={14} /> Projects</button>
-            <button onClick={() => { setRailPopover(null); setBrandOpen(true); }}><VellumIcon name="palette" size={14} /> Brand kit</button>
-            <button onClick={() => { setRailPopover(null); setHelpOpen(true); }}><VellumIcon name="help" size={14} /> Help</button>
+            <button onClick={() => { setRailPopover(null); setView('projects'); }}><EditrimIcon name="projects" size={14} /> Projects</button>
+            <button onClick={() => { setRailPopover(null); setBrandOpen(true); }}><EditrimIcon name="palette" size={14} /> Brand kit</button>
+            <button onClick={() => { setRailPopover(null); setHelpOpen(true); }}><EditrimIcon name="help" size={14} /> Help</button>
           </div>
         )}
         {railPopover === 'more' && (
           <div className="rail-popover rail-more">
-            <div className="rail-popover-head"><strong>More</strong><button onClick={() => setRailPopover(null)}><VellumIcon name="close" size={14} /></button></div>
-            <button onClick={() => { setRailPopover(null); fileRef.current?.click(); }}><VellumIcon name="upload" size={14} /> Upload image</button>
-            <button onClick={() => { setRailPopover(null); openCreate(true); }}><VellumIcon name="custom" size={14} /> Custom size</button>
-            <button onClick={() => { setRailPopover(null); openPrint(); }}><VellumIcon name="print" size={14} /> Print-ready PDF</button>
-            <button onClick={() => { setRailPopover(null); setHelpOpen(true); }}><VellumIcon name="help" size={14} /> Help &amp; shortcuts</button>
-            <a href="https://github.com/IMMENSE-BUILDER/vellum" target="_blank" rel="noreferrer"><VellumIcon name="website" size={14} /> Source</a>
+            <div className="rail-popover-head"><strong>More</strong><button onClick={() => setRailPopover(null)}><EditrimIcon name="close" size={14} /></button></div>
+            <button onClick={() => { setRailPopover(null); fileRef.current?.click(); }}><EditrimIcon name="upload" size={14} /> Upload image</button>
+            <button onClick={() => { setRailPopover(null); openCreate(true); }}><EditrimIcon name="custom" size={14} /> Custom size</button>
+            <button onClick={() => { setRailPopover(null); openPrint(); }}><EditrimIcon name="print" size={14} /> Print-ready PDF</button>
+            <button onClick={() => { setRailPopover(null); setHelpOpen(true); }}><EditrimIcon name="help" size={14} /> Help &amp; shortcuts</button>
+            <a href="https://github.com/IMMENSE-BUILDER/editrim" target="_blank" rel="noreferrer"><EditrimIcon name="website" size={14} /> Source</a>
           </div>
         )}
       </aside>
@@ -497,12 +497,12 @@ export default function Home() {
         <div className="home-scroll">
           <section className="home-hero">
             <div className="home-topline">
-              <Link to="/" className="home-brand" aria-label="Vellum home"><BrandMark size={24} /><span>Vellum</span></Link>
+              <Link to="/" className="home-brand" aria-label="Editrim home"><BrandMark size={24} /><span>Editrim</span></Link>
             </div>
             <h1 className="home-sr-title">{view === 'projects' ? 'Projects' : 'Home'}</h1>
 
             <div className="home-search-wrap">
-              <VellumIcon name="search" size={21} />
+              <EditrimIcon name="search" size={21} />
               <input
                 ref={searchRef}
                 value={query}
@@ -514,7 +514,7 @@ export default function Home() {
                 placeholder="Search anything"
                 aria-label="Search designs, templates and actions"
               />
-              {query ? <button className="home-search-clear" onClick={() => setQuery('')} aria-label="Clear search"><VellumIcon name="close" size={16} /></button> : <span className="home-search-key">/</span>}
+              {query ? <button className="home-search-clear" onClick={() => setQuery('')} aria-label="Clear search"><EditrimIcon name="close" size={16} /></button> : <span className="home-search-key">/</span>}
             </div>
 
             {!hasSearch && view === 'home' && (
@@ -524,7 +524,7 @@ export default function Home() {
                     <div className="home-cat-wrap" key={cat.id}>
                       {i === 1 && <span className="home-cat-sep" />}
                       <button className={`home-cat ${cat.outline ? 'is-outline' : ''} tone-${cat.tone}`} onClick={cat.run} title={cat.label} style={{ '--icon-index': i } as CSSProperties}>
-                        <span className="home-cat-icon"><VellumIcon name={cat.icon} size={22} /></span>
+                        <span className="home-cat-icon"><EditrimIcon name={cat.icon} size={22} /></span>
                         <span className="home-cat-label">{cat.label}</span>
                       </button>
                     </div>
@@ -546,7 +546,7 @@ export default function Home() {
                       <Link key={d.id} className="home-result-row" to={`/editor/${d.id}`} onClick={() => setQuery('')}>
                         <span className="home-result-thumb"><PagePreview page={d.pages[0]} size={d.size} /></span>
                         <span><strong>{d.title}</strong><small>{d.category} · {formatCount(d.pages.length, 'page', 'pages')} · {timeAgo(d.updatedAt)}</small></span>
-                        <VellumIcon name="arrowUpRight" size={14} />
+                        <EditrimIcon name="arrowUpRight" size={14} />
                       </Link>
                     ))}
                   </div>
@@ -566,7 +566,7 @@ export default function Home() {
                         >
                           <FormatGlyph formatId={preset.id} size="sm" ratio={preset.w / preset.h} />
                           <span><strong>{preset.name}</strong><small>{preset.group} · {preset.w}×{preset.h} · {preset.hint}</small></span>
-                          <VellumIcon name="arrowUpRight" size={14} />
+                          <EditrimIcon name="arrowUpRight" size={14} />
                         </button>
                       );
                     })}
@@ -579,7 +579,7 @@ export default function Home() {
                       <Link key={t.id} className="home-result-row" to={`/editor/new?template=${t.id}`} onClick={() => setQuery('')}>
                         <span className="home-result-thumb"><PagePreview page={t.pages[0]} size={t.size} /></span>
                         <span><strong>{t.name}</strong><small>{t.category} · {formatCount(t.pages.length, 'page', 'pages')}</small></span>
-                        <VellumIcon name="arrowUpRight" size={14} />
+                        <EditrimIcon name="arrowUpRight" size={14} />
                       </Link>
                     ))}
                   </div>
@@ -590,9 +590,9 @@ export default function Home() {
                     {searchActions.map(action => {
                       return (
                         <button key={action.label} className="home-result-row action" onClick={() => { setQuery(''); action.run(); }}>
-                          <span className="home-result-action-icon"><VellumIcon name={action.icon} size={17} /></span>
+                          <span className="home-result-action-icon"><EditrimIcon name={action.icon} size={17} /></span>
                           <span><strong>{action.label}</strong><small>{action.hint}</small></span>
-                          <VellumIcon name="arrowUpRight" size={14} />
+                          <EditrimIcon name="arrowUpRight" size={14} />
                         </button>
                       );
                     })}
@@ -600,7 +600,7 @@ export default function Home() {
                 )}
                 {!searchDesigns.length && !searchTemplates.length && !searchPresets.length && !searchActions.length && (
                   <div className="home-no-results">
-                    <VellumIcon name="search" size={22} /><h3>Nothing matches “{query}”.</h3>
+                    <EditrimIcon name="search" size={22} /><h3>Nothing matches “{query}”.</h3>
                     <p>Try a design name, a template type, or an action like “AI” or “print”.</p>
                   </div>
                 )}
@@ -612,7 +612,7 @@ export default function Home() {
                 <section className="home-section">
                   <div className="home-section-head">
                     <div><h2>Continue designing</h2></div>
-                    <button onClick={() => setView('projects')}>See all <VellumIcon name="arrowUpRight" size={14} /></button>
+                    <button onClick={() => setView('projects')}>See all <EditrimIcon name="arrowUpRight" size={14} /></button>
                   </div>
                   {recent.length > 0 ? (
                     <div className="home-design-strip">
@@ -632,7 +632,7 @@ export default function Home() {
                         );
                       })}
                       <button className="home-design-card home-new-card" onClick={() => openCreate()}>
-                        <span className="home-new-card-icon"><VellumIcon name="plus" size={22} /></span>
+                        <span className="home-new-card-icon"><EditrimIcon name="plus" size={22} /></span>
                         <strong>Start something new</strong>
                         <span className="home-design-meta">Blank canvas, any size</span>
                       </button>
@@ -640,7 +640,7 @@ export default function Home() {
                   ) : (
                     <div className="home-empty-continue">
                       <div><strong>No designs</strong></div>
-                      <button className="btn home-btn-primary" onClick={() => openCreate()}><VellumIcon name="plus" size={14} /> Create</button>
+                      <button className="btn home-btn-primary" onClick={() => openCreate()}><EditrimIcon name="plus" size={14} /> Create</button>
                       <Link to="/templates" className="btn home-btn-ghost">Browse templates</Link>
                     </div>
                   )}
@@ -649,7 +649,7 @@ export default function Home() {
                 <section className="home-section">
                   <div className="home-section-head">
                     <div><h2>Templates for you</h2></div>
-                    <Link to="/templates">See all <VellumIcon name="arrowUpRight" size={14} /></Link>
+                    <Link to="/templates">See all <EditrimIcon name="arrowUpRight" size={14} /></Link>
                   </div>
                   <div className="home-template-strip">
                     {templateSuggestions.map(t => (
@@ -668,7 +668,7 @@ export default function Home() {
 
                 <section className="home-section home-quiet-cta">
                   <div><h2>AI Studio</h2></div>
-                  <button className="home-btn-ai" onClick={() => navigate('/editor/new#ai')}><VellumIcon name="spark" size={15} /> Open <VellumIcon name="arrowUpRight" size={14} /></button>
+                  <button className="home-btn-ai" onClick={() => navigate('/editor/new#ai')}><EditrimIcon name="spark" size={15} /> Open <EditrimIcon name="arrowUpRight" size={14} /></button>
                 </section>
               </>
             )}
@@ -679,7 +679,7 @@ export default function Home() {
                   <div><h2>Projects</h2></div>
                   <div className="home-project-actions">
                     <span>{formatCount(entries.length, 'design', 'designs')} · {formatCount(pageCount, 'page', 'pages')}</span>
-                    <button className="btn home-btn-primary" onClick={() => openCreate()}><VellumIcon name="plus" size={14} /> New design</button>
+                    <button className="btn home-btn-primary" onClick={() => openCreate()}><EditrimIcon name="plus" size={14} /> New design</button>
                   </div>
                 </div>
                 {entries.length > 0 ? (
@@ -693,7 +693,7 @@ export default function Home() {
                             <div className="home-project-art" style={{ width: `${designArtWidth(d, 1.1)}%` }}>
                               <PagePreview page={d.pages[0]} size={d.size} />
                             </div>
-                            <span className="home-project-open">Open <VellumIcon name="arrowUpRight" size={12} /></span>
+                            <span className="home-project-open">Open <EditrimIcon name="arrowUpRight" size={12} /></span>
                           </Link>
                           <div className="home-project-info">
                             <div><Link to={`/editor/${d.id}`}>{d.title}</Link><span><FormatGlyph name={d.category} size="micro" /> {d.category} · {formatCount(d.pages.length, 'page', 'pages')} · {timeAgo(d.updatedAt)}</span></div>
@@ -704,15 +704,15 @@ export default function Home() {
                                 aria-label={`Options for ${d.title}`}
                                 aria-haspopup="menu"
                                 aria-expanded={menuId === d.id}
-                              ><VellumIcon name="more" size={16} /></button>
+                              ><EditrimIcon name="more" size={16} /></button>
                               {menuId === d.id && (
                                 <div className="home-project-menu" role="menu" aria-label={`Options for ${d.title}`}>
-                                  <button role="menuitem" onClick={() => { setMenuId(null); navigate(`/editor/${d.id}`); }}><VellumIcon name="pencil" size={13} /> Edit</button>
-                                  <button role="menuitem" onClick={() => onRename(d)}><VellumIcon name="doc" size={13} /> Rename</button>
-                                  <button role="menuitem" onClick={() => onDuplicate(d)}><VellumIcon name="duplicate" size={13} /> Duplicate</button>
-                                  <button role="menuitem" onClick={() => onDownload(d)}><VellumIcon name="download" size={13} /> Download PNG</button>
-                                  <button role="menuitem" onClick={() => { setMenuId(null); navigate(`/present/${d.id}`); }}><VellumIcon name="play" size={13} /> Present</button>
-                                  <button role="menuitem" className="danger" onClick={() => { setMenuId(null); setDeleting(d); }}><VellumIcon name="trash" size={13} /> Delete</button>
+                                  <button role="menuitem" onClick={() => { setMenuId(null); navigate(`/editor/${d.id}`); }}><EditrimIcon name="pencil" size={13} /> Edit</button>
+                                  <button role="menuitem" onClick={() => onRename(d)}><EditrimIcon name="doc" size={13} /> Rename</button>
+                                  <button role="menuitem" onClick={() => onDuplicate(d)}><EditrimIcon name="duplicate" size={13} /> Duplicate</button>
+                                  <button role="menuitem" onClick={() => onDownload(d)}><EditrimIcon name="download" size={13} /> Download PNG</button>
+                                  <button role="menuitem" onClick={() => { setMenuId(null); navigate(`/present/${d.id}`); }}><EditrimIcon name="play" size={13} /> Present</button>
+                                  <button role="menuitem" className="danger" onClick={() => { setMenuId(null); setDeleting(d); }}><EditrimIcon name="trash" size={13} /> Delete</button>
                                 </div>
                               )}
                             </div>
@@ -721,14 +721,14 @@ export default function Home() {
                       );
                     })}
                     <button className="home-project-add" onClick={() => openCreate()}>
-                      <span><VellumIcon name="plus" size={22} /></span><strong>Create a new design</strong><small>Any size, blank or from a template</small>
+                      <span><EditrimIcon name="plus" size={22} /></span><strong>Create a new design</strong><small>Any size, blank or from a template</small>
                     </button>
                   </div>
                 ) : (
                   <div className="home-empty-continue">
-                    <span className="home-empty-icon"><VellumIcon name="magic" size={21} /></span>
+                    <span className="home-empty-icon"><EditrimIcon name="magic" size={21} /></span>
                     <div><strong>No projects yet.</strong><p>Make your first design and it will show up here, saved in this browser.</p></div>
-                    <button className="btn home-btn-primary" onClick={() => openCreate()}><VellumIcon name="plus" size={14} /> New design</button>
+                    <button className="btn home-btn-primary" onClick={() => openCreate()}><EditrimIcon name="plus" size={14} /> New design</button>
                   </div>
                 )}
               </section>
@@ -736,7 +736,7 @@ export default function Home() {
           </section>
         </div>
 
-        <button className="home-help" onClick={() => setHelpOpen(true)} title="Help"><VellumIcon name="help" size={22} /></button>
+        <button className="home-help" onClick={() => setHelpOpen(true)} title="Help"><EditrimIcon name="help" size={22} /></button>
       </main>
 
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f); e.target.value = ''; }} />
@@ -755,7 +755,7 @@ export default function Home() {
           <>
             <button className="btn btn-ghost" onClick={() => setFeature(null)}>Not now</button>
             {feature === 'magic' && <Link to="/templates" className="btn btn-secondary" onClick={() => setFeature(null)}>Browse templates</Link>}
-            <button className="btn btn-cobalt" onClick={featureMeta.run}>{featureMeta.primary} <VellumIcon name="arrowUpRight" size={15} /></button>
+            <button className="btn btn-cobalt" onClick={featureMeta.run}>{featureMeta.primary} <EditrimIcon name="arrowUpRight" size={15} /></button>
           </>
         ) : undefined}
       >
@@ -771,7 +771,7 @@ export default function Home() {
           <>
             <button className="btn btn-ghost" onClick={() => setPrintOpen(false)}>Cancel</button>
             <button className="btn btn-cobalt" onClick={downloadPrintPdf} disabled={printing || !entries.length}>
-              {printing ? 'Rendering…' : 'Download PDF'} <VellumIcon name="download" size={15} />
+              {printing ? 'Rendering…' : 'Download PDF'} <EditrimIcon name="download" size={15} />
             </button>
           </>
         }
@@ -793,15 +793,15 @@ export default function Home() {
       <Modal
         open={helpOpen}
         onClose={() => setHelpOpen(false)}
-        title="Welcome to Vellum"
+        title="Welcome to Editrim"
         width={640}
         footer={<button className="btn btn-cobalt" onClick={() => setHelpOpen(false)}>Back to work</button>}
       >
         <div className="home-help-grid">
-          <div><VellumIcon name="spark" size={17} /><strong>Start anywhere</strong><p>Use a template, a category, a custom size or an upload. Everything can be edited.</p></div>
-          <div><VellumIcon name="projects" size={17} /><strong>Your work is local</strong><p>Designs autosave in this browser. No account, no cloud, no surprise sharing.</p></div>
-          <div><VellumIcon name="magic" size={17} /><strong>AI when you want it</strong><p>Design, edit, write, illustrate and review from the AI Studio tab in the editor.</p></div>
-          <div><VellumIcon name="print" size={17} /><strong>Take it with you</strong><p>Export PNG, JPG or PDF. Use Print for a high-resolution PDF, all pages.</p></div>
+          <div><EditrimIcon name="spark" size={17} /><strong>Start anywhere</strong><p>Use a template, a category, a custom size or an upload. Everything can be edited.</p></div>
+          <div><EditrimIcon name="projects" size={17} /><strong>Your work is local</strong><p>Designs autosave in this browser. No account, no cloud, no surprise sharing.</p></div>
+          <div><EditrimIcon name="magic" size={17} /><strong>AI when you want it</strong><p>Design, edit, write, illustrate and review from the AI Studio tab in the editor.</p></div>
+          <div><EditrimIcon name="print" size={17} /><strong>Take it with you</strong><p>Export PNG, JPG or PDF. Use Print for a high-resolution PDF, all pages.</p></div>
         </div>
       </Modal>
 
@@ -812,15 +812,15 @@ export default function Home() {
         width={560}
       >
         <div className="home-more-grid">
-          <button onClick={() => { setMoreOpen(false); openCreate(); }}><VellumIcon name="templates" size={18} /><strong>Design library</strong></button>
-          <button onClick={() => { setMoreOpen(false); navigate('/video'); }}><VellumIcon name="video" size={18} /><strong>Video studio</strong></button>
-          <button onClick={() => { setMoreOpen(false); navigate('/photo'); }}><VellumIcon name="photo" size={18} /><strong>Photo editor</strong></button>
-          <button onClick={() => { setMoreOpen(false); openCreate(true); }}><VellumIcon name="custom" size={18} /><strong>Custom size</strong></button>
-          <button onClick={() => { setMoreOpen(false); fileRef.current?.click(); }}><VellumIcon name="upload" size={18} /><strong>Upload image</strong></button>
-          <button onClick={() => { setMoreOpen(false); openPrint(); }}><VellumIcon name="print" size={18} /><strong>Print-ready PDF</strong></button>
-          <button onClick={() => { setMoreOpen(false); setBrandOpen(true); }}><VellumIcon name="palette" size={18} /><strong>Brand kit</strong></button>
-          <button onClick={() => { setMoreOpen(false); navigate('/editor/new#ai'); }}><VellumIcon name="spark" size={18} /><strong>AI Studio</strong></button>
-          <button onClick={() => { setMoreOpen(false); setHelpOpen(true); }}><VellumIcon name="help" size={18} /><strong>Help</strong></button>
+          <button onClick={() => { setMoreOpen(false); openCreate(); }}><EditrimIcon name="templates" size={18} /><strong>Design library</strong></button>
+          <button onClick={() => { setMoreOpen(false); navigate('/video'); }}><EditrimIcon name="video" size={18} /><strong>Video studio</strong></button>
+          <button onClick={() => { setMoreOpen(false); navigate('/photo'); }}><EditrimIcon name="photo" size={18} /><strong>Photo editor</strong></button>
+          <button onClick={() => { setMoreOpen(false); openCreate(true); }}><EditrimIcon name="custom" size={18} /><strong>Custom size</strong></button>
+          <button onClick={() => { setMoreOpen(false); fileRef.current?.click(); }}><EditrimIcon name="upload" size={18} /><strong>Upload image</strong></button>
+          <button onClick={() => { setMoreOpen(false); openPrint(); }}><EditrimIcon name="print" size={18} /><strong>Print-ready PDF</strong></button>
+          <button onClick={() => { setMoreOpen(false); setBrandOpen(true); }}><EditrimIcon name="palette" size={18} /><strong>Brand kit</strong></button>
+          <button onClick={() => { setMoreOpen(false); navigate('/editor/new#ai'); }}><EditrimIcon name="spark" size={18} /><strong>AI Studio</strong></button>
+          <button onClick={() => { setMoreOpen(false); setHelpOpen(true); }}><EditrimIcon name="help" size={18} /><strong>Help</strong></button>
         </div>
       </Modal>
 
@@ -840,7 +840,7 @@ export default function Home() {
         subtitle="This cannot be undone — the design is removed from this browser."
         footer={<><button className="btn btn-ghost" onClick={() => setDeleting(null)}>Keep it</button><button className="btn btn-danger" onClick={confirmDelete}>Delete design</button></>}
       >
-        <div className="home-delete"><VellumIcon name="trash" size={18} /><div><strong>{deleting?.title}</strong><span>{deleting ? `${deleting.pages.length} pages · ${deleting.size.width}×${deleting.size.height}` : ''}</span></div></div>
+        <div className="home-delete"><EditrimIcon name="trash" size={18} /><div><strong>{deleting?.title}</strong><span>{deleting ? `${deleting.pages.length} pages · ${deleting.size.width}×${deleting.size.height}` : ''}</span></div></div>
       </Modal>
     </div>
   );

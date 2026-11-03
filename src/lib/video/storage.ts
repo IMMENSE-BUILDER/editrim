@@ -1,13 +1,13 @@
 import { projectDuration, normalizeVideoProject, newVideoProject, type VideoAsset, type VideoProject } from './types';
 import { uid } from '../utils';
 
-const DB_NAME = 'vellum-video-media';
+const DB_NAME = 'editrim-video-media';
 const DB_VERSION = 1;
 const STORE = 'media';
-const LEGACY_PROJECT_KEY = 'vellum_video_project_v1';
-const INDEX_KEY = 'vellum_video_projects_v1';
-const PROJECT_PREFIX = 'vellum_video_project_v2_';
-const LAST_KEY = 'vellum_video_last_id_v1';
+const LEGACY_PROJECT_KEY = 'editrim_video_project_v1';
+const INDEX_KEY = 'editrim_video_projects_v1';
+const PROJECT_PREFIX = 'editrim_video_project_v2_';
+const LAST_KEY = 'editrim_video_last_id_v1';
 
 export type VideoProjectMeta = {
   id: string;

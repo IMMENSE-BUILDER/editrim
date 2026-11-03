@@ -235,5 +235,5 @@ export function assetKindFromMime(mime: string): VideoAssetKind | null {
 }
 
 export function sanitizeVideoFilename(name: string): string {
-  return (name.trim().toLowerCase().replace(/[^a-z0-9-_]+/g, '-').replace(/^-+|-+$/g, '') || 'vellum-video');
+  return (name.trim().toLowerCase().replace(/[^a-z0-9-_]+/g, '-').replace(/^-+|-+$/g, '') || 'editrim-video');
 }

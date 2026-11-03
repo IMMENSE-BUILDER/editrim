@@ -42,8 +42,8 @@ The preview renders at 880 px while controls are moving, then re-renders at 1400
 
 ## Storage
 
-- `vellum-photo-source` IndexedDB → the imported source blob (`current`).
-- `vellum_photo_session_v1` localStorage → name, dimensions, crop, transform, adjustments, filter and text layers.
+- `editrim-photo-source` IndexedDB → the imported source blob (`current`).
+- `editrim_photo_session_v1` localStorage → name, dimensions, crop, transform, adjustments, filter and text layers.
 - Importing a new photo replaces the stored source and resets the edit stack.
 
 ## Export
@@ -83,7 +83,7 @@ The photo E2E verifies:
 
 ## Live verification
 
-Production run on `https://vellum-delta-dun.vercel.app`:
+Production run on `https://editrim.vercel.app`:
 
 - `/photo` served the new build with 16 sliders and the Photo title.
 - Imported the 1600 × 1067 fixture; adjustments set to exposure **+0.5**, contrast **+22**, temperature **−30**, vignette **40**, grain **18**.

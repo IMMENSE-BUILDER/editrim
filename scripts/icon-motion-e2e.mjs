@@ -25,11 +25,11 @@ await p.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
 await p.waitForTimeout(700);
 
 const echo = await p.evaluate(() => {
-  const icons = [...document.querySelectorAll('[data-vellum-icon]')];
+  const icons = [...document.querySelectorAll('[data-editrim-icon]')];
   return {
     icons: icons.length,
-    echoes: document.querySelectorAll('[data-vellum-icon] .vellum-icon-echo').length,
-    compactHidden: [...document.querySelectorAll('.vellum-icon.is-compact .vellum-icon-echo')]
+    echoes: document.querySelectorAll('[data-editrim-icon] .editrim-icon-echo').length,
+    compactHidden: [...document.querySelectorAll('.editrim-icon.is-compact .editrim-icon-echo')]
       .every(el => getComputedStyle(el).display === 'none'),
   };
 });
@@ -38,10 +38,10 @@ assert.equal(echo.icons, echo.echoes);
 assert.ok(echo.compactHidden);
 
 const cat = p.locator('.home-cat').filter({ hasText: 'Templates' });
-const catIcon = cat.locator('.home-cat-icon .vellum-icon');
+const catIcon = cat.locator('.home-cat-icon .editrim-icon');
 const catEntrance = await animation(catIcon);
 console.log('category entrance animation', catEntrance);
-assert.ok(catEntrance.name.includes('vellum-icon-enter'));
+assert.ok(catEntrance.name.includes('editrim-icon-enter'));
 const catBefore = await transform(catIcon);
 await cat.hover();
 await p.waitForTimeout(280);
@@ -51,7 +51,7 @@ assert.notEqual(catAfter, catBefore);
 assert.notEqual(catAfter, 'none');
 
 const create = p.locator('.rail-create');
-const createIcon = create.locator('.vellum-icon');
+const createIcon = create.locator('.editrim-icon');
 const createBefore = await transform(createIcon);
 await create.hover();
 await p.waitForTimeout(240);
@@ -61,7 +61,7 @@ assert.notEqual(createAfter, createBefore);
 assert.notEqual(createAfter, 'none');
 
 const projects = p.locator('.rail-nav button').filter({ hasText: 'Projects' });
-const projectsIcon = projects.locator('.vellum-icon');
+const projectsIcon = projects.locator('.editrim-icon');
 const projectsBefore = await transform(projectsIcon);
 await projects.hover();
 await p.waitForTimeout(240);
@@ -88,10 +88,10 @@ await p.waitForTimeout(800);
 
 const railTabs = p.locator('.ed-rail > button');
 const elementsTab = railTabs.filter({ hasText: 'Elements' });
-const elementsIcon = elementsTab.locator('.vellum-icon');
+const elementsIcon = elementsTab.locator('.editrim-icon');
 const studioEntrance = await animation(elementsIcon);
 console.log('studio entrance animation', studioEntrance);
-assert.ok(studioEntrance.name.includes('vellum-icon-enter'));
+assert.ok(studioEntrance.name.includes('editrim-icon-enter'));
 const elementsBefore = await transform(elementsIcon);
 await elementsTab.hover();
 await p.waitForTimeout(240);
@@ -102,10 +102,10 @@ assert.notEqual(elementsAfter, elementsBefore);
 const aiTab = railTabs.filter({ hasText: 'AI' });
 await aiTab.click();
 await p.waitForTimeout(80);
-const activeIcon = aiTab.locator('.vellum-icon');
+const activeIcon = aiTab.locator('.editrim-icon');
 const activeAnim = await animation(activeIcon);
 console.log('active rail animation', activeAnim);
-assert.ok(activeAnim.name.includes('vellum-icon-pop'));
+assert.ok(activeAnim.name.includes('editrim-icon-pop'));
 assert.notEqual(activeAnim.duration, '0s');
 
 // Close AI panel, hover undo
@@ -114,7 +114,7 @@ await p.waitForTimeout(250);
 const target = p.locator('.cv-el').nth(2);
 await target.click({ force: true });
 await p.waitForTimeout(300);
-const rotateHandle = p.locator('.cv-rotate .vellum-icon');
+const rotateHandle = p.locator('.cv-rotate .editrim-icon');
 const rotateBefore = await transform(rotateHandle);
 await p.locator('.cv-rotate').hover();
 await p.waitForTimeout(220);
@@ -122,7 +122,7 @@ const rotateAfter = await transform(rotateHandle);
 console.log('canvas rotate icon', rotateBefore, '->', rotateAfter);
 assert.notEqual(rotateAfter, rotateBefore);
 const undo = p.locator('.ed-top-center .ed-ico').first();
-const undoIcon = undo.locator('.vellum-icon');
+const undoIcon = undo.locator('.editrim-icon');
 const undoBefore = await transform(undoIcon);
 await undo.hover();
 await p.waitForTimeout(220);
@@ -134,7 +134,7 @@ assert.notEqual(undoAfter, undoBefore);
 await target.click({ button: 'right', force: true });
 await p.waitForTimeout(300);
 const row = p.locator('.cv-menu-row').filter({ hasText: 'Duplicate' });
-const rowIcon = row.locator('.cv-menu-icon .vellum-icon');
+const rowIcon = row.locator('.cv-menu-icon .editrim-icon');
 const rowBefore = await transform(rowIcon);
 await row.hover();
 await p.waitForTimeout(240);
@@ -148,7 +148,7 @@ await p.waitForTimeout(250);
 
 // Inspector alignment icon motion
 const align = p.locator('.insp-align button').first();
-const alignIcon = align.locator('.vellum-icon');
+const alignIcon = align.locator('.editrim-icon');
 const alignBefore = await transform(alignIcon);
 await align.hover();
 await p.waitForTimeout(220);
@@ -162,9 +162,9 @@ await p.waitForTimeout(300);
 const modeTab = p.locator('.ai-tabs button').nth(2);
 await modeTab.click();
 await p.waitForTimeout(80);
-const modeAnim = await animation(modeTab.locator('.vellum-icon'));
+const modeAnim = await animation(modeTab.locator('.editrim-icon'));
 console.log('AI mode icon animation', modeAnim);
-assert.ok(modeAnim.name.includes('vellum-icon-pop'));
+assert.ok(modeAnim.name.includes('editrim-icon-pop'));
 
 // ---------- reduced motion ----------
 const rctx = await browser.newContext({ viewport: { width: 1440, height: 1000 }, reducedMotion: 'reduce' });
@@ -173,7 +173,7 @@ watch(rp);
 await rp.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
 await rp.waitForTimeout(600);
 const rc = rp.locator('.home-cat').filter({ hasText: 'Templates' });
-const rcIcon = rc.locator('.home-cat-icon .vellum-icon');
+const rcIcon = rc.locator('.home-cat-icon .editrim-icon');
 const reducedBase = await rcIcon.evaluate(el => {
   const s = getComputedStyle(el);
   return { transition: s.transitionProperty, animation: s.animationName, transform: s.transform };
@@ -195,7 +195,7 @@ await rp.waitForTimeout(600);
 const rtab = rp.locator('.ed-rail > button').nth(1);
 await rtab.click();
 await rp.waitForTimeout(80);
-const reducedStudio = await rtab.locator('.vellum-icon').evaluate(el => {
+const reducedStudio = await rtab.locator('.editrim-icon').evaluate(el => {
   const s = getComputedStyle(el);
   return { transition: s.transitionProperty, animation: s.animationName };
 });

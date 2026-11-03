@@ -7,7 +7,7 @@ import {
   Redo2, Share2, Shapes, SlidersHorizontal, Sparkles, Trash2, Type, Undo2, X,
 } from 'lucide-react';
 import { Logo } from '../components/Brand';
-import { VellumIcon, type VellumIconName } from '../components/VellumIcon';
+import { EditrimIcon, type EditrimIconName } from '../components/EditrimIcon';
 import { Modal } from '../components/Modal';
 import { PagePreview } from '../components/PagePreview';
 import { BrandKitModal } from '../components/BrandKitModal';
@@ -81,7 +81,7 @@ function MissingDesign() {
     <div className="editor-missing">
       <Logo size={36} />
       <h1>This design isn’t here.</h1>
-      <p>It may have been deleted, or it lives in a different browser. Vellum stores designs locally, not in the cloud.</p>
+      <p>It may have been deleted, or it lives in a different browser. Editrim stores designs locally, not in the cloud.</p>
       <div>
         <Link to="/editor/new" className="btn btn-cobalt">Start a new design</Link>
         <Link to="/dashboard" className="btn btn-secondary">Your designs</Link>
@@ -90,7 +90,7 @@ function MissingDesign() {
   );
 }
 
-const TABS: { id: PanelTab; label: string; icon: VellumIconName }[] = [
+const TABS: { id: PanelTab; label: string; icon: EditrimIconName }[] = [
   { id: 'templates', label: 'Templates', icon: 'templates' },
   { id: 'ai', label: 'AI', icon: 'spark' },
   { id: 'elements', label: 'Elements', icon: 'elements' },
@@ -308,9 +308,9 @@ function EditorWorkspace({ initial }: { initial: Design }) {
   }, []);
 
   useEffect(() => {
-    document.title = `${design.title || 'Untitled'} — Vellum`;
+    document.title = `${design.title || 'Untitled'} — Editrim`;
     return () => {
-      document.title = 'Vellum — Design anything. Beautifully.';
+      document.title = 'Editrim — Design anything. Beautifully.';
     };
   }, [design.title]);
 
@@ -437,7 +437,7 @@ function EditorWorkspace({ initial }: { initial: Design }) {
       }
       if (mod && e.shiftKey && key === '1') {
         e.preventDefault();
-        window.dispatchEvent(new CustomEvent('vellum:fit'));
+        window.dispatchEvent(new CustomEvent('editrim:fit'));
         return;
       }
       if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -502,8 +502,8 @@ function EditorWorkspace({ initial }: { initial: Design }) {
     <div className={`editor ${inspectorOpen ? 'show-inspector' : ''}`}>
       <header className="ed-topbar">
         <div className="ed-top-left">
-          <Link to="/dashboard" className="ed-back" title="Back to your designs"><VellumIcon name="arrowLeft" size={17} /></Link>
-          <Link to="/" className="ed-mark" aria-label="Vellum home"><Logo size={26} wordmark={false} /></Link>
+          <Link to="/dashboard" className="ed-back" title="Back to your designs"><EditrimIcon name="arrowLeft" size={17} /></Link>
+          <Link to="/" className="ed-mark" aria-label="Editrim home"><Logo size={26} wordmark={false} /></Link>
           <div className="ed-title">
             <input
               value={design.title}
@@ -512,31 +512,31 @@ function EditorWorkspace({ initial }: { initial: Design }) {
               aria-label="Design title"
             />
             <span className={`ed-status ${saveState}`}>
-              {saveState === 'saving' ? <Loader2 size={10} className="spin" /> : <VellumIcon name="cloud" size={11} />}
+              {saveState === 'saving' ? <Loader2 size={10} className="spin" /> : <EditrimIcon name="cloud" size={11} />}
               {saveState === 'saving' ? 'Saving' : saveState === 'error' ? 'Storage full' : 'Saved'}
             </span>
           </div>
         </div>
 
         <div className="ed-top-center">
-          <button className="ed-ico" onClick={store.undo} disabled={!store.canUndo} title="Undo (⌘Z)"><VellumIcon name="undo" size={16} /></button>
-          <button className="ed-ico" onClick={store.redo} disabled={!store.canRedo} title="Redo (⌘⇧Z)"><VellumIcon name="redo" size={16} /></button>
+          <button className="ed-ico" onClick={store.undo} disabled={!store.canUndo} title="Undo (⌘Z)"><EditrimIcon name="undo" size={16} /></button>
+          <button className="ed-ico" onClick={store.redo} disabled={!store.canRedo} title="Redo (⌘⇧Z)"><EditrimIcon name="redo" size={16} /></button>
           <span className="ed-divider" />
           <button className="ed-size-pill" onClick={() => setResizeOpen(true)} title="Resize canvas">
             {design.size.width} × {design.size.height}
-            <VellumIcon name="fit" size={12} />
+            <EditrimIcon name="fit" size={12} />
           </button>
         </div>
 
         <div className="ed-top-right">
           <button className="ed-ico ed-insp-toggle" onClick={() => setInspectorOpen(v => !v)} title="Design controls">
-            <VellumIcon name="sliders" size={17} />
+            <EditrimIcon name="sliders" size={17} />
           </button>
-          <button className="ed-ico ed-help" onClick={() => setShortcutsOpen(true)} title="Keyboard shortcuts"><VellumIcon name="help" size={17} /></button>
-          <button className="ed-action" onClick={present}><VellumIcon name="play" size={14} /> <span>Present</span></button>
-          <button className="ed-action" onClick={openShare}><VellumIcon name="share" size={14} /> <span>Share</span></button>
+          <button className="ed-ico ed-help" onClick={() => setShortcutsOpen(true)} title="Keyboard shortcuts"><EditrimIcon name="help" size={17} /></button>
+          <button className="ed-action" onClick={present}><EditrimIcon name="play" size={14} /> <span>Present</span></button>
+          <button className="ed-action" onClick={openShare}><EditrimIcon name="share" size={14} /> <span>Share</span></button>
           <button className="btn btn-cobalt btn-sm ed-download" onClick={() => setExportOpen(true)}>
-            <VellumIcon name="download" size={14} /> Download
+            <EditrimIcon name="download" size={14} /> Download
           </button>
         </div>
       </header>
@@ -551,14 +551,14 @@ function EditorWorkspace({ initial }: { initial: Design }) {
                 onClick={() => setPanel(panel === t.id ? null : t.id)}
                 title={t.label}
               >
-                <VellumIcon name={t.icon} size={19} />
+                <EditrimIcon name={t.icon} size={19} />
                 <span>{t.label}</span>
               </button>
             );
           })}
           <div className="ed-rail-bottom">
             <button onClick={() => setShortcutsOpen(true)} title="Shortcuts">
-              <VellumIcon name="help" size={18} />
+              <EditrimIcon name="help" size={18} />
               <span>Help</span>
             </button>
           </div>
@@ -615,16 +615,16 @@ function EditorWorkspace({ initial }: { initial: Design }) {
                     <>
                       <div className="page-menu-backdrop" onClick={() => setPageMenu(null)} />
                       <div className="page-menu" style={{ left: pageMenu.x, top: pageMenu.top }}>
-                        <button onClick={() => { store.duplicatePage(i); setPageMenu(null); }}><VellumIcon name="duplicate" size={13} /> Duplicate</button>
-                        <button onClick={() => { store.movePage(i, i - 1); setPageMenu(null); }} disabled={i === 0}><VellumIcon name="chevronLeft" size={13} /> Move left</button>
-                        <button onClick={() => { store.movePage(i, i + 1); setPageMenu(null); }} disabled={i === design.pages.length - 1}><VellumIcon name="chevronRight" size={13} /> Move right</button>
-                        <button className="danger" onClick={() => { store.deletePage(i); setPageMenu(null); }} disabled={design.pages.length <= 1}><VellumIcon name="trash" size={13} /> Delete page</button>
+                        <button onClick={() => { store.duplicatePage(i); setPageMenu(null); }}><EditrimIcon name="duplicate" size={13} /> Duplicate</button>
+                        <button onClick={() => { store.movePage(i, i - 1); setPageMenu(null); }} disabled={i === 0}><EditrimIcon name="chevronLeft" size={13} /> Move left</button>
+                        <button onClick={() => { store.movePage(i, i + 1); setPageMenu(null); }} disabled={i === design.pages.length - 1}><EditrimIcon name="chevronRight" size={13} /> Move right</button>
+                        <button className="danger" onClick={() => { store.deletePage(i); setPageMenu(null); }} disabled={design.pages.length <= 1}><EditrimIcon name="trash" size={13} /> Delete page</button>
                       </div>
                     </>
                   )}
                 </div>
               ))}
-              <button className="page-add" onClick={() => store.addPage()} title="Add page"><VellumIcon name="plus" size={17} /><span>Add page</span></button>
+              <button className="page-add" onClick={() => store.addPage()} title="Add page"><EditrimIcon name="plus" size={17} /><span>Add page</span></button>
             </div>
             <div className="page-strip-info">
               <span>Page {store.activePage + 1} of {design.pages.length}</span>
@@ -671,7 +671,7 @@ function EditorWorkspace({ initial }: { initial: Design }) {
           onResize={() => setResizeOpen(true)}
           onAddPage={() => store.addPage()}
           onDuplicatePage={() => store.duplicatePage()}
-          onFit={() => window.dispatchEvent(new CustomEvent('vellum:fit'))}
+          onFit={() => window.dispatchEvent(new CustomEvent('editrim:fit'))}
         />
       )}
 
@@ -702,7 +702,7 @@ function EditorWorkspace({ initial }: { initial: Design }) {
         </div>
         {componentDraft && (
           <div className="component-draft-meta">
-            <VellumIcon name="elements" size={15} />
+            <EditrimIcon name="elements" size={15} />
             <span>{componentDraft.elements.length} layers · {componentDraft.width} × {componentDraft.height} px · stored locally</span>
           </div>
         )}
@@ -743,16 +743,16 @@ function EditorWorkspace({ initial }: { initial: Design }) {
                   <p>{c.text}</p>
                   <div className="comment-actions">
                     <button onClick={() => store.updateComment(c.id, { resolved: !c.resolved })}>
-                      <VellumIcon name="check" size={12} /> {c.resolved ? 'Reopen' : 'Resolve'}
+                      <EditrimIcon name="check" size={12} /> {c.resolved ? 'Reopen' : 'Resolve'}
                     </button>
-                    <button className="danger" onClick={() => store.removeComment(c.id)}><VellumIcon name="trash" size={12} /> Delete</button>
+                    <button className="danger" onClick={() => store.removeComment(c.id)}><EditrimIcon name="trash" size={12} /> Delete</button>
                   </div>
                 </div>
               </div>
             ))}
           {commentTarget && !(design.comments ?? []).some(c => c.pageId === commentTarget.pageId && (commentTarget.elementId ? c.elementId === commentTarget.elementId : !c.elementId)) && (
             <div className="comment-empty">
-              <VellumIcon name="comment" size={20} />
+              <EditrimIcon name="comment" size={20} />
               <strong>No comments yet.</strong>
               <p>Leave a note for yourself or whoever opens this file next.</p>
             </div>

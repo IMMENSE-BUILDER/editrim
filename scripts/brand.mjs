@@ -12,7 +12,7 @@ await p.locator('#brand-name').fill('Acme Studio');
 await p.screenshot({path:'shots/brand-modal.png'});
 await p.locator('.modal-footer .btn-cobalt').click();
 await p.waitForTimeout(600);
-console.log('brandLS', await p.evaluate(()=>localStorage.getItem('vellum.brand.v1')));
+console.log('brandLS', await p.evaluate(()=>localStorage.getItem('editrim.brand.v1')));
 // new design modal sizes screenshot
 await p.getByRole('button',{name:/New design/i}).first().click();
 await p.waitForTimeout(300);

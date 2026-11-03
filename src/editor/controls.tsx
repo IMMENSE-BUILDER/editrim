@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
-import { VellumIcon } from '../components/VellumIcon';
+import { EditrimIcon } from '../components/EditrimIcon';
 
 import type { Paint, Shadow } from '../lib/types';
 import { FONTS } from '../lib/fonts';
@@ -207,7 +207,7 @@ export function ColorField({
       <button type="button" className="color-trigger" onClick={openPopover} ref={triggerRef}>
         <span className="color-chip" style={{ background: value === 'transparent' ? 'repeating-conic-gradient(#ddd 0 25%, #fff 0 50%) 0 0/8px 8px' : value }} />
         <span className="color-hex-text">{value === 'transparent' ? 'None' : hex}</span>
-        <VellumIcon name="chevronDown" size={13} />
+        <EditrimIcon name="chevronDown" size={13} />
       </button>
       {open && (
         <div className="color-pop" style={{ position: 'fixed', left: pos.left, top: pos.top }}>
@@ -292,12 +292,12 @@ export function FontField({ value, onChange }: { value: string; onChange: (f: st
       <button type="button" className="font-trigger" onClick={toggle} ref={triggerRef}>
         <span className="font-trigger-sample" style={{ fontFamily: `"${value}", sans-serif` }}>Aa</span>
         <span className="font-trigger-name">{value}</span>
-        <VellumIcon name="chevronDown" size={13} />
+        <EditrimIcon name="chevronDown" size={13} />
       </button>
       {open && (
         <div className="font-pop" style={{ position: 'fixed', left: pos.left, top: pos.top }}>
           <div className="font-search">
-            <VellumIcon name="search" size={13} />
+            <EditrimIcon name="search" size={13} />
             <input value={q} onChange={e => setQ(e.target.value)} placeholder="Search fonts" autoFocus />
           </div>
           <div className="font-list">
@@ -309,7 +309,7 @@ export function FontField({ value, onChange }: { value: string; onChange: (f: st
               >
                 <span style={{ fontFamily: `"${f.family}", sans-serif` }}>{f.label}</span>
                 <small>{f.category}</small>
-                {value === f.family && <VellumIcon name="check" size={13} />}
+                {value === f.family && <EditrimIcon name="check" size={13} />}
               </button>
             ))}
             {list.length === 0 && <div className="font-empty">No fonts found</div>}
@@ -386,7 +386,7 @@ export function ShadowField({ shadow, onChange }: { shadow?: Shadow | null; onCh
 export function ResetButton({ onClick }: { onClick: () => void }) {
   return (
     <button className="insp-reset" onClick={onClick} title="Reset">
-      <VellumIcon name="rotate" size={12} />
+      <EditrimIcon name="rotate" size={12} />
     </button>
   );
 }
@@ -413,7 +413,7 @@ export function ToggleRow({
 export function ModalClose({ onClose }: { onClose: () => void }) {
   return (
     <button className="btn-icon" onClick={onClose} aria-label="Close">
-      <VellumIcon name="close" size={18} />
+      <EditrimIcon name="close" size={18} />
     </button>
   );
 }

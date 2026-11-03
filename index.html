@@ -4,17 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#F4F1EA" />
-    <meta name="description" content="Vellum is a free AI-powered browser design studio. Make social posts, presentations, posters, resumes and brand assets with templates, editable AI drafts and real design tools." />
-    <meta property="og:title" content="Vellum — Design anything. Beautifully." />
+    <meta name="description" content="Editrim is a free AI-powered browser design studio. Make social posts, presentations, posters, resumes and brand assets with templates, editable AI drafts and real design tools." />
+    <meta property="og:title" content="Editrim — Design anything. Beautifully." />
     <meta property="og:description" content="A whole design studio in your browser, with AI writing, AI layouts, visual review and editable vector illustrations. Free, fast, no sign-up." />
     <meta property="og:type" content="website" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href="/fonts/geist-serif-regular.woff2" as="font" type="font/woff2" crossorigin />
-    <title>Vellum — Design anything. Beautifully.</title>
+    <title>Editrim — Design anything. Beautifully.</title>
     <script>
       (() => {
         try {
-          const stored = localStorage.getItem('vellum_theme_v1');
+          let stored = localStorage.getItem('editrim_theme_v1');
+          if (stored !== 'dark' && stored !== 'light') {
+            const legacy = localStorage.getItem('vellum_theme_v1');
+            if (legacy === 'dark' || legacy === 'light') {
+              stored = legacy;
+              localStorage.setItem('editrim_theme_v1', legacy);
+              localStorage.removeItem('vellum_theme_v1');
+            }
+          }
           const theme = stored === 'dark' || stored === 'light' ? stored : 'light';
           document.documentElement.dataset.theme = theme;
           document.documentElement.style.colorScheme = theme;

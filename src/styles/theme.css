@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Vellum themes
+   Editrim themes
    Light is the paper studio; dark is the ink studio. Both are hand-set:
    surfaces, borders, shadows, selection, scrollbars and native controls move
    together instead of being filtered or inverted.
@@ -76,7 +76,7 @@ html.theme-switching *::after {
   letter-spacing: 0.01em;
 }
 
-.rail-theme-label .vellum-icon {
+.rail-theme-label .editrim-icon {
   opacity: 0.8;
 }
 

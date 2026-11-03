@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Logo } from '../components/Brand';
-import { VellumIcon, type VellumIconName } from '../components/VellumIcon';
+import { EditrimIcon, type EditrimIconName } from '../components/EditrimIcon';
 import { useToast } from '../components/Toast';
 import { FONTS } from '../lib/fonts';
 import { buildVideoAsset } from '../lib/video/media';
@@ -57,13 +57,13 @@ type AudioGraph = {
   destination: MediaStreamAudioDestinationNode;
 };
 
-const TRACK_ICONS: Record<VideoTrack['kind'], VellumIconName> = {
+const TRACK_ICONS: Record<VideoTrack['kind'], EditrimIconName> = {
   video: 'film',
   overlay: 'layers',
   audio: 'music',
 };
 
-const KIND_ICONS: Record<VideoClipKind, VellumIconName> = {
+const KIND_ICONS: Record<VideoClipKind, EditrimIconName> = {
   video: 'film',
   image: 'image',
   text: 'text',
@@ -159,7 +159,7 @@ function IconButton({
   disabled,
   className = '',
 }: {
-  icon: VellumIconName;
+  icon: EditrimIconName;
   label: string;
   onClick: () => void;
   active?: boolean;
@@ -175,7 +175,7 @@ function IconButton({
       aria-label={label}
       disabled={disabled}
     >
-      <VellumIcon name={icon} size={16} />
+      <EditrimIcon name={icon} size={16} />
     </button>
   );
 }
@@ -1098,7 +1098,7 @@ export default function VideoEditor() {
     >
       <header className="vd-header">
         <div className="vd-left">
-          <Link to="/videos" className="vd-back" title="Back to videos"><VellumIcon name="arrowLeft" size={17} /></Link>
+          <Link to="/videos" className="vd-back" title="Back to videos"><EditrimIcon name="arrowLeft" size={17} /></Link>
           <Logo size={26} wordmark={false} />
           <div className="vd-title-wrap">
             <input value={project.name} onChange={event => renameProject(event.target.value)} aria-label="Video project name" />
@@ -1110,11 +1110,11 @@ export default function VideoEditor() {
           <IconButton icon="redo" label="Redo" onClick={redo} disabled={!historyState.canRedo} />
         </div>
         <div className="vd-right">
-          <button className="vd-mobile-btn" onClick={() => { setLibraryOpen(v => !v); setInspectorOpen(false); }} title="Media library"><VellumIcon name="film" size={15} /><span>Media</span></button>
-          <button className="vd-mobile-btn" onClick={() => { setInspectorOpen(v => !v); setLibraryOpen(false); }} title="Properties"><VellumIcon name="sliders" size={15} /><span>Edit</span></button>
-          <button className="vd-import-btn" onClick={() => fileInputRef.current?.click()}><VellumIcon name="upload" size={15} /><span>Import</span></button>
+          <button className="vd-mobile-btn" onClick={() => { setLibraryOpen(v => !v); setInspectorOpen(false); }} title="Media library"><EditrimIcon name="film" size={15} /><span>Media</span></button>
+          <button className="vd-mobile-btn" onClick={() => { setInspectorOpen(v => !v); setLibraryOpen(false); }} title="Properties"><EditrimIcon name="sliders" size={15} /><span>Edit</span></button>
+          <button className="vd-import-btn" onClick={() => fileInputRef.current?.click()}><EditrimIcon name="upload" size={15} /><span>Import</span></button>
           <button className="vd-export-btn" onClick={exportVideo} disabled={!clipCount || exporting}>
-            <VellumIcon name="download" size={15} /><span>{exporting ? 'Rendering' : 'Export'}</span>
+            <EditrimIcon name="download" size={15} /><span>{exporting ? 'Rendering' : 'Export'}</span>
           </button>
         </div>
       </header>
@@ -1123,7 +1123,7 @@ export default function VideoEditor() {
         <aside className={`vd-panel vd-library ${libraryOpen ? 'is-open' : ''}`}>
           <div className="vd-panel-head">
             <h2>Media</h2>
-            <button className="vd-panel-close" onClick={() => setLibraryOpen(false)} aria-label="Close media library"><VellumIcon name="close" size={15} /></button>
+            <button className="vd-panel-close" onClick={() => setLibraryOpen(false)} aria-label="Close media library"><EditrimIcon name="close" size={15} /></button>
           </div>
           <input
             ref={fileInputRef}
@@ -1138,8 +1138,8 @@ export default function VideoEditor() {
           />
           
           <div className="vd-library-actions">
-            <button className="vd-primary-btn" onClick={() => fileInputRef.current?.click()}><VellumIcon name="upload" size={15} /> Import</button>
-            <button className="vd-ghost-btn" onClick={addText}><VellumIcon name="text" size={15} /> Text</button>
+            <button className="vd-primary-btn" onClick={() => fileInputRef.current?.click()}><EditrimIcon name="upload" size={15} /> Import</button>
+            <button className="vd-ghost-btn" onClick={addText}><EditrimIcon name="text" size={15} /> Text</button>
           </div>
           {project.assets.length > 0 && (
             <div className="vd-media-list">
@@ -1153,9 +1153,9 @@ export default function VideoEditor() {
                   title={asset.missing ? 'Missing media — re-import the file' : 'Add to timeline'}
                 >
                   <div className="vd-media-thumb" style={{ backgroundImage: `url(${asset.thumbnail})` }}>
-                    <span className="vd-media-kind"><VellumIcon name={KIND_ICONS[asset.kind]} size={12} /></span>
+                    <span className="vd-media-kind"><EditrimIcon name={KIND_ICONS[asset.kind]} size={12} /></span>
                     <span className="vd-media-duration">{asset.kind === 'image' ? 'still' : formatTimecode(asset.duration, false)}</span>
-                    <span className="vd-media-add"><VellumIcon name="plus" size={14} /></span>
+                    <span className="vd-media-add"><EditrimIcon name="plus" size={14} /></span>
                   </div>
                   <div className="vd-media-meta">
                     <strong>{asset.name}</strong>
@@ -1166,7 +1166,7 @@ export default function VideoEditor() {
                     title="Remove media"
                     aria-label={`Remove ${asset.name}`}
                   >
-                    <VellumIcon name="trash" size={13} />
+                    <EditrimIcon name="trash" size={13} />
                   </button>
                 </div>
               ))}
@@ -1181,11 +1181,11 @@ export default function VideoEditor() {
               <canvas ref={canvasRef} width={project.width} height={project.height} aria-label="Video preview" />
               {clipCount === 0 && (
                 <div className="vd-empty-stage">
-                  <span className="vd-empty-mark"><VellumIcon name="film" size={30} /></span>
+                  <span className="vd-empty-mark"><EditrimIcon name="film" size={30} /></span>
                   <h2>No clips</h2>
                   <div>
-                    <button className="vd-primary-btn" onClick={() => fileInputRef.current?.click()}><VellumIcon name="upload" size={15} /> Import video</button>
-                    <button className="vd-ghost-btn" onClick={addText}><VellumIcon name="text" size={15} /> Add text</button>
+                    <button className="vd-primary-btn" onClick={() => fileInputRef.current?.click()}><EditrimIcon name="upload" size={15} /> Import video</button>
+                    <button className="vd-ghost-btn" onClick={addText}><EditrimIcon name="text" size={15} /> Add text</button>
                   </div>
                 </div>
               )}
@@ -1195,7 +1195,7 @@ export default function VideoEditor() {
                 <IconButton icon="skipStart" label="Go to start" onClick={() => seekTo(0)} />
                 <IconButton icon="chevronLeft" label="Back one second" onClick={() => seekTo(currentTime - 1)} />
                 <button className="vd-play" onClick={togglePlay} aria-label={playing ? 'Pause' : 'Play'}>
-                  <VellumIcon name={playing ? 'pause' : 'play'} size={20} />
+                  <EditrimIcon name={playing ? 'pause' : 'play'} size={20} />
                 </button>
                 <IconButton icon="chevronRight" label="Forward one second" onClick={() => seekTo(currentTime + 1)} />
                 <IconButton icon="skipEnd" label="Go to end" onClick={() => seekTo(duration)} />
@@ -1203,7 +1203,7 @@ export default function VideoEditor() {
               </div>
               <div className="vd-transport-right">
                 <div className="vd-volume">
-                  <VellumIcon name={masterVolume === 0 ? 'volumeOff' : 'volume'} size={15} />
+                  <EditrimIcon name={masterVolume === 0 ? 'volumeOff' : 'volume'} size={15} />
                   <input type="range" min={0} max={1} step={0.01} value={masterVolume} onChange={event => setMasterVolume(Number(event.target.value))} aria-label="Master volume" />
                 </div>
                 <IconButton icon="loop" label="Loop playback" onClick={() => setLoop(value => !value)} active={loop} />
@@ -1221,7 +1221,7 @@ export default function VideoEditor() {
                 <IconButton icon="trash" label="Delete selected (Del)" onClick={deleteSelected} disabled={!selectedClip} />
                 <span className="vd-tool-sep" />
                 <IconButton icon="text" label="Add text overlay (T)" onClick={addText} />
-                <button className={`vd-snap ${snap ? 'is-active' : ''}`} onClick={() => setSnap(value => !value)} title="Snap clips and playhead"><VellumIcon name="bolt" size={14} /> Snap</button>
+                <button className={`vd-snap ${snap ? 'is-active' : ''}`} onClick={() => setSnap(value => !value)} title="Snap clips and playhead"><EditrimIcon name="bolt" size={14} /> Snap</button>
                 <span className="vd-tool-sep" />
                 <IconButton icon="zoomOut" label="Zoom out timeline" onClick={() => setZoom(value => clamp(value - 12, 34, 180))} />
                 <IconButton icon="zoomIn" label="Zoom in timeline" onClick={() => setZoom(value => clamp(value + 12, 34, 180))} />
@@ -1232,7 +1232,7 @@ export default function VideoEditor() {
                 <div className="vd-track-head-spacer" />
                 {project.tracks.map(track => (
                   <div className="vd-track-head" key={track.id}>
-                    <span className={`vd-track-icon is-${track.kind}`}><VellumIcon name={TRACK_ICONS[track.kind]} size={15} /></span>
+                    <span className={`vd-track-icon is-${track.kind}`}><EditrimIcon name={TRACK_ICONS[track.kind]} size={15} /></span>
                     <div><strong>{track.name}</strong></div>
                     <div className="vd-track-actions">
                       {track.kind === 'audio' ? (
@@ -1293,7 +1293,7 @@ export default function VideoEditor() {
                           >
                             <span className="vd-trim vd-trim-left" onPointerDown={event => startClipDrag(event, clip, 'trim-left')} />
                             <div className="vd-clip-content">
-                              <span className="vd-clip-icon"><VellumIcon name={KIND_ICONS[clip.kind]} size={12} /></span>
+                              <span className="vd-clip-icon"><EditrimIcon name={KIND_ICONS[clip.kind]} size={12} /></span>
                               <span className="vd-clip-name">{clip.kind === 'text' ? (clip.text?.content ?? clip.name) : clip.name}</span>
                               {clip.speed && clip.speed !== 1 && <span className="vd-clip-speed">{clip.speed}×</span>}
                               {width > 110 && <span className="vd-clip-time">{formatTimecode(clipDuration, false)}</span>}
@@ -1319,13 +1319,13 @@ export default function VideoEditor() {
         <aside className={`vd-panel vd-inspector ${inspectorOpen ? 'is-open' : ''}`}>
           <div className="vd-panel-head">
             <h2>{selectedClip ? 'Clip' : 'Project'}</h2>
-            <button className="vd-panel-close" onClick={() => setInspectorOpen(false)} aria-label="Close inspector"><VellumIcon name="close" size={15} /></button>
+            <button className="vd-panel-close" onClick={() => setInspectorOpen(false)} aria-label="Close inspector"><EditrimIcon name="close" size={15} /></button>
           </div>
           <div className="vd-inspector-scroll">
             {selectedClip ? (
               <>
                 <div className="vd-selected-head">
-                  <span className={`vd-selected-icon is-${selectedClip.kind}`}><VellumIcon name={KIND_ICONS[selectedClip.kind]} size={16} /></span>
+                  <span className={`vd-selected-icon is-${selectedClip.kind}`}><EditrimIcon name={KIND_ICONS[selectedClip.kind]} size={16} /></span>
                   <div><strong>{selectedClip.kind === 'text' ? (selectedClip.text?.content ?? selectedClip.name) : selectedClip.name}</strong></div>
                   <div className="vd-selected-actions">
                     <IconButton icon="duplicate" label="Duplicate clip" onClick={duplicateSelected} />
@@ -1412,7 +1412,7 @@ export default function VideoEditor() {
                       <div className="vd-align-buttons">
                         {(['left', 'center', 'right'] as const).map(align => (
                           <button key={align} className={selectedClip.text?.align === align ? 'is-active' : ''} onClick={() => updateText(selectedClip.id, { align })} title={`Align ${align}`}>
-                            <VellumIcon name={align === 'left' ? 'alignLeft' : align === 'right' ? 'alignRight' : 'alignCenter'} size={14} />
+                            <EditrimIcon name={align === 'left' ? 'alignLeft' : align === 'right' ? 'alignRight' : 'alignCenter'} size={14} />
                           </button>
                         ))}
                       </div>
@@ -1479,7 +1479,7 @@ export default function VideoEditor() {
                   ))}
                 </div>
                 <div className="vd-inspector-section">
-                  <button className="vd-danger-link" onClick={newProject}><VellumIcon name="refresh" size={14} /> New project</button>
+                  <button className="vd-danger-link" onClick={newProject}><EditrimIcon name="refresh" size={14} /> New project</button>
                 </div>
               </>
             )}
@@ -1538,7 +1538,7 @@ export default function VideoEditor() {
       {exporting && (
         <div className="vd-export-overlay" role="status" aria-live="polite">
           <div className="vd-export-card">
-            <div className="vd-export-mark"><VellumIcon name="record" size={22} /></div>
+            <div className="vd-export-mark"><EditrimIcon name="record" size={22} /></div>
             <h2>Exporting</h2>
             <p>WebM · {project.fps} fps</p>
             <div className="vd-export-progress"><i style={{ transform: `scaleX(${Math.max(0.01, exportProgress)})` }} /></div>

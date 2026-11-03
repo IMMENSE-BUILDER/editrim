@@ -1795,30 +1795,30 @@
   transition: background 160ms var(--ease), color 160ms var(--ease), border-color 160ms var(--ease), transform 160ms var(--ease-out);
 }
 
-.video-editor .vd-clip .vellum-icon {
+.video-editor .vd-clip .editrim-icon {
   transition: transform 160ms var(--ease-out);
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .video-editor .vd-icon-btn:hover:not(:disabled) .vellum-icon,
-  .video-editor .vd-media-card:hover .vd-media-kind .vellum-icon {
+  .video-editor .vd-icon-btn:hover:not(:disabled) .editrim-icon,
+  .video-editor .vd-media-card:hover .vd-media-kind .editrim-icon {
     transform: scale(1.1);
   }
 
-  .video-editor .vd-play:hover .vellum-icon {
+  .video-editor .vd-play:hover .editrim-icon {
     transform: scale(1.08);
   }
 
-  .video-editor .vd-import-btn:hover .vellum-icon,
-  .video-editor .vd-export-btn:hover:not(:disabled) .vellum-icon {
+  .video-editor .vd-import-btn:hover .editrim-icon,
+  .video-editor .vd-export-btn:hover:not(:disabled) .editrim-icon {
     transform: translateY(-1px) scale(1.08);
   }
 
-  .video-editor .vd-panel-close:hover .vellum-icon {
+  .video-editor .vd-panel-close:hover .editrim-icon {
     transform: rotate(90deg) scale(1.08);
   }
 
-  .video-editor .vd-clip:hover .vd-clip-icon .vellum-icon {
+  .video-editor .vd-clip:hover .vd-clip-icon .editrim-icon {
     transform: scale(1.12) rotate(-4deg);
   }
 
@@ -1828,7 +1828,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .video-editor .vellum-icon {
+  .video-editor .editrim-icon {
     transform: none !important;
     transition: none !important;
     animation: none !important;

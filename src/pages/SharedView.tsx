@@ -9,7 +9,7 @@ import type { Design } from '../lib/types';
 import { downloadBlob, safeFilename, uid } from '../lib/utils';
 import { renderPageCanvas, canvasToBlob } from '../lib/render';
 import { useToast } from '../components/Toast';
-import { VellumIcon } from '../components/VellumIcon';
+import { EditrimIcon } from '../components/EditrimIcon';
 import '../styles/present.css';
 
 export default function SharedView() {
@@ -24,7 +24,7 @@ export default function SharedView() {
     const decoded = decodeShare(window.location.hash);
     if (decoded) {
       setDesign(decoded);
-      document.title = `${decoded.title} — Shared — Vellum`;
+      document.title = `${decoded.title} — Shared — Editrim`;
     }
     setChecked(true);
   }, []);
@@ -82,13 +82,13 @@ export default function SharedView() {
           </div>
         </header>
         <div className="shared-empty">
-          <div className="shared-empty-art"><VellumIcon name="share" size={24} /></div>
+          <div className="shared-empty-art"><EditrimIcon name="share" size={24} /></div>
           <h1>This link is missing its design.</h1>
           <p>
-            A Vellum share link carries the whole design inside the URL. If it was shortened or edited,
+            A Editrim share link carries the whole design inside the URL. If it was shortened or edited,
             part of the design may have been lost. Ask the sender for a fresh link.
           </p>
-          <Link to="/" className="btn btn-primary">Go to Vellum <VellumIcon name="arrowRight" size={15} /></Link>
+          <Link to="/" className="btn btn-primary">Go to Editrim <EditrimIcon name="arrowRight" size={15} /></Link>
         </div>
       </div>
     );
@@ -98,7 +98,7 @@ export default function SharedView() {
     <div className="shared-shell">
       <header className="shared-top">
         <div className="shared-top-left">
-          <Link to="/" aria-label="Vellum home"><Logo size={30} wordmark={false} /></Link>
+          <Link to="/" aria-label="Editrim home"><Logo size={30} wordmark={false} /></Link>
           <div className="shared-title">
             <strong>{design.title}</strong>
             <span>Shared design · read only</span>
@@ -106,20 +106,20 @@ export default function SharedView() {
         </div>
         <div className="shared-actions">
           <button className="btn btn-ghost btn-sm" onClick={download} disabled={downloading}>
-            <VellumIcon name="download" size={14} /> {downloading ? 'Exporting…' : 'PNG'}
+            <EditrimIcon name="download" size={14} /> {downloading ? 'Exporting…' : 'PNG'}
           </button>
           <button className="btn btn-secondary btn-sm" onClick={importCopy}>
-            <VellumIcon name="pencil" size={14} /> Edit a copy
+            <EditrimIcon name="pencil" size={14} /> Edit a copy
           </button>
           <Link to="/editor/new" className="btn btn-cobalt btn-sm">
-            Make your own <VellumIcon name="arrowRight" size={14} />
+            Make your own <EditrimIcon name="arrowRight" size={14} />
           </Link>
         </div>
       </header>
 
       <div className="shared-body">
         <aside className="shared-info">
-          <span className="eyebrow"><span className="dot" /> Shared with Vellum</span>
+          <span className="eyebrow"><span className="dot" /> Shared with Editrim</span>
           <h1>{design.title}</h1>
           <div className="shared-meta">
             <span>{design.size.width} × {design.size.height}</span>
@@ -128,7 +128,7 @@ export default function SharedView() {
           </div>
           <p>A read-only preview, packed entirely into the link. Edit a copy to make it yours — the original stays untouched.</p>
           <div className="shared-buttons">
-            <button className="btn btn-primary" onClick={importCopy}>Edit a copy <VellumIcon name="external" size={14} /></button>
+            <button className="btn btn-primary" onClick={importCopy}>Edit a copy <EditrimIcon name="external" size={14} /></button>
             <button className="btn btn-secondary" onClick={() => setPage(p => (p + 1) % pages)}>Next page</button>
           </div>
           <div className="shared-facts">
@@ -147,9 +147,9 @@ export default function SharedView() {
           </div>
           {pages > 1 && (
             <div className="shared-pager">
-              <button className="btn-icon" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}><VellumIcon name="arrowLeft" size={16} /></button>
+              <button className="btn-icon" onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}><EditrimIcon name="arrowLeft" size={16} /></button>
               <span>{page + 1} / {pages}</span>
-              <button className="btn-icon" onClick={() => setPage(p => Math.min(pages - 1, p + 1))} disabled={page === pages - 1}><VellumIcon name="arrowRight" size={16} /></button>
+              <button className="btn-icon" onClick={() => setPage(p => Math.min(pages - 1, p + 1))} disabled={page === pages - 1}><EditrimIcon name="arrowRight" size={16} /></button>
             </div>
           )}
         </main>

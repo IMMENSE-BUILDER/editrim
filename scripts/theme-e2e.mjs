@@ -50,7 +50,7 @@ const styleOf = (selector, property) => page.locator(selector).first().evaluate(
 
 // ---------------------------------------------------------------- light first
 await page.goto(`${base}/dashboard`, { waitUntil: 'domcontentloaded' });
-await page.evaluate(() => localStorage.removeItem('vellum_theme_v1'));
+await page.evaluate(() => localStorage.removeItem('editrim_theme_v1'));
 await page.reload({ waitUntil: 'domcontentloaded' });
 await wait(700);
 
@@ -86,7 +86,7 @@ await toggle.click();
 await wait(60);
 const switching = await page.evaluate(() => document.documentElement.classList.contains('theme-switching'));
 assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'dark');
-assert.equal(await page.evaluate(() => localStorage.getItem('vellum_theme_v1')), 'dark');
+assert.equal(await page.evaluate(() => localStorage.getItem('editrim_theme_v1')), 'dark');
 assert.equal(await toggle.getAttribute('aria-pressed'), 'true');
 await wait(500);
 const darkHome = await styleOf('.home', 'backgroundColor');
@@ -229,7 +229,7 @@ await wait(700);
 await page.locator('.rail-theme').click();
 await wait(600);
 assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'light');
-assert.equal(await page.evaluate(() => localStorage.getItem('vellum_theme_v1')), 'light');
+assert.equal(await page.evaluate(() => localStorage.getItem('editrim_theme_v1')), 'light');
 assert.ok(lum(parse(await styleOf('.home', 'backgroundColor'))) > 0.7, 'dashboard returns to paper');
 assert.equal(await page.locator('.rail-theme').getAttribute('aria-pressed'), 'false');
 await page.screenshot({ path: 'shots/theme-audit-dashboard-light.png' });
@@ -239,7 +239,7 @@ const mobile = await browser.newContext({ viewport: { width: 390, height: 844 },
 const mp = await mobile.newPage();
 mp.on('pageerror', error => errors.push(error.message));
 await mp.goto(`${base}/`, { waitUntil: 'domcontentloaded' });
-await mp.evaluate(() => localStorage.setItem('vellum_theme_v1', 'dark'));
+await mp.evaluate(() => localStorage.setItem('editrim_theme_v1', 'dark'));
 await mp.goto(`${base}/dashboard`, { waitUntil: 'domcontentloaded' });
 await mp.waitForTimeout(700);
 const mobileState = await mp.evaluate(() => {

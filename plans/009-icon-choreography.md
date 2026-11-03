@@ -1,6 +1,6 @@
 # Icon choreography — a gesture per glyph
 
-Every one of the 122 Vellum icons now performs its own hover animation and a different press animation. The gesture is chosen from what the icon means, not from a shared transition.
+Every one of the 122 Editrim icons now performs its own hover animation and a different press animation. The gesture is chosen from what the icon means, not from a shared transition.
 
 Full mapping: [`docs/ICON-CHOREOGRAPHY.md`](../docs/ICON-CHOREOGRAPHY.md).
 
@@ -16,7 +16,7 @@ Full mapping: [`docs/ICON-CHOREOGRAPHY.md`](../docs/ICON-CHOREOGRAPHY.md).
 
 - `src/styles/icon-motion.css` declares 244 keyframe blocks and 122 `--im-hover` / `--im-press` shorthands, one pair per glyph.
 - The shared rules resolve those variables on the icon's ink group. Interactive ancestors (`button`, links, `role="button"`, tabs) trigger the gesture from anywhere in the hit area; direct `:hover` covers decorative icons.
-- `VellumIcon` now wraps the echo and main paths in one `.vellum-icon-ink` group, so the duotone mark moves as a single object instead of leaving the echo behind.
+- `EditrimIcon` now wraps the echo and main paths in one `.editrim-icon-ink` group, so the duotone mark moves as a single object instead of leaving the echo behind.
 - `transform-box: fill-box` rotates each glyph around its own geometry. Alignment and edge tools override `transform-origin` so press squashes toward the guide they align to.
 - The echo layer also gains ink weight on hover (`0.16 → 0.24`) and press (`→ 0.32`).
 - Disabled controls are excluded. Keyboard focus replays the hover gesture.
@@ -42,7 +42,7 @@ node scripts/polish-e2e.mjs         POLISH E2E OK
 
 **Static**
 
-- 122 icons in `VellumIcon`, 122 hover declarations, 122 press declarations.
+- 122 icons in `EditrimIcon`, 122 hover declarations, 122 press declarations.
 - Every glyph has both keyframe blocks; names are unique per glyph.
 - Hover and press durations differ for every icon; CSS braces balance.
 

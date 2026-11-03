@@ -1,4 +1,4 @@
-# Vellum Ink v2 — duotone icons and kinetic studio states
+# Editrim Ink v2 — duotone icons and kinetic studio states
 
 Second generation of the interface icon system. Built on `501e28d`.
 
@@ -6,13 +6,13 @@ Second generation of the interface icon system. Built on `501e28d`.
 
 ## Icon redesign
 
-Every `VellumIcon` now renders as a two-layer ink mark:
+Every `EditrimIcon` now renders as a two-layer ink mark:
 
 - **Main layer** — 1.65px rounded stroke, 24×24 grid.
 - **Echo layer** — the same geometry offset by `0.55 / 0.75` and rendered at `0.16` opacity, giving each glyph a subtle letterpress depth.
 - Compact icons at 13px and below hide the echo so toolbars and save states stay crisp.
 - All 100 glyphs use the same stroke, join, cap and optical origin.
-- `data-icon-size` and `.vellum-icon` hooks expose the style for tests and CSS.
+- `data-icon-size` and `.editrim-icon` hooks expose the style for tests and CSS.
 
 The format library keeps its separate `FormatGlyph` identity: 59 formats, each with its own tone, mark and aspect ratio marker.
 
@@ -31,7 +31,7 @@ The format library keeps its separate `FormatGlyph` identity: 59 formats, each w
 - Create: the plus rotates 12° and lifts on hover.
 - Rail navigation, More, Help and notifications: direction-aware lifts and rotations.
 - Studio top bar: icons lift; undo rotates counter-clockwise, redo clockwise, download dips.
-- Studio rail: hover lifts and tilts; active tab plays a 260ms `vellum-icon-pop`.
+- Studio rail: hover lifts and tilts; active tab plays a 260ms `editrim-icon-pop`.
 - Canvas selection: the rotation handle now uses the custom rotate glyph and turns under the pointer; selection overlays no longer contain stock SVG controls.
 - Context menu: the row icon nudges and scales on hover.
 - Inspector: arrange, align, layer and page action icons scale on hover.
@@ -61,8 +61,8 @@ All motion animates `transform` and `opacity` only. Durations are 160–300ms.
   - studio rail hover and context-menu hover produce non-identity matrices
   - canvas rotate handle: custom glyph and animated hover
   - canvas selection audit: `rotate: true`, `stock: 0`
-  - active editor rail: `vellum-icon-pop`, `0.26s`
-  - active AI mode: `vellum-icon-pop`, `0.26s`
+  - active editor rail: `editrim-icon-pop`, `0.26s`
+  - active AI mode: `editrim-icon-pop`, `0.26s`
   - reduced motion: `transition: none`, `animation: none`, hover transform `none`
 - Existing suites remain green: `LIBRARY OK`, `HOME FEATURES E2E OK`, `POLISH E2E OK`, `CONTEXT MENU E2E OK`
 

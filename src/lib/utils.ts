@@ -50,7 +50,7 @@ export const safeFilename = (name: string) =>
     .replace(/[^\w\s-]/g, '')
     .trim()
     .replace(/\s+/g, '-')
-    .toLowerCase() || 'vellum-design';
+    .toLowerCase() || 'editrim-design';
 
 export function timeAgo(ts: number) {
   const s = Math.floor((Date.now() - ts) / 1000);

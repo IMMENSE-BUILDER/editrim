@@ -1,6 +1,6 @@
 # Icon choreography
 
-Every one of the 122 Vellum glyphs has its own hover gesture and a different press reply.
+Every one of the 122 Editrim glyphs has its own hover gesture and a different press reply.
 The gesture is chosen from what the icon does, not from a shared hover rule:
 undo rewinds, download drops, crop frames, eye blinks, flip mirrors, bell swings,
 trash rattles, and the alignment family squashes toward its own guide.
@@ -207,10 +207,10 @@ Light, temperature, levels and the original.
 ## Mechanics
 
 - Each glyph declares `--im-hover` and `--im-press` animation shorthands on its
-  `[data-vellum-icon]` element; the shared rules resolve them on the ink group.
+  `[data-editrim-icon]` element; the shared rules resolve them on the ink group.
 - Interactive ancestors (`button`, links, `role="button"`, tabs) trigger the
   gesture from anywhere in the hit area, not only over the 24px glyph.
-- The two ink layers live in one `.vellum-icon-ink` group, so the duotone mark
+- The two ink layers live in one `.editrim-icon-ink` group, so the duotone mark
   moves as a single object and the echo never drifts into a second glyph.
 - `transform-box: fill-box` rotates every glyph around its own geometry;
   alignment and edge tools override the origin to squash toward their guide.

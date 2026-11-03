@@ -1,6 +1,6 @@
 # Theming — light paper, dark ink
 
-Vellum has two complete themes. Light is the paper studio; dark is the ink
+Editrim has two complete themes. Light is the paper studio; dark is the ink
 studio. Both are hand-set surface by surface — no inversion filter, no opacity
 wash, no half-themed pages.
 
@@ -10,7 +10,7 @@ wash, no half-themed pages.
   a labelled track with a sun or moon.
 - `aria-pressed` reflects dark mode; the label and the knob both state the
   active mode.
-- The choice is stored in `localStorage` as `vellum_theme_v1`.
+- The choice is stored in `localStorage` as `editrim_theme_v1`.
 - `index.html` applies the stored theme to `<html data-theme>` before the first
   paint, so a reload never flashes the wrong theme.
 - `color-scheme` and `<meta name="theme-color">` follow the theme, so native

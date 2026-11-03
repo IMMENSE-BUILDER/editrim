@@ -47,11 +47,22 @@ import './styles/dashboard.css';
 import './styles/editor.css';
 import './styles/icon-motion.css';
 import './styles/theme.css';
+import { migrateLegacyStorage } from './lib/migrate';
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </React.StrictMode>,
-);
+const root = ReactDOM.createRoot(document.getElementById('root')!);
+
+function renderApp() {
+  root.render(
+    <React.StrictMode>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </React.StrictMode>,
+  );
+}
+
+// Copy any data stored under the app's previous name before the first read.
+// The timeout keeps a blocked IndexedDB transaction from holding up the app.
+const migration = migrateLegacyStorage().catch(() => undefined);
+const timeout = new Promise<void>(resolve => window.setTimeout(resolve, 3000));
+Promise.race([migration, timeout]).then(renderApp, renderApp);

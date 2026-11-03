@@ -180,7 +180,7 @@ const quote = page('Cover', bgSolid('#F5F1E7'), [
   }),
   T('A note on good design', 154, 720, 500, 40, { fontSize: 19, letterSpacing: 3.5, color: '#6B675D' }),
   S('line', 152, 810, 280, 1, { fill: NONE, stroke: INK, strokeWidth: 1.5 }),
-  T('VELLUM STUDIO / VOL. 01', 152, 840, 500, 30, { fontSize: 14, letterSpacing: 2.8, color: '#6B675D' }),
+  T('EDITRIM STUDIO / VOL. 01', 152, 840, 500, 30, { fontSize: 14, letterSpacing: 2.8, color: '#6B675D' }),
   IC('star', 854, 792, 70, INK, 1.4),
 ]);
 

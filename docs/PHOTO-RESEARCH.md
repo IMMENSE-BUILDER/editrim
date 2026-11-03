@@ -19,7 +19,7 @@ Public product pages captured while scoping this feature:
 ## Deliberately not added
 
 - **AI background removal, generative fill, upscaling.** These need hosted models or API keys; the app is static and local-first.
-- **Layers, masks, curves, levels, PSD/RAW import.** This would turn a focused photo editor into a Photoshop clone. The Vellum design editor already owns layered composition.
+- **Layers, masks, curves, levels, PSD/RAW import.** This would turn a focused photo editor into a Photoshop clone. The Editrim design editor already owns layered composition.
 - **Cloud projects and accounts.** Storage stays in the browser.
 - **Video-style timelines.** A photo has no timeline; the four-mode editor (Adjust, Crop, Filters, Text) is the whole surface.
 
@@ -38,4 +38,4 @@ Public product pages captured while scoping this feature:
 - [VIDEO-RESEARCH.md](VIDEO-RESEARCH.md) — the sibling studio's research and excluded scope.
 - [ENGINE-SCHEMA.md](ENGINE-SCHEMA.md) — the `PhotoSession`, `PhotoSettings` and storage formats.
 
-Live: `https://vellum-delta-dun.vercel.app/photo`.
+Live: `https://editrim.vercel.app/photo`.

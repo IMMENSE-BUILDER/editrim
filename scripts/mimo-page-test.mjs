@@ -11,7 +11,7 @@ await p.getByRole('button',{name:/Add as new page/i}).click();
 await p.waitForTimeout(900);
 const pageName=await p.locator('.insp-section input.input').first().inputValue();
 const activeText=await p.locator('.page-strip-info span').first().innerText();
-const stored=await p.evaluate(()=>{const idx=JSON.parse(localStorage.getItem('vellum.index.v1')); const id=idx[0].id; const d=JSON.parse(localStorage.getItem('vellum.design.v1.'+id)); return d.pages.map(p=>({name:p.name,n:p.elements.length}));});
+const stored=await p.evaluate(()=>{const idx=JSON.parse(localStorage.getItem('editrim.index.v1')); const id=idx[0].id; const d=JSON.parse(localStorage.getItem('editrim.design.v1.'+id)); return d.pages.map(p=>({name:p.name,n:p.elements.length}));});
 console.log({resultName,pageName,activeText,stored});
 await p.locator('.cv-page').screenshot({path:'shots/mimo-ai-design-page.png'});
 await b.close();

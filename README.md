@@ -1,10 +1,10 @@
-# Vellum
+# Editrim
 
-**A complete design studio in your browser.** Vellum is a working, local-first alternative to Canva for social posts, stories, presentations, posters, resumes, menus, invitations and brand assets — now with an AI studio that can design, write, edit, illustrate and review, plus local photo and video studios.
+**A complete design studio in your browser.** Editrim is a working, local-first alternative to Canva for social posts, stories, presentations, posters, resumes, menus, invitations and brand assets — now with an AI studio that can design, write, edit, illustrate and review, plus local photo and video studios.
 
 No account. No watermark. Your designs stay yours. AI runs through a serverless proxy, never from a key in the browser.
 
-> Live: **https://vellum-delta-dun.vercel.app** &nbsp;·&nbsp; Source: **https://github.com/IMMENSE-BUILDER/vellum**
+> Live: **https://editrim.vercel.app** &nbsp;·&nbsp; Source: **https://github.com/IMMENSE-BUILDER/editrim**
 
 ---
 
@@ -15,7 +15,7 @@ No account. No watermark. Your designs stay yours. AI runs through a serverless 
 - **Canvas-style Home dashboard** at `/dashboard` — left rail with Create, Home, Projects, Templates, Brand, AI Studio, Print and More; a gradient “What will you design today?” hero; glowing universal search across designs, templates and actions; 14 creation shortcuts; Continue designing; Templates for you; and a full Projects view with rename, duplicate, download, present and delete.
 - **Functional starting points** — Presentation, Social media, Doc, Whiteboard, Upload, Custom size, Printables and Templates create real editable designs. Photo opens the photo editor, Video opens Video Studio, and Sheet, Website and Magic Layers explain their honest scope instead of faking media tools. The Create modal is a **59-format design library** grouped into Social, Presentation, Print, Brand, Web and Docs, with search across every format.
 - **A real editor** — drag, resize, rotate, snap to guides, multi-select, group resize, align, distribute, layer, lock, hide, duplicate, copy/paste and undo/redo.
-- **120+ icon interface vocabulary** — one custom `VellumIcon` set covers navigation, actions, context menus, inspector controls, panels, present mode and every dialog; every glyph has a subtle two-layer ink echo, a bespoke hover gesture and a different press reply chosen from what it does, and the whole set enters with a first-paint stagger. `FormatGlyph` gives all 59 formats their own tone, mark and aspect marker.
+- **120+ icon interface vocabulary** — one custom `EditrimIcon` set covers navigation, actions, context menus, inspector controls, panels, present mode and every dialog; every glyph has a subtle two-layer ink echo, a bespoke hover gesture and a different press reply chosen from what it does, and the whole set enters with a first-paint stagger. `FormatGlyph` gives all 59 formats their own tone, mark and aspect marker.
 - **Photo editor** — `/photo` imports a JPEG, PNG, WebP or GIF and edits it locally: sixteen tonal and colour controls with a live histogram, cropping with aspect presets, rotation and flipping, nine filter presets, draggable text layers, hold-to-compare with the original, undo/redo and PNG/JPEG/WebP export. The source file and the edit stack restore from browser storage. Reachable from the Photo category, dashboard search and the More menu.
 - **Light and dark themes** — a labelled switch at the bottom of the dashboard rail flips the whole product between warm paper and deep ink: marketing, templates, dashboard, editor, modals, AI panels and shared view. The choice is stored on the device, applied before first paint, reflected in `color-scheme` and the browser theme colour, and cross-fades only when motion is allowed.
 - **Video Studio** — `/videos` keeps multiple projects with search, rename, duplicate and delete. `/video/:id` imports local video, image and audio files, builds a three-track timeline, trims, splits and duplicates clips, adds text and image overlays, mixes volume, previews, autosaves and exports a real WebM with mixed audio. Clip tools include speed, colour correction, video zoom and text motion presets. The last project reopens from browser storage.
@@ -115,7 +115,7 @@ Further reading:
 
 ## Privacy & limits
 
-Vellum is local-first:
+Editrim is local-first:
 
 - Designs live in your browser's local storage. Clearing site data removes them.
 - Uploaded images live in IndexedDB on this device and are never uploaded to a server.
@@ -123,7 +123,7 @@ Vellum is local-first:
 - Video projects keep their media blobs in IndexedDB and project JSON in local storage; nothing is uploaded.
 - Designs do not sync across devices. Share links carry a snapshot of the design inside the URL, not on a server.
 - Template photos are loaded from Unsplash. Uploads and exports work offline once the page is loaded; remote photos need a connection.
-- **AI is opt-in per action.** Text actions send your prompt plus a compact scene description. AI Review renders a temporary snapshot of the current page and sends it for visual inspection. Vellum does not store prompts, scenes or snapshots; Vercel AI Gateway may process them under its own terms.
+- **AI is opt-in per action.** Text actions send your prompt plus a compact scene description. AI Review renders a temporary snapshot of the current page and sends it for visual inspection. Editrim does not store prompts, scenes or snapshots; Vercel AI Gateway may process them under its own terms.
 - AI results are drafts. They are previewed before insertion, and AI edits are shown as explicit commands before they can be applied. AI can be wrong.
 - **Not implemented:** image segmentation (background remover/Magic Eraser), inpainting, generated video/audio, real-time multiplayer, cloud sync, social scheduling, print fulfilment, and Canva's asset library. The UI does not pretend they exist. The photo editor's adjustments are deterministic Canvas maths, not generative AI.
 
@@ -154,7 +154,7 @@ The app was tested end-to-end with Playwright against Chrome:
 
 ## Credits
 
-Templates and interface designed for this project. Photos via [Unsplash](https://unsplash.com). Fonts via [Fontsource](https://fontsource.org), plus [Geist Serif](https://vercel.com/font?type=serif) by Vercel under the SIL Open Font License (see `public/fonts/GeistSerif-LICENSE.txt`). Design-content icons via [Lucide](https://lucide.dev); interface iconography is the custom Vellum set. Built with React, Vite and Canvas 2D.
+Templates and interface designed for this project. Photos via [Unsplash](https://unsplash.com). Fonts via [Fontsource](https://fontsource.org), plus [Geist Serif](https://vercel.com/font?type=serif) by Vercel under the SIL Open Font License (see `public/fonts/GeistSerif-LICENSE.txt`). Design-content icons via [Lucide](https://lucide.dev); interface iconography is the custom Editrim set. Built with React, Vite and Canvas 2D.
 
 ## License
 

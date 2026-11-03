@@ -21,7 +21,7 @@ function start(title: string, width: number, height: number, category: string, b
 export function createDocDesign(): Design {
   const { design, page, size, brand } = start('Untitled doc', 1240, 1754, 'Doc', { kind: 'solid', color: '#FCFBF7' });
   const label = createText('caption', page, size, brand);
-  label.text = 'VELLUM DOCS  /  DRAFT';
+  label.text = 'EDITRIM DOCS  /  DRAFT';
   label.x = 96;
   label.y = 92;
   label.w = 600;
@@ -112,7 +112,7 @@ export function createDocDesign(): Design {
   body2.color = '#4F4B42';
 
   const footer = createText('caption', page, size, brand);
-  footer.text = 'VELLUM DOCS  ·  PAGE 01';
+  footer.text = 'EDITRIM DOCS  ·  PAGE 01';
   footer.x = 96;
   footer.y = 1640;
   footer.w = 600;
@@ -200,7 +200,7 @@ export function createWhiteboardDesign(): Design {
   });
 
   const footer = createText('caption', page, size, brand);
-  footer.text = 'VELLUM WHITEBOARD  /  ONE BOARD, NO WRONG ANSWERS';
+  footer.text = 'EDITRIM WHITEBOARD  /  ONE BOARD, NO WRONG ANSWERS';
   footer.x = 120;
   footer.y = 1480;
   footer.w = 900;
@@ -373,7 +373,7 @@ export function createSheetDesign(): Design {
   });
 
   const footer = createText('caption', page, size, brand);
-  footer.text = 'STATIC SHEET LAYOUT  ·  VELLUM';
+  footer.text = 'STATIC SHEET LAYOUT  ·  EDITRIM';
   footer.x = 80;
   footer.y = 930;
   footer.w = 800;

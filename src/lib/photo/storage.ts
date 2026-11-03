@@ -1,10 +1,10 @@
 import type { PhotoSession } from './types';
 
-const DB_NAME = 'vellum-photo-source';
+const DB_NAME = 'editrim-photo-source';
 const DB_VERSION = 1;
 const STORE = 'source';
 const SOURCE_KEY = 'current';
-const SESSION_KEY = 'vellum_photo_session_v1';
+const SESSION_KEY = 'editrim_photo_session_v1';
 
 function openDb(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {

@@ -4,7 +4,7 @@ Implemented on top of `883e778`.
 
 ## Decision
 
-One custom `VellumIcon` set now covers interface iconography. It has **100** 24×24 stroked glyphs with shared geometry, 1.8 default stroke, rounded joins and `data-vellum-icon` hooks for coverage tests.
+One custom `EditrimIcon` set now covers interface iconography. It has **100** 24×24 stroked glyphs with shared geometry, 1.8 default stroke, rounded joins and `data-editrim-icon` hooks for coverage tests.
 
 Format identity stays in `FormatGlyph`: all **59** design formats keep their own glyph, tone and aspect marker, including real social-platform marks.
 

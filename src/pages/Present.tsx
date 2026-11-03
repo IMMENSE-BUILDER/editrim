@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { VellumIcon } from '../components/VellumIcon';
+import { EditrimIcon } from '../components/EditrimIcon';
 import { PagePreview } from '../components/PagePreview';
 import { getDesign } from '../lib/storage';
 import type { Design } from '../lib/types';
@@ -22,7 +22,7 @@ export default function Present() {
     const d = getDesign(id);
     if (d) {
       setDesign(d);
-      document.title = `${d.title} — Present — Vellum`;
+      document.title = `${d.title} — Present — Editrim`;
     } else {
       setMissing(true);
     }
@@ -122,7 +122,7 @@ export default function Present() {
       </div>
 
       <button className="present-exit" onClick={() => navigate(`/editor/${id}`)} title="Exit presentation (Esc)">
-        <VellumIcon name="close" size={16} /> Exit
+        <EditrimIcon name="close" size={16} /> Exit
       </button>
 
       <div className="present-progress">
@@ -143,7 +143,7 @@ export default function Present() {
           disabled={pageIndex === 0}
           aria-label="Previous page"
         >
-          <VellumIcon name="chevronLeft" size={22} />
+          <EditrimIcon name="chevronLeft" size={22} />
         </button>
         <button
           className="present-arrow present-arrow-right"
@@ -151,13 +151,13 @@ export default function Present() {
           disabled={pageIndex === pages - 1}
           aria-label="Next page"
         >
-          <VellumIcon name="chevronRight" size={22} />
+          <EditrimIcon name="chevronRight" size={22} />
         </button>
       </div>
 
       <div className="present-bar" onClick={e => e.stopPropagation()}>
         <button onClick={() => setAuto(a => !a)} title={auto ? 'Pause autoplay' : 'Autoplay'} className="present-tool">
-          {auto ? <VellumIcon name="pause" size={15} /> : <VellumIcon name="play" size={15} />}
+          {auto ? <EditrimIcon name="pause" size={15} /> : <EditrimIcon name="play" size={15} />}
         </button>
         <span className="present-count">{pageIndex + 1} / {pages}</span>
         <span className="present-title">{design.title}</span>
@@ -170,10 +170,10 @@ export default function Present() {
             }}
             title="Fullscreen (F)"
           >
-            <VellumIcon name="fit" size={15} />
+            <EditrimIcon name="fit" size={15} />
           </button>
           <button className="present-tool" onClick={() => navigate(`/editor/${id}`)} title="Back to editor">
-            <VellumIcon name="arrowLeft" size={15} />
+            <EditrimIcon name="arrowLeft" size={15} />
           </button>
         </div>
       </div>

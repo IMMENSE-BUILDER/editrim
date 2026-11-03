@@ -17,7 +17,7 @@ Implemented in `src/pages/VideoEditor.tsx` with `src/lib/video/*` and `src/style
 - Keyboard shortcuts: Space, S, Delete, T, Ctrl/Cmd+Z, Shift+Ctrl/Cmd+Z, arrows.
 - WebM export through `canvas.captureStream` + `MediaRecorder`, with mixed audio from the Web Audio graph, progress, cancel and automatic download.
 - Responsive studio shell: side panels become drawers below 1180px; 390px layout verified without horizontal overflow.
-- Custom Vellum icon vocabulary throughout.
+- Custom Editrim icon vocabulary throughout.
 
 ## Integration
 
@@ -57,7 +57,7 @@ The deterministic test clip is `scripts/fixtures/test-clip.webm`; regenerate it 
 
 ## Live verification
 
-Production check on `https://vellum-delta-dun.vercel.app/video`:
+Production check on `https://editrim.vercel.app/video`:
 
 - dashboard **Video** category opens `/video`
 - WebM fixture imports and appears in the library

@@ -12,7 +12,7 @@ const log = (label, value) => console.log(label + ':', typeof value === 'string'
 
 const design = () => page.evaluate(() => {
   const id = location.pathname.split('/').pop();
-  return JSON.parse(localStorage.getItem('vellum.design.v1.' + id) || 'null');
+  return JSON.parse(localStorage.getItem('editrim.design.v1.' + id) || 'null');
 });
 const closeMenu = async () => {
   if (await page.locator('.cv-menu').count()) {
@@ -123,7 +123,7 @@ assert.equal(await page.locator('.modal-title').innerText(), 'Create component')
 await page.locator('#component-name').fill('Menu hero');
 await page.getByRole('button', { name: 'Save component' }).click(); await wait(700);
 assert.equal(await page.locator('.component-card').count(), 1);
-log('componentStored', await page.evaluate(() => JSON.parse(localStorage.getItem('vellum_components_v1') || '[]').map(c => c.name)));
+log('componentStored', await page.evaluate(() => JSON.parse(localStorage.getItem('editrim_components_v1') || '[]').map(c => c.name)));
 const beforeComponent = await elementCount();
 await page.locator('.component-thumb').first().click(); await wait(700);
 log('componentInsert', `${beforeComponent} ? ${await elementCount()}`);

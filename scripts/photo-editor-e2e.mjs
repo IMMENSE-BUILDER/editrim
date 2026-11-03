@@ -65,9 +65,9 @@ function readPngSize(path) {
 // ---------- clean start ----------
 await page.goto(`${base}/photo`, { waitUntil: 'networkidle' });
 await page.evaluate(async () => {
-  localStorage.removeItem('vellum_photo_session_v1');
+  localStorage.removeItem('editrim_photo_session_v1');
   await new Promise(resolve => {
-    const request = indexedDB.deleteDatabase('vellum-photo-source');
+    const request = indexedDB.deleteDatabase('editrim-photo-source');
     request.onsuccess = () => resolve(null);
     request.onerror = () => resolve(null);
     request.onblocked = () => resolve(null);

@@ -78,17 +78,17 @@ export type BrandAssetBundle = {
 };
 
 export const DEFAULT_BRAND_HUB: BrandHub = {
-  id: 'vellum-default',
-  name: 'Vellum Studio',
+  id: 'editrim-default',
+  name: 'Editrim Studio',
   version: 1,
   base: {
-    name: 'Vellum Studio',
+    name: 'Editrim Studio',
     colors: ['#14130F', '#F4F1EA', '#2440F0', '#D8F55A'],
     fonts: ['Bricolage Grotesque', 'Inter'],
     voice: 'Clear, direct, a little editorial. No filler.',
   },
   assets: [
-    { id: 'logo-mark', kind: 'logo', name: 'Vellum mark', value: '/favicon.svg', roles: ['mark', 'primary'], scope: 'workspace', locked: true },
+    { id: 'logo-mark', kind: 'logo', name: 'Editrim mark', value: '/favicon.svg', roles: ['mark', 'primary'], scope: 'workspace', locked: true },
     { id: 'font-display', kind: 'font', name: 'Display', value: 'Bricolage Grotesque', roles: ['display', 'primary'], scope: 'workspace', locked: true },
     { id: 'font-body', kind: 'font', name: 'Body', value: 'Inter', roles: ['body', 'secondary'], scope: 'workspace', locked: true },
     { id: 'color-ink', kind: 'color', name: 'Ink', value: '#14130F', roles: ['primary', 'neutral'], scope: 'workspace', locked: true },
@@ -181,7 +181,7 @@ export function enforceBrandLayout(policy: BrandLayoutPolicy, incoming: Record<s
 }
 
 export const BRAND_ASSET_BUNDLE: BrandAssetBundle = {
-  id: 'vellum-launch-bundle',
+  id: 'editrim-launch-bundle',
   name: 'Launch templates',
   hubId: DEFAULT_BRAND_HUB.id,
   assets: DEFAULT_BRAND_HUB.assets,

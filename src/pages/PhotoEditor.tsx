@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Logo } from '../components/Brand';
-import { VellumIcon } from '../components/VellumIcon';
-import type { VellumIconName } from '../components/VellumIcon';
+import { EditrimIcon } from '../components/EditrimIcon';
+import type { EditrimIconName } from '../components/EditrimIcon';
 import { useToast } from '../components/Toast';
 import { clamp, downloadBlob, safeFilename } from '../lib/utils';
 import { FONTS } from '../lib/fonts';
@@ -40,7 +40,7 @@ type Mode = 'adjust' | 'crop' | 'filters' | 'text';
 const PREVIEW_MAX = 1400;
 const DRAFT_MAX = 880;
 
-const MODES: { id: Mode; label: string; icon: VellumIconName }[] = [
+const MODES: { id: Mode; label: string; icon: EditrimIconName }[] = [
   { id: 'adjust', label: 'Adjust', icon: 'sliders' },
   { id: 'crop', label: 'Crop', icon: 'crop' },
   { id: 'filters', label: 'Filters', icon: 'palette' },
@@ -49,7 +49,7 @@ const MODES: { id: Mode; label: string; icon: VellumIconName }[] = [
 
 const ADJUSTMENT_GROUPS: {
   title: string;
-  icon: VellumIconName;
+  icon: EditrimIconName;
   items: { key: keyof PhotoAdjustments; label: string; min: number; max: number; step: number; digits: number }[];
 }[] = [
   {
@@ -288,7 +288,7 @@ export default function PhotoEditor() {
   }, [syncHistory]);
 
   useEffect(() => {
-    document.title = 'Photo — Vellum';
+    document.title = 'Photo — Editrim';
     let alive = true;
     (async () => {
       const restored = await loadPhotoSession().catch(() => null);
@@ -684,7 +684,7 @@ export default function PhotoEditor() {
     >
       <header className="ph-header">
         <div className="ph-left">
-          <Link to="/dashboard" className="ph-back" title="Back to dashboard"><VellumIcon name="arrowLeft" size={17} /></Link>
+          <Link to="/dashboard" className="ph-back" title="Back to dashboard"><EditrimIcon name="arrowLeft" size={17} /></Link>
           <span className="ph-logo"><Logo size={26} wordmark={false} /></span>
           <div className="ph-title-wrap">
             <input value={name} onChange={event => setName(event.target.value)} aria-label="Photo name" />
@@ -696,8 +696,8 @@ export default function PhotoEditor() {
           </div>
         </div>
         <div className="ph-center">
-          <button className="ph-icon-btn" onClick={undo} disabled={!historyState.canUndo} title="Undo" aria-label="Undo"><VellumIcon name="undo" size={17} /></button>
-          <button className="ph-icon-btn" onClick={redo} disabled={!historyState.canRedo} title="Redo" aria-label="Redo"><VellumIcon name="redo" size={17} /></button>
+          <button className="ph-icon-btn" onClick={undo} disabled={!historyState.canUndo} title="Undo" aria-label="Undo"><EditrimIcon name="undo" size={17} /></button>
+          <button className="ph-icon-btn" onClick={redo} disabled={!historyState.canRedo} title="Redo" aria-label="Redo"><EditrimIcon name="redo" size={17} /></button>
           <button
             className={`ph-compare ${comparing ? 'is-active' : ''}`}
             onPointerDown={() => setComparing(true)}
@@ -709,7 +709,7 @@ export default function PhotoEditor() {
             aria-pressed={comparing}
             title="Hold to compare with the original"
           >
-            <VellumIcon name="compare" size={16} /><span>Compare</span>
+            <EditrimIcon name="compare" size={16} /><span>Compare</span>
           </button>
         </div>
         <div className="ph-right">
@@ -724,9 +724,9 @@ export default function PhotoEditor() {
               event.target.value = '';
             }}
           />
-          <button className="ph-ghost-btn ph-import-btn" onClick={() => fileInputRef.current?.click()}><VellumIcon name="upload" size={15} /><span>Import</span></button>
-          <button className="ph-ghost-btn ph-reset-btn" onClick={resetAll} disabled={!image}><VellumIcon name="refresh" size={15} /><span>Reset</span></button>
-          <button className="ph-export-btn" onClick={() => setExportOpen(true)} disabled={!image}><VellumIcon name="download" size={15} /><span>Export</span></button>
+          <button className="ph-ghost-btn ph-import-btn" onClick={() => fileInputRef.current?.click()}><EditrimIcon name="upload" size={15} /><span>Import</span></button>
+          <button className="ph-ghost-btn ph-reset-btn" onClick={resetAll} disabled={!image}><EditrimIcon name="refresh" size={15} /><span>Reset</span></button>
+          <button className="ph-export-btn" onClick={() => setExportOpen(true)} disabled={!image}><EditrimIcon name="download" size={15} /><span>Export</span></button>
         </div>
       </header>
 
@@ -740,7 +740,7 @@ export default function PhotoEditor() {
               disabled={!image}
               aria-pressed={mode === item.id}
             >
-              <VellumIcon name={item.icon} size={18} />
+              <EditrimIcon name={item.icon} size={18} />
               <span>{item.label}</span>
             </button>
           ))}
@@ -749,10 +749,10 @@ export default function PhotoEditor() {
         <main className="ph-stage" ref={stageRef}>
           {!image ? (
             <div className={`ph-empty ${loading ? 'is-loading' : ''}`}>
-              <span className="ph-empty-mark"><VellumIcon name="photo" size={30} /></span>
+              <span className="ph-empty-mark"><EditrimIcon name="photo" size={30} /></span>
               <h2>No photo</h2>
               <button className="ph-primary-btn ph-choose" onClick={() => fileInputRef.current?.click()}>
-                <VellumIcon name="upload" size={15} /> Choose photo
+                <EditrimIcon name="upload" size={15} /> Choose photo
               </button>
             </div>
           ) : (
@@ -826,8 +826,8 @@ export default function PhotoEditor() {
           <div className="ph-inspector-head">
             <h2>{MODES.find(item => item.id === mode)?.label}</h2>
             <div className="ph-inspector-tools">
-              <button className="ph-icon-btn" onClick={() => fileInputRef.current?.click()} title="Import another photo" aria-label="Import another photo"><VellumIcon name="upload" size={16} /></button>
-              <button className="ph-icon-btn" onClick={resetAll} disabled={!image} title="Reset all edits" aria-label="Reset all edits"><VellumIcon name="refresh" size={16} /></button>
+              <button className="ph-icon-btn" onClick={() => fileInputRef.current?.click()} title="Import another photo" aria-label="Import another photo"><EditrimIcon name="upload" size={16} /></button>
+              <button className="ph-icon-btn" onClick={resetAll} disabled={!image} title="Reset all edits" aria-label="Reset all edits"><EditrimIcon name="refresh" size={16} /></button>
             </div>
           </div>
 
@@ -843,7 +843,7 @@ export default function PhotoEditor() {
                 </div>
                 {ADJUSTMENT_GROUPS.map(group => (
                   <section key={group.title} className="ph-section">
-                    <h3 className="ph-section-title"><VellumIcon name={group.icon} size={12} />{group.title}</h3>
+                    <h3 className="ph-section-title"><EditrimIcon name={group.icon} size={12} />{group.title}</h3>
                     {group.items.map(item => {
                       const value = settings.adjustments[item.key];
                       return (
@@ -920,10 +920,10 @@ export default function PhotoEditor() {
                 <section className="ph-section">
                   <h3 className="ph-section-title">Transform</h3>
                   <div className="ph-btn-row">
-                    <button className="ph-tool-btn" onClick={() => rotateImage(-1)} title="Rotate left"><VellumIcon name="rotate" size={15} /><span>Left</span></button>
-                    <button className="ph-tool-btn" onClick={() => rotateImage(1)} title="Rotate right"><VellumIcon name="rotate" size={15} className="is-flipped" /><span>Right</span></button>
-                    <button className={`ph-tool-btn ${settings.transform.flipX ? 'is-active' : ''}`} onClick={() => flipImage('x')} title="Flip horizontal"><VellumIcon name="flipX" size={15} /><span>Flip X</span></button>
-                    <button className={`ph-tool-btn ${settings.transform.flipY ? 'is-active' : ''}`} onClick={() => flipImage('y')} title="Flip vertical"><VellumIcon name="flipY" size={15} /><span>Flip Y</span></button>
+                    <button className="ph-tool-btn" onClick={() => rotateImage(-1)} title="Rotate left"><EditrimIcon name="rotate" size={15} /><span>Left</span></button>
+                    <button className="ph-tool-btn" onClick={() => rotateImage(1)} title="Rotate right"><EditrimIcon name="rotate" size={15} className="is-flipped" /><span>Right</span></button>
+                    <button className={`ph-tool-btn ${settings.transform.flipX ? 'is-active' : ''}`} onClick={() => flipImage('x')} title="Flip horizontal"><EditrimIcon name="flipX" size={15} /><span>Flip X</span></button>
+                    <button className={`ph-tool-btn ${settings.transform.flipY ? 'is-active' : ''}`} onClick={() => flipImage('y')} title="Flip vertical"><EditrimIcon name="flipY" size={15} /><span>Flip Y</span></button>
                   </div>
                 </section>
                 <section className="ph-section">
@@ -933,8 +933,8 @@ export default function PhotoEditor() {
                     <span>Height</span><b>{Math.round(settings.crop.h * 100)}%</b>
                   </div>
                   <div className="ph-btn-row ph-btn-row-spaced">
-                    <button className="ph-tool-btn" onClick={() => chooseAspect('original')}><VellumIcon name="fit" size={15} /><span>Full</span></button>
-                    <button className="ph-primary-btn" onClick={() => setMode('adjust')}><VellumIcon name="check" size={15} /><span>Apply</span></button>
+                    <button className="ph-tool-btn" onClick={() => chooseAspect('original')}><EditrimIcon name="fit" size={15} /><span>Full</span></button>
+                    <button className="ph-primary-btn" onClick={() => setMode('adjust')}><EditrimIcon name="check" size={15} /><span>Apply</span></button>
                   </div>
                 </section>
                 {activeAspectRatio && (
@@ -963,7 +963,7 @@ export default function PhotoEditor() {
                     >
                       <span className="ph-filter-thumb">
                         <FilterThumb image={image} presetId={preset.id} />
-                        {settings.filter === preset.id && <span className="ph-filter-check"><VellumIcon name="check" size={12} /></span>}
+                        {settings.filter === preset.id && <span className="ph-filter-check"><EditrimIcon name="check" size={12} /></span>}
                       </span>
                       <span className="ph-filter-name">{preset.name}</span>
                     </button>
@@ -977,7 +977,7 @@ export default function PhotoEditor() {
                 <section className="ph-section">
                   <div className="ph-section-head">
                     <h3 className="ph-section-title">Layers</h3>
-                    <button className="ph-text-btn ph-add-text" onClick={addText}><VellumIcon name="plus" size={13} /> Add text</button>
+                    <button className="ph-text-btn ph-add-text" onClick={addText}><EditrimIcon name="plus" size={13} /> Add text</button>
                   </div>
                   {settings.text.length === 0 ? (
                     <p className="ph-panel-empty">No text layers.</p>
@@ -989,9 +989,9 @@ export default function PhotoEditor() {
                           className={`ph-text-item ${selectedTextId === layer.id ? 'is-active' : ''}`}
                           onClick={() => setSelectedTextId(layer.id)}
                         >
-                          <VellumIcon name="text" size={13} />
+                          <EditrimIcon name="text" size={13} />
                           <span>{layer.text || 'Empty'}</span>
-                          <button onClick={event => { event.stopPropagation(); removeText(layer.id); }} aria-label="Delete text"><VellumIcon name="trash" size={13} /></button>
+                          <button onClick={event => { event.stopPropagation(); removeText(layer.id); }} aria-label="Delete text"><EditrimIcon name="trash" size={13} /></button>
                         </div>
                       ))}
                     </div>
@@ -1064,7 +1064,7 @@ export default function PhotoEditor() {
                             onClick={() => updateTextLayer(selectedLayer.id, { align })}
                             aria-label={`Align ${align}`}
                           >
-                            <VellumIcon name={align === 'left' ? 'alignLeft' : align === 'right' ? 'alignRight' : 'alignCenter'} size={15} />
+                            <EditrimIcon name={align === 'left' ? 'alignLeft' : align === 'right' ? 'alignRight' : 'alignCenter'} size={15} />
                           </button>
                         ))}
                       </div>
@@ -1132,7 +1132,7 @@ export default function PhotoEditor() {
           <div className="ph-export-card">
             <div className="ph-export-head">
               <h2>Export</h2>
-              <button className="ph-icon-btn" onClick={() => setExportOpen(false)} aria-label="Close export"><VellumIcon name="close" size={16} /></button>
+              <button className="ph-icon-btn" onClick={() => setExportOpen(false)} aria-label="Close export"><EditrimIcon name="close" size={16} /></button>
             </div>
 
             <div className="ph-export-field">
@@ -1191,7 +1191,7 @@ export default function PhotoEditor() {
             <div className="ph-export-actions">
               <button className="ph-ghost-btn" onClick={() => setExportOpen(false)}>Cancel</button>
               <button className="ph-primary-btn" onClick={runExport} disabled={exporting}>
-                <VellumIcon name="download" size={15} />{exporting ? 'Exporting' : 'Download'}
+                <EditrimIcon name="download" size={15} />{exporting ? 'Exporting' : 'Download'}
               </button>
             </div>
           </div>

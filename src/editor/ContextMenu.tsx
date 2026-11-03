@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { VellumIcon, type VellumIconName } from '../components/VellumIcon';
+import { EditrimIcon, type EditrimIconName } from '../components/EditrimIcon';
 import type { EditorStore } from './useEditor';
 import type { Point } from '../lib/types';
 
@@ -11,12 +11,12 @@ export type CanvasMenuState = {
   pagePoint?: Point;
 };
 
-type IconType = VellumIconName;
+type IconType = EditrimIconName;
 
 function Row({
   icon, label, shortcut, onClick, disabled, danger, submenu, active, onEnter,
 }: {
-  icon: VellumIconName;
+  icon: EditrimIconName;
   label: string;
   shortcut?: string;
   onClick: () => void;
@@ -35,10 +35,10 @@ function Row({
       aria-haspopup={submenu ? 'menu' : undefined}
       aria-expanded={submenu ? active : undefined}
     >
-      <span className="cv-menu-icon"><VellumIcon name={icon} size={16} /></span>
+      <span className="cv-menu-icon"><EditrimIcon name={icon} size={16} /></span>
       <span className="cv-menu-label">{label}</span>
       {shortcut && <span className="cv-menu-key">{shortcut}</span>}
-      {submenu && <VellumIcon name="chevronRight" size={14} className="cv-menu-chev" />}
+      {submenu && <EditrimIcon name="chevronRight" size={14} className="cv-menu-chev" />}
     </button>
   );
 }

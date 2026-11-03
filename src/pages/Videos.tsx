@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Logo } from '../components/Brand';
-import { VellumIcon } from '../components/VellumIcon';
+import { EditrimIcon } from '../components/EditrimIcon';
 import { useToast } from '../components/Toast';
 import { createVideoProject, deleteVideoProject, duplicateVideoProject, listVideoProjects, renameVideoProject, type VideoProjectMeta } from '../lib/video/storage';
 import { formatTimecode } from '../lib/video/types';
@@ -17,7 +17,7 @@ export default function Videos() {
   const [renameValue, setRenameValue] = useState('');
 
   useEffect(() => {
-    document.title = 'Videos — Vellum';
+    document.title = 'Videos — Editrim';
   }, []);
 
   const results = useMemo(() => {
@@ -68,25 +68,25 @@ export default function Videos() {
     <div className="videos-page" onClick={() => setMenuId(null)}>
       <header className="videos-header">
         <div className="videos-head-left">
-          <Link to="/dashboard" className="videos-back" aria-label="Back to dashboard"><VellumIcon name="arrowLeft" size={17} /></Link>
+          <Link to="/dashboard" className="videos-back" aria-label="Back to dashboard"><EditrimIcon name="arrowLeft" size={17} /></Link>
           <Logo size={26} wordmark={false} />
           <h1>Videos</h1>
         </div>
         <div className="videos-head-right">
           <label className="videos-search">
-            <VellumIcon name="search" size={15} />
+            <EditrimIcon name="search" size={15} />
             <input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search videos" aria-label="Search videos" />
           </label>
-          <button className="videos-new" onClick={newVideo}><VellumIcon name="plus" size={15} /> New video</button>
+          <button className="videos-new" onClick={newVideo}><EditrimIcon name="plus" size={15} /> New video</button>
         </div>
       </header>
 
       <main className="videos-body">
         {projects.length === 0 ? (
           <div className="videos-empty">
-            <span className="videos-empty-icon"><VellumIcon name="film" size={28} /></span>
+            <span className="videos-empty-icon"><EditrimIcon name="film" size={28} /></span>
             <h2>No videos</h2>
-            <button className="videos-new" onClick={newVideo}><VellumIcon name="plus" size={15} /> New video</button>
+            <button className="videos-new" onClick={newVideo}><EditrimIcon name="plus" size={15} /> New video</button>
           </div>
         ) : results.length === 0 ? (
           <div className="videos-empty">
@@ -103,21 +103,21 @@ export default function Videos() {
                 onClick={() => { if (!menuId && renamingId !== project.id) navigate(`/video/${project.id}`); }}
               >
                 <div className="video-card-poster" style={project.poster ? { backgroundImage: `url(${project.poster})` } : undefined}>
-                  {!project.poster && <span className="video-card-fallback"><VellumIcon name="film" size={28} /></span>}
+                  {!project.poster && <span className="video-card-fallback"><EditrimIcon name="film" size={28} /></span>}
                   <span className="video-card-duration">{formatTimecode(project.duration, false)}</span>
-                  <span className="video-card-play"><VellumIcon name="play" size={17} /></span>
+                  <span className="video-card-play"><EditrimIcon name="play" size={17} /></span>
                   <button
                     className="video-card-menu-btn"
                     onClick={event => { event.stopPropagation(); setMenuId(menuId === project.id ? null : project.id); }}
                     aria-label={`Actions for ${project.name}`}
                   >
-                    <VellumIcon name="more" size={16} />
+                    <EditrimIcon name="more" size={16} />
                   </button>
                   {menuId === project.id && (
                     <div className="video-card-menu" onClick={event => event.stopPropagation()}>
-                      <button onClick={() => beginRename(project)}><VellumIcon name="pencil" size={13} /> Rename</button>
-                      <button onClick={() => duplicate(project.id)}><VellumIcon name="duplicate" size={13} /> Duplicate</button>
-                      <button className="danger" onClick={() => remove(project.id)}><VellumIcon name="trash" size={13} /> Delete</button>
+                      <button onClick={() => beginRename(project)}><EditrimIcon name="pencil" size={13} /> Rename</button>
+                      <button onClick={() => duplicate(project.id)}><EditrimIcon name="duplicate" size={13} /> Duplicate</button>
+                      <button className="danger" onClick={() => remove(project.id)}><EditrimIcon name="trash" size={13} /> Delete</button>
                     </div>
                   )}
                 </div>

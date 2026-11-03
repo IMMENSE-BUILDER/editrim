@@ -19,7 +19,7 @@ import { useToast } from '../components/Toast';
 import { FONTS } from '../lib/fonts';
 import { deleteComponent, listComponents, onComponentsChange, type SavedComponent } from '../lib/components';
 import { AiPanel } from './AiPanel';
-import { VellumIcon } from '../components/VellumIcon';
+import { EditrimIcon } from '../components/EditrimIcon';
 
 export type PanelTab = 'templates' | 'ai' | 'elements' | 'text' | 'uploads' | 'background' | 'brand';
 
@@ -40,7 +40,7 @@ function PanelHead({ title, onClose, children }: { title: string; onClose: () =>
     <div className="lp-head">
       <h3>{title}</h3>
       {children}
-      <button className="lp-close" onClick={onClose} aria-label="Close panel"><VellumIcon name="close" size={16} /></button>
+      <button className="lp-close" onClick={onClose} aria-label="Close panel"><EditrimIcon name="close" size={16} /></button>
     </div>
   );
 }
@@ -91,8 +91,8 @@ export function LeftPanel({
         <PanelHead title="Start from a layout" onClose={onClose} />
         <div className="lp-scroll">
           <Link to="/templates" className="lp-banner">
-            <span><VellumIcon name="templates" size={16} /> Browse all templates</span>
-            <VellumIcon name="arrowUpRight" size={14} />
+            <span><EditrimIcon name="templates" size={16} /> Browse all templates</span>
+            <EditrimIcon name="arrowUpRight" size={14} />
           </Link>
           <div className="layout-grid">
             {PAGE_LAYOUTS.map(layout => (
@@ -160,7 +160,7 @@ export function LeftPanel({
                         title={`Delete ${component.name}`}
                         aria-label={`Delete ${component.name}`}
                       >
-                        <VellumIcon name="trash" size={13} />
+                        <EditrimIcon name="trash" size={13} />
                       </button>
                     </div>
                   );
@@ -396,10 +396,10 @@ export function LeftPanel({
             toast('Brand fonts applied');
           }}
         >
-          <VellumIcon name="check" size={14} /> Apply brand fonts to selection
+          <EditrimIcon name="check" size={14} /> Apply brand fonts to selection
         </button>
         <button className="lp-action" onClick={() => store.setBackground({ kind: 'solid', color: brand.colors[1] ?? '#F4F1EA' })}>
-          <VellumIcon name="palette" size={14} /> Use brand background
+          <EditrimIcon name="palette" size={14} /> Use brand background
         </button>
       </div>
     </div>
@@ -473,7 +473,7 @@ function UploadsPanel({ store, onClose }: { store: EditorStore; onClose: () => v
           tabIndex={0}
           onKeyDown={e => e.key === 'Enter' && inputRef.current?.click()}
         >
-          <VellumIcon name="upload" size={20} />
+          <EditrimIcon name="upload" size={20} />
           <b>{busy ? 'Processing…' : 'Drop images here'}</b>
           <span>or click to choose · JPG, PNG, WebP, GIF</span>
         </div>
@@ -504,7 +504,7 @@ function UploadsPanel({ store, onClose }: { store: EditorStore; onClose: () => v
                       toast('Image removed');
                     }}
                   >
-                    <VellumIcon name="trash" size={12} />
+                    <EditrimIcon name="trash" size={12} />
                   </button>
                 </div>
               ))}
@@ -604,7 +604,7 @@ function BackgroundControls({ store, brand, toast }: { store: EditorStore; brand
             ))}
           </div>
           <button className="lp-action" onClick={() => fileRef.current?.click()} disabled={busy}>
-            <VellumIcon name="image" size={14} /> {busy ? 'Uploading…' : 'Upload your own photo'}
+            <EditrimIcon name="image" size={14} /> {busy ? 'Uploading…' : 'Upload your own photo'}
           </button>
           <input ref={fileRef} type="file" accept="image/*" hidden onChange={e => { if (e.target.files?.[0]) uploadBg(e.target.files[0]); e.target.value = ''; }} />
           <div className="lp-section-title">Overlay</div>
@@ -616,7 +616,7 @@ function BackgroundControls({ store, brand, toast }: { store: EditorStore; brand
 
       <div className="lp-section-title">Reset</div>
       <button className="lp-action" onClick={() => store.setBackground({ kind: 'solid', color: '#FFFFFF' })}>
-        <VellumIcon name="palette" size={14} /> White background
+        <EditrimIcon name="palette" size={14} /> White background
       </button>
     </div>
   );

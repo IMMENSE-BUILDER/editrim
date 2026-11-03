@@ -9,15 +9,15 @@ async function audit(p, name, url) {
   await p.goto(url, { waitUntil: 'networkidle' });
   await p.waitForTimeout(650);
   const data = await p.evaluate(() => {
-    const icons = [...document.querySelectorAll('[data-vellum-icon]')];
+    const icons = [...document.querySelectorAll('[data-editrim-icon]')];
     const allowed = 'svg.closest(".format-glyph, .logo, .brand-mark, .spin")';
-    const stock = [...document.querySelectorAll('svg:not([data-vellum-icon])')]
+    const stock = [...document.querySelectorAll('svg:not([data-editrim-icon])')]
       .filter(svg => !svg.closest('.format-glyph') && !svg.closest('.logo') && !svg.closest('.brand-mark') && !svg.closest('.spin') && !svg.closest('.page-preview') && !svg.closest('.cv-el'))
       .map(svg => svg.outerHTML.slice(0, 120));
     return {
       count: icons.length,
-      echoes: document.querySelectorAll('[data-vellum-icon] .vellum-icon-echo').length,
-      names: [...new Set(icons.map(el => el.getAttribute('data-vellum-icon')))],
+      echoes: document.querySelectorAll('[data-editrim-icon] .editrim-icon-echo').length,
+      names: [...new Set(icons.map(el => el.getAttribute('data-editrim-icon')))],
       glyphs: document.querySelectorAll('.format-glyph').length,
       stock,
       overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
@@ -62,9 +62,9 @@ await p.waitForTimeout(500);
 await p.locator('.rail-create').click();
 await p.waitForTimeout(350);
 const modal = await p.evaluate(() => ({
-  icons: document.querySelectorAll('.modal [data-vellum-icon]').length,
+  icons: document.querySelectorAll('.modal [data-editrim-icon]').length,
   glyphs: document.querySelectorAll('.modal .format-glyph').length,
-  close: !!document.querySelector('.modal [data-vellum-icon="close"]'),
+  close: !!document.querySelector('.modal [data-editrim-icon="close"]'),
 }));
 console.log('create modal', modal);
 assert.ok(modal.icons >= 2 && modal.close);
@@ -86,7 +86,7 @@ await p.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
 await p.waitForTimeout(400);
 await p.locator('.rail-nav button').filter({ hasText: 'Brand' }).click();
 await p.waitForTimeout(300);
-const brand = await p.evaluate(() => document.querySelectorAll('.modal [data-vellum-icon]').length);
+const brand = await p.evaluate(() => document.querySelectorAll('.modal [data-editrim-icon]').length);
 console.log('brand modal icons', brand);
 assert.ok(brand >= 2);
 
@@ -94,7 +94,7 @@ await p.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
 await p.waitForTimeout(400);
 await p.locator('.home-help').click();
 await p.waitForTimeout(300);
-const help = await p.evaluate(() => document.querySelectorAll('.modal [data-vellum-icon]').length);
+const help = await p.evaluate(() => document.querySelectorAll('.modal [data-editrim-icon]').length);
 console.log('help modal icons', help);
 assert.ok(help >= 4);
 
@@ -123,7 +123,7 @@ await mp.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
 await mp.waitForTimeout(400);
 await mp.locator('.rail-create').click();
 await mp.waitForTimeout(300);
-const mm = await mp.evaluate(() => ({ icons: document.querySelectorAll('.modal [data-vellum-icon]').length, glyphs: document.querySelectorAll('.modal .format-glyph').length }));
+const mm = await mp.evaluate(() => ({ icons: document.querySelectorAll('.modal [data-editrim-icon]').length, glyphs: document.querySelectorAll('.modal .format-glyph').length }));
 console.log('create modal 390', mm);
 assert.ok(mm.icons >= 2 && mm.glyphs >= 6);
 
@@ -146,9 +146,9 @@ const surface = async (name, selector) => {
   const data = await p.evaluate(sel => {
     const root = document.querySelector(sel);
     if (!root) return { exists: false, icons: 0, stock: 0 };
-    const stock = [...root.querySelectorAll('svg:not([data-vellum-icon])')]
+    const stock = [...root.querySelectorAll('svg:not([data-editrim-icon])')]
       .filter(svg => !svg.closest('.format-glyph') && !svg.closest('.logo') && !svg.closest('.brand-mark') && !svg.closest('.spin') && !svg.closest('.page-preview') && !svg.closest('.cv-el'));
-    return { exists: true, icons: root.querySelectorAll('[data-vellum-icon]').length, echoes: root.querySelectorAll('[data-vellum-icon] .vellum-icon-echo').length, stock: stock.length };
+    return { exists: true, icons: root.querySelectorAll('[data-editrim-icon]').length, echoes: root.querySelectorAll('[data-editrim-icon] .editrim-icon-echo').length, stock: stock.length };
   }, selector);
   console.log(name, data);
   assert.ok(data.exists, `${name} not found`);
@@ -171,17 +171,17 @@ await p.waitForTimeout(250);
 const selectionIcons = await p.evaluate(() => {
   const sel = document.querySelector('.cv-sel');
   if (!sel) return { exists: false, rotate: false, icons: 0, stock: 0 };
-  const stock = [...sel.querySelectorAll('svg:not([data-vellum-icon])')]
+  const stock = [...sel.querySelectorAll('svg:not([data-editrim-icon])')]
     .filter(svg => !svg.closest('.format-glyph') && !svg.closest('.logo') && !svg.closest('.brand-mark') && !svg.closest('.spin'));
   return {
     exists: true,
-    rotate: !!sel.querySelector('.cv-rotate [data-vellum-icon="rotate"]'),
-    icons: sel.querySelectorAll('[data-vellum-icon]').length,
+    rotate: !!sel.querySelector('.cv-rotate [data-editrim-icon="rotate"]'),
+    icons: sel.querySelectorAll('[data-editrim-icon]').length,
     stock: stock.length,
   };
 });
 console.log('canvas selection', selectionIcons);
-assert.ok(selectionIcons.exists && selectionIcons.rotate, 'canvas rotate handle uses the Vellum icon');
+assert.ok(selectionIcons.exists && selectionIcons.rotate, 'canvas rotate handle uses the Editrim icon');
 assert.equal(selectionIcons.stock, 0, 'canvas selection has stock icons');
 await p.locator('.ed-download').click();
 await p.waitForTimeout(300);
@@ -198,4 +198,4 @@ assert.equal(errors.length, 0);
 await desktop.close();
 await mobile.close();
 await browser.close();
-console.log('ICON COVERAGE OK — every route uses the Vellum vocabulary, no stock SVGs, no overflow');
+console.log('ICON COVERAGE OK — every route uses the Editrim vocabulary, no stock SVGs, no overflow');

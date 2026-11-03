@@ -10,8 +10,8 @@ export type SavedComponent = {
   createdAt: number;
 };
 
-const KEY = 'vellum_components_v1';
-const EVENT = 'vellum:components';
+const KEY = 'editrim_components_v1';
+const EVENT = 'editrim:components';
 
 function read(): SavedComponent[] {
   try {

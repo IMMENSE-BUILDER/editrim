@@ -1,9 +1,9 @@
 import type { Background, BrandKit, Design, Page, Template } from './types';
 import { uid } from './utils';
 
-const INDEX_KEY = 'vellum.index.v1';
-const DESIGN_KEY = (id: string) => `vellum.design.v1.${id}`;
-const BRAND_KEY = 'vellum.brand.v1';
+const INDEX_KEY = 'editrim.index.v1';
+const DESIGN_KEY = (id: string) => `editrim.design.v1.${id}`;
+const BRAND_KEY = 'editrim.brand.v1';
 
 export type DesignMeta = {
   id: string;
@@ -173,7 +173,7 @@ export function saveBrand(kit: BrandKit) {
 
 /* ---------------- Uploaded assets (IndexedDB) ---------------- */
 
-const DB_NAME = 'vellum-assets';
+const DB_NAME = 'editrim-assets';
 const STORE = 'assets';
 const memCache = new Map<string, string>();
 

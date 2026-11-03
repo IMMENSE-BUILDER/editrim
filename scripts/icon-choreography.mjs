@@ -5,14 +5,14 @@ import fs from 'node:fs';
 /**
  * Icon choreography audit.
  *
- * 1. Static: every VellumIcon glyph must declare its own hover and press
+ * 1. Static: every EditrimIcon glyph must declare its own hover and press
  *    animation, both keyframe blocks must exist, and the durations must differ.
  * 2. Live: every glyph is mounted in a real button, hovered and pressed, and
  *    the computed animation names are compared against the manifest.
  */
 
 const css = fs.readFileSync('src/styles/icon-motion.css', 'utf8');
-const component = fs.readFileSync('src/components/VellumIcon.tsx', 'utf8');
+const component = fs.readFileSync('src/components/EditrimIcon.tsx', 'utf8');
 const block = component.match(/const ICONS[^{]*{([\s\S]*?)\n};/);
 assert.ok(block, 'ICONS map not found');
 const names = [...block[1].matchAll(/^  ([a-zA-Z0-9]+):/gm)].map(match => match[1]);
@@ -97,10 +97,10 @@ await page.evaluate(iconNames => {
     button.dataset.labIcon = name;
     button.style.cssText = 'height:52px;display:grid;place-items:center;background:#16151d;border:1px solid #2a2933;border-radius:8px;color:#f4f1ea;cursor:pointer;padding:0;';
     button.innerHTML = `
-      <svg class="vellum-icon" data-vellum-icon="${name}" data-icon-size="18" width="18" height="18"
+      <svg class="editrim-icon" data-editrim-icon="${name}" data-icon-size="18" width="18" height="18"
            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65"
            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <g class="vellum-icon-ink"><g class="vellum-icon-echo" transform="translate(0.55 0.75)"><path d="M4 4h16v16H4zM8 8h8v8H8z"/></g><g class="vellum-icon-main"><path d="M4 4h16v16H4zM8 8h8v8H8z"/></g></g>
+        <g class="editrim-icon-ink"><g class="editrim-icon-echo" transform="translate(0.55 0.75)"><path d="M4 4h16v16H4zM8 8h8v8H8z"/></g><g class="editrim-icon-main"><path d="M4 4h16v16H4zM8 8h8v8H8z"/></g></g>
       </svg>`;
     lab.appendChild(button);
   });
@@ -109,7 +109,7 @@ await page.evaluate(iconNames => {
 
 const read = async name => page.evaluate(iconName => {
   const button = document.querySelector(`[data-lab-icon="${iconName}"]`);
-  const ink = button.querySelector('.vellum-icon-ink');
+  const ink = button.querySelector('.editrim-icon-ink');
   const style = getComputedStyle(ink);
   return { name: style.animationName, duration: style.animationDuration, transform: style.transform };
 }, name);
@@ -160,7 +160,7 @@ console.log('duration pairs unique', new Set(durations).size, 'of', durations.le
 // Real components must use the same rules.
 await page.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
 await page.waitForTimeout(500);
-const realIcon = page.locator('.rail-nav button').filter({ hasText: 'Projects' }).locator('.vellum-icon-ink');
+const realIcon = page.locator('.rail-nav button').filter({ hasText: 'Projects' }).locator('.editrim-icon-ink');
 await page.locator('.rail-nav button').filter({ hasText: 'Projects' }).hover();
 await page.waitForTimeout(40);
 const realHover = await realIcon.evaluate(el => getComputedStyle(el).animationName);
@@ -169,7 +169,7 @@ const createBox = await createButton.boundingBox();
 await page.mouse.move(createBox.x + createBox.width - 6, createBox.y + createBox.height - 6);
 await page.waitForTimeout(70);
 const edgeHover = await page.evaluate(() => {
-  const ink = document.querySelector('.rail-create .vellum-icon-ink');
+  const ink = document.querySelector('.rail-create .editrim-icon-ink');
   return getComputedStyle(ink).animationName;
 });
 console.log('hit-area edge hover', edgeHover);
@@ -191,7 +191,7 @@ await reducedPage.waitForTimeout(400);
 const reducedButton = reducedPage.locator('.rail-nav button').filter({ hasText: 'Projects' });
 await reducedButton.hover();
 await reducedPage.waitForTimeout(60);
-const reduced = await reducedButton.locator('.vellum-icon-ink').evaluate(el => {
+const reduced = await reducedButton.locator('.editrim-icon-ink').evaluate(el => {
   const style = getComputedStyle(el);
   return { animation: style.animationName, transform: style.transform, transition: style.transitionProperty };
 });
@@ -209,7 +209,7 @@ const disabledBox = await disabledButton.boundingBox();
 await page.mouse.move(disabledBox.x + 2, disabledBox.y + 2);
 await page.waitForTimeout(90);
 const disabledAnim = await page.evaluate(() => {
-  const ink = document.querySelector('.ph-icon-btn[title="Undo"] .vellum-icon-ink');
+  const ink = document.querySelector('.ph-icon-btn[title="Undo"] .editrim-icon-ink');
   return ink ? getComputedStyle(ink).animationName : 'missing';
 });
 console.log('disabled hover', disabledAnim);
@@ -223,12 +223,12 @@ for (let i = 0; i < 8; i++) {
   await page.keyboard.press('Tab');
   focus = await page.evaluate(() => {
     const el = document.activeElement;
-    const ink = el?.querySelector?.('.vellum-icon-ink');
-    const root = ink?.closest('[data-vellum-icon]');
+    const ink = el?.querySelector?.('.editrim-icon-ink');
+    const root = ink?.closest('[data-editrim-icon]');
     return {
       tag: el?.tagName,
       hasInk: Boolean(ink),
-      icon: root?.getAttribute('data-vellum-icon') ?? null,
+      icon: root?.getAttribute('data-editrim-icon') ?? null,
       anim: ink ? getComputedStyle(ink).animationName : null,
     };
   });

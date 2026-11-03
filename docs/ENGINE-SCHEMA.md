@@ -44,8 +44,8 @@ The photo and video studios are separate documents that live outside the design 
 
 Storage:
 
-- IndexedDB `vellum-photo-source` → store `source` → key `current` (the imported blob).
-- localStorage `vellum_photo_session_v1` (the session above).
+- IndexedDB `editrim-photo-source` → store `source` → key `current` (the imported blob).
+- localStorage `editrim_photo_session_v1` (the session above).
 - Importing a new photo replaces the source and resets the settings; the previously stored session is overwritten.
 
 Geometry invariant: crop coordinates are normalised to the rotated canvas. `sourceCropRect()` inverse-maps the crop through flip and rotation to an exact source rectangle before extraction, so rotate → crop → export stays pixel-aligned.
@@ -54,11 +54,11 @@ Geometry invariant: crop coordinates are normalised to the rotated canvas. `sour
 
 | Piece | Key / shape |
 |---|---|
-| Project index | localStorage `vellum_video_projects_v1` — id, name, width/height, duration, clip count, asset count, poster, timestamps |
-| Project JSON | localStorage `vellum_video_project_v2_<id>` |
-| Last opened | localStorage `vellum_video_last_id_v1` |
-| Media blobs | IndexedDB `vellum-video-media` |
-| Legacy | `vellum_video_project_v1` is migrated into the index on first load |
+| Project index | localStorage `editrim_video_projects_v1` — id, name, width/height, duration, clip count, asset count, poster, timestamps |
+| Project JSON | localStorage `editrim_video_project_v2_<id>` |
+| Last opened | localStorage `editrim_video_last_id_v1` |
+| Media blobs | IndexedDB `editrim-video-media` |
+| Legacy | `editrim_video_project_v1` is migrated into the index on first load |
 
 Project tracks are `video`, `overlay` and `audio`. Clips carry `start`, `duration`, `inPoint`, `speed` (0.5×–2×), `opacity`, `volume`, fades, `scale` (video zoom), `filters` (brightness/contrast/saturation/blur) and optional text with a motion preset (`none`/`fade`/`rise`/`pop`).
 

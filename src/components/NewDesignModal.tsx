@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { VellumIcon } from './VellumIcon';
+import { EditrimIcon } from './EditrimIcon';
 import { Modal } from './Modal';
 import { FormatGlyph } from './FormatGlyph';
 import { GROUP_ORDER, SIZE_PRESETS, type SizePreset } from '../lib/presets';
@@ -74,12 +74,12 @@ export function NewDesignModal({
             <button className="btn btn-ghost" onClick={() => setCustom(false)}>Back to presets</button>
             <button className="btn btn-cobalt" onClick={() => start(w, h, 'Untitled design', 'Custom')}>
               Create canvas
-              <VellumIcon name="arrowRight" size={15} />
+              <EditrimIcon name="arrowRight" size={15} />
             </button>
           </>
         ) : (
           <button className="btn btn-ghost" onClick={() => setCustom(true)}>
-            <VellumIcon name="plus" size={15} /> Custom size
+            <EditrimIcon name="plus" size={15} /> Custom size
           </button>
         )
       }
@@ -87,7 +87,7 @@ export function NewDesignModal({
       {!custom ? (
         <>
           <div className="size-search">
-            <VellumIcon name="search" size={15} />
+            <EditrimIcon name="search" size={15} />
             <input
               className="size-search-input"
               value={query}
@@ -101,7 +101,7 @@ export function NewDesignModal({
             />
             {query && (
               <button className="size-search-clear" onClick={() => setQuery('')} aria-label="Clear format search">
-                <VellumIcon name="close" size={14} />
+                <EditrimIcon name="close" size={14} />
               </button>
             )}
           </div>
@@ -135,7 +135,7 @@ export function NewDesignModal({
                   <span className="size-card-name">{p.name}</span>
                   <span className="size-card-hint">{query.trim() ? `${p.group} · ${p.hint} · ` : `${p.hint} · `}{p.w}×{p.h}</span>
                 </span>
-                <VellumIcon name="arrowRight" size={14} className="size-card-go" />
+                <EditrimIcon name="arrowRight" size={14} className="size-card-go" />
               </button>
             ))}
           </div>
@@ -147,7 +147,7 @@ export function NewDesignModal({
             </div>
           )}
           <div className="size-custom-hint">
-            <VellumIcon name="templates" size={16} />
+            <EditrimIcon name="templates" size={16} />
             Need a different size? Use <button onClick={() => setCustom(true)}>custom dimensions</button>.
           </div>
         </>

@@ -40,11 +40,11 @@ function makeWav(seconds = 0.6, frequency = 440) {
 
 await p.goto(`${base}/videos`, { waitUntil: 'domcontentloaded' });
 await p.evaluate(async () => {
-  localStorage.removeItem('vellum_video_projects_v1');
-  localStorage.removeItem('vellum_video_last_id_v1');
-  localStorage.removeItem('vellum_video_project_v1');
+  localStorage.removeItem('editrim_video_projects_v1');
+  localStorage.removeItem('editrim_video_last_id_v1');
+  localStorage.removeItem('editrim_video_project_v1');
   await new Promise(resolve => {
-    const req = indexedDB.deleteDatabase('vellum-video-media');
+    const req = indexedDB.deleteDatabase('editrim-video-media');
     req.onsuccess = () => resolve(null);
     req.onerror = () => resolve(null);
     req.onblocked = () => resolve(null);

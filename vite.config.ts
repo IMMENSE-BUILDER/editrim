@@ -28,7 +28,7 @@ function readJsonBody(req) {
 
 function aiDevPlugin(apiKey) {
   return {
-    name: 'vellum-ai-dev',
+    name: 'editrim-ai-dev',
     configureServer(server) {
       server.middlewares.use('/api/ai', async (req, res) => {
         res.setHeader('Content-Type', 'application/json');

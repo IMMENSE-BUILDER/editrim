@@ -23,9 +23,9 @@ Research notes: `docs/VIDEO-RESEARCH.md`.
 ## Architecture
 
 - `src/lib/video/storage.ts` now manages a project index and per-project keys:
-  - `vellum_video_projects_v1` — metadata for browsing
-  - `vellum_video_project_v2_<id>` — project JSON
-  - `vellum_video_last_id_v1` — last opened project
+  - `editrim_video_projects_v1` — metadata for browsing
+  - `editrim_video_project_v2_<id>` — project JSON
+  - `editrim_video_last_id_v1` — last opened project
   - media blobs remain in IndexedDB
 - Project metadata includes poster, duration, resolution, clip count and timestamps.
 - `src/pages/Videos.tsx` owns browsing and card actions.
@@ -57,7 +57,7 @@ The expanded video E2E verifies:
 
 ## Live verification
 
-Production run on `https://vellum-delta-dun.vercel.app`:
+Production run on `https://editrim.vercel.app`:
 
 - new video created from the **Videos** library
 - WebM fixture imported and added

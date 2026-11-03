@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type React from 'react';
-import { VellumIcon } from '../components/VellumIcon';
+import { EditrimIcon } from '../components/EditrimIcon';
 
 import type { CanvasComment, El, Page, Point, Rect } from '../lib/types';
 import type { Design } from '../lib/types';
@@ -112,10 +112,10 @@ export function Canvas({
       fit();
     };
     window.addEventListener('resize', onResize);
-    window.addEventListener('vellum:fit', onResize as EventListener);
+    window.addEventListener('editrim:fit', onResize as EventListener);
     return () => {
       window.removeEventListener('resize', onResize);
-      window.removeEventListener('vellum:fit', onResize as EventListener);
+      window.removeEventListener('editrim:fit', onResize as EventListener);
     };
   }, [fit]);
 
@@ -617,7 +617,7 @@ export function Canvas({
                 >
                   {editingId === el.id && el.type === 'text' ? renderTextEditor(el) : <ElementView el={el} />}
                   {el.locked && selectedIds.includes(el.id) && (
-                    <span className="cv-lock-badge"><VellumIcon name="lock" size={Math.max(8, 10 / view.zoom)} /></span>
+                    <span className="cv-lock-badge"><EditrimIcon name="lock" size={Math.max(8, 10 / view.zoom)} /></span>
                   )}
                 </div>
               );
@@ -639,7 +639,7 @@ export function Canvas({
               title={`${pin.count} ${pin.count === 1 ? 'comment' : 'comments'}`}
               aria-label={`Open ${pin.count} ${pin.count === 1 ? 'comment' : 'comments'}`}
             >
-              <VellumIcon name="comment" size={12} />
+              <EditrimIcon name="comment" size={12} />
               {pin.count > 1 && <span>{pin.count}</span>}
             </button>
           ))}
@@ -709,7 +709,7 @@ export function Canvas({
                     onPointerDown={startRotate}
                     title="Rotate"
                   >
-                    <VellumIcon name="rotate" size={11 / view.zoom} strokeWidth={2} className="cv-rotate-icon" />
+                    <EditrimIcon name="rotate" size={11 / view.zoom} strokeWidth={2} className="cv-rotate-icon" />
                   </span>
                   {HANDLES.map(h => (
                     <span
@@ -748,13 +748,13 @@ export function Canvas({
       </div>
 
       <div className="cv-controls" onPointerDown={e => e.stopPropagation()}>
-        <button onClick={() => zoomBy(0.9)} aria-label="Zoom out" title="Zoom out"><VellumIcon name="minus" size={15} /></button>
+        <button onClick={() => zoomBy(0.9)} aria-label="Zoom out" title="Zoom out"><EditrimIcon name="minus" size={15} /></button>
         <button className="cv-zoom-val" onClick={() => zoomBy(1 / view.zoom)} title="Reset zoom">
           {Math.round(view.zoom * 100)}%
         </button>
-        <button onClick={() => zoomBy(1.1)} aria-label="Zoom in" title="Zoom in"><VellumIcon name="plus" size={15} /></button>
+        <button onClick={() => zoomBy(1.1)} aria-label="Zoom in" title="Zoom in"><EditrimIcon name="plus" size={15} /></button>
         <span className="cv-ctrl-sep" />
-        <button onClick={fit} aria-label="Fit to screen" title="Fit to screen"><VellumIcon name="fit" size={15} /></button>
+        <button onClick={fit} aria-label="Fit to screen" title="Fit to screen"><EditrimIcon name="fit" size={15} /></button>
         <span className="cv-ctrl-sep" />
         <button onClick={onOpenShortcuts} className="cv-help" title="Keyboard shortcuts">?</button>
       </div>

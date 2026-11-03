@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
-import { VellumIcon } from './VellumIcon';
+import { EditrimIcon } from './EditrimIcon';
 
 export function Modal({
   open,
@@ -92,7 +92,7 @@ export function Modal({
               {subtitle && <div className="modal-sub">{subtitle}</div>}
             </div>
             <button className="btn-icon" onClick={onClose} aria-label="Close">
-              <VellumIcon name="close" size={18} />
+              <EditrimIcon name="close" size={18} />
             </button>
           </div>
         )}

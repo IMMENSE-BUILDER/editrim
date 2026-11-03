@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { VellumIcon } from './VellumIcon';
+import { EditrimIcon } from './EditrimIcon';
 import { THEME_KEY, applyTheme, readTheme, subscribeTheme, toggleTheme, type Theme } from '../lib/theme';
 
 /**
@@ -38,7 +38,7 @@ export function ThemeToggle() {
         <i />
       </span>
       <span className="rail-theme-label">
-        <VellumIcon name={dark ? 'moon' : 'sun'} size={11} />
+        <EditrimIcon name={dark ? 'moon' : 'sun'} size={11} />
         {dark ? 'Dark' : 'Light'}
       </span>
     </button>

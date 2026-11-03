@@ -1,4 +1,4 @@
-# Vellum — Design System
+# Editrim — Design System
 
 ## POV
 Editorial studio meets precision tool. Warm paper, ink-black type, one electric cobalt accent, and a lime highlighter. Marketing is expressive and typographic; the editor is quiet, dense, and neutral so the design on the canvas is the only loud thing.
@@ -37,7 +37,7 @@ Editorial studio meets precision tool. Warm paper, ink-black type, one electric 
 - The photo editor shares Video Studio's dark shell rather than the paper editor: `#0B0A0F` canvas, `#131219` panels, `rgba(244,241,234,.1)` lines and `#F4F1EA` text. Lime `#D8F55A` is the only active accent; cobalt `#5B7CFF` is reserved for focused text inputs.
 - **Photo editor:** 58px header (back, name + save status, undo/redo/compare, import/reset/export), 78px tool rail, flexible stage, 322px inspector. At 900px and below the rail becomes a 56px bottom bar and the inspector a 41dvh panel; the header drops the logo, save label and secondary buttons rather than shrinking hit areas.
 - The image is the only colour in the room: neutral chrome, a faint checkerboard stage and a soft shadow under the photo. Controls stay at 10–11px with 8.5px uppercase group labels.
-- Functional labels only — no taglines or helper paragraphs. Adjustment group headers carry a Vellum icon (sun, droplet, scan, histogram); presets, sliders and layers speak for themselves.
+- Functional labels only — no taglines or helper paragraphs. Adjustment group headers carry a Editrim icon (sun, droplet, scan, histogram); presets, sliders and layers speak for themselves.
 - Crop overlay: 1px paper frame, lime corner handles, thirds guides and a 62% shade outside the box. Text layers show a dashed box that turns solid lime when selected, with a single dot handle.
 - Focus is always visible: 2px lime outline with a 2px offset on keyboard focus.
 

@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import { SiteHeader, SiteFooter } from '../components/SiteChrome';
 import { TemplateCard } from '../components/TemplateCard';
-import { VellumIcon } from '../components/VellumIcon';
+import { EditrimIcon } from '../components/EditrimIcon';
 import { FormatGlyph } from '../components/FormatGlyph';
 import { TEMPLATES, TEMPLATE_CATEGORIES } from '../lib/templates';
 
@@ -14,7 +14,7 @@ export default function Templates() {
   const [query, setQuery] = useState('');
 
   useEffect(() => {
-    document.title = 'Templates — Vellum';
+    document.title = 'Templates — Editrim';
   }, []);
 
   const results = useMemo(() => {
@@ -60,7 +60,7 @@ export default function Templates() {
             ))}
           </div>
           <div className="gallery-search">
-            <VellumIcon name="search" size={15} />
+            <EditrimIcon name="search" size={15} />
             <input
               value={query}
               onChange={e => setQuery(e.target.value)}
@@ -102,10 +102,10 @@ export default function Templates() {
         </div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <button className="btn btn-secondary" onClick={surprise}>
-            <VellumIcon name="shuffle" size={15} /> Surprise me
+            <EditrimIcon name="shuffle" size={15} /> Surprise me
           </button>
           <Link to="/editor/new" className="btn btn-primary">
-            Start from blank <VellumIcon name="arrowUpRight" size={16} />
+            Start from blank <EditrimIcon name="arrowUpRight" size={16} />
           </Link>
         </div>
       </div>

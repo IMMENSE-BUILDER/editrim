@@ -1,7 +1,7 @@
-# Vellum — Product Brief
+# Editrim — Product Brief
 
 ## What it is
-Vellum is a browser-based design studio: a complete, working alternative to Canva for social posts, stories, presentations, posters, resumes, menus, invitations and brand assets. No install, no account. Designs live in the browser and export as PNG, JPG or PDF. An AI Studio adds editable copy, layouts, command-based edits, vector illustrations, translation and visual critique through a serverless Vercel AI Gateway proxy. A photo editor and a video studio handle local stills and clips on the same device.
+Editrim is a browser-based design studio: a complete, working alternative to Canva for social posts, stories, presentations, posters, resumes, menus, invitations and brand assets. No install, no account. Designs live in the browser and export as PNG, JPG or PDF. An AI Studio adds editable copy, layouts, command-based edits, vector illustrations, translation and visual critique through a serverless Vercel AI Gateway proxy. A photo editor and a video studio handle local stills and clips on the same device.
 
 ## Who it is for
 People who need polished visuals without a design background: small-business owners, students, creators, and teams making a last-minute deck or launch post.

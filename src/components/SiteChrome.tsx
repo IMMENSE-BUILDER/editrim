@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { VellumIcon } from './VellumIcon';
+import { EditrimIcon } from './EditrimIcon';
 import { Logo } from './Brand';
 
 export function SiteHeader({ variant = 'default' }: { variant?: 'default' | 'plain' }) {
@@ -9,7 +9,7 @@ export function SiteHeader({ variant = 'default' }: { variant?: 'default' | 'pla
   return (
     <header className={`site-header ${variant === 'plain' ? 'plain' : ''}`}>
       <div className="site-header-inner">
-        <Link to="/" className="site-brand" aria-label="Vellum home">
+        <Link to="/" className="site-brand" aria-label="Editrim home">
           <Logo size={32} />
         </Link>
         <nav className="site-nav" aria-label="Main">
@@ -23,11 +23,11 @@ export function SiteHeader({ variant = 'default' }: { variant?: 'default' | 'pla
           <Link to="/dashboard" className="site-login">Your designs</Link>
           <Link to="/dashboard" className="btn btn-primary btn-sm">
             Start designing
-            <VellumIcon name="arrowUpRight" size={14} />
+            <EditrimIcon name="arrowUpRight" size={14} />
           </Link>
         </div>
         <button className="site-menu-btn" onClick={() => setOpen(v => !v)} aria-label="Menu">
-          {open ? <VellumIcon name="close" size={20} /> : <VellumIcon name="menu" size={20} />}
+          {open ? <EditrimIcon name="close" size={20} /> : <EditrimIcon name="menu" size={20} />}
         </button>
       </div>
       {open && (
@@ -54,7 +54,7 @@ export function SiteFooter() {
           <p>A complete design studio in your browser.<br />Free, fast, and yours to keep.</p>
           <Link to="/dashboard" className="btn btn-lime btn-sm footer-cta">
             Start designing
-            <VellumIcon name="arrowUpRight" size={14} />
+            <EditrimIcon name="arrowUpRight" size={14} />
           </Link>
         </div>
         <div className="footer-cols">
@@ -81,7 +81,7 @@ export function SiteFooter() {
           </div>
           <div>
             <h4>Project</h4>
-            <a href="https://github.com/IMMENSE-BUILDER/vellum" target="_blank" rel="noreferrer">GitHub</a>
+            <a href="https://github.com/IMMENSE-BUILDER/editrim" target="_blank" rel="noreferrer">GitHub</a>
             <Link to="/#pricing">Pricing</Link>
             <Link to="/view">Shared designs</Link>
             <Link to="/#faq">FAQ</Link>
@@ -89,7 +89,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="footer-bottom">
-        <span>© {new Date().getFullYear()} Vellum. Built for the web.</span>
+        <span>© {new Date().getFullYear()} Editrim. Built for the web.</span>
         <span className="footer-note">No account. No watermark. No nonsense.</span>
       </div>
     </footer>

@@ -1,9 +1,9 @@
 {
-  "name": "vellum-studio",
+  "name": "editrim-studio",
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "Vellum — a complete browser design studio.",
+  "description": "Editrim — a complete browser design studio.",
   "scripts": {
     "dev": "vite --port 5173",
     "build": "tsc -b && vite build",

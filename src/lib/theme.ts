@@ -1,7 +1,7 @@
 export type Theme = 'light' | 'dark';
 
-export const THEME_KEY = 'vellum_theme_v1';
-export const THEME_EVENT = 'vellum:theme';
+export const THEME_KEY = 'editrim_theme_v1';
+export const THEME_EVENT = 'editrim:theme';
 
 export function readTheme(): Theme {
   if (typeof document === 'undefined') return 'light';

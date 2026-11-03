@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { VellumIcon } from '../components/VellumIcon';
+import { EditrimIcon } from '../components/EditrimIcon';
 import { Modal } from '../components/Modal';
 import type { Design } from '../lib/types';
 import { exportDesign, type ExportFormat } from '../lib/export';
@@ -64,7 +64,7 @@ export function ExportModal({
             {format === 'pdf' ? `${pages === 'all' ? design.pages.length : 1} page PDF` : `${outW} × ${outH} px`} · {format.toUpperCase()}
           </span>
           <button className="btn btn-cobalt" onClick={run} disabled={busy}>
-            {busy ? <Loader2 size={16} className="spin" /> : <VellumIcon name="download" size={16} />}
+            {busy ? <Loader2 size={16} className="spin" /> : <EditrimIcon name="download" size={16} />}
             {busy ? 'Exporting…' : 'Download'}
           </button>
         </>
@@ -78,10 +78,10 @@ export function ExportModal({
         ].map(f => {
           return (
             <button key={f.id} className={`export-format ${format === f.id ? 'active' : ''}`} onClick={() => setFormat(f.id)}>
-              <VellumIcon name={f.icon} size={19} />
+              <EditrimIcon name={f.icon} size={19} />
               <b>{f.label}</b>
               <span>{f.note}</span>
-              {format === f.id && <VellumIcon name="check" size={15} className="export-check" />}
+              {format === f.id && <EditrimIcon name="check" size={15} className="export-check" />}
             </button>
           );
         })}
@@ -174,7 +174,7 @@ export function ShareModal({
         <>
           <button className="btn btn-ghost" onClick={onClose}>Close</button>
           <button className="btn btn-cobalt" onClick={copy} disabled={!state?.ok}>
-            {copied ? <VellumIcon name="check" size={15} /> : <VellumIcon name="copy" size={15} />} {copied ? 'Copied' : 'Copy link'}
+            {copied ? <EditrimIcon name="check" size={15} /> : <EditrimIcon name="copy" size={15} />} {copied ? 'Copied' : 'Copy link'}
           </button>
         </>
       }
@@ -186,19 +186,19 @@ export function ShareModal({
           <div className="share-input">
             <input id="share-url" readOnly value={state.url} onFocus={e => e.currentTarget.select()} />
             <button className="btn btn-secondary btn-sm" onClick={() => window.open(state.url, '_blank', 'noreferrer')}>
-              <VellumIcon name="external" size={14} /> Preview
+              <EditrimIcon name="external" size={14} /> Preview
             </button>
           </div>
           {!state.ok && (
             <div className="share-warning">
-              <VellumIcon name="share" size={15} />
+              <EditrimIcon name="share" size={15} />
               <span>{state.reason ?? 'This design is too large to fit in a link.'}</span>
             </div>
           )}
           <div className="share-facts">
-            <span><VellumIcon name="check" size={13} /> Read-only view</span>
-            <span><VellumIcon name="check" size={13} /> Opens without an account</span>
-            <span><VellumIcon name="check" size={13} /> Entirely client-side</span>
+            <span><EditrimIcon name="check" size={13} /> Read-only view</span>
+            <span><EditrimIcon name="check" size={13} /> Opens without an account</span>
+            <span><EditrimIcon name="check" size={13} /> Entirely client-side</span>
           </div>
           <div className="share-hint">
             Tip: for print or client work, use Download → PDF. A link is best for a quick review.

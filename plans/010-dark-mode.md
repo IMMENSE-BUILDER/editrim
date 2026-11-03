@@ -7,7 +7,7 @@ theme; nothing is inverted wholesale.
 ## What ships
 
 - `<html data-theme="light|dark">` set before first paint from
-  `localStorage.vellum_theme_v1` by an inline script in `index.html`.
+  `localStorage.editrim_theme_v1` by an inline script in `index.html`.
 - `color-scheme` and `<meta name="theme-color">` follow the theme.
 - A labelled switch in the dashboard rail bottom: sun/Light or moon/Dark, with
   `aria-pressed`, a 240ms cross-fade and a reduced-motion bypass.

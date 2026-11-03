@@ -1,6 +1,6 @@
-# Vellum — Advanced Canva Research & AI Plan
+# Editrim — Advanced Canva Research & AI Plan
 
-Research date: November 2026. This document records what Canva and other design tools actually ship, how Vellum's AI was designed against that, and what is intentionally left out.
+Research date: November 2026. This document records what Canva and other design tools actually ship, how Editrim's AI was designed against that, and what is intentionally left out.
 
 ## 1. Executive summary
 
@@ -11,7 +11,7 @@ Canva is no longer just a template editor. Its 2026 stack is a cloud Visual Suit
 - an AI layer — **Canva AI 2.0** — that performs conversational, multi-step edits on the canvas;
 - asset, publishing, and enterprise surfaces that a local-first product cannot honestly clone without a backend and media models.
 
-The highest-value gap for a browser alternative is not more templates. It is **trustworthy AI editing on a real, local scene graph**: visible plans, explicit commands, previews, validation, and one-step undo. Vellum now implements that gap with **Xiaomi MiMo V2.6 Flash** and **Vercel AI Gateway**.
+The highest-value gap for a browser alternative is not more templates. It is **trustworthy AI editing on a real, local scene graph**: visible plans, explicit commands, previews, validation, and one-step undo. Editrim now implements that gap with **Xiaomi MiMo V2.6 Flash** and **Vercel AI Gateway**.
 
 ## 2. What Canva ships — core and advanced
 
@@ -29,7 +29,7 @@ The highest-value gap for a browser alternative is not more templates. It is **t
 
 ## 3. Canva AI 2.0 and the advanced AI layer
 
-| Feature | What it does | Vellum status |
+| Feature | What it does | Editrim status |
 |---|---|---|
 | **Canva AI 2.0 / conversational editing** | Reads the open design and applies edits in place; bulk restyles, page adds, resizing; interruptible | **Implemented in a focused form**: AI Edit proposes typed commands, previews the resulting page, requires approval, applies as one undo step |
 | **Memory Library** | Persistent style/tone preferences built from recent designs or chats; editable doc; no cross-chat transcript memory | **Partially implemented**: brand kit stores name, colours, fonts and a voice sample; AI write can match it. No automatic profile mining |
@@ -45,7 +45,7 @@ The highest-value gap for a browser alternative is not more templates. It is **t
 | **Magic Insights/Formulas/Charts** | Sheets analysis and formulas | Not implemented; no Sheets surface |
 | **Canva Code** | Prompt → interactive HTML/CSS/JS, sandboxed | Not implemented; potential P2 with a sandboxed iframe |
 | **MCP/AI Connector** | Drive Canva from external agents | Not implemented; the command bus is a good substrate for a future MCP bridge |
-| **AI Review / critique** | Not a single named Canva SKU, but design critique and Canva AI suggestions exist | **Implemented and stronger than text-only**: Vellum renders the page and MiMo inspects the image plus the scene graph |
+| **AI Review / critique** | Not a single named Canva SKU, but design critique and Canva AI suggestions exist | **Implemented and stronger than text-only**: Editrim renders the page and MiMo inspects the image plus the scene graph |
 
 ### What Canva's newer agentic work implies
 
@@ -55,7 +55,7 @@ The highest-value gap for a browser alternative is not more templates. It is **t
 - **Brand must be enforceable**, not just prompt context. Canva's own docs admit AI follows locks loosely; a local command bus can enforce them deterministically.
 - **Image editing is a different model class.** A text LLM cannot erase, inpaint, segment or outpaint pixels. Pretending otherwise is the fastest way to lose trust.
 
-## 4. Vellum AI architecture
+## 4. Editrim AI architecture
 
 ```
 Browser
@@ -117,11 +117,11 @@ Every failure is traceable end-to-end:
 | `timeout` | `GATEWAY_TIMEOUT` | Shorter brief |
 | `validation` | `INVALID_COMMANDS` / `NO_COMMANDS` | Try a more specific instruction |
 
-The panel shows stage, code, HTTP status, request ID, model, and a **Copy diagnostics** action. The server logs `[vellum-ai] <requestId> action=… stage=… code=… status=… ms`. API keys and prompt content are not logged.
+The panel shows stage, code, HTTP status, request ID, model, and a **Copy diagnostics** action. The server logs `[editrim-ai] <requestId> action=… stage=… code=… status=… ms`. API keys and prompt content are not logged.
 
 ### Model and routing
 
-- Model: **`xiaomi/mimo-v2.6-flash`**, only model used by Vellum AI.
+- Model: **`xiaomi/mimo-v2.6-flash`**, only model used by Editrim AI.
 - Gateway: **Vercel AI Gateway** OpenAI-compatible endpoint.
 - 1M context, multimodal input, structured output, tools; used with `reasoning_effort: none` for latency, `provider.sort: ttft`, and `json_object` response format for design/critique/edit.
 - AI responses are capped per action; design 7k output tokens, SVG 5k, copy 900.

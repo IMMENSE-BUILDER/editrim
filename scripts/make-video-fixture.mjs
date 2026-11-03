@@ -38,7 +38,7 @@ for (let attempt = 1; attempt <= 6; attempt++) {
         ctx.fillRect(0, 0, 320, 180);
         ctx.fillStyle = '#d8f55a';
         ctx.font = '700 28px sans-serif';
-        ctx.fillText('VELLUM', 20, 60);
+        ctx.fillText('EDITRIM', 20, 60);
         ctx.fillStyle = '#f4f1ea';
         ctx.font = '500 14px sans-serif';
         ctx.fillText(`test clip ${t.toFixed(1)}s`, 20, 92);

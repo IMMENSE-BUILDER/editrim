@@ -136,7 +136,7 @@ export async function callAi<T>(action: string, payload: Record<string, unknown>
 
 function logAiFailure(err: AiRequestError) {
   // Deliberate console diagnostics: no prompts or API keys, but enough to trace.
-  console.error('[Vellum AI] request failed', {
+  console.error('[Editrim AI] request failed', {
     action: err.action,
     stage: err.stage,
     code: err.code,

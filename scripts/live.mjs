@@ -1,6 +1,6 @@
 import { chromium } from 'playwright';
 import fs from 'node:fs';
-const base='https://vellum-delta-dun.vercel.app';
+const base='https://editrim.vercel.app';
 const b=await chromium.launch({channel:'chrome'});
 const c=await b.newContext({viewport:{width:1440,height:1000},acceptDownloads:true});
 const p=await c.newPage();

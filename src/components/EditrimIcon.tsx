@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-export type VellumIconName =
+export type EditrimIconName =
   | 'home' | 'projects' | 'templates' | 'brand' | 'spark' | 'print' | 'more'
   | 'elements' | 'text' | 'uploads' | 'background' | 'present' | 'share'
   | 'download' | 'undo' | 'redo' | 'help' | 'bell' | 'plus' | 'search'
@@ -23,7 +23,7 @@ export type VellumIconName =
   | 'photo' | 'crop' | 'flipX' | 'flipY' | 'sun' | 'contrast' | 'thermometer'
   | 'histogram' | 'compare' | 'droplet' | 'moon';
 
-const ICONS: Record<VellumIconName, string[]> = {
+const ICONS: Record<EditrimIconName, string[]> = {
   home: ['M3 10.8 12 3.5l9 7.3V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-9.2Z', 'M9.5 21v-6h5v6'],
   projects: ['M3 7.5h6l1.8 2H21v10.5H3z', 'M3 7.5V5h4l1.5 2.5'],
   templates: ['M4 4h9v9H4z', 'M11 11h9v9h-9z', 'M7 8h3M15 15h2'],
@@ -160,13 +160,13 @@ const ICONS: Record<VellumIconName, string[]> = {
   moon: ['M20 14.6A8.6 8.6 0 0 1 9.4 4a8.6 8.6 0 1 0 10.6 10.6z'],
 };
 
-export function VellumIcon({
+export function EditrimIcon({
   name,
   size = 18,
   strokeWidth = 1.65,
   className = '',
   ...rest
-}: { name: VellumIconName; size?: number; strokeWidth?: number; className?: string } & Omit<SVGProps<SVGSVGElement>, 'name' | 'width' | 'height'>) {
+}: { name: EditrimIconName; size?: number; strokeWidth?: number; className?: string } & Omit<SVGProps<SVGSVGElement>, 'name' | 'width' | 'height'>) {
   const paths = ICONS[name];
   return (
     <svg
@@ -178,17 +178,17 @@ export function VellumIcon({
       strokeWidth={strokeWidth}
       strokeLinecap="round"
       strokeLinejoin="round"
-      className={`vellum-icon ${size <= 13 ? 'is-compact' : ''} ${className}`.trim()}
-      data-vellum-icon={name}
+      className={`editrim-icon ${size <= 13 ? 'is-compact' : ''} ${className}`.trim()}
+      data-editrim-icon={name}
       data-icon-size={size}
       aria-hidden="true"
       {...rest}
     >
-      <g className="vellum-icon-ink">
-        <g className="vellum-icon-echo" transform="translate(0.55 0.75)">
+      <g className="editrim-icon-ink">
+        <g className="editrim-icon-echo" transform="translate(0.55 0.75)">
           {paths.map((d, index) => <path key={`echo-${index}`} d={d} />)}
         </g>
-        <g className="vellum-icon-main">
+        <g className="editrim-icon-main">
           {paths.map((d, index) => <path key={index} d={d} />)}
         </g>
       </g>
@@ -196,4 +196,4 @@ export function VellumIcon({
   );
 }
 
-export const VELLUM_ICON_NAMES = Object.keys(ICONS) as VellumIconName[];
+export const EDITRIM_ICON_NAMES = Object.keys(ICONS) as EditrimIconName[];
