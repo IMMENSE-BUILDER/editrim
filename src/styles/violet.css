@@ -103,6 +103,17 @@
   color: #fff;
 }
 
+:root[data-theme='light'] .home-cat.is-outline .home-cat-icon {
+  border-color: var(--h-icon-line);
+  color: var(--h-icon);
+}
+
+:root[data-theme='light'] .home-cat.is-outline:hover .home-cat-icon {
+  background: var(--h-icon);
+  border-color: var(--h-icon);
+  color: #fff;
+}
+
 /* Rail: violet create tile, violet active state and hover replies. */
 .rail-create-icon {
   border-radius: 13px;
