@@ -1,0 +1,307 @@
+/* ============================================================
+   Vercel-style dark dashboard
+   Flat black surfaces, neutral 1px borders, white primary
+   actions, and the violet #8A63FF icon system kept intact.
+   Scoped to dark mode only.
+   ============================================================ */
+
+:root[data-theme='dark'] .home {
+  --h-bg: #000000;
+  --h-panel: #0a0a0a;
+  --h-soft: #111111;
+  --h-line: #262626;
+  --h-text: #ededed;
+  --h-muted: #a1a1a1;
+  --h-muted-2: #737373;
+  --h-lilac: #8a63ff;
+  --h-purple: #8a63ff;
+  background: #000;
+}
+
+:root[data-theme='dark'] .home-main {
+  background-color: #000;
+  background-image: none;
+}
+
+:root[data-theme='dark'] .home-main::-webkit-scrollbar-thumb {
+  background: #333;
+  border: 3px solid #000;
+}
+
+:root[data-theme='dark'] .home-rail {
+  background: #000;
+  border-right: 1px solid #1f1f1f;
+}
+
+:root[data-theme='dark'] .home-brand {
+  color: #ededed !important;
+}
+
+/* Search is a flat input, not a glowing capsule. */
+:root[data-theme='dark'] .home-search-wrap {
+  height: 48px;
+  border-radius: 8px;
+  background: #0a0a0a;
+  border: 1px solid #333;
+  box-shadow: none;
+}
+
+:root[data-theme='dark'] .home-search-wrap:focus-within {
+  border-color: #8a63ff;
+  box-shadow: 0 0 0 1px rgba(138, 99, 255, 0.35);
+}
+
+:root[data-theme='dark'] .home-search-wrap input {
+  font-size: 14px;
+  color: #ededed;
+  caret-color: #8a63ff;
+}
+
+:root[data-theme='dark'] .home-search-wrap input::placeholder {
+  color: #737373;
+}
+
+:root[data-theme='dark'] .home-search-key {
+  background: #111;
+  border: 1px solid #333;
+  color: #737373;
+}
+
+/* Rail: white primary Create, flat hover states, violet icons. */
+:root[data-theme='dark'] .rail-create-icon {
+  border-radius: 8px;
+  background: #ededed;
+  box-shadow: none;
+}
+
+:root[data-theme='dark'] .rail-create .editrim-icon,
+:root[data-theme='dark'] .rail-create-icon .editrim-icon {
+  color: #000;
+}
+
+:root[data-theme='dark'] .rail-create:hover .rail-create-icon {
+  background: #fff;
+  box-shadow: none;
+}
+
+:root[data-theme='dark'] .rail-nav button.active {
+  background: #111;
+}
+
+:root[data-theme='dark'] .rail-nav button:hover,
+:root[data-theme='dark'] .rail-nav a:hover,
+:root[data-theme='dark'] .rail-bottom button:hover,
+:root[data-theme='dark'] .rail-collapse:hover {
+  background: #111;
+}
+
+/* Category icons: black tiles with a neutral border, violet glyph. */
+:root[data-theme='dark'] .home-cat .home-cat-icon,
+:root[data-theme='dark'] .home-cat[class*='tone-'] .home-cat-icon {
+  background: #0a0a0a;
+  border: 1px solid #262626;
+  border-radius: 10px;
+  color: #8a63ff;
+  box-shadow: none;
+}
+
+:root[data-theme='dark'] .home-cat:hover .home-cat-icon {
+  background: #141414;
+  border-color: #8a63ff;
+  color: #8a63ff;
+  box-shadow: none;
+}
+
+:root[data-theme='dark'] .home-cat:hover .home-cat-icon .editrim-icon {
+  color: #8a63ff;
+}
+
+:root[data-theme='dark'] .home-cat.is-outline .home-cat-icon {
+  background: transparent;
+  border: 1px dashed #333;
+  color: #8a63ff;
+}
+
+:root[data-theme='dark'] .home-cat.is-outline:hover .home-cat-icon {
+  background: #141414;
+  border-style: solid;
+  border-color: #8a63ff;
+  color: #8a63ff;
+}
+
+/* Cards and thumbnails. */
+:root[data-theme='dark'] .home-design-thumb,
+:root[data-theme='dark'] .home-template-thumb,
+:root[data-theme='dark'] .home-project-thumb {
+  background: #0a0a0a;
+  border: 1px solid #262626;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+:root[data-theme='dark'] .home-design-card:hover .home-design-thumb,
+:root[data-theme='dark'] .home-template-card:hover .home-template-thumb,
+:root[data-theme='dark'] .home-project-thumb:hover {
+  background: #111;
+  border-color: #404040;
+  box-shadow: none;
+}
+
+:root[data-theme='dark'] .home-design-art,
+:root[data-theme='dark'] .home-template-art,
+:root[data-theme='dark'] .home-project-art {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+}
+
+:root[data-theme='dark'] .home-new-card {
+  background: #0a0a0a;
+  border: 1px dashed #333;
+  border-radius: 8px;
+}
+
+:root[data-theme='dark'] .home-new-card:hover {
+  background: #111;
+  border-color: #8a63ff;
+}
+
+:root[data-theme='dark'] .home-new-card-icon {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #8a63ff;
+}
+
+:root[data-theme='dark'] .home-empty-continue {
+  background: #0a0a0a;
+  border: 1px solid #262626;
+  border-radius: 8px;
+}
+
+:root[data-theme='dark'] .home-project-add {
+  border-color: #333;
+  border-radius: 8px;
+}
+
+:root[data-theme='dark'] .home-project-add:hover {
+  background: #111;
+  border-color: #8a63ff;
+}
+
+:root[data-theme='dark'] .home-project-add > span {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #8a63ff;
+}
+
+/* White primary actions, Vercel-style. */
+:root[data-theme='dark'] .home-btn-primary {
+  background: #ededed;
+  color: #000 !important;
+  border-radius: 6px;
+}
+
+:root[data-theme='dark'] .home-btn-primary:hover {
+  background: #fff;
+  color: #000 !important;
+}
+
+:root[data-theme='dark'] .home-btn-ai {
+  background: #ededed;
+  color: #000;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+:root[data-theme='dark'] .home-btn-ai:hover {
+  background: #fff;
+  filter: none;
+}
+
+:root[data-theme='dark'] .home-btn-ghost {
+  border-color: #333;
+  color: #ededed;
+}
+
+/* AI CTA panel. */
+:root[data-theme='dark'] .home-quiet-cta {
+  background: #0a0a0a;
+  border: 1px solid #262626;
+  border-radius: 8px;
+}
+
+:root[data-theme='dark'] .home-quiet-cta h2 {
+  color: #ededed;
+}
+
+:root[data-theme='dark'] .home-quiet-cta p {
+  color: #a1a1a1;
+}
+
+/* Menus and popovers. */
+:root[data-theme='dark'] .rail-popover,
+:root[data-theme='dark'] .home-project-menu {
+  background: #0a0a0a;
+  border: 1px solid #262626;
+  border-radius: 8px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+}
+
+:root[data-theme='dark'] .rail-popover-item:hover,
+:root[data-theme='dark'] .home-project-menu button:hover,
+:root[data-theme='dark'] .rail-popover-head button:hover {
+  background: #111;
+}
+
+:root[data-theme='dark'] .rail-popover-item p .kbd {
+  background: #111;
+  border-color: #333;
+}
+
+:root[data-theme='dark'] .home-more-grid button {
+  background: #0a0a0a;
+  border-color: #262626;
+  border-radius: 8px;
+}
+
+:root[data-theme='dark'] .home-more-grid button:hover {
+  background: #111;
+  border-color: #404040;
+}
+
+:root[data-theme='dark'] .home-more-grid button:first-child {
+  background: #0a0a0a;
+  border-color: #262626;
+}
+
+/* Search rows and misc. */
+:root[data-theme='dark'] .home-result-row:hover {
+  background: #111;
+  border-color: #262626;
+}
+
+:root[data-theme='dark'] .home-result-action-icon {
+  background: #111;
+  border: 1px solid #262626;
+  color: #8a63ff;
+}
+
+:root[data-theme='dark'] .home-uploading {
+  background: #111;
+  border: 1px solid #333;
+}
+
+:root[data-theme='dark'] .home-help {
+  background: #8a63ff;
+  box-shadow: none;
+}
+
+:root[data-theme='dark'] .home-help:hover {
+  background: #7a4ff0;
+  box-shadow: none;
+}
+
+:root[data-theme='dark'] .rail-avatar {
+  background: #8a63ff;
+  box-shadow: none;
+}

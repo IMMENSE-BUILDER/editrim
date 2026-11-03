@@ -49,6 +49,7 @@ import './styles/icon-motion.css';
 import './styles/theme.css';
 import './styles/studio.css';
 import './styles/violet.css';
+import './styles/vercel-dark.css';
 import { migrateLegacyStorage } from './lib/migrate';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);
