@@ -11,6 +11,20 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preload" href="/fonts/geist-serif-regular.woff2" as="font" type="font/woff2" crossorigin />
     <title>Vellum — Design anything. Beautifully.</title>
+    <script>
+      (() => {
+        try {
+          const stored = localStorage.getItem('vellum_theme_v1');
+          const theme = stored === 'dark' || stored === 'light' ? stored : 'light';
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.style.colorScheme = theme;
+          const meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', theme === 'dark' ? '#121116' : '#F4F1EA');
+        } catch {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

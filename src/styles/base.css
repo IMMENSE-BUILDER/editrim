@@ -40,6 +40,39 @@
   --inspector: 272px;
 }
 
+:root[data-theme='dark'] {
+  --paper: #121116;
+  --paper-deep: #0c0b10;
+  --card: #1a1922;
+  --ink: #f4f1ea;
+  --ink-soft: #d8d3c7;
+  --muted: #a49f93;
+  --muted-2: #7e7a70;
+  --line: #2b2933;
+  --line-strong: #413e4b;
+  --cobalt: #7189ff;
+  --cobalt-dark: #aab9ff;
+  --cobalt-soft: rgba(91, 124, 255, 0.16);
+  --lime: #d8f55a;
+  --lime-soft: rgba(216, 245, 90, 0.16);
+  --coral: #ff8568;
+  --coral-soft: rgba(255, 106, 70, 0.14);
+  --sage: #74c9a1;
+  --danger: #ff6f5f;
+  --canvas: #0b0a0f;
+  --chrome: #15141b;
+  --chrome-2: #1c1a24;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 30px 70px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
 *,
 *::before,
 *::after {

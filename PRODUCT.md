@@ -21,6 +21,7 @@ People who need polished visuals without a design background: small-business own
 2. **Start fast.** 20 hand-built templates across 12 categories, 59 size presets, blank canvases, a browser photo editor and a browser video studio.
 3. **Yours.** Projects autosave locally, export without watermarks, work offline after first load. Imported photos and video media never leave the device.
 4. **No dark patterns.** No sign-up wall, no paywall. AI is opt-in, previewed before it changes anything, and honestly scoped. Everything shown is usable.
+5. **Your room, your light.** A labelled light/dark switch at the bottom of the dashboard rail changes the whole product — marketing, dashboard, editor and dialogs — and the choice is remembered on the device.
 
 ## AI Studio
 - **AI Design** — a full editable page from a brief; adds as a new page after preview.

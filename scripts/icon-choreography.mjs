@@ -17,7 +17,7 @@ const block = component.match(/const ICONS[^{]*{([\s\S]*?)\n};/);
 assert.ok(block, 'ICONS map not found');
 const names = [...block[1].matchAll(/^  ([a-zA-Z0-9]+):/gm)].map(match => match[1]);
 console.log('icons', names.length);
-assert.equal(names.length, 121, 'expected 121 icons');
+assert.equal(names.length, 122, 'expected 122 icons');
 
 const unique = new Set(names);
 assert.equal(unique.size, names.length, 'icon names must be unique');
@@ -244,4 +244,4 @@ assert.equal(errors.length, 0);
 await reducedContext.close();
 await context.close();
 await browser.close();
-console.log('ICON CHOREOGRAPHY OK — 121 bespoke hover and press animations');
+console.log('ICON CHOREOGRAPHY OK — 122 bespoke hover and press animations');

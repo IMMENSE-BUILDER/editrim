@@ -17,6 +17,7 @@ No account. No watermark. Your designs stay yours. AI runs through a serverless 
 - **A real editor** — drag, resize, rotate, snap to guides, multi-select, group resize, align, distribute, layer, lock, hide, duplicate, copy/paste and undo/redo.
 - **120+ icon interface vocabulary** — one custom `VellumIcon` set covers navigation, actions, context menus, inspector controls, panels, present mode and every dialog; every glyph has a subtle two-layer ink echo, a bespoke hover gesture and a different press reply chosen from what it does, and the whole set enters with a first-paint stagger. `FormatGlyph` gives all 59 formats their own tone, mark and aspect marker.
 - **Photo editor** — `/photo` imports a JPEG, PNG, WebP or GIF and edits it locally: sixteen tonal and colour controls with a live histogram, cropping with aspect presets, rotation and flipping, nine filter presets, draggable text layers, hold-to-compare with the original, undo/redo and PNG/JPEG/WebP export. The source file and the edit stack restore from browser storage. Reachable from the Photo category, dashboard search and the More menu.
+- **Light and dark themes** — a labelled switch at the bottom of the dashboard rail flips the whole product between warm paper and deep ink: marketing, templates, dashboard, editor, modals, AI panels and shared view. The choice is stored on the device, applied before first paint, reflected in `color-scheme` and the browser theme colour, and cross-fades only when motion is allowed.
 - **Video Studio** — `/videos` keeps multiple projects with search, rename, duplicate and delete. `/video/:id` imports local video, image and audio files, builds a three-track timeline, trims, splits and duplicates clips, adds text and image overlays, mixes volume, previews, autosaves and exports a real WebM with mixed audio. Clip tools include speed, colour correction, video zoom and text motion presets. The last project reopens from browser storage.
 - **Right-click canvas menu** — copy, copy/paste style, paste, duplicate and delete; Layer and Align-to-page submenus; group/ungroup; reusable components; local comment pins; lock controls; apply a palette from the selection to the page; download the selection as a transparent PNG; Magic Write and Translate powers.
 - **Typography** — 15 self-hosted fonts, weight, size, line-height, letter-spacing, alignment, uppercase, underline, highlight, outline and drop shadow.
@@ -109,6 +110,7 @@ Further reading:
 - [docs/VIDEO-RESEARCH.md](docs/VIDEO-RESEARCH.md) — video-editor research and the deliberately excluded scope.
 - [docs/PHOTO-RESEARCH.md](docs/PHOTO-RESEARCH.md) — photo-editor research, adopted control set and excluded AI imagery tools.
 - [docs/ICON-CHOREOGRAPHY.md](docs/ICON-CHOREOGRAPHY.md) — every glyph's hover gesture and press reply, with the mechanics behind them.
+- [docs/THEMING.md](docs/THEMING.md) — the light and dark palettes, surface rules, toggle mechanics and contrast verification.
 - [plans/008-photo-editor.md](plans/008-photo-editor.md) — photo editor implementation and verification record.
 
 ## Privacy & limits
@@ -143,7 +145,8 @@ The app was tested end-to-end with Playwright against Chrome:
 - Video studio: multi-project library, media import, timeline trim/split, speed, colour correction, text motion, reload restore, WebM export and a 390 px layout
 - Editor right-click menu: copy/paste, copy/paste style, duplicate/delete, layer and align submenus, group/ungroup, component save + insert + persistence, comment add/resolve/delete + pin, lock/unlock, palette apply + undo, selection PNG download, and Magic Write/Translate handoff to AI Studio
 - Motion and accessibility polish: reduced-motion without losing colour feedback, toast exit, origin-aware menus, modal focus trap/restore, button press states, 4.79:1 Home label contrast, and no horizontal overflow at 390 px
-- Icon choreography: 121 bespoke hover gestures, 121 different press replies, live-verified in the browser, disabled-state and keyboard-focus handling, reduced-motion safe
+- Theme audit: light/dark toggle in the dashboard rail, pre-paint restore, `aria-pressed`, contrast ≥ 4.5 on dashboard, landing, footer, gallery chips, editor inputs and modals, dark AI panel, mobile 390 px fit, cross-fade with reduced-motion bypass
+- Icon choreography: 122 bespoke hover gestures, 122 different press replies, live-verified in the browser, disabled-state and keyboard-focus handling, reduced-motion safe
 - Engine schema audit: 59 canvas formats, print DPI mappings, 16 font assets, 6 text-effect presets, 8 type pairings, 5 transitions, 35 vectors in 6 clusters, 10 mood palettes, 7 slide archetypes, 3 chart wrappers, reflow without overflow and enforced brand locks
 - responsive layouts at 1440, 1600 and 390 px
 - **AI health check, design generation, AI editing with preview + apply + undo, AI copy, vector illustration, visual review, and visible diagnostics for gateway/network/validation failures**

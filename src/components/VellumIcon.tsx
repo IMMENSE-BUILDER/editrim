@@ -21,7 +21,7 @@ export type VellumIconName =
   | 'film' | 'music' | 'volume' | 'volumeOff' | 'scissors' | 'split'
   | 'skipStart' | 'skipEnd' | 'loop' | 'record' | 'waveform'
   | 'photo' | 'crop' | 'flipX' | 'flipY' | 'sun' | 'contrast' | 'thermometer'
-  | 'histogram' | 'compare' | 'droplet';
+  | 'histogram' | 'compare' | 'droplet' | 'moon';
 
 const ICONS: Record<VellumIconName, string[]> = {
   home: ['M3 10.8 12 3.5l9 7.3V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-9.2Z', 'M9.5 21v-6h5v6'],
@@ -157,6 +157,7 @@ const ICONS: Record<VellumIconName, string[]> = {
   histogram: ['M3 20h18', 'M6 20v-9h3v9', 'M11 20V5h3v15', 'M16 20v-6h3v6'],
   compare: ['M12 3v18', 'M8 8 4 12l4 4', 'M16 8l4 4-4 4'],
   droplet: ['M12 3s6 6.4 6 10.4A6 6 0 0 1 6 13.4C6 9.4 12 3 12 3z'],
+  moon: ['M20 14.6A8.6 8.6 0 0 1 9.4 4a8.6 8.6 0 1 0 10.6 10.6z'],
 };
 
 export function VellumIcon({

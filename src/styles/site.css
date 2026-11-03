@@ -1986,6 +1986,10 @@
   padding: 64px 40px 26px;
 }
 
+.site-footer .logo-word {
+  color: var(--paper);
+}
+
 .footer-top {
   max-width: 1240px;
   margin: 0 auto;

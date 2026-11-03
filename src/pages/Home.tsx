@@ -17,6 +17,7 @@ import { BrandKitModal } from '../components/BrandKitModal';
 import { Modal } from '../components/Modal';
 import { PagePreview } from '../components/PagePreview';
 import { FormatGlyph } from '../components/FormatGlyph';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { useToast } from '../components/Toast';
 import {
   addAsset, createDesign, deleteDesign, duplicateDesign, getBrand, getDesign,
@@ -436,6 +437,7 @@ export default function Home() {
         </nav>
 
         <div className="rail-bottom">
+          <ThemeToggle />
           <button
             className="rail-bell"
             onClick={() => {

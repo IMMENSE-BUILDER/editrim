@@ -675,6 +675,11 @@
 @keyframes im-droplet-h { 0%, 100% { transform: none; } 40% { transform: translateY(2.4px) scale(1.04); } 72% { transform: translateY(-.2px); } }
 @keyframes im-droplet-p { 0% { transform: none; } 45% { transform: scale(1.16); } 100% { transform: scale(.94); } }
 
+/* moon — the crescent turns into the light, press dims it. */
+.vellum-icon[data-vellum-icon='moon'] { --im-hover: im-moon-h 520ms var(--ease-out) both; --im-press: im-moon-p 190ms var(--ease-in-out) both; }
+@keyframes im-moon-h { 0%, 100% { transform: none; } 45% { transform: rotate(-14deg) translateY(-1.2px) scale(1.05); } 75% { transform: rotate(2deg); } }
+@keyframes im-moon-p { 0% { transform: none; } 55% { transform: rotate(6deg) scale(.86); } 100% { transform: rotate(3deg) scale(.91); } }
+
 /* --------------------------------------------------------------- reduced */
 
 @media (prefers-reduced-motion: reduce) {

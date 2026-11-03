@@ -25,6 +25,14 @@ Editorial studio meets precision tool. Warm paper, ink-black type, one electric 
 - Icon choreography: every glyph has a meaning-specific hover gesture and a shorter, differently-axed press reply (see `docs/ICON-CHOREOGRAPHY.md`). Only `transform`/`opacity`, 160–580ms, no layout. The echo/mask pair moves as one ink group so the duotone never splits.
 - Editor chrome: 56px top bar, 68px rail + 300px panel, 264px inspector, bottom page strip. Neutral, no gradients.
 
+## Themes
+- Two complete palettes, switched from the bottom of the dashboard rail. Light: paper `#F4F1EA`, card `#FBFAF6`, ink `#14130F`, line `#E2DED3`. Dark: paper `#121116`, card `#1A1922`, chrome `#15141B`, ink `#F4F1EA`, line `#2B2933`.
+- Cobalt brightens to `#7189FF` in dark; lime and coral stay recognisable. Shadows deepen, selection turns lime-tinted, scrollbars invert and `color-scheme` follows the theme.
+- Dark is not a filter. The header and gallery bar become dark glass; the marquee, formats band, pricing card, export illustration and footer keep their ink surfaces; editor chrome, inputs, popovers, AI panels, dialogs and the design-library cards each get a surface decision. Artboards and template previews keep their own colours.
+- Paper artifacts (footer, marquee, formats band, pricing card, app mock) re-declare the light tokens locally so they stay light-on-dark in both themes.
+- Contrast is measured, not eyeballed: primary text pairs stay at 4.5:1 or better. No pure black; the deepest surface is `#0C0B10`.
+- The switch is labelled (sun/Light, moon/Dark), exposes `aria-pressed`, stores the choice, applies it before first paint and cross-fades only when motion is allowed.
+
 ## Media studios (photo and video)
 - The photo editor shares Video Studio's dark shell rather than the paper editor: `#0B0A0F` canvas, `#131219` panels, `rgba(244,241,234,.1)` lines and `#F4F1EA` text. Lime `#D8F55A` is the only active accent; cobalt `#5B7CFF` is reserved for focused text inputs.
 - **Photo editor:** 58px header (back, name + save status, undo/redo/compare, import/reset/export), 78px tool rail, flexible stage, 322px inspector. At 900px and below the rail becomes a 56px bottom bar and the inspector a 41dvh panel; the header drops the logo, save label and secondary buttons rather than shrinking hit areas.
@@ -37,6 +45,7 @@ Editorial studio meets precision tool. Warm paper, ink-black type, one electric 
 - No generic purple SaaS gradient, no glassmorphism everywhere, no emoji as feature icons.
 - No centered-everything marketing page; use an asymmetric editorial grid.
 - No fake "AI" badges or invented customer logos.
+- No pure `#000` page surface in dark mode and no pure `#FFF` chrome in light mode; the themes use warm ink and paper.
 
 ## AI Studio
 - Lives in the editor rail with a lime "Beta" chip and a green health dot; powered by MiMo V2.6 Flash through Vercel AI Gateway.

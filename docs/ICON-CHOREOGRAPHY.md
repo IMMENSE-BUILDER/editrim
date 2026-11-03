@@ -1,6 +1,6 @@
 # Icon choreography
 
-Every one of the 121 Vellum glyphs has its own hover gesture and a different press reply.
+Every one of the 122 Vellum glyphs has its own hover gesture and a different press reply.
 The gesture is chosen from what the icon does, not from a shared hover rule:
 undo rewinds, download drops, crop frames, eye blinks, flip mirrors, bell swings,
 trash rattles, and the alignment family squashes toward its own guide.
@@ -201,6 +201,7 @@ Light, temperature, levels and the original.
 | `thermometer` | the mercury rises 2.4px | drops 1.4px to 88% tall |
 | `histogram` | the bars grow 16% from the floor | flatten to 80% from the floor |
 | `compare` | the panels push 12% apart | close to 86% wide |
+| `moon` | turns −14° and lifts 1.2px | tips 6° and dims to 86% |
 | `droplet` | falls 2.4px | splashes 16% then settles at 94% |
 
 ## Mechanics

@@ -1,6 +1,6 @@
 # Icon choreography — a gesture per glyph
 
-Every one of the 121 Vellum icons now performs its own hover animation and a different press animation. The gesture is chosen from what the icon means, not from a shared transition.
+Every one of the 122 Vellum icons now performs its own hover animation and a different press animation. The gesture is chosen from what the icon means, not from a shared transition.
 
 Full mapping: [`docs/ICON-CHOREOGRAPHY.md`](../docs/ICON-CHOREOGRAPHY.md).
 
@@ -8,12 +8,13 @@ Full mapping: [`docs/ICON-CHOREOGRAPHY.md`](../docs/ICON-CHOREOGRAPHY.md).
 
 - **Hover is a performance.** A one-shot gesture that resolves back to rest: the roof lifts on `home`, the arrow drops on `download`, `undo` rewinds, `eye` opens, `bell` swings from its crown, `trash` rattles, `crop` closes in.
 - **Press is a different sentence.** It is shorter, compressed, and rarely on the same axis: `download` lands and squashes, `undo` steps forward, `eye` blinks shut, `plus` folds from a quarter turn into a half turn, `alignLeft` squashes toward its guide.
+- **The theme toggle joins the set.** The crescent turns and lifts on hover, then tips and dims on press.
 - **Meaning sets direction.** Arrows travel the way they point, `layerFront` lifts forward, `layerBack` drops back, `zoomIn` grows while `zoomOut` shrinks, `flipX`/`flipY` mirror and return.
 - **Families share a grammar, not a keyframe.** The 16 alignment glyphs all travel to their own guide and press against it, but each axis, origin and distance is its own.
 
 ## Mechanics
 
-- `src/styles/icon-motion.css` declares 242 keyframe blocks and 121 `--im-hover` / `--im-press` shorthands, one pair per glyph.
+- `src/styles/icon-motion.css` declares 244 keyframe blocks and 122 `--im-hover` / `--im-press` shorthands, one pair per glyph.
 - The shared rules resolve those variables on the icon's ink group. Interactive ancestors (`button`, links, `role="button"`, tabs) trigger the gesture from anywhere in the hit area; direct `:hover` covers decorative icons.
 - `VellumIcon` now wraps the echo and main paths in one `.vellum-icon-ink` group, so the duotone mark moves as a single object instead of leaving the echo behind.
 - `transform-box: fill-box` rotates each glyph around its own geometry. Alignment and edge tools override `transform-origin` so press squashes toward the guide they align to.
@@ -27,7 +28,7 @@ Full mapping: [`docs/ICON-CHOREOGRAPHY.md`](../docs/ICON-CHOREOGRAPHY.md).
 ```text
 npx tsc --noEmit                    TSC_EXIT=0
 npm run build                       ✓ built
-node scripts/icon-choreography.mjs  ICON CHOREOGRAPHY OK — 121 bespoke hover and press animations
+node scripts/icon-choreography.mjs  ICON CHOREOGRAPHY OK — 122 bespoke hover and press animations
 node scripts/icon-motion-e2e.mjs    ICON MOTION E2E OK
 node scripts/icon-coverage.mjs      ICON COVERAGE OK
 node scripts/home-e2e.mjs           HOME FEATURES E2E OK
@@ -41,13 +42,13 @@ node scripts/polish-e2e.mjs         POLISH E2E OK
 
 **Static**
 
-- 121 icons in `VellumIcon`, 121 hover declarations, 121 press declarations.
+- 122 icons in `VellumIcon`, 122 hover declarations, 122 press declarations.
 - Every glyph has both keyframe blocks; names are unique per glyph.
 - Hover and press durations differ for every icon; CSS braces balance.
 
 **Live**
 
-- All 121 glyphs are mounted in real buttons, hovered and pressed.
+- All 122 glyphs are mounted in real buttons, hovered and pressed.
 - Every hover resolves to `im-<icon>-h`; every press resolves to `im-<icon>-p`.
 - Every hover moves the glyph, every press moves it, and the two poses differ.
 - A real dashboard rail button resolves to `im-projects-h` / `im-projects-p`.

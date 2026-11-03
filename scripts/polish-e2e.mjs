@@ -47,7 +47,7 @@ assert.ok(contrast.ratio >= 4.5);
 await page.locator('.home-cat').first().focus();
 const focus = await page.locator('.home-cat').first().evaluate(el => getComputedStyle(el).outlineColor);
 log('homeFocusColor', focus);
-assert.equal(focus, 'rgb(185, 167, 255)');
+assert.equal(focus, 'rgb(91, 51, 214)');
 if (await page.locator('.home-project-menu-btn').count()) {
   await page.locator('.home-project-menu-btn').first().click(); await page.waitForTimeout(150);
   await page.keyboard.press('Escape'); await page.waitForTimeout(150);

@@ -46,6 +46,7 @@ import './styles/site.css';
 import './styles/dashboard.css';
 import './styles/editor.css';
 import './styles/icon-motion.css';
+import './styles/theme.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
