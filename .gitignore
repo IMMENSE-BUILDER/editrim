@@ -3,6 +3,7 @@ dist/
 shots/
 dev.log
 dev-run.log
+*.log
 preview.log
 playwright-report/
 test-results/
