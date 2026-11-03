@@ -3822,27 +3822,8 @@ input[type='range']::-moz-range-thumb {
   margin-top: 2px;
 }
 
-.ai-foot {
-  flex: none;
-  border-top: 1px solid var(--line);
-  padding: 8px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  background: #f7f4ec;
-}
-
-.ai-foot span {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 7.5px;
-  color: var(--muted-2);
-  line-height: 1.4;
-}
-
-.ai-foot svg {
-  color: var(--cobalt);
+.ai-command-op {
+  background: #f1eee5;
 }
 
 @media (max-width: 1100px) {

@@ -477,7 +477,9 @@ export function AiPanel({
           <strong>
             {health === undefined ? 'Checking AI…' : healthReady ? 'AI ready' : health === null ? 'AI endpoint unreachable' : 'AI key missing'}
           </strong>
-          <span>{healthReady ? `${AI_MODEL_LABEL} · ${health?.gateway === 'vercel-ai-gateway' ? 'Vercel AI Gateway' : health?.gateway ?? 'Vercel AI Gateway'}` : health?.message ?? 'Testing /api/ai…'}</span>
+          {!healthReady && (
+            <span>{health?.message ?? 'Testing /api/ai…'}</span>
+          )}
         </div>
         {healthBroken && (
           <button
@@ -561,7 +563,7 @@ export function AiPanel({
                 <span className="ai-orbit"><VellumIcon name="spark" size={15} /></span>
                 <div>
                   <strong>Art-directing your page…</strong>
-                  <span>MiMo V2.6 Flash via Vercel AI Gateway</span>
+                  <span>Building an editable page for this canvas.</span>
                 </div>
               </div>
             )}
@@ -669,7 +671,7 @@ export function AiPanel({
                 <span className="ai-orbit"><VellumIcon name="magic" size={15} /></span>
                 <div>
                   <strong>Reading the scene, planning the edit…</strong>
-                  <span>MiMo V2.6 Flash · validated canvas commands</span>
+                  <span>Commands are validated before they apply.</span>
                 </div>
               </div>
             )}
@@ -881,11 +883,6 @@ export function AiPanel({
             )}
           </>
         )}
-      </div>
-
-      <div className="ai-foot">
-        <span><VellumIcon name="spark" size={11} /> {AI_MODEL_LABEL}</span>
-        <span>AI can make mistakes. Review before publishing.</span>
       </div>
     </div>
   );
