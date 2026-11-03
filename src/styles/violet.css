@@ -53,9 +53,9 @@
 }
 
 :root[data-theme='light'] .home {
-  --h-icon: #6d4aff;
-  --h-icon-soft: rgba(109, 74, 255, 0.15);
-  --h-icon-line: rgba(109, 74, 255, 0.32);
+  --h-icon: #8a63ff;
+  --h-icon-soft: rgba(138, 99, 255, 0.15);
+  --h-icon-line: rgba(138, 99, 255, 0.32);
 }
 
 .home-cat .home-cat-icon svg {
@@ -125,6 +125,27 @@
 .rail-create:hover .rail-create-icon {
   background: #7a4ff0;
   box-shadow: 0 9px 24px rgba(138, 99, 255, 0.45);
+}
+
+.home-rail .editrim-icon {
+  color: var(--h-icon);
+}
+
+.rail-create .editrim-icon,
+.rail-create-icon .editrim-icon {
+  color: #fff;
+  opacity: 1;
+}
+
+.rail-nav .editrim-icon,
+.rail-bottom .editrim-icon {
+  opacity: 0.72;
+}
+
+.rail-nav button.active .editrim-icon,
+.rail-nav a.active .editrim-icon,
+.rail-bottom button:hover .editrim-icon {
+  opacity: 1;
 }
 
 .rail-nav button.active {
