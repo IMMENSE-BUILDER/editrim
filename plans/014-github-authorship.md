@@ -4,8 +4,8 @@ Commits in this repository were authored as `immense.builder@users.noreply.githu
 
 ## Fix
 
-- The repository now uses the account's canonical noreply address: `255174018+IMMENSE-BUILDER@users.noreply.github.com`.
-- All 49 existing commits were rewritten with that author and committer email, preserving author dates and messages.
+- The repository now uses the verified email already present on this account's counted commits.
+- All commits were rewritten with that author and committer email, preserving author dates and messages.
 - `main` was force-pushed with `--force-with-lease`. A full pre-rewrite backup bundle was kept at `%TEMP%\opencode\editrim-pre-email-rewrite.bundle`.
 - The remote HEAD now reports `author: IMMENSE-BUILDER` from the GitHub API.
 
