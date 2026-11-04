@@ -1,6 +1,12 @@
 import type { Background, IconElement, ImageElement, ImageFilters, Page, Paint, ShapeElement, ShapeKind, Template, TextElement } from './types';
 import type { Shadow } from './types';
 import { uid } from './utils';
+import { EDITORIAL_TEMPLATES } from './library/editorial';
+import { SOCIAL_TEMPLATES } from './library/social';
+import { DECK_TEMPLATES } from './library/decks';
+import { BRAND_TEMPLATES } from './library/brand';
+import { EVENT_TEMPLATES } from './library/events';
+import { COMMERCE_TEMPLATES } from './library/commerce';
 
 /* ---------- helpers ---------- */
 
@@ -675,6 +681,12 @@ export const TEMPLATES: Template[] = [
     id: 'bruma-email', name: 'Bruma — Email Header', category: 'Banner', description: 'A warm newsletter header with a clear call to action.',
     size: { name: 'Email Header', width: 1200, height: 400 }, pages: [email], tags: ['email', 'header', 'newsletter', 'brand'],
   },
+  ...EDITORIAL_TEMPLATES,
+  ...SOCIAL_TEMPLATES,
+  ...DECK_TEMPLATES,
+  ...BRAND_TEMPLATES,
+  ...EVENT_TEMPLATES,
+  ...COMMERCE_TEMPLATES,
 ];
 
 export const TEMPLATE_CATEGORIES = ['All', ...Array.from(new Set(TEMPLATES.map(t => t.category)))];

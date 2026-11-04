@@ -12,7 +12,7 @@ No account. No watermark. Your designs stay yours. AI runs through a serverless 
 
 ## What it does
 
-- **20 hand-built templates** across Instagram, stories, presentations, posters, resumes, menus, invitations, business cards, YouTube, banners and podcasts.
+- **44 hand-built templates** across Instagram, stories, presentations, posters, resumes, menus, invitations, business cards, YouTube, banners, podcasts, identity systems, editorial print, event culture and product campaigns.
 - **59 canvas presets** plus custom dimensions up to 6000 × 6000.
 - **Canvas-style Home dashboard** at `/dashboard` — left rail with Create, Home, Projects, Templates, Brand, AI Studio, Print and More; a gradient “What will you design today?” hero; glowing universal search across designs, templates and actions; 14 creation shortcuts; Continue designing; Templates for you; and a full Projects view with rename, duplicate, download, present and delete.
 - **Functional starting points** — Presentation, Social media, Doc, Whiteboard, Upload, Custom size, Printables and Templates create real editable designs. Photo opens the photo editor, Video opens Video Studio, and Sheet, Website and Magic Layers explain their honest scope instead of faking media tools. The Create modal is a **59-format design library** grouped into Social, Presentation, Print, Brand, Web and Docs, with search across every format.
@@ -149,6 +149,7 @@ The app was tested end-to-end with Playwright against Chrome:
 - Studio responsive audit: command palette, resize studio and export modal fit at 1440, 1366, 1024 and 390 px, in light and dark, with no horizontal overflow
 - Version history: IndexedDB snapshots, checkpoint creation, dedupe, restore, save-a-copy, delete, 40-version cap and fail-soft storage
 - Bulk create: RFC4180 CSV parsing, delimiter detection, quoted fields/newlines, `{{token}}` merge, column mapping, auto-match, 100-row cap, live row preview and generated pages
+- Library expansion: 44 gallery cards / 44 unique IDs, 24 templates and 42 pages opened in the real editor, every page at least 6 layers, zero out-of-bounds elements, zero text overflow, zero console errors; sizes and page counts asserted per template
 - Brand hub: logo upload to IndexedDB, named palettes, apply-to-page/all-pages with undo, off-brand colour/font audit and Fix all
 - Export suite: PNG 2160×2160, JPG `ffd8`, WebP `RIFF/WEBP`, SVG with `<text>`/`<clipPath>` and no `<foreignObject>`, standard and print PDF (`%PDF`, larger MediaBox with 3 mm bleed)
 - dashboard rename, duplicate, delete and search

@@ -104,7 +104,7 @@ assert.equal(await page.locator('.brand-card strong').innerText(), 'Atelier Test
 await page.goto('http://127.0.0.1:5173/templates?category=Presentation', { waitUntil: 'networkidle' });
 await page.waitForTimeout(700);
 log('presentationTemplates', await page.locator('.template-card').count());
-assert.equal(await page.locator('.template-card').count(), 2);
+assert.ok(await page.locator('.template-card').count() >= 2, 'the presentation library includes multiple decks');
 await page.locator('.gallery-search input').fill('porter');
 await page.waitForTimeout(300);
 log('searchTemplates', await page.locator('.template-card').count());

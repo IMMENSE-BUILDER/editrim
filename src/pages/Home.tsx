@@ -184,7 +184,7 @@ export default function Home() {
   const pageCount = entries.reduce((n, d) => n + d.pages.length, 0);
   const recent = entries.slice(0, 8);
   const templateSuggestions = useMemo(() => {
-    const preferred = ['cafe-opening', 'porter-pitch', 'night-shift', 'form-04', 'flash-sale', 'north-coast', 'elena-resume', 'north-mark'];
+    const preferred = ['cafe-opening', 'porter-pitch', 'dk-meridian', 'ed-field-notes', 'so-aster-skin', 'ev-sonic-bloom', 'co-good-shelf', 'br-aperture'];
     return preferred.map(id => TEMPLATES.find(t => t.id === id)).filter((t): t is typeof TEMPLATES[number] => Boolean(t));
   }, []);
 

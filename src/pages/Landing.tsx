@@ -185,7 +185,7 @@ export default function Landing() {
           <div className="promise-item">
             <span className="promise-num">01</span>
             <h3>Start with real design</h3>
-            <p>Twenty templates made by a designer, not generated from a prompt. Open one and it is already editable, layered and aligned.</p>
+            <p>{TEMPLATES.length} templates made by a designer, not generated from a prompt. Open one and it is already editable, layered and aligned.</p>
           </div>
           <div className="promise-item">
             <span className="promise-num">02</span>
@@ -485,7 +485,7 @@ export default function Landing() {
               <div className="step-mini-card"><PagePreview page={cafe.pages[0]} size={cafe.size} /></div>
             </div>
             <h3>Pick a starting point</h3>
-            <p>Choose from 20 templates, a preset size, or an empty canvas at exactly the dimensions you need.</p>
+            <p>Choose from {TEMPLATES.length} templates, a preset size, or an empty canvas at exactly the dimensions you need.</p>
           </div>
           <div className="step">
             <span className="step-num">02</span>
@@ -526,7 +526,7 @@ export default function Landing() {
           </div>
           <div className="pricing-list">
             <div className="pricing-row"><span>Unlimited designs</span><EditrimIcon name="check" size={16} /></div>
-            <div className="pricing-row"><span>All 20 templates</span><EditrimIcon name="check" size={16} /></div>
+            <div className="pricing-row"><span>All {TEMPLATES.length} templates</span><EditrimIcon name="check" size={16} /></div>
             <div className="pricing-row"><span>Multi-page documents</span><EditrimIcon name="check" size={16} /></div>
             <div className="pricing-row"><span>PNG, JPG &amp; PDF export</span><EditrimIcon name="check" size={16} /></div>
             <div className="pricing-row"><span>Brand kits</span><EditrimIcon name="check" size={16} /></div>
