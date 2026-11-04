@@ -85,9 +85,10 @@ Build command `npm run build`, output `dist`. The AI function gets a 60s max dur
 - LZ-String for share links
 - IndexedDB for uploads, photo sources, video media and version-history snapshots; localStorage for designs, brand kit, photo sessions and video projects
 - **Vercel AI Gateway + Xiaomi MiMo V2.6 Flash** via a serverless AI proxy and matching Vite dev middleware
+- **Vercel Web Analytics** for cookieless, aggregate page views on production
 - JSON command bus for AI edits: schema validation, locked-node protection, one-step undo
 - DOMParser allowlist sanitiser for AI-authored SVG
-- No database, no auth, no analytics. Only the AI proxy is server-side.
+- No database, no accounts, no auth. Vercel Web Analytics and the AI proxy are the only server-side surfaces.
 
 ## Project structure
 
@@ -126,6 +127,7 @@ Editrim is local-first:
 - Uploaded images live in IndexedDB on this device and are never uploaded to a server.
 - An imported photo is stored as a single source blob in IndexedDB, with its edit stack in local storage. Both are local; nothing is sent anywhere.
 - Video projects keep their media blobs in IndexedDB and project JSON in local storage; nothing is uploaded.
+- Vercel Web Analytics records aggregate page views, route paths and referrers on the deployed site. It is cookieless and never receives design content, uploads, AI prompts or account data.
 - Designs do not sync across devices. Share links carry a snapshot of the design inside the URL, not on a server.
 - Template photos are loaded from Unsplash. Uploads and exports work offline once the page is loaded; remote photos need a connection.
 - **AI is opt-in per action.** Text actions send your prompt plus a compact scene description. AI Review renders a temporary snapshot of the current page and sends it for visual inspection. Editrim does not store prompts, scenes or snapshots; Vercel AI Gateway may process them under its own terms.
