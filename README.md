@@ -6,6 +6,8 @@ No account. No watermark. Your designs stay yours. AI runs through a serverless 
 
 > Live: **https://editrim.vercel.app** &nbsp;·&nbsp; Source: **https://github.com/IMMENSE-BUILDER/editrim**
 
+[![License: Apache 2.0](https://img.shields.io/badge/license-Apache--2.0-8A63FF.svg)](LICENSE)
+
 ---
 
 ## What it does
@@ -167,4 +169,6 @@ Templates and interface designed for this project. Photos via [Unsplash](https:/
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Template photos remain subject to the Unsplash licence.
+**Apache License 2.0** — see [LICENSE](LICENSE) and [NOTICE](NOTICE).
+
+The license covers the source code and documentation in this repository. Template photos remain subject to the Unsplash License; bundled fonts keep their respective licenses, including the SIL Open Font License for Geist Serif; design-content icons from Lucide remain under the ISC License.

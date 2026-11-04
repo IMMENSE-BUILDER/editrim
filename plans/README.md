@@ -18,3 +18,4 @@ Implementation records. Each plan lists what shipped, the files involved and the
 | 012 | Hero viewport fit — compact hero on short laptop windows so the CTA row stays visible | Implemented |
 | 013 | Canva Pro parity — resize variants, brand hub, version history, bulk CSV, command palette, inline AI, presenter view, export suite | Implemented |
 | 014 | GitHub contribution authorship — canonical noreply email and history rewrite | Implemented |
+| 015 | Apache License 2.0 — license, NOTICE, package metadata and docs | Implemented |

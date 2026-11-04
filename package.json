@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Editrim — a complete browser design studio.",
+  "license": "Apache-2.0",
   "scripts": {
     "dev": "vite --port 5173",
     "build": "tsc -b && vite build",
