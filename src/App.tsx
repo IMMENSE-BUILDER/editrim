@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import Landing from './pages/Landing';
 import Templates from './pages/Templates';
 import Home, { ProjectsRoute } from './pages/Home';
@@ -47,6 +48,7 @@ export default function App() {
         <Route path="/designs" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <Analytics />
     </ToastProvider>
   );
 }
