@@ -600,7 +600,7 @@ const email = page('Header', bgGrad('#F6F1E3', '#D8F55A', 100), [
 
 /* ---------- export ---------- */
 
-export const TEMPLATES: Template[] = [
+const ALL_TEMPLATES: Template[] = [
   {
     id: 'cafe-opening', name: 'Bruma Café', category: 'Instagram', description: 'A moody opening announcement for a café or bakery.',
     size: { name: 'Instagram Post', width: 1080, height: 1080 }, pages: [cafe], tags: ['instagram', 'cafe', 'photo', 'serif'], featured: true,
@@ -689,7 +689,50 @@ export const TEMPLATES: Template[] = [
   ...COMMERCE_TEMPLATES,
 ];
 
-export const TEMPLATE_CATEGORIES = ['All', ...Array.from(new Set(TEMPLATES.map(t => t.category)))];
+/** Lead with a curated mix so the expanded library is visible immediately. */
+const CURATED_ORDER = [
+  'cafe-opening',
+  'ed-field-notes',
+  'dk-meridian',
+  'so-aster-skin',
+  'porter-pitch',
+  'ev-sonic-bloom',
+  'form-04',
+  'co-good-shelf',
+];
+
+export const TEMPLATES: Template[] = [
+  ...CURATED_ORDER
+    .map(id => ALL_TEMPLATES.find(t => t.id === id))
+    .filter((t): t is Template => Boolean(t)),
+  ...ALL_TEMPLATES.filter(t => !CURATED_ORDER.includes(t.id)),
+];
+
+const CATEGORY_ORDER = [
+  'Instagram',
+  'Story',
+  'Presentation',
+  'Poster',
+  'Resume',
+  'Business card',
+  'YouTube',
+  'Menu',
+  'Invitation',
+  'Logo',
+  'Flyer',
+  'Banner',
+  'Podcast',
+];
+
+export const TEMPLATE_CATEGORIES = [
+  'All',
+  ...CATEGORY_ORDER.filter(category => TEMPLATES.some(t => t.category === category)),
+  ...new Set(
+    TEMPLATES
+      .map(t => t.category)
+      .filter(category => !CATEGORY_ORDER.includes(category)),
+  ),
+];
 
 export const getTemplate = (id: string) => TEMPLATES.find(t => t.id === id);
 

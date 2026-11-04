@@ -25,7 +25,7 @@ Each collection is a separate module so the library can keep growing without one
 
 ## Integration
 
-`src/lib/templates.ts` imports the six arrays and spreads them into `TEMPLATES`. `TEMPLATE_CATEGORIES` and all gallery/search surfaces derive from that list. The dashboard’s “Templates for you” strip now mixes six new designs with two existing favourites. Landing counts are derived from `TEMPLATES.length` (44), not hardcoded.
+`src/lib/templates.ts` imports the six arrays and spreads them into `TEMPLATES`. A curated order leads the gallery with Bruma, Field Notes, Meridian and Aster Skin, then mixes in the strongest remaining work. `TEMPLATE_CATEGORIES` keeps the familiar category order and ignores first-occurrence order. The dashboard’s “Templates for you” strip mixes six new designs with two existing favourites. Landing counts are derived from `TEMPLATES.length` (44), not hardcoded.
 
 ## Verification
 
