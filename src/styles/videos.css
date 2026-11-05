@@ -1,16 +1,14 @@
 .videos-page {
-  --vp-bg: #0b0a0f;
-  --vp-panel: #131219;
-  --vp-line: rgba(244, 241, 234, 0.1);
-  --vp-line-strong: rgba(244, 241, 234, 0.18);
-  --vp-text: #f4f1ea;
-  --vp-muted: rgba(244, 241, 234, 0.56);
-  --vp-muted-2: rgba(244, 241, 234, 0.36);
-  --vp-cobalt: #5b7cff;
+  --vp-bg: #0b0b0d;
+  --vp-panel: #18181b;
+  --vp-line: rgba(250, 250, 250, 0.1);
+  --vp-line-strong: rgba(250, 250, 250, 0.18);
+  --vp-text: #fafafa;
+  --vp-muted: rgba(250, 250, 250, 0.56);
+  --vp-muted-2: rgba(250, 250, 250, 0.36);
+  --vp-cobalt: #3b82f6;
   min-height: 100vh;
-  background:
-    radial-gradient(60% 60% at 50% -10%, rgba(36, 64, 240, 0.16), transparent 70%),
-    var(--vp-bg);
+  background: var(--vp-bg);
   color: var(--vp-text);
   font-family: Inter, system-ui, sans-serif;
 }
@@ -191,7 +189,7 @@
   inset: 0;
   display: grid;
   place-items: center;
-  color: rgba(244, 241, 234, 0.28);
+  color: rgba(250, 250, 250, 0.28);
 }
 
 .video-card-play {
@@ -345,9 +343,9 @@
   border-radius: 16px;
   display: grid;
   place-items: center;
-  color: var(--vp-lime, #d8f55a);
-  background: rgba(216, 245, 90, 0.08);
-  border: 1px solid rgba(216, 245, 90, 0.16);
+  color: var(--vp-lime, #60a5fa);
+  background: rgba(96, 165, 250, 0.08);
+  border: 1px solid rgba(96, 165, 250, 0.16);
 }
 
 .videos-empty h2 {

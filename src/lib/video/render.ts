@@ -231,7 +231,7 @@ function drawGuide(ctx: CanvasRenderingContext2D, bounds: TextBounds) {
   ctx.save();
   ctx.setLineDash([8, 6]);
   ctx.lineWidth = 2;
-  ctx.strokeStyle = 'rgba(216,245,90,.95)';
+  ctx.strokeStyle = 'rgba(96,165,250,.95)';
   ctx.strokeRect(bounds.x - 6, bounds.y - 6, bounds.w + 12, bounds.h + 12);
   ctx.restore();
 }

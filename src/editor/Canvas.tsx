@@ -72,6 +72,51 @@ const rectFromPoints = (a: Point, b: Point, maxW: number, maxH: number): Rect =>
 const rectsIntersect = (a: Rect, b: Rect) =>
   a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 
+/**
+ * The two tightest gaps between a moving box and its neighbours: one
+ * horizontal, one vertical. Returned in page coordinates, labelled in page
+ * units, capped at 320px so distant elements don't shout.
+ */
+function measureGaps(moving: Rect, others: Rect[]) {
+  let bestH: { gap: number; x: number; y: number } | null = null;
+  let bestV: { gap: number; x: number; y: number } | null = null;
+
+  for (const other of others) {
+    const vOverlap = Math.min(moving.y + moving.h, other.y + other.h) - Math.max(moving.y, other.y);
+    if (vOverlap > 1) {
+      const right = other.x - (moving.x + moving.w);
+      const left = moving.x - (other.x + other.w);
+      const gap = right >= 0 ? right : left >= 0 ? left : -1;
+      if (gap > 2 && gap <= 320 && (!bestH || gap < bestH.gap)) {
+        bestH = {
+          gap,
+          x: right >= 0 ? (moving.x + moving.w + other.x) / 2 : (other.x + other.w + moving.x) / 2,
+          y: Math.max(moving.y, other.y) + vOverlap / 2,
+        };
+      }
+    }
+
+    const hOverlap = Math.min(moving.x + moving.w, other.x + other.w) - Math.max(moving.x, other.x);
+    if (hOverlap > 1) {
+      const below = other.y - (moving.y + moving.h);
+      const above = moving.y - (other.y + other.h);
+      const gap = below >= 0 ? below : above >= 0 ? above : -1;
+      if (gap > 2 && gap <= 320 && (!bestV || gap < bestV.gap)) {
+        bestV = {
+          gap,
+          x: Math.max(moving.x, other.x) + hOverlap / 2,
+          y: below >= 0 ? (moving.y + moving.h + other.y) / 2 : (other.y + other.h + moving.y) / 2,
+        };
+      }
+    }
+  }
+
+  const out: { id: string; x: number; y: number; label: string; vertical: boolean }[] = [];
+  if (bestH) out.push({ id: 'h', x: bestH.x, y: bestH.y, label: `${Math.round(bestH.gap)}`, vertical: false });
+  if (bestV) out.push({ id: 'v', x: bestV.x, y: bestV.y, label: `${Math.round(bestV.gap)}`, vertical: true });
+  return out;
+}
+
 export function Canvas({
   design,
   page,
@@ -93,6 +138,7 @@ export function Canvas({
   const [space, setSpace] = useState(false);
   const [panning, setPanning] = useState(false);
   const [guides, setGuides] = useState<{ x: number | null; y: number | null }>({ x: null, y: null });
+  const [gaps, setGaps] = useState<{ id: string; x: number; y: number; label: string; vertical: boolean }[]>([]);
   const [hint, setHint] = useState<{ text: string; x: number; y: number } | null>(null);
   const [marquee, setMarquee] = useState<Rect | null>(null);
   const marqueeCleanup = useRef<(() => void) | null>(null);
@@ -379,6 +425,16 @@ export function Canvas({
       }
       const snapped = snapDelta(dx, dy, rects, movable.map(el => el.id), 6 / view.zoom);
       setGuides({ x: snapped.gx, y: snapped.gy });
+
+      /* Live spacing: the two nearest neighbours on each axis, so the drag can
+         be placed to a real gap instead of by eye. */
+      const bounds = unionRect(rects);
+      if (bounds) {
+        const moving = { x: bounds.x + snapped.dx, y: bounds.y + snapped.dy, w: bounds.w, h: bounds.h };
+        const ignore = movable.map(el => el.id);
+        const neighbours = page.elements.filter(el => !ignore.includes(el.id) && !el.hidden).map(el => rotatedBBox(el));
+        setGaps(measureGaps(moving, neighbours));
+      }
       const updates: Record<string, Partial<El>> = {};
       movable.forEach(el => {
         const o = originals.get(el.id)!;
@@ -390,6 +446,7 @@ export function Canvas({
       window.removeEventListener('pointermove', move);
       window.removeEventListener('pointerup', up);
       setGuides({ x: null, y: null });
+      setGaps([]);
     };
     window.addEventListener('pointermove', move);
     window.addEventListener('pointerup', up);
@@ -761,6 +818,21 @@ export function Canvas({
           {guides.y !== null && (
             <div className="cv-guide cv-guide-y" style={{ top: guides.y, height: 1 / view.zoom, width: size.width }} />
           )}
+
+          {gaps.map(gap => (
+            <div
+              key={gap.id}
+              className="cv-gap"
+              aria-hidden="true"
+              style={{
+                left: gap.x,
+                top: gap.y,
+                transform: `translate(-50%, -50%) scale(${1 / view.zoom})`,
+              }}
+            >
+              {gap.label}
+            </div>
+          ))}
 
           {groupBox && (
             <div

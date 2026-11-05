@@ -1,0 +1,186 @@
+/* ==========================================================================
+   Motion layer
+   ==========================================================================
+   Choreography for the neutral chrome. Every rule here is transform/opacity
+   only, runs on the project's own duration and easing tokens, and is skipped
+   entirely when the visitor asks for reduced motion.
+
+   The rule: motion should say where something came from or what just changed.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ------------------------------------------------ editor: left panel
+
+     The panel belongs to the rail item that opened it, so it enters from the
+     start edge rather than fading in place. */
+
+  .lp {
+    animation: lp-in 200ms var(--ease-out) backwards;
+  }
+
+  @keyframes lp-in {
+    from {
+      opacity: 0;
+      transform: translateX(-10px) scaleX(0.99);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* ------------------------------------------------ editor: inspector
+
+     The opposite edge, the opposite direction: it slides in from the side it
+     is anchored to. */
+
+  .inspector {
+    animation: inspector-in 220ms var(--ease-out) backwards;
+  }
+
+  @keyframes inspector-in {
+    from {
+      opacity: 0;
+      transform: translateX(14px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* ------------------------------------------------ editor: page strip
+
+     The strip rises when the workspace mounts, and its thumbnails follow one
+     another so the eye lands on the pages instead of the chrome. */
+
+  .page-strip {
+    animation: strip-in 260ms var(--ease-out) backwards;
+  }
+
+  @keyframes strip-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .page-thumb {
+    animation: thumb-in 220ms var(--ease-out) backwards;
+  }
+
+  @keyframes thumb-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px) scale(0.96);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .page-thumb:nth-child(1) { animation-delay: 40ms; }
+  .page-thumb:nth-child(2) { animation-delay: 70ms; }
+  .page-thumb:nth-child(3) { animation-delay: 100ms; }
+  .page-thumb:nth-child(4) { animation-delay: 130ms; }
+  .page-thumb:nth-child(5) { animation-delay: 160ms; }
+  .page-thumb:nth-child(n + 6) { animation-delay: 180ms; }
+
+  /* ------------------------------------------------ dashboard: reveal
+
+     Cards arrive in reading order. The delay is capped: past the fifth card
+     the stagger would start to feel slow, so the rest arrive together. */
+
+  .home-cat,
+  .home-design-card,
+  .home-template-card,
+  .home-project-card {
+    animation: card-in 300ms var(--ease-out) backwards;
+  }
+
+  @keyframes card-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .home-cat:nth-child(1),
+  .home-design-card:nth-child(1),
+  .home-template-card:nth-child(1),
+  .home-project-card:nth-child(1) { animation-delay: 0ms; }
+
+  .home-cat:nth-child(2),
+  .home-design-card:nth-child(2),
+  .home-template-card:nth-child(2),
+  .home-project-card:nth-child(2) { animation-delay: 30ms; }
+
+  .home-cat:nth-child(3),
+  .home-design-card:nth-child(3),
+  .home-template-card:nth-child(3),
+  .home-project-card:nth-child(3) { animation-delay: 60ms; }
+
+  .home-cat:nth-child(4),
+  .home-design-card:nth-child(4),
+  .home-template-card:nth-child(4),
+  .home-project-card:nth-child(4) { animation-delay: 90ms; }
+
+  .home-cat:nth-child(5),
+  .home-design-card:nth-child(5),
+  .home-template-card:nth-child(5),
+  .home-project-card:nth-child(5) { animation-delay: 120ms; }
+
+  .home-cat:nth-child(n + 6),
+  .home-design-card:nth-child(n + 6),
+  .home-template-card:nth-child(n + 6),
+  .home-project-card:nth-child(n + 6) { animation-delay: 150ms; }
+
+  /* ------------------------------------------------ dashboard: touch
+
+     Hover lifts the card off the page; press gives it back. The icon tiles
+     lift a little further because they are the primary target. */
+
+  .home-design-card,
+  .home-template-card,
+  .home-project-card {
+    transition:
+      transform 180ms var(--ease-out),
+      box-shadow 180ms var(--ease-out);
+  }
+
+  .home-design-card:hover,
+  .home-template-card:hover,
+  .home-project-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .home-design-card:active,
+  .home-template-card:active,
+  .home-project-card:active {
+    transform: translateY(-1px) scale(0.995);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .home-cat:hover .home-cat-icon {
+    transform: translateY(-2px) scale(1.04);
+  }
+
+  .home-cat:active .home-cat-icon {
+    transform: translateY(0) scale(0.98);
+  }
+}

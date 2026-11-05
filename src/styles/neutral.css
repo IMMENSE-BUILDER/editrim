@@ -1,0 +1,342 @@
+/* ==========================================================================
+   Neutral surface
+   ==========================================================================
+   The editor and the dashboard, retuned to the neutral chrome system:
+   cool greys, one blue accent, hairline borders, neutral shadows.
+
+   Opt-in per route through <html data-surface="neutral"> (see
+   hooks/useSurface.ts), so the marketing pages keep their paper palette.
+
+   Everything here overrides tokens and the handful of rules that hardcode a
+   warm value. Artboard and template content is never touched.
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- tokens */
+
+:root[data-surface='neutral'] {
+  --paper: #fafafa;
+  --paper-deep: #f4f4f5;
+  --card: #ffffff;
+  --ink: #18181b;
+  --ink-soft: #3f3f46;
+  --muted: #6b6b73;
+  --muted-2: #9a9aa3;
+  --line: #e7e7ea;
+  --line-strong: #d4d4d8;
+  --cobalt: #2563eb;
+  --cobalt-dark: #1d4ed8;
+  --cobalt-soft: #eff6ff;
+  --lime: #bfdbfe;
+  --lime-soft: #eff6ff;
+  --sage: #16a34a;
+  --danger: #dc2626;
+  --canvas: #e9e9ec;
+  --chrome: #f7f7f8;
+  --chrome-2: #f0f0f2;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 30px 70px rgba(0, 0, 0, 0.16), 0 8px 24px rgba(0, 0, 0, 0.06);
+  --selection: rgba(37, 99, 235, 0.18);
+  --scrollbar: rgba(24, 24, 27, 0.18);
+  --scrollbar-hover: rgba(24, 24, 27, 0.32);
+}
+
+:root[data-surface='neutral'][data-theme='dark'] {
+  --paper: #111113;
+  --paper-deep: #0b0b0d;
+  --card: #18181b;
+  --ink: #fafafa;
+  --ink-soft: #d4d4d8;
+  --muted: #a1a1aa;
+  --muted-2: #71717a;
+  --line: #27272a;
+  --line-strong: #3f3f46;
+  --cobalt: #3b82f6;
+  --cobalt-dark: #2563eb;
+  --cobalt-soft: rgba(59, 130, 246, 0.16);
+  --lime: #60a5fa;
+  --lime-soft: rgba(96, 165, 250, 0.16);
+  --sage: #22c55e;
+  --danger: #ef4444;
+  --canvas: #1a1a1e;
+  --chrome: #151518;
+  --chrome-2: #1b1b1f;
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 30px 70px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.4);
+  --selection: rgba(96, 165, 250, 0.24);
+  --scrollbar: rgba(250, 250, 250, 0.16);
+  --scrollbar-hover: rgba(250, 250, 250, 0.28);
+}
+
+/* The dashboard carries a second accent ramp (--violet) for its icon tiles.
+   Point it at the one blue so the surface stays single-accent. */
+:root[data-surface='neutral'] {
+  --violet: #2563eb;
+  --violet-deep: #1d4ed8;
+  --violet-light: #3b82f6;
+  --violet-soft: #eff6ff;
+}
+
+:root[data-surface='neutral'][data-theme='dark'] {
+  --violet: #3b82f6;
+  --violet-deep: #60a5fa;
+  --violet-light: #93c5fd;
+  --violet-soft: rgba(59, 130, 246, 0.16);
+}
+
+/* ------------------------------------------------------- editor: shells */
+
+:root[data-surface='neutral'] .ed-topbar {
+  background: var(--card);
+  border-bottom-color: var(--line);
+}
+
+:root[data-surface='neutral'] .ed-rail {
+  background: var(--chrome-2);
+  border-right-color: var(--line);
+}
+
+:root[data-surface='neutral'] .ed-rail > button.active {
+  background: var(--card);
+}
+
+:root[data-surface='neutral'] .ed-size-pill:hover {
+  background: var(--chrome-2);
+}
+
+:root[data-surface='neutral'] .ed-title input:focus {
+  background: var(--card);
+}
+
+:root[data-surface='neutral'] .lp {
+  background: var(--card);
+  border-right-color: var(--line);
+}
+
+:root[data-surface='neutral'] .inspector {
+  background: var(--card);
+  border-left-color: var(--line);
+}
+
+:root[data-surface='neutral'] .page-strip {
+  background: var(--chrome);
+  border-top-color: var(--line);
+}
+
+:root[data-surface='neutral'] .page-thumb,
+:root[data-surface='neutral'] .page-num,
+:root[data-surface='neutral'] .page-menu,
+:root[data-surface='neutral'] .page-menu-btn {
+  background: var(--card);
+}
+
+:root[data-surface='neutral'] .page-menu button:hover {
+  background: var(--chrome-2);
+}
+
+/* ------------------------------------------------ editor: panel surfaces */
+
+:root[data-surface='neutral'] .lp-note {
+  background: var(--chrome-2);
+}
+
+:root[data-surface='neutral'] .lp-action {
+  background: var(--card);
+}
+
+:root[data-surface='neutral'] .lp-action:hover {
+  background: var(--paper);
+}
+
+:root[data-surface='neutral'] .lp-banner:hover {
+  background: var(--ink);
+}
+
+:root[data-surface='neutral'] .layout-card:hover,
+:root[data-surface='neutral'] .shape-btn:hover,
+:root[data-surface='neutral'] .icon-btn:hover,
+:root[data-surface='neutral'] .text-preset:hover,
+:root[data-surface='neutral'] .pair-card,
+:root[data-surface='neutral'] .line-presets button,
+:root[data-surface='neutral'] .brand-fonts-list button {
+  background: var(--card);
+}
+
+:root[data-surface='neutral'] .layout-thumb {
+  background: var(--chrome-2);
+}
+
+:root[data-surface='neutral'] .upload-zone {
+  background: var(--paper);
+}
+
+:root[data-surface='neutral'] .asset-item,
+:root[data-surface='neutral'] .insp-bg-photo {
+  background: var(--chrome-2);
+}
+
+:root[data-surface='neutral'] .palette-dots i {
+  background: var(--card);
+}
+
+:root[data-surface='neutral'] .brand-card {
+  background: var(--card);
+}
+
+/* --------------------------------------------- editor: fields and controls */
+
+:root[data-surface='neutral'] .num-field,
+:root[data-surface='neutral'] .color-trigger,
+:root[data-surface='neutral'] .color-pop,
+:root[data-surface='neutral'] .font-trigger,
+:root[data-surface='neutral'] .font-pop,
+:root[data-surface='neutral'] .share-input input,
+:root[data-surface='neutral'] .export-format,
+:root[data-surface='neutral'] .resize-presets button,
+:root[data-surface='neutral'] .insp-toggle-row button {
+  background: var(--card);
+}
+
+:root[data-surface='neutral'] .segmented {
+  background: var(--chrome-2);
+}
+
+:root[data-surface='neutral'] .segmented button.active,
+:root[data-surface='neutral'] .font-list button:hover,
+:root[data-surface='neutral'] .export-format.active,
+:root[data-surface='neutral'] .resize-presets button.active {
+  background: var(--paper);
+}
+
+:root[data-surface='neutral'] .switch {
+  background: var(--line-strong);
+}
+
+:root[data-surface='neutral'] input[type='range'] {
+  background: var(--line-strong);
+}
+
+:root[data-surface='neutral'] .resize-current,
+:root[data-surface='neutral'] .share-facts span,
+:root[data-surface='neutral'] .resize-preview,
+:root[data-surface='neutral'] .export-warning {
+  background: var(--chrome-2);
+}
+
+/* ------------------------------------------------------- editor: AI panel */
+
+:root[data-surface='neutral'] .ai-tabs,
+:root[data-surface='neutral'] .ai-textarea,
+:root[data-surface='neutral'] .ai-chip-row button {
+  background: var(--card);
+}
+
+:root[data-surface='neutral'] .ai-health,
+:root[data-surface='neutral'] .ai-loading {
+  background: var(--chrome-2);
+}
+
+/* ------------------------------------------- editor: dark mode shells */
+
+:root[data-surface='neutral'][data-theme='dark'] .ed-topbar {
+  background: var(--card);
+}
+
+:root[data-surface='neutral'][data-theme='dark'] .ed-rail,
+:root[data-surface='neutral'][data-theme='dark'] .page-strip {
+  background: var(--chrome);
+}
+
+:root[data-surface='neutral'][data-theme='dark'] .lp,
+:root[data-surface='neutral'][data-theme='dark'] .inspector {
+  background: var(--card);
+}
+
+:root[data-surface='neutral'][data-theme='dark'] .cv-viewport {
+  background: var(--paper-deep);
+}
+
+/* ------------------------------------------------------- dashboard: tokens */
+
+:root[data-surface='neutral'] .home {
+  --h-soft: #f4f4f5;
+  --h-muted: #6b6b73;
+  --h-muted-2: #8f8f96;
+  --h-lilac: #2563eb;
+  --h-purple: #2563eb;
+  --h-lime: #bfdbfe;
+  --h-coral: #dc2626;
+  color-scheme: light;
+}
+
+:root[data-surface='neutral'][data-theme='dark'] .home {
+  --h-bg: #111113;
+  --h-panel: #18181b;
+  --h-soft: #1f1f23;
+  --h-line: #27272a;
+  --h-text: #fafafa;
+  --h-muted: #a1a1aa;
+  --h-muted-2: #71717a;
+  --h-lilac: #60a5fa;
+  --h-purple: #3b82f6;
+  --h-lime: #60a5fa;
+  --h-coral: #f87171;
+  color-scheme: dark;
+}
+
+/* The dashboard's own chrome: a warm rail and a teal/violet wash behind the
+   content. Both go flat neutral here. */
+:root[data-surface='neutral'][data-theme='light'] .home-rail {
+  background: var(--chrome-2);
+  border-right-color: var(--line);
+}
+
+/* violet.css gives the dashboard its own icon ramp (--h-icon*) and a hardcoded
+   violet primary button. Point both at the single blue accent. */
+:root[data-surface='neutral'] .home {
+  --h-icon: #2563eb;
+  --h-icon-soft: rgba(37, 99, 235, 0.12);
+  --h-icon-line: rgba(37, 99, 235, 0.3);
+}
+
+:root[data-surface='neutral'][data-theme='dark'] .home {
+  --h-icon: #60a5fa;
+  --h-icon-soft: rgba(96, 165, 250, 0.14);
+  --h-icon-line: rgba(96, 165, 250, 0.32);
+}
+
+:root[data-surface='neutral'][data-theme='light'] .home-btn-primary {
+  background: var(--cobalt);
+}
+
+:root[data-surface='neutral'][data-theme='light'] .home-btn-primary:hover {
+  background: var(--cobalt-dark);
+}
+
+:root[data-surface='neutral'] .home-cat:hover .home-cat-icon {
+  box-shadow: 0 12px 26px rgba(37, 99, 235, 0.28);
+}
+
+:root[data-surface='neutral'] .rail-create-icon {
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.28);
+}
+
+:root[data-surface='neutral'] .rail-create:hover .rail-create-icon {
+  box-shadow: 0 9px 24px rgba(37, 99, 235, 0.38);
+}
+
+:root[data-surface='neutral'][data-theme='dark'] .home-rail {
+  background: var(--chrome);
+  border-right-color: var(--line);
+}
+
+:root[data-surface='neutral'] .home-main {
+  background: var(--paper);
+}
+
+:root[data-surface='neutral'][data-theme='light'] .rail-bell > i {
+  box-shadow: 0 0 0 2px var(--chrome-2);
+}

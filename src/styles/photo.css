@@ -1,14 +1,14 @@
 .photo-editor {
-  --ph-bg: #0b0a0f;
-  --ph-panel: #131219;
-  --ph-panel-2: #18171f;
-  --ph-line: rgba(244, 241, 234, 0.1);
-  --ph-line-strong: rgba(244, 241, 234, 0.18);
-  --ph-text: #f4f1ea;
-  --ph-muted: rgba(244, 241, 234, 0.56);
-  --ph-muted-2: rgba(244, 241, 234, 0.36);
-  --ph-cobalt: #5b7cff;
-  --ph-lime: #d8f55a;
+  --ph-bg: #0b0b0d;
+  --ph-panel: #18181b;
+  --ph-panel-2: #1f1f23;
+  --ph-line: rgba(250, 250, 250, 0.1);
+  --ph-line-strong: rgba(250, 250, 250, 0.18);
+  --ph-text: #fafafa;
+  --ph-muted: rgba(250, 250, 250, 0.56);
+  --ph-muted-2: rgba(250, 250, 250, 0.36);
+  --ph-cobalt: #3b82f6;
+  --ph-lime: #60a5fa;
   height: 100vh;
   height: 100dvh;
   display: flex;
@@ -202,7 +202,7 @@
 .ph-compare:hover,
 .ph-compare.is-active {
   border-color: var(--ph-line-strong);
-  background: rgba(216, 245, 90, 0.12);
+  background: rgba(96, 165, 250, 0.12);
   color: var(--ph-lime);
 }
 
@@ -298,8 +298,8 @@
 }
 
 .ph-rail-btn.is-active {
-  border-color: rgba(216, 245, 90, 0.3);
-  background: rgba(216, 245, 90, 0.1);
+  border-color: rgba(96, 165, 250, 0.3);
+  background: rgba(96, 165, 250, 0.1);
   color: var(--ph-lime);
 }
 
@@ -331,7 +331,7 @@
   max-width: 100%;
   max-height: 100%;
   border-radius: 3px;
-  box-shadow: 0 22px 64px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(244, 241, 234, 0.08);
+  box-shadow: 0 22px 64px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(250, 250, 250, 0.08);
   background: #05050a;
 }
 
@@ -384,7 +384,7 @@
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  border: 1.6px solid rgba(244, 241, 234, 0.22);
+  border: 1.6px solid rgba(250, 250, 250, 0.22);
   border-top-color: var(--ph-lime);
   animation: ph-spin 720ms linear infinite;
 }
@@ -405,7 +405,7 @@
 
 .ph-crop-box {
   position: absolute;
-  border: 1px solid rgba(244, 241, 234, 0.9);
+  border: 1px solid rgba(250, 250, 250, 0.9);
   box-shadow: 0 0 0 9999px rgba(6, 6, 9, 0.62);
   cursor: move;
   touch-action: none;
@@ -416,10 +416,10 @@
   inset: 0;
   pointer-events: none;
   background-image:
-    linear-gradient(to right, transparent calc(33.333% - 0.5px), rgba(244, 241, 234, 0.28) 33.333%, transparent calc(33.333% + 0.5px)),
-    linear-gradient(to right, transparent calc(66.666% - 0.5px), rgba(244, 241, 234, 0.28) 66.666%, transparent calc(66.666% + 0.5px)),
-    linear-gradient(to bottom, transparent calc(33.333% - 0.5px), rgba(244, 241, 234, 0.28) 33.333%, transparent calc(33.333% + 0.5px)),
-    linear-gradient(to bottom, transparent calc(66.666% - 0.5px), rgba(244, 241, 234, 0.28) 66.666%, transparent calc(66.666% + 0.5px));
+    linear-gradient(to right, transparent calc(33.333% - 0.5px), rgba(250, 250, 250, 0.28) 33.333%, transparent calc(33.333% + 0.5px)),
+    linear-gradient(to right, transparent calc(66.666% - 0.5px), rgba(250, 250, 250, 0.28) 66.666%, transparent calc(66.666% + 0.5px)),
+    linear-gradient(to bottom, transparent calc(33.333% - 0.5px), rgba(250, 250, 250, 0.28) 33.333%, transparent calc(33.333% + 0.5px)),
+    linear-gradient(to bottom, transparent calc(66.666% - 0.5px), rgba(250, 250, 250, 0.28) 66.666%, transparent calc(66.666% + 0.5px));
 }
 
 .ph-crop-handle {
@@ -472,7 +472,7 @@
   position: absolute;
   max-width: 100%;
   padding: 2px 4px;
-  border: 1px dashed rgba(244, 241, 234, 0.32);
+  border: 1px dashed rgba(250, 250, 250, 0.32);
   border-radius: 2px;
   color: transparent;
   white-space: pre;
@@ -556,7 +556,7 @@
   overscroll-behavior: contain;
   padding: 0 14px 18px;
   scrollbar-width: thin;
-  scrollbar-color: rgba(244, 241, 234, 0.2) transparent;
+  scrollbar-color: rgba(250, 250, 250, 0.2) transparent;
 }
 
 .ph-inspector-scroll::-webkit-scrollbar {
@@ -564,7 +564,7 @@
 }
 
 .ph-inspector-scroll::-webkit-scrollbar-thumb {
-  background: rgba(244, 241, 234, 0.16);
+  background: rgba(250, 250, 250, 0.16);
   border-radius: 999px;
 }
 
@@ -678,7 +678,7 @@
 .photo-editor input[type='range']::-webkit-slider-runnable-track {
   height: 3px;
   border-radius: 999px;
-  background: rgba(244, 241, 234, 0.16);
+  background: rgba(250, 250, 250, 0.16);
 }
 
 .photo-editor input[type='range']::-webkit-slider-thumb {
@@ -690,22 +690,22 @@
   border: 0;
   border-radius: 50%;
   background: var(--ph-lime);
-  box-shadow: 0 0 0 3px rgba(216, 245, 90, 0.12);
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.12);
   transition: box-shadow 140ms var(--ease), transform 140ms var(--ease);
 }
 
 .photo-editor input[type='range']:hover::-webkit-slider-thumb {
-  box-shadow: 0 0 0 5px rgba(216, 245, 90, 0.18);
+  box-shadow: 0 0 0 5px rgba(96, 165, 250, 0.18);
 }
 
 .photo-editor input[type='range']:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 5px rgba(216, 245, 90, 0.3);
+  box-shadow: 0 0 0 5px rgba(96, 165, 250, 0.3);
 }
 
 .photo-editor input[type='range']::-moz-range-track {
   height: 3px;
   border-radius: 999px;
-  background: rgba(244, 241, 234, 0.16);
+  background: rgba(250, 250, 250, 0.16);
 }
 
 .photo-editor input[type='range']::-moz-range-thumb {
@@ -727,7 +727,7 @@
   color: var(--ph-muted);
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: rgba(244, 241, 234, 0.24);
+  text-decoration-color: rgba(250, 250, 250, 0.24);
 }
 
 .ph-text-btn:hover {
@@ -766,8 +766,8 @@
 }
 
 .ph-aspect-btn.is-active {
-  border-color: rgba(216, 245, 90, 0.5);
-  background: rgba(216, 245, 90, 0.1);
+  border-color: rgba(96, 165, 250, 0.5);
+  background: rgba(96, 165, 250, 0.1);
   color: var(--ph-lime);
 }
 
@@ -810,8 +810,8 @@
 }
 
 .ph-tool-btn.is-active {
-  border-color: rgba(216, 245, 90, 0.45);
-  background: rgba(216, 245, 90, 0.11);
+  border-color: rgba(96, 165, 250, 0.45);
+  background: rgba(96, 165, 250, 0.11);
   color: var(--ph-lime);
 }
 
@@ -874,7 +874,7 @@
 
 .ph-filter-tile.is-active .ph-filter-thumb {
   border-color: var(--ph-lime);
-  box-shadow: 0 0 0 1px rgba(216, 245, 90, 0.45);
+  box-shadow: 0 0 0 1px rgba(96, 165, 250, 0.45);
 }
 
 .ph-filter-canvas {
@@ -939,8 +939,8 @@
 }
 
 .ph-text-item.is-active {
-  border-color: rgba(216, 245, 90, 0.34);
-  background: rgba(216, 245, 90, 0.08);
+  border-color: rgba(96, 165, 250, 0.34);
+  background: rgba(96, 165, 250, 0.08);
   color: var(--ph-text);
 }
 
@@ -1139,7 +1139,7 @@
 }
 
 .ph-seg button.is-active {
-  background: rgba(216, 245, 90, 0.15);
+  background: rgba(96, 165, 250, 0.15);
   color: var(--ph-lime);
 }
 

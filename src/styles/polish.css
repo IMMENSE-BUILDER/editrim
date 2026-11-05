@@ -1,0 +1,330 @@
+/* ==========================================================================
+   Depth + type contrast
+   ==========================================================================
+   Two things the flat neutral theme needs to feel engineered rather than
+   merely recoloured:
+
+   1. A real elevation ladder. Three levels, used consistently: cards sit at 1,
+      popovers at 2, dialogs at 3. Only transient layers get blur.
+   2. Numeric voice. Dimensions, counts and page numbers are data, so they get
+      tabular figures and a mono face - everything else stays in Inter.
+
+   Scoped to the neutral surface; the marketing pages are untouched.
+   ========================================================================== */
+
+:root[data-surface='neutral'] {
+  --elev-1: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 1px rgba(0, 0, 0, 0.03);
+  --elev-2: 0 4px 14px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  --elev-3: 0 18px 48px rgba(0, 0, 0, 0.16), 0 4px 12px rgba(0, 0, 0, 0.08);
+  --elev-inset: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+:root[data-surface='neutral'][data-theme='dark'] {
+  --elev-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --elev-2: 0 6px 20px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.4);
+  --elev-3: 0 24px 60px rgba(0, 0, 0, 0.6), 0 6px 16px rgba(0, 0, 0, 0.5);
+  --elev-inset: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* ------------------------------------------------------------- level 1 */
+
+:root[data-surface='neutral'] .home-template-thumb,
+:root[data-surface='neutral'] .home-project-thumb,
+:root[data-surface='neutral'] .home-design-thumb,
+:root[data-surface='neutral'] .home-new-card,
+:root[data-surface='neutral'] .layout-card,
+:root[data-surface='neutral'] .asset-item,
+:root[data-surface='neutral'] .brand-card {
+  box-shadow: var(--elev-1), var(--elev-inset);
+}
+
+:root[data-surface='neutral'] .btn-cobalt,
+:root[data-surface='neutral'] .home-btn-primary,
+:root[data-surface='neutral'] .rail-create-icon {
+  box-shadow: var(--elev-1), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+/* ------------------------------------------------------------- level 2 */
+
+:root[data-surface='neutral'] .rail-popover,
+:root[data-surface='neutral'] .page-menu,
+:root[data-surface='neutral'] .color-pop,
+:root[data-surface='neutral'] .font-pop,
+:root[data-surface='neutral'] .cv-menu,
+:root[data-surface='neutral'] .inline-ai-menu {
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  border: 1px solid var(--line);
+  box-shadow: var(--elev-2);
+  backdrop-filter: blur(14px) saturate(1.08);
+  -webkit-backdrop-filter: blur(14px) saturate(1.08);
+}
+
+/* ------------------------------------------------------------- level 3 */
+
+:root[data-surface='neutral'] .cmd-panel {
+  background: color-mix(in srgb, var(--card) 90%, transparent);
+  border: 1px solid var(--line);
+  box-shadow: var(--elev-3);
+  backdrop-filter: blur(20px) saturate(1.1);
+  -webkit-backdrop-filter: blur(20px) saturate(1.1);
+}
+
+:root[data-surface='neutral'] .modal,
+:root[data-surface='neutral'] .resize-modal,
+:root[data-surface='neutral'] .brand-kit-modal {
+  box-shadow: var(--elev-3);
+}
+
+:root[data-surface='neutral'] .cmd-overlay,
+:root[data-surface='neutral'] .modal-backdrop {
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* -------------------------------------------------------------- numbers */
+
+:root[data-surface='neutral'] .num-field,
+:root[data-surface='neutral'] .ed-size-pill,
+:root[data-surface='neutral'] .page-num {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+:root[data-surface='neutral'] .home-design-meta,
+:root[data-surface='neutral'] .home-project-info span,
+:root[data-surface='neutral'] .home-result-row span,
+:root[data-surface='neutral'] .insp-sel-count,
+:root[data-surface='neutral'] .ai-score {
+  font-variant-numeric: tabular-nums;
+}
+
+/* The dashboard's section headings already use the display face; tighten the
+   small meta line so the contrast between display and data reads clearly. */
+:root[data-surface='neutral'] .home-section-head h2 {
+  letter-spacing: -0.03em;
+}
+
+:root[data-surface='neutral'] .home-section-head > button,
+:root[data-surface='neutral'] .home-section-head > a {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------- workbench modes
+
+   Focus mode fades the chrome instead of hiding it: the canvas takes the room,
+   but every control is one hover away. Density tightens the same surfaces. */
+
+.editor.focus-mode .ed-rail,
+.editor.focus-mode .lp,
+.editor.focus-mode .inspector,
+.editor.focus-mode .page-strip {
+  opacity: 0.14;
+  filter: saturate(0.7);
+  transition: opacity 200ms var(--ease), filter 200ms var(--ease);
+}
+
+.editor.focus-mode .ed-rail:hover,
+.editor.focus-mode .lp:hover,
+.editor.focus-mode .inspector:hover,
+.editor.focus-mode .page-strip:hover,
+.editor.focus-mode .ed-rail:focus-within,
+.editor.focus-mode .lp:focus-within,
+.editor.focus-mode .inspector:focus-within {
+  opacity: 1;
+  filter: none;
+}
+
+.editor.focus-mode .ed-topbar {
+  opacity: 0.45;
+  transition: opacity 200ms var(--ease);
+}
+
+.editor.focus-mode .ed-topbar:hover,
+.editor.focus-mode .ed-topbar:focus-within {
+  opacity: 1;
+}
+
+.editor.density-compact .insp-section {
+  padding-block: 9px;
+}
+
+.editor.density-compact .lp-action {
+  padding-block: 6px;
+}
+
+.editor.density-compact .page-strip {
+  height: 78px;
+}
+
+.editor.density-compact .insp-hint {
+  display: none;
+}
+
+/* Save state settles rather than blinking. */
+.ed-status.saved {
+  animation: status-settle 320ms var(--ease-out);
+}
+
+.ed-status.saving {
+  opacity: 0.72;
+}
+
+@keyframes status-settle {
+  from {
+    opacity: 0.4;
+    transform: translateY(1px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ed-status.saved {
+    animation: none;
+  }
+}
+/* ------------------------------------------------------------ loading shell
+
+   The editor boots into a skeleton of its own chrome, so the layout is already
+   in the right place when the design arrives. */
+
+.editor-skeleton {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--chrome);
+  color: var(--ink);
+}
+
+.ed-skel-topbar {
+  height: 56px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  border-bottom: 1px solid var(--line);
+  background: var(--card);
+}
+
+.ed-skel-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.ed-skel-rail {
+  width: 72px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding-top: 14px;
+  border-right: 1px solid var(--line);
+  background: var(--chrome-2);
+}
+
+.ed-skel-panel {
+  width: 300px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-right: 1px solid var(--line);
+  background: var(--card);
+}
+
+.ed-skel-canvas {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  background: var(--canvas);
+}
+
+.ed-skel-inspector {
+  width: 272px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-left: 1px solid var(--line);
+  background: var(--card);
+}
+
+.ed-skel-artboard {
+  width: min(58%, 520px);
+  aspect-ratio: 1;
+  background: var(--card);
+  border-radius: 2px;
+}
+
+.ed-skel-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.skel {
+  position: relative;
+  overflow: hidden;
+  flex: none;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--line) 65%, transparent);
+}
+
+.skel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--card) 70%, transparent),
+    transparent
+  );
+  animation: skel-sweep 1.15s var(--ease) infinite;
+}
+
+@keyframes skel-sweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.skel-dot { width: 26px; height: 26px; border-radius: 8px; }
+.skel-line { height: 10px; }
+.skel-line.is-40 { width: 160px; }
+.skel-line.is-50 { width: 120px; }
+.skel-line.is-60 { width: 220px; }
+.skel-pill { width: 96px; height: 24px; border-radius: 999px; }
+.skel-pill.is-short { width: 62px; }
+.skel-tile { width: 36px; height: 36px; border-radius: 10px; }
+.skel-card { width: 100%; height: 56px; border-radius: 8px; }
+.skel-field { width: 100%; height: 28px; }
+
+@media (max-width: 1000px) {
+  .ed-skel-inspector { display: none; }
+}
+
+@media (max-width: 760px) {
+  .ed-skel-panel { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skel::after { animation: none; }
+}

@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Logo } from '../components/Brand';
 import { EditrimIcon, type EditrimIconName } from '../components/EditrimIcon';
 import { useToast } from '../components/Toast';
+import { useSurface } from '../hooks/useSurface';
 import { FONTS } from '../lib/fonts';
 import { buildVideoAsset } from '../lib/video/media';
 import {
@@ -181,6 +182,7 @@ function IconButton({
 }
 
 export default function VideoEditor() {
+  useSurface('neutral');
   const { toast } = useToast();
   const { id: projectId } = useParams<{ id: string }>();
   const navigate = useNavigate();

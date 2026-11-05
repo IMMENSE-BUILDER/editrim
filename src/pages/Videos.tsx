@@ -3,11 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Logo } from '../components/Brand';
 import { EditrimIcon } from '../components/EditrimIcon';
 import { useToast } from '../components/Toast';
+import { useSurface } from '../hooks/useSurface';
 import { createVideoProject, deleteVideoProject, duplicateVideoProject, listVideoProjects, renameVideoProject, type VideoProjectMeta } from '../lib/video/storage';
 import { formatTimecode } from '../lib/video/types';
 import '../styles/videos.css';
 
 export default function Videos() {
+  useSurface('neutral');
   const navigate = useNavigate();
   const { toast } = useToast();
   const [projects, setProjects] = useState<VideoProjectMeta[]>(() => listVideoProjects());

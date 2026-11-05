@@ -17,6 +17,7 @@ import { BulkCreateModal } from '../components/BulkCreateModal';
 import { CommandBar } from '../components/CommandBar';
 import { InlineAiBar } from '../components/InlineAiBar';
 import { useToast } from '../components/Toast';
+import { useSurface } from '../hooks/useSurface';
 import { Canvas } from '../editor/Canvas';
 import { Inspector } from '../editor/Inspector';
 import { LeftPanel, type PanelTab } from '../editor/Panels';
@@ -37,6 +38,7 @@ import type { BrandKit, Design, El, Point } from '../lib/types';
 import { clamp, rotatedBBox, timeAgo, uid, unionRect } from '../lib/utils';
 
 export default function Editor() {
+  useSurface('neutral');
   const { id } = useParams();
   const [search] = useSearchParams();
   const navigate = useNavigate();
@@ -77,10 +79,36 @@ export default function Editor() {
 
 function EditorLoading() {
   return (
-    <div className="editor-loading">
-      <Logo size={38} />
-      <div className="editor-loading-bar"><i /></div>
-      <span>Opening your canvas…</span>
+    <div className="editor-skeleton" role="status" aria-live="polite" aria-label="Opening your canvas">
+      <div className="ed-skel-topbar">
+        <span className="skel skel-dot" />
+        <span className="skel skel-line is-40" />
+        <span className="skel skel-pill" />
+        <span className="skel skel-pill is-short" />
+      </div>
+      <div className="ed-skel-body">
+        <div className="ed-skel-rail">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <span key={index} className="skel skel-tile" />
+          ))}
+        </div>
+        <div className="ed-skel-panel">
+          <span className="skel skel-line is-60" />
+          <span className="skel skel-card" />
+          <span className="skel skel-card" />
+          <span className="skel skel-card" />
+        </div>
+        <div className="ed-skel-canvas">
+          <span className="skel skel-artboard" />
+        </div>
+        <div className="ed-skel-inspector">
+          <span className="skel skel-line is-50" />
+          <span className="skel skel-field" />
+          <span className="skel skel-field" />
+          <span className="skel skel-field" />
+        </div>
+      </div>
+      <p className="ed-skel-caption">Opening your canvas…</p>
     </div>
   );
 }
@@ -129,6 +157,22 @@ function EditorWorkspace({ initial }: { initial: Design }) {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const [saveState, setSaveState] = useState<'saved' | 'saving' | 'error'>('saved');
+  const [focusMode, setFocusMode] = useState(false);
+  const [density, setDensity] = useState<'comfortable' | 'compact'>(() => {
+    try {
+      return localStorage.getItem('editrim_density') === 'compact' ? 'compact' : 'comfortable';
+    } catch {
+      return 'comfortable';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('editrim_density', density);
+    } catch {
+      // Private browsing can reject storage; the choice still applies for this session.
+    }
+  }, [density]);
   const [pageMenu, setPageMenu] = useState<{ index: number; x: number; top: number } | null>(null);
   const [contextMenu, setContextMenu] = useState<CanvasMenuState | null>(null);
   const [styleClipboard, setStyleClipboard] = useState<StylePayload | null>(null);
@@ -381,6 +425,18 @@ function EditorWorkspace({ initial }: { initial: Design }) {
       if (!mod && !e.shiftKey && key === '/') {
         e.preventDefault();
         setCommandOpen(true);
+        return;
+      }
+      /* Focus mode: fade the chrome so the canvas is the only thing in the room. */
+      if (!mod && !e.altKey && !e.shiftKey && key === 'f') {
+        e.preventDefault();
+        setFocusMode(v => !v);
+        return;
+      }
+      /* Density: compact panels for small screens and long sessions. */
+      if (!mod && e.shiftKey && key === 'd') {
+        e.preventDefault();
+        setDensity(current => (current === 'compact' ? 'comfortable' : 'compact'));
         return;
       }
 
@@ -705,7 +761,7 @@ function EditorWorkspace({ initial }: { initial: Design }) {
   ];
 
   return (
-    <div className={`editor ${inspectorOpen ? 'show-inspector' : ''}`}>
+    <div className={`editor ${inspectorOpen ? 'show-inspector' : ''} ${focusMode ? 'focus-mode' : ''} ${density === 'compact' ? 'density-compact' : ''}`}>
       <header className="ed-topbar">
         <div className="ed-top-left">
           <Link to="/dashboard" className="ed-back" title="Back to your designs"><EditrimIcon name="arrowLeft" size={17} /></Link>

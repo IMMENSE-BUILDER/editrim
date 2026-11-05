@@ -132,7 +132,7 @@ export function newVideoProject(name = 'Untitled video'): VideoProject {
     width: 1920,
     height: 1080,
     fps: 30,
-    background: '#0B0911',
+    background: '#0B0B0D',
     tracks: createVideoTracks(),
     clips: [],
     assets: [],
@@ -221,10 +221,10 @@ export function normalizeVideoProject(project: VideoProject): VideoProject {
 }
 
 export function clipColor(kind: VideoClipKind): string {
-  if (kind === 'video') return '#2440F0';
-  if (kind === 'image') return '#8B5CFF';
-  if (kind === 'audio') return '#1FBCC1';
-  return '#D8F55A';
+  if (kind === 'video') return '#2563EB';
+  if (kind === 'image') return '#8B5CF6';
+  if (kind === 'audio') return '#14B8A6';
+  return '#60A5FA';
 }
 
 export function assetKindFromMime(mime: string): VideoAssetKind | null {

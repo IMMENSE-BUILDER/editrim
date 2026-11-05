@@ -1,14 +1,14 @@
 .video-editor {
-  --vd-bg: #0b0a0f;
-  --vd-panel: #131219;
-  --vd-panel-2: #18171f;
-  --vd-line: rgba(244, 241, 234, 0.1);
-  --vd-line-strong: rgba(244, 241, 234, 0.18);
-  --vd-text: #f4f1ea;
-  --vd-muted: rgba(244, 241, 234, 0.56);
-  --vd-muted-2: rgba(244, 241, 234, 0.36);
-  --vd-cobalt: #5b7cff;
-  --vd-lime: #d8f55a;
+  --vd-bg: #0b0b0d;
+  --vd-panel: #18181b;
+  --vd-panel-2: #1f1f23;
+  --vd-line: rgba(250, 250, 250, 0.1);
+  --vd-line-strong: rgba(250, 250, 250, 0.18);
+  --vd-text: #fafafa;
+  --vd-muted: rgba(250, 250, 250, 0.56);
+  --vd-muted-2: rgba(250, 250, 250, 0.36);
+  --vd-cobalt: #3b82f6;
+  --vd-lime: #60a5fa;
   --vd-teal: #2ec4c6;
   height: 100vh;
   min-height: 620px;
@@ -164,7 +164,7 @@
 
 .vd-icon-btn.is-active {
   color: var(--vd-lime);
-  background: rgba(216, 245, 90, 0.08);
+  background: rgba(96, 165, 250, 0.08);
 }
 
 .vd-mobile-btn {
@@ -523,8 +523,8 @@
   display: grid;
   place-items: center;
   color: var(--vd-lime);
-  background: rgba(216, 245, 90, 0.08);
-  border: 1px solid rgba(216, 245, 90, 0.16);
+  background: rgba(96, 165, 250, 0.08);
+  border: 1px solid rgba(96, 165, 250, 0.16);
   margin-bottom: 4px;
 }
 
@@ -603,7 +603,7 @@
   display: grid;
   place-items: center;
   background: var(--vd-text);
-  color: #0b0a0f;
+  color: #0b0b0d;
   margin: 0 3px;
   transition: transform 160ms var(--ease-out), background 160ms var(--ease);
 }
@@ -710,9 +710,9 @@
 
 .vd-snap:hover,
 .vd-snap.is-active {
-  background: rgba(216, 245, 90, 0.08);
+  background: rgba(96, 165, 250, 0.08);
   color: var(--vd-lime);
-  border-color: rgba(216, 245, 90, 0.18);
+  border-color: rgba(96, 165, 250, 0.18);
 }
 
 
@@ -751,7 +751,7 @@
   align-items: center;
   gap: 8px;
   padding: 0 8px 0 10px;
-  border-bottom: 1px solid rgba(244, 241, 234, 0.06);
+  border-bottom: 1px solid rgba(250, 250, 250, 0.06);
 }
 
 .vd-track-icon {
@@ -846,11 +846,11 @@
   top: 0;
   bottom: 0;
   width: 1px;
-  background: rgba(244, 241, 234, 0.08);
+  background: rgba(250, 250, 250, 0.08);
 }
 
 .vd-tick.is-major {
-  background: rgba(244, 241, 234, 0.2);
+  background: rgba(250, 250, 250, 0.2);
 }
 
 .vd-tick b {
@@ -867,7 +867,7 @@
 .vd-lane {
   position: relative;
   height: 56px;
-  border-bottom: 1px solid rgba(244, 241, 234, 0.06);
+  border-bottom: 1px solid rgba(250, 250, 250, 0.06);
   background-image: linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
   background-size: var(--vd-grid, 74px) 100%;
 }
@@ -920,13 +920,13 @@
 }
 
 .vd-clip-image {
-  background-color: rgba(139, 92, 255, 0.35);
+  background-color: rgba(59, 130, 246, 0.35);
 }
 
 .vd-clip-text {
-  background: linear-gradient(135deg, #d8f55a, #b9e83b);
-  border-color: #e8ff87;
-  color: #14130f;
+  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  border-color: #93c5fd;
+  color: #ffffff;
 }
 
 .vd-clip-audio {
@@ -1044,7 +1044,7 @@
   background: var(--vd-lime);
   z-index: 8;
   pointer-events: none;
-  box-shadow: 0 0 8px rgba(216, 245, 90, 0.3);
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.3);
 }
 
 .vd-playhead span {
@@ -1128,7 +1128,7 @@
 
 .vd-aspect-grid button.is-active {
   border-color: var(--vd-lime);
-  background: rgba(216, 245, 90, 0.06);
+  background: rgba(96, 165, 250, 0.06);
 }
 
 .vd-aspect-shape {
@@ -1284,12 +1284,12 @@
 }
 
 .vd-selected-icon.is-text {
-  color: #14130f;
+  color: #ffffff;
   background: var(--vd-lime);
 }
 
 .vd-selected-icon.is-audio {
-  color: #0b0a0f;
+  color: #0b0b0d;
   background: var(--vd-teal);
 }
 
@@ -1382,7 +1382,7 @@
 
 .vd-align-buttons button.is-active {
   background: var(--vd-lime);
-  color: #14130f;
+  color: #ffffff;
   border-color: var(--vd-lime);
 }
 

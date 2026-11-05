@@ -50,6 +50,9 @@ import './styles/theme.css';
 import './styles/studio.css';
 import './styles/violet.css';
 import './styles/vercel-dark.css';
+import './styles/neutral.css';
+import './styles/motion.css';
+import './styles/polish.css';
 import { migrateLegacyStorage } from './lib/migrate';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);

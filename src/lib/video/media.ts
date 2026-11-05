@@ -74,7 +74,7 @@ export async function createVideoThumbnail(src: string, duration: number): Promi
     ctx.drawImage(video, (320 - w) / 2, (180 - h) / 2, w, h);
     return canvas.toDataURL('image/jpeg', 0.75);
   } catch {
-    return placeholderThumbnail('Video', '#2440F0');
+    return placeholderThumbnail('Video', '#2563EB');
   }
 }
 

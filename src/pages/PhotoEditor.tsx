@@ -4,6 +4,7 @@ import { Logo } from '../components/Brand';
 import { EditrimIcon } from '../components/EditrimIcon';
 import type { EditrimIconName } from '../components/EditrimIcon';
 import { useToast } from '../components/Toast';
+import { useSurface } from '../hooks/useSurface';
 import { clamp, downloadBlob, safeFilename } from '../lib/utils';
 import { FONTS } from '../lib/fonts';
 import {
@@ -214,6 +215,7 @@ function FilterThumb({ image, presetId }: { image: HTMLImageElement; presetId: P
 }
 
 export default function PhotoEditor() {
+  useSurface('neutral');
   const { toast } = useToast();
   const [name, setName] = useState('Untitled photo');
   const [image, setImage] = useState<HTMLImageElement | null>(null);

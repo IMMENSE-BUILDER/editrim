@@ -18,7 +18,11 @@ import { Modal } from '../components/Modal';
 import { PagePreview } from '../components/PagePreview';
 import { FormatGlyph } from '../components/FormatGlyph';
 import { ThemeToggle } from '../components/ThemeToggle';
+import { CommandBar } from '../components/CommandBar';
+import type { StudioCommand } from '../lib/commands';
+import { toggleTheme } from '../lib/theme';
 import { useToast } from '../components/Toast';
+import { useSurface } from '../hooks/useSurface';
 import {
   addAsset, createDesign, deleteDesign, duplicateDesign, getBrand, getDesign,
   listDesigns, saveDesign, storageUsage,
@@ -114,6 +118,7 @@ function formatCount(n: number, one: string, many: string) {
 }
 
 export default function Home() {
+  useSurface('neutral');
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -138,6 +143,7 @@ export default function Home() {
   const [printing, setPrinting] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [notificationsRead, setNotificationsRead] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -159,6 +165,11 @@ export default function Home() {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
       const typing = !!target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT' || target.isContentEditable);
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setPaletteOpen(open => !open);
+        return;
+      }
       if (e.key === '/' && !typing) {
         e.preventDefault();
         searchRef.current?.focus();
@@ -193,6 +204,33 @@ export default function Home() {
     else setSearchParams({});
     setRailPopover(null);
   };
+
+  /**
+   * The dashboard's palette. Same component as the editor's, so ⌘K means the
+   * same thing everywhere: navigate, create, search, or reopen a design.
+   */
+  const commands = useMemo<StudioCommand[]>(() => {
+    const items: StudioCommand[] = [
+      { id: 'home', label: 'Go to Home', group: 'Navigate', icon: 'home', run: () => setView('home') },
+      { id: 'projects', label: 'Go to Projects', group: 'Navigate', icon: 'projects', run: () => setView('projects') },
+      { id: 'templates', label: 'Browse templates', group: 'Navigate', icon: 'templates', keywords: ['gallery'], run: () => navigate('/templates') },
+      { id: 'search', label: 'Search designs', group: 'Create', icon: 'search', keywords: ['find', 'lookup'], run: () => searchRef.current?.focus() },
+      { id: 'new', label: 'New design', group: 'Create', icon: 'plus', keywords: ['create', 'blank', 'canvas'], run: () => setNewOpen(true) },
+      { id: 'theme', label: 'Toggle light / dark', group: 'Settings', icon: 'moon', keywords: ['appearance', 'dark mode'], run: () => { toggleTheme(); } },
+    ];
+    for (const design of entries.slice(0, 8)) {
+      items.push({
+        id: `open-${design.id}`,
+        label: `Open ${design.title}`,
+        hint: design.category,
+        group: 'Recent designs',
+        icon: 'doc',
+        keywords: [design.category, 'design', 'recent', 'open'],
+        run: () => navigate(`/editor/${design.id}`),
+      });
+    }
+    return items;
+  }, [entries, navigate]);
 
   const startBlank = (w: number, h: number, title: string, category: string) => {
     const d = createDesign({ title, width: w, height: h, category });
@@ -842,6 +880,8 @@ export default function Home() {
       >
         <div className="home-delete"><EditrimIcon name="trash" size={18} /><div><strong>{deleting?.title}</strong><span>{deleting ? `${deleting.pages.length} pages · ${deleting.size.width}×${deleting.size.height}` : ''}</span></div></div>
       </Modal>
+
+      <CommandBar open={paletteOpen} onClose={() => setPaletteOpen(false)} commands={commands} />
     </div>
   );
 

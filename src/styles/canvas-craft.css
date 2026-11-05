@@ -24,3 +24,23 @@
   user-select: none;
   -webkit-user-select: none;
 }
+/* ------------------------------------------------------------ spacing chips
+
+   The gap between the moving selection and its nearest neighbours, drawn in
+   page coordinates and counter-scaled so the label stays legible at any zoom. */
+
+.cv-gap {
+  position: absolute;
+  z-index: 30;
+  pointer-events: none;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 10px;
+  line-height: 15px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  opacity: 0.92;
+}
