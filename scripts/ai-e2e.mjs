@@ -75,12 +75,11 @@ await page.route('**/api/ai', async route => {
     contentType: 'application/json',
     body: JSON.stringify({
       ok: false,
-      error: 'Simulated gateway failure for diagnostics test.',
+      error: 'Simulated AI service failure for diagnostics test.',
       stage: 'gateway',
       code: 'GATEWAY_502',
       status: 502,
       requestId: 'ai_test_12345',
-      model: 'minimax/minimax-m3.1-flash',
     }),
   });
 });
@@ -94,7 +93,7 @@ const errText = await page.locator('.ai-error').innerText();
 log('errorCard', errText.replace(/\n/g, ' | '));
 assert.ok(errText.includes('GATEWAY_502'));
 assert.ok(errText.includes('ai_test_12345'));
-assert.ok(errText.includes('Vercel AI Gateway'));
+assert.ok(errText.includes('AI service error'));
 await page.screenshot({ path: 'shots/ai-error.png' });
 
 log('pageErrors', errors);

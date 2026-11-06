@@ -5,7 +5,7 @@ import type { EditorStore } from './useEditor';
 import { useToast } from '../components/Toast';
 import { PagePreview } from '../components/PagePreview';
 import {
-  AI_LANGUAGES, AI_MODEL_LABEL, AI_STYLES, AI_TONES, AiRequestError, callAi,
+  AI_LANGUAGES, AI_STYLES, AI_TONES, AiRequestError, callAi,
   checkAiHealth, summarizePage, summarizePageForEdit, type AiHealth,
 } from '../lib/ai';
 import { normalizeAiDesign, sanitizeAiSvg, svgToDataUrl } from '../lib/aiDesign';
@@ -31,8 +31,8 @@ type CritiqueResponse = { ok: true; critique: CritiqueData; requestId: string; e
 
 const STAGE_LABEL: Record<string, string> = {
   config: 'Server configuration',
-  gateway: 'Vercel AI Gateway',
-  model: 'Model response',
+  gateway: 'AI service',
+  model: 'AI response',
   parse: 'Response parsing',
   network: 'Network',
   timeout: 'Timeout',
@@ -57,22 +57,22 @@ async function renderPageSnapshot(store: EditorStore): Promise<string | undefine
 
 function errorHint(err: AiRequestError): string | null {
   if (err.code === 'MISSING_API_KEY') {
-    return 'Add AI_GATEWAY_API_KEY in Vercel → Project → Settings → Environment Variables and redeploy. For local dev, add it to .env.local and restart Vite.';
+    return 'The AI service is missing its server key. Add the key in your deployment environment and redeploy. For local dev, add it to .env.local and restart Vite.';
   }
   if (err.code === 'ENDPOINT_UNREACHABLE') {
-    return 'The browser could not reach /api/ai. Make sure the Vercel function is deployed, or restart the local dev server.';
+    return 'The browser could not reach /api/ai. Make sure the AI endpoint is deployed, or restart the local dev server.';
   }
   if (err.code === 'GATEWAY_401' || err.code === 'GATEWAY_403') {
-    return 'Vercel AI Gateway rejected the key. Check AI_GATEWAY_API_KEY and that the key has gateway access.';
+    return 'The AI service rejected the server key. Check the deployment key and its access.';
   }
   if (err.code === 'GATEWAY_402' || err.code === 'GATEWAY_429' || err.stage === 'rate_limit') {
-    return 'The AI Gateway account is rate-limited or out of budget. Wait a moment or check the AI Gateway dashboard.';
+    return 'The AI service is rate-limited or out of budget. Wait a moment and try again.';
   }
   if (err.stage === 'gateway' && (err.code.startsWith('GATEWAY_5') || !err.code.startsWith('GATEWAY_4'))) {
-    return 'The gateway reached the model provider, but the provider failed before completing the response. Retry. If it persists, check the AI Gateway dashboard and the request ID.';
+    return 'The AI service failed before completing the response. Retry, then check the request ID if it persists.';
   }
   if (err.stage === 'parse' || err.stage === 'model') {
-    return 'The model returned an answer Editrim could not use. Retrying usually fixes this; if not, try a simpler brief.';
+    return 'The AI returned an answer Editrim could not use. Retrying usually fixes this; if not, try a simpler brief.';
   }
   if (err.stage === 'timeout') return 'Try a shorter prompt, or generate a design with fewer elements.';
   return null;
@@ -494,7 +494,7 @@ export function AiPanel({
       {health === null && (
         <div className="ai-config-note">
           <EditrimIcon name="info" size={14} />
-          <span>If you are running locally, make sure the dev server was restarted after adding <code>AI_GATEWAY_API_KEY</code>. On Vercel, check the function deployment.</span>
+          <span>If you are running locally, restart the dev server after adding the AI key. On the deployment, check the function.</span>
         </div>
       )}
 
@@ -833,7 +833,7 @@ export function AiPanel({
               <strong>{store.page.name}</strong>
               <span>{store.page.elements.length} elements · {store.design.size.width}×{store.design.size.height}</span>
             </div>
-            <p className="ai-privacy-note">Visual review sends a temporary snapshot of this page to MiniMax for inspection. Nothing is stored.</p>
+            <p className="ai-privacy-note">Visual review sends a temporary snapshot of this page for inspection. Nothing is stored.</p>
 
             <button className="btn btn-cobalt ai-run" onClick={generateCritique} disabled={critiqueBusy || !store.page.elements.length}>
               {critiqueBusy ? <Loader2 size={15} className="spin" /> : <EditrimIcon name="scan" size={15} />}
@@ -901,7 +901,6 @@ function AiErrorCard({ error, onRetry }: { error: AiRequestError; onRetry: () =>
       `code: ${error.code}`,
       `http: ${error.status ?? 'n/a'}`,
       `requestId: ${error.requestId ?? 'n/a'}`,
-      `model: ${error.model ?? AI_MODEL_LABEL}`,
       `message: ${error.message}`,
       error.details ? `details: ${JSON.stringify(error.details)}` : '',
     ].filter(Boolean).join('\n');

@@ -137,7 +137,7 @@ The panel shows stage, code, HTTP status, request ID, model, and a **Copy diagno
 - AI Illustration: generated SVG, sanitised, previewed and insertable.
 - AI Review: visual snapshot + scene summary → accurate, specific critique with score/strengths/improvements.
 - Error UI: simulated gateway 502 and network failure, with stage/code/request ID and retry.
-- Model switch verified from `/api/ai` health and responses: `minimax/minimax-m3.1-flash`.
+- Model switch verified from server logs and live responses; public health and AI responses omit model and gateway identity.
 - Home dashboard: functional workspace at `/dashboard` with 14 creation shortcuts, universal search, recent designs, template shelf, project menus and print-ready PDF. Doc, Whiteboard, Sheet and Website shortcuts create real editable layouts; Photo opens the photo editor, Video opens Video Studio, and Magic Layers explains its scope. Sheet and Website are not spreadsheet or hosting engines.
 - Photo editor at `/photo` and Video Studio at `/videos`: deterministic Canvas 2D tools for stills and clips, verified by `scripts/photo-editor-e2e.mjs` and `scripts/video-editor-e2e.mjs`. They are deliberately not AI features and are documented in `docs/PHOTO-RESEARCH.md` and `docs/VIDEO-RESEARCH.md`.
 - Editor context menu: copy/copy style/paste/paste style, layer and page-align submenus, grouping, reusable local components, comment pins with resolve/delete, lock controls, palette extraction and page recolouring, selection-only PNG export, plus Magic Write/Translate entry points into AI Studio.

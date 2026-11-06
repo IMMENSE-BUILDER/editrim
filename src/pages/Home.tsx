@@ -505,7 +505,7 @@ export default function Home() {
           <div className="rail-popover rail-notifications">
             <div className="rail-popover-head"><strong>Updates</strong><button onClick={() => setRailPopover(null)}><EditrimIcon name="close" size={14} /></button></div>
             <div className="rail-popover-item"><span className="rail-popover-dot" /><div><strong>Your designs are local</strong><p>Everything autosaves in this browser. Nothing is uploaded.</p></div></div>
-            <div className="rail-popover-item"><span className="rail-popover-dot" /><div><strong>AI Studio is ready</strong><p>Design, edit, write and review with MiniMax M3.1 Flash.</p></div></div>
+            <div className="rail-popover-item"><span className="rail-popover-dot" /><div><strong>AI Studio is ready</strong><p>Design, edit, write and review with AI Studio.</p></div></div>
             <div className="rail-popover-item"><span className="rail-popover-dot" /><div><strong>Find anything</strong><p>Press <span className="kbd">/</span> to search designs, templates and actions.</p></div></div>
           </div>
         )}

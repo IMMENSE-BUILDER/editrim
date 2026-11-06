@@ -1,8 +1,5 @@
 import type { Design, Page } from './types';
 
-export const AI_MODEL_LABEL = 'MiniMax M3.1 Flash';
-export const AI_GATEWAY_LABEL = 'Vercel AI Gateway';
-
 export type AiStage =
   | 'request'
   | 'config'
@@ -22,7 +19,6 @@ export type AiErrorData = {
   code: string;
   status?: number;
   requestId?: string;
-  model?: string;
   details?: Record<string, unknown>;
   action?: string;
 };
@@ -32,7 +28,6 @@ export class AiRequestError extends Error {
   code: string;
   status?: number;
   requestId?: string;
-  model?: string;
   details?: Record<string, unknown>;
   action?: string;
 
@@ -43,7 +38,6 @@ export class AiRequestError extends Error {
     this.code = data.code;
     this.status = data.status;
     this.requestId = data.requestId;
-    this.model = data.model;
     this.details = data.details;
     this.action = data.action;
   }
@@ -52,8 +46,6 @@ export class AiRequestError extends Error {
 export type AiHealth = {
   ok: boolean;
   configured: boolean;
-  model: string;
-  gateway: string;
   message: string;
 };
 
@@ -100,7 +92,6 @@ export async function callAi<T>(action: string, payload: Record<string, unknown>
         code: data?.code || `HTTP_${res.status}`,
         status: res.status,
         requestId: data?.requestId,
-        model: data?.model,
         details: data?.details,
         action,
       });
@@ -122,7 +113,7 @@ export async function callAi<T>(action: string, payload: Record<string, unknown>
     }
     const netErr = new AiRequestError({
       message:
-        "Couldn't reach the AI endpoint. Check your connection — and if you're running locally, make sure the dev server has AI_GATEWAY_API_KEY in .env.local.",
+        "Couldn't reach the AI endpoint. Check your connection — and if you're running locally, make sure the dev server has the AI key in .env.local.",
       stage: 'network',
       code: 'ENDPOINT_UNREACHABLE',
       action,
@@ -142,7 +133,6 @@ function logAiFailure(err: AiRequestError) {
     code: err.code,
     status: err.status,
     requestId: err.requestId,
-    model: err.model,
     message: err.message,
     details: err.details,
   });

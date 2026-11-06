@@ -164,7 +164,7 @@ The app was tested end-to-end with Playwright against Chrome:
 - Engine schema audit: 59 canvas formats, print DPI mappings, 16 font assets, 6 text-effect presets, 8 type pairings, 5 transitions, 35 vectors in 6 clusters, 10 mood palettes, 7 slide archetypes, 3 chart wrappers, reflow without overflow and enforced brand locks
 - responsive layouts at 1440, 1600 and 390 px
 - **AI health check, design generation, AI editing with preview + apply + undo, AI copy, vector illustration, visual review, and visible diagnostics for gateway/network/validation failures**
-- Model verification: `minimax/minimax-m3.1-flash` via Vercel AI Gateway, verified from `/api/ai` health and request logs
+- Model verification: `minimax/minimax-m3.1-flash` via server logs and live generation; the public health and AI responses no longer expose model or gateway identity
 
 ## Credits
 

@@ -42,7 +42,7 @@ const FAQS = [
   },
   {
     q: 'How does the AI work?',
-    a: 'AI Studio sends your brief to MiniMax M3.1 Flash through a Vercel AI Gateway serverless function. Text actions send the prompt and a compact description of the current page. AI Review renders a temporary snapshot of the page and sends that image for visual critique. Requests happen only when you press generate, and API keys stay on the server. Nothing is stored by Editrim. AI drafts are always previewed first, so nothing changes until you approve it. AI can be wrong — review the result. Image segmentation and inpainting (such as a background remover) are not implemented; AI illustrations are generated as sanitised vector SVG.',
+    a: 'AI Studio sends your brief to a serverless AI service. Text actions send the prompt and a compact description of the current page. AI Review renders a temporary snapshot of the page and sends that image for visual critique. Requests happen only when you press generate, and API keys stay on the server. Nothing is stored by Editrim. AI drafts are always previewed first, so nothing changes until you approve it. AI can be wrong - review the result. Image segmentation and inpainting (such as a background remover) are not implemented; AI illustrations are generated as sanitised vector SVG.',
   },
 ];
 
@@ -329,7 +329,7 @@ export default function Landing() {
               <Link to="/editor/new#ai" className="btn btn-cobalt">
                 Try AI Studio <EditrimIcon name="arrowUpRight" size={16} />
               </Link>
-              <span className="ai-powered"><span /> MiniMax M3.1 Flash · Vercel AI Gateway</span>
+              <span className="ai-powered"><span /> AI Studio · Server-side</span>
             </div>
           </div>
 
@@ -355,7 +355,7 @@ export default function Landing() {
             </div>
             <div className="ai-demo-foot">
               <span><EditrimIcon name="check" size={11} /> Editable before it lands</span>
-              <span>MiniMax M3.1 Flash</span>
+              <span>AI Studio</span>
             </div>
           </div>
         </div>

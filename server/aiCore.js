@@ -37,11 +37,9 @@ export function aiHealth(apiKey) {
   return {
     ok: true,
     configured: Boolean(apiKey),
-    model: AI_MODEL,
-    gateway: 'vercel-ai-gateway',
     message: apiKey
-      ? 'Vercel AI Gateway configured.'
-      : 'AI_GATEWAY_API_KEY is missing on the server.',
+      ? 'AI service configured.'
+      : 'The AI server key is missing on the server.',
   };
 }
 
@@ -104,7 +102,7 @@ function cleanCopy(text) {
 async function callModel(messages, opts = {}) {
   const apiKey = opts.apiKey;
   if (!apiKey) {
-    throw new AiError('AI is not configured on this deployment yet. Add AI_GATEWAY_API_KEY.', 503, 'config', 'MISSING_API_KEY');
+    throw new AiError('AI is not configured on this deployment yet. Add the server key.', 503, 'config', 'MISSING_API_KEY');
   }
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 58_000);
@@ -131,10 +129,10 @@ async function callModel(messages, opts = {}) {
     try {
       data = JSON.parse(raw);
     } catch {
-      throw new AiError(`The AI gateway returned an unreadable response (${res.status}).`, 502, 'gateway', 'GATEWAY_BAD_RESPONSE');
+      throw new AiError(`The AI service returned an unreadable response (${res.status}).`, 502, 'gateway', 'GATEWAY_BAD_RESPONSE');
     }
     if (!res.ok) {
-      const message = data?.error?.message || data?.message || 'The AI gateway rejected the request.';
+      const message = data?.error?.message || data?.message || 'The AI service rejected the request.';
       throw new AiError(message.slice(0, 300), res.status === 429 ? 429 : 502, 'gateway', `GATEWAY_${res.status}`, {
         upstreamStatus: res.status,
       });
@@ -379,7 +377,7 @@ export async function runAi(payload, options = {}) {
       const text = cleanCopy(result.content);
       if (!text) throw new AiError('The AI returned no copy. Try again.', 502, 'model', 'EMPTY_COPY');
       console.log(`[editrim-ai] ${requestId} action=write stage=done status=200 ${Date.now() - started}ms`);
-      return { status: 200, body: { ok: true, model: AI_MODEL, text, requestId, elapsedMs: Date.now() - started } };
+      return { status: 200, body: { ok: true, text, requestId, elapsedMs: Date.now() - started } };
     }
 
     if (action === 'translate') {
@@ -392,7 +390,7 @@ export async function runAi(payload, options = {}) {
       const text = cleanCopy(result.content);
       if (!text) throw new AiError('The AI returned no translation. Try again.', 502, 'model', 'EMPTY_TRANSLATION');
       console.log(`[editrim-ai] ${requestId} action=translate stage=done status=200 ${Date.now() - started}ms`);
-      return { status: 200, body: { ok: true, model: AI_MODEL, text, requestId, elapsedMs: Date.now() - started } };
+      return { status: 200, body: { ok: true, text, requestId, elapsedMs: Date.now() - started } };
     }
 
     if (action === 'design') {
@@ -407,7 +405,7 @@ export async function runAi(payload, options = {}) {
         throw new AiError('The AI returned a design with no elements. Try again.', 502, 'validation', 'NO_ELEMENTS');
       }
       console.log(`[editrim-ai] ${requestId} action=design stage=done status=200 ${Date.now() - started}ms elements=${spec.elements.length}`);
-      return { status: 200, body: { ok: true, model: AI_MODEL, spec, requestId, elapsedMs: Date.now() - started } };
+      return { status: 200, body: { ok: true, spec, requestId, elapsedMs: Date.now() - started } };
     }
 
     if (action === 'illustration') {
@@ -419,7 +417,7 @@ export async function runAi(payload, options = {}) {
       });
       const svg = sanitizeSvg(result.content);
       console.log(`[editrim-ai] ${requestId} action=illustration stage=done status=200 ${Date.now() - started}ms svgChars=${svg.length}`);
-      return { status: 200, body: { ok: true, model: AI_MODEL, svg, requestId, elapsedMs: Date.now() - started } };
+      return { status: 200, body: { ok: true, svg, requestId, elapsedMs: Date.now() - started } };
     }
 
     if (action === 'critique') {
@@ -431,7 +429,7 @@ export async function runAi(payload, options = {}) {
       });
       const critique = normalizeCritique(extractJson(result.content));
       console.log(`[editrim-ai] ${requestId} action=critique stage=done status=200 ${Date.now() - started}ms visual=${Boolean(payload?.image)}`);
-      return { status: 200, body: { ok: true, model: AI_MODEL, critique, requestId, elapsedMs: Date.now() - started } };
+      return { status: 200, body: { ok: true, critique, requestId, elapsedMs: Date.now() - started } };
     }
 
     if (action === 'edit') {
@@ -447,7 +445,7 @@ export async function runAi(payload, options = {}) {
         throw new AiError('The AI did not propose any edits. Try a more specific instruction.', 502, 'validation', 'NO_COMMANDS');
       }
       console.log(`[editrim-ai] ${requestId} action=edit stage=done status=200 ${Date.now() - started}ms commands=${plan.commands.length}`);
-      return { status: 200, body: { ok: true, model: AI_MODEL, plan, requestId, elapsedMs: Date.now() - started } };
+      return { status: 200, body: { ok: true, plan, requestId, elapsedMs: Date.now() - started } };
     }
 
     throw new AiError('Unknown AI action.', 400, 'validation', 'UNKNOWN_ACTION');
@@ -467,7 +465,6 @@ export async function runAi(payload, options = {}) {
         code,
         status,
         requestId,
-        model: AI_MODEL,
         ...(known && err.details ? { details: err.details } : {}),
       },
     };

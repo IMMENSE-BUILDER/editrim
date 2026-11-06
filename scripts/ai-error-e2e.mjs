@@ -8,7 +8,7 @@ await p.goto('http://127.0.0.1:5173/editor/new?template=cafe-opening#ai',{waitUn
 await p.waitForTimeout(1600);
 await p.route('**/api/ai', async route => {
   if (route.request().method()==='GET') return route.continue();
-  await route.fulfill({status:502,contentType:'application/json',body:JSON.stringify({ok:false,error:'The AI gateway returned HTTP 502 (upstream provider failed).',stage:'gateway',code:'GATEWAY_502',status:502,requestId:'ai_diag_12345',model:'minimax/minimax-m3.1-flash'})});
+  await route.fulfill({status:502,contentType:'application/json',body:JSON.stringify({ok:false,error:'The AI service returned HTTP 502 (upstream provider failed).',stage:'gateway',code:'GATEWAY_502',status:502,requestId:'ai_diag_12345'})});
 });
 await p.getByRole('tab',{name:'Write'}).click();
 await p.waitForTimeout(300);
@@ -19,7 +19,7 @@ await p.waitForSelector('.ai-error',{timeout:20000});
 const text=await p.locator('.ai-error').innerText();
 console.log(text.replace(/\n/g,' | '));
 console.log('consoleErrors', errors.length, errors.slice(-3));
-assert.ok(text.includes('Vercel AI Gateway error'));
+assert.ok(text.includes('AI service error'));
 assert.ok(text.includes('GATEWAY_502'));
 assert.ok(text.includes('ai_diag_12345'));
 assert.ok(text.includes('HTTP 502'));
