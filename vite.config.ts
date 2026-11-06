@@ -60,7 +60,7 @@ function aiDevPlugin(apiKey) {
             code: 'INVALID_JSON_BODY',
             status: 400,
             requestId: `ai_${Date.now().toString(36)}`,
-            model: 'xiaomi/mimo-v2.6-flash',
+            model: 'minimax/minimax-m3.1-flash',
           }));
         }
       });

@@ -1,6 +1,6 @@
 import type { Design, Page } from './types';
 
-export const AI_MODEL_LABEL = 'MiMo V2.6 Flash';
+export const AI_MODEL_LABEL = 'MiniMax M3.1 Flash';
 export const AI_GATEWAY_LABEL = 'Vercel AI Gateway';
 
 export type AiStage =

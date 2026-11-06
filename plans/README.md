@@ -21,3 +21,4 @@ Implementation records. Each plan lists what shipped, the files involved and the
 | 015 | Apache License 2.0 — license, NOTICE, package metadata and docs | Implemented |
 | 016 | Vercel Web Analytics — React package, production page views and privacy docs | Implemented |
 | 017 | Library expansion — 24 new hand-built templates across six collections | Implemented |
+| 018 | AI model switch — MiniMax M3.1 Flash across server, client, docs and tests | Implemented |

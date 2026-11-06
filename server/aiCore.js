@@ -5,7 +5,7 @@
 
 import { jsonrepair } from 'jsonrepair';
 
-export const AI_MODEL = 'xiaomi/mimo-v2.6-flash';
+export const AI_MODEL = 'minimax/minimax-m3.1-flash';
 const GATEWAY_URL = 'https://ai-gateway.vercel.sh/v1/chat/completions';
 
 export const AI_FONTS = [

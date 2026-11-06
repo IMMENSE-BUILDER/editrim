@@ -833,7 +833,7 @@ export function AiPanel({
               <strong>{store.page.name}</strong>
               <span>{store.page.elements.length} elements · {store.design.size.width}×{store.design.size.height}</span>
             </div>
-            <p className="ai-privacy-note">Visual review sends a temporary snapshot of this page to MiMo for inspection. Nothing is stored.</p>
+            <p className="ai-privacy-note">Visual review sends a temporary snapshot of this page to MiniMax for inspection. Nothing is stored.</p>
 
             <button className="btn btn-cobalt ai-run" onClick={generateCritique} disabled={critiqueBusy || !store.page.elements.length}>
               {critiqueBusy ? <Loader2 size={15} className="spin" /> : <EditrimIcon name="scan" size={15} />}

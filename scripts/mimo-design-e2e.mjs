@@ -28,7 +28,7 @@ const headingColor = await page.locator('.cv-el').filter({ hasText: 'Bruma' }).f
 log('appliedHeadingColor', headingColor);
 assert.ok(headingColor.includes('36, 64, 240'));
 
-// AI design with MiMo
+// AI design with MiniMax
 await page.getByRole('tab', { name: 'Design' }).click();
 await wait(200);
 await page.locator('#ai-design-prompt').fill('A warm editorial launch poster for Bruma slow coffee, with one coffee photo and a confident headline.');
@@ -61,4 +61,4 @@ await page.screenshot({ path: 'shots/mimo-illustration-insert.png' });
 log('errors', errors);
 assert.equal(errors.length, 0);
 await browser.close();
-console.log('MIMO DESIGN/EDIT OK');
+console.log('MINIMAX DESIGN/EDIT OK');

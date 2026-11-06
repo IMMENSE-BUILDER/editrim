@@ -13,7 +13,9 @@ const wait = ms => page.waitForTimeout(ms);
 await page.goto('http://127.0.0.1:5173/editor/new?template=cafe-opening#ai', { waitUntil: 'networkidle' });
 await wait(1800);
 log('health', await page.locator('.ai-health').innerText());
-assert.ok((await page.locator('.ai-health').innerText()).includes('MiMo'));
+assert.ok((await page.locator('.ai-health').innerText()).includes('AI ready'));
+const health = await (await page.request.get('http://127.0.0.1:5173/api/ai')).json();
+assert.equal(health.model, 'minimax/minimax-m3.1-flash');
 
 // AI agent: propose edit commands, preview, apply
 await page.getByRole('tab', { name: 'Edit' }).click();
@@ -58,7 +60,7 @@ log('copy', copy);
 assert.ok(copy.length > 3);
 await page.screenshot({ path: 'shots/mimo-ai-write.png' });
 
-// AI illustration, now with MiMo
+// AI illustration, now with MiniMax
 await page.getByRole('tab', { name: 'Design' }).click();
 await wait(300);
 await page.locator('.ai-subsection-toggle').click();
@@ -78,12 +80,12 @@ await page.route('**/api/ai', async route => {
     contentType: 'application/json',
     body: JSON.stringify({
       ok: false,
-      error: 'MiMo gateway upstream failed.',
+      error: 'MiniMax gateway upstream failed.',
       stage: 'gateway',
       code: 'GATEWAY_502',
       status: 502,
-      requestId: 'ai_mimo_diag_77',
-      model: 'xiaomi/mimo-v2.6-flash',
+      requestId: 'ai_minimax_diag_77',
+      model: 'minimax/minimax-m3.1-flash',
     }),
   });
 });
@@ -96,11 +98,12 @@ await page.waitForSelector('.ai-error', { timeout: 20000 });
 const err = await page.locator('.ai-error').innerText();
 log('error', err.replace(/\n/g, ' | '));
 assert.ok(err.includes('GATEWAY_502'));
-assert.ok(err.includes('ai_mimo_diag_77'));
+assert.ok(err.includes('ai_minimax_diag_77'));
 assert.ok(err.includes('Vercel AI Gateway'));
 await page.screenshot({ path: 'shots/mimo-ai-error.png' });
 
 log('errors', errors);
-assert.equal(errors.length, 0);
+const unexpected = errors.filter(e => !e.includes('GATEWAY_502') && !e.includes('status of 502'));
+assert.equal(unexpected.length, 0);
 await browser.close();
-console.log('MIMO AI E2E OK');
+console.log('MINIMAX AI E2E OK');

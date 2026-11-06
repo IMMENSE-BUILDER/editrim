@@ -67,4 +67,4 @@ Production run on `https://editrim.vercel.app`:
 - WebM export downloaded successfully (697 KB)
 - search and empty-search states verified in the library
 - 390px layout has no horizontal overflow
-- no console errors; /api/ai remains `200` on `xiaomi/mimo-v2.6-flash`
+- no console errors; /api/ai remains `200` on `minimax/minimax-m3.1-flash`

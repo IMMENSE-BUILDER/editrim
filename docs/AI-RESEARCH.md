@@ -11,7 +11,7 @@ Canva is no longer just a template editor. Its 2026 stack is a cloud Visual Suit
 - an AI layer — **Canva AI 2.0** — that performs conversational, multi-step edits on the canvas;
 - asset, publishing, and enterprise surfaces that a local-first product cannot honestly clone without a backend and media models.
 
-The highest-value gap for a browser alternative is not more templates. It is **trustworthy AI editing on a real, local scene graph**: visible plans, explicit commands, previews, validation, and one-step undo. Editrim now implements that gap with **Xiaomi MiMo V2.6 Flash** and **Vercel AI Gateway**.
+The highest-value gap for a browser alternative is not more templates. It is **trustworthy AI editing on a real, local scene graph**: visible plans, explicit commands, previews, validation, and one-step undo. Editrim now implements that gap with **MiniMax M3.1 Flash** and **Vercel AI Gateway**.
 
 ## 2. What Canva ships — core and advanced
 
@@ -45,7 +45,7 @@ The highest-value gap for a browser alternative is not more templates. It is **t
 | **Magic Insights/Formulas/Charts** | Sheets analysis and formulas | Not implemented; no Sheets surface |
 | **Canva Code** | Prompt → interactive HTML/CSS/JS, sandboxed | Not implemented; potential P2 with a sandboxed iframe |
 | **MCP/AI Connector** | Drive Canva from external agents | Not implemented; the command bus is a good substrate for a future MCP bridge |
-| **AI Review / critique** | Not a single named Canva SKU, but design critique and Canva AI suggestions exist | **Implemented and stronger than text-only**: Editrim renders the page and MiMo inspects the image plus the scene graph |
+| **AI Review / critique** | Not a single named Canva SKU, but design critique and Canva AI suggestions exist | **Implemented and stronger than text-only**: Editrim renders the page and MiniMax inspects the image plus the scene graph |
 
 ### What Canva's newer agentic work implies
 
@@ -92,7 +92,7 @@ Browser
 
 ### Visual review
 
-AI Review uses MiMo's multimodal input:
+AI Review uses MiniMax's multimodal input:
 
 1. Render the current page to a JPEG snapshot at ≤1280px max dimension.
 2. Send the snapshot plus a compact scene description.
@@ -121,9 +121,9 @@ The panel shows stage, code, HTTP status, request ID, model, and a **Copy diagno
 
 ### Model and routing
 
-- Model: **`xiaomi/mimo-v2.6-flash`**, only model used by Editrim AI.
+- Model: **`minimax/minimax-m3.1-flash`**, only model used by Editrim AI.
 - Gateway: **Vercel AI Gateway** OpenAI-compatible endpoint.
-- 1M context, multimodal input, structured output, tools; used with `reasoning_effort: none` for latency, `provider.sort: ttft`, and `json_object` response format for design/critique/edit.
+- Multimodal input and structured output; used with `reasoning_effort: none` for latency, `provider.sort: ttft`, and `json_object` response format for design/critique/edit.
 - AI responses are capped per action; design 7k output tokens, SVG 5k, copy 900.
 - Max function duration: 60s. Local Vite middleware mirrors the production handler so the same errors and validation are testable locally.
 
@@ -137,7 +137,7 @@ The panel shows stage, code, HTTP status, request ID, model, and a **Copy diagno
 - AI Illustration: generated SVG, sanitised, previewed and insertable.
 - AI Review: visual snapshot + scene summary → accurate, specific critique with score/strengths/improvements.
 - Error UI: simulated gateway 502 and network failure, with stage/code/request ID and retry.
-- Model switch verified from `/api/ai` health and responses: `xiaomi/mimo-v2.6-flash`.
+- Model switch verified from `/api/ai` health and responses: `minimax/minimax-m3.1-flash`.
 - Home dashboard: functional workspace at `/dashboard` with 14 creation shortcuts, universal search, recent designs, template shelf, project menus and print-ready PDF. Doc, Whiteboard, Sheet and Website shortcuts create real editable layouts; Photo opens the photo editor, Video opens Video Studio, and Magic Layers explains its scope. Sheet and Website are not spreadsheet or hosting engines.
 - Photo editor at `/photo` and Video Studio at `/videos`: deterministic Canvas 2D tools for stills and clips, verified by `scripts/photo-editor-e2e.mjs` and `scripts/video-editor-e2e.mjs`. They are deliberately not AI features and are documented in `docs/PHOTO-RESEARCH.md` and `docs/VIDEO-RESEARCH.md`.
 - Editor context menu: copy/copy style/paste/paste style, layer and page-align submenus, grouping, reusable local components, comment pins with resolve/delete, lock controls, palette extraction and page recolouring, selection-only PNG export, plus Magic Write/Translate entry points into AI Studio.
@@ -196,4 +196,4 @@ The panel shows stage, code, HTTP status, request ID, model, and a **Copy diagno
 - Adobe Firefly assistant: https://blog.adobe.com/en/publish/2026/04/27/firefly-ai-assistant-public-beta
 - tldraw agent kit: https://tldraw.dev/starter-kits/agent
 - Vercel AI Gateway chat completions: https://vercel.com/docs/ai-gateway
-- MiMo model: https://mimo.mi.com (and live `GET /v1/models` on Vercel AI Gateway)
+- MiniMax model: https://www.minimax.io (and live `GET /v1/models` on Vercel AI Gateway)

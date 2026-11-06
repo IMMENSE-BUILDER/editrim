@@ -65,4 +65,4 @@ Production check on `https://editrim.vercel.app/video`:
 - WebM export downloads successfully (1.0 MB in the live run)
 - zero stock interface icons
 - mobile 390px layout has no horizontal overflow and drawers are mutually exclusive
-- `/api/ai` health remains `200` with `xiaomi/mimo-v2.6-flash`
+- `/api/ai` health remains `200` with `minimax/minimax-m3.1-flash`

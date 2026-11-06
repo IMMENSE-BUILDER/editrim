@@ -35,12 +35,12 @@ No account. No watermark. Your designs stay yours. AI runs through a serverless 
 - **Quick actions and inline AI** — a Ctrl K / `/` command palette for every tool, and selection-anchored Rewrite, Shorten, Expand, Tone and Translate actions on any text box with an explicit preview before applying.
 - **Share links** — the entire design is compressed into the URL; anyone can view a read-only copy and import an editable one.
 - **Autosave** to local storage, with uploaded images stored in IndexedDB.
-- **AI Studio (6 tools)** powered by **Xiaomi MiMo V2.6 Flash** through **Vercel AI Gateway**:
+- **AI Studio (6 tools)** powered by **MiniMax M3.1 Flash** through **Vercel AI Gateway**:
   - **AI Design** — a complete, editable page from a brief, with brand colours and fonts.
   - **AI Edit** — an agent that proposes explicit canvas commands (“make the headline cobalt”), validates them against the real scene, previews a before/after page, and applies them as one undoable step.
   - **AI Write** — generate, rewrite, shorten, expand, translate, or match a saved brand voice.
   - **AI Illustration** — safe, sanitised vector SVG artwork that can be inserted or used as a background.
-  - **AI Review** — a real visual critique: the page is rendered to an image and MiMo inspects it for hierarchy, spacing, contrast and legibility.
+  - **AI Review** — a real visual critique: the page is rendered to an image and MiniMax inspects it for hierarchy, spacing, contrast and legibility.
   - **AI Translate** — selected text into 16 languages.
 - **Responsive marketing site, template gallery and dashboard**, plus an editor that works on a tablet and remains accessible on a phone.
 
@@ -84,7 +84,7 @@ Build command `npm run build`, output `dist`. The AI function gets a 60s max dur
 - jsPDF for raster PDF export, including print bleed and crop marks
 - LZ-String for share links
 - IndexedDB for uploads, photo sources, video media and version-history snapshots; localStorage for designs, brand kit, photo sessions and video projects
-- **Vercel AI Gateway + Xiaomi MiMo V2.6 Flash** via a serverless AI proxy and matching Vite dev middleware
+- **Vercel AI Gateway + MiniMax M3.1 Flash** via a serverless AI proxy and matching Vite dev middleware
 - **Vercel Web Analytics** for cookieless, aggregate page views on production
 - JSON command bus for AI edits: schema validation, locked-node protection, one-step undo
 - DOMParser allowlist sanitiser for AI-authored SVG
@@ -164,7 +164,7 @@ The app was tested end-to-end with Playwright against Chrome:
 - Engine schema audit: 59 canvas formats, print DPI mappings, 16 font assets, 6 text-effect presets, 8 type pairings, 5 transitions, 35 vectors in 6 clusters, 10 mood palettes, 7 slide archetypes, 3 chart wrappers, reflow without overflow and enforced brand locks
 - responsive layouts at 1440, 1600 and 390 px
 - **AI health check, design generation, AI editing with preview + apply + undo, AI copy, vector illustration, visual review, and visible diagnostics for gateway/network/validation failures**
-- Model verification: `xiaomi/mimo-v2.6-flash` via Vercel AI Gateway, verified from `/api/ai` health and request logs
+- Model verification: `minimax/minimax-m3.1-flash` via Vercel AI Gateway, verified from `/api/ai` health and request logs
 
 ## Credits
 

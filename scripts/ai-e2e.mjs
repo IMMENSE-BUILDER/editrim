@@ -86,6 +86,8 @@ await page.route('**/api/ai', async route => {
 });
 await page.getByRole('tab', { name: 'Write' }).click();
 await wait(300);
+await page.locator('.ai-write-modes button').filter({ hasText: 'compose' }).click();
+await page.locator('#ai-write-prompt').fill('A short diagnostics test headline.');
 await page.locator('.ai-run').click();
 await page.waitForSelector('.ai-error', { timeout: 20000 });
 const errText = await page.locator('.ai-error').innerText();
@@ -96,6 +98,7 @@ assert.ok(errText.includes('Vercel AI Gateway'));
 await page.screenshot({ path: 'shots/ai-error.png' });
 
 log('pageErrors', errors);
-assert.equal(errors.length, 0);
+const unexpected = errors.filter(e => !e.includes('GATEWAY_502') && !e.includes('status of 502'));
+assert.equal(unexpected.length, 0);
 await browser.close();
 console.log('AI E2E OK');
