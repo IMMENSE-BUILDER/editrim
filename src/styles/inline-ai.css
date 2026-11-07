@@ -143,6 +143,7 @@
   max-height: 262px;
   overflow-y: auto;
   overscroll-behavior: contain;
+  scrollbar-gutter: stable;
   padding: 5px;
   background: var(--card);
   border: 1px solid var(--line);
@@ -152,6 +153,24 @@
   animation: iai-menu-in var(--dur-fast) var(--ease-out);
   scrollbar-width: thin;
   scrollbar-color: var(--line-strong) transparent;
+}
+
+.iai-menu.is-up {
+  top: auto;
+  bottom: calc(100% + 8px);
+}
+
+.iai-menu::-webkit-scrollbar {
+  width: 7px;
+}
+
+.iai-menu::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
+  border-radius: 7px;
+}
+
+.iai-menu::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 .iai-menu button {

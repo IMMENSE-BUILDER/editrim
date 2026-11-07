@@ -1,4 +1,4 @@
-import { AiRequestError, callAi } from './ai';
+import { AI_LANGUAGES, AiRequestError, callAi } from './ai';
 
 /** The write modes exposed by the inline text bar. */
 export type InlineWriteMode = 'rewrite' | 'shorten' | 'expand';
@@ -6,11 +6,9 @@ export type InlineWriteMode = 'rewrite' | 'shorten' | 'expand';
 export const INLINE_TONES = ['Formal', 'Casual', 'Confident', 'Friendly', 'Bold'] as const;
 export type InlineTone = (typeof INLINE_TONES)[number];
 
-export const INLINE_LANGUAGES = [
-  'Spanish', 'French', 'German', 'Portuguese',
-  'Italian', 'Japanese', 'Hindi', 'Arabic',
-] as const;
-export type InlineLanguage = (typeof INLINE_LANGUAGES)[number];
+/** Keep the selection bar in sync with the full AI Studio language list. */
+export const INLINE_LANGUAGES = AI_LANGUAGES;
+export type InlineLanguage = (typeof AI_LANGUAGES)[number];
 
 export const INLINE_WRITE_LABELS: Record<InlineWriteMode, string> = {
   rewrite: 'Rewrite',

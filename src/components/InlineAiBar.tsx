@@ -216,6 +216,11 @@ export function InlineAiBar({
     '--iai-drop': `${pos?.drop ?? 8}px`,
   } as CSSProperties;
   const flipClass = pos?.flip ? 'is-below' : '';
+  const menuUp = !pos?.below;
+  const barHeight = barRef.current?.offsetHeight ?? 40;
+  const spaceAboveMenu = (pos?.top ?? window.innerHeight) - barHeight - 12;
+  const spaceBelowMenu = window.innerHeight - (pos?.top ?? 0) - barHeight - 12;
+  const menuMaxHeight = Math.max(120, Math.min(262, menuUp ? spaceAboveMenu : spaceBelowMenu));
 
   if (!expanded) {
     return (
@@ -275,7 +280,7 @@ export function InlineAiBar({
             Tone <EditrimIcon name="chevronDown" size={11} />
           </button>
           {menu === 'tone' && (
-            <div className="iai-menu" role="menu" aria-label="Tone">
+            <div className={`iai-menu ${menuUp ? 'is-up' : ''}`} style={{ maxHeight: menuMaxHeight }} role="menu" aria-label="Tone">
               {INLINE_TONES.map(option => (
                 <button
                   key={option}
@@ -306,7 +311,7 @@ export function InlineAiBar({
             Translate <EditrimIcon name="chevronDown" size={11} />
           </button>
           {menu === 'translate' && (
-            <div className="iai-menu" role="menu" aria-label="Translate">
+            <div className={`iai-menu ${menuUp ? 'is-up' : ''}`} style={{ maxHeight: menuMaxHeight }} role="menu" aria-label="Translate">
               {INLINE_LANGUAGES.map(option => (
                 <button
                   key={option}

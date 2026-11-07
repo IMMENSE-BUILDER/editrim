@@ -61,6 +61,28 @@ await page.screenshot({ path: 'shots/studio-inline-ai-open.png' });
 const inlineActions = await page.locator('.iai-pill .iai-action').count();
 log('inlineActions', inlineActions);
 assert.ok(inlineActions >= 5, 'inline AI exposes rewrite, shorten, expand, tone and translate');
+await page.locator('.iai-pill .iai-action', { hasText: 'Translate' }).click();
+await wait(250);
+const translateMenu = await page.evaluate(() => {
+  const menu = document.querySelector('.iai-menu[aria-label="Translate"]');
+  const bar = document.querySelector('.iai-bar');
+  if (!menu || !bar) return null;
+  const m = menu.getBoundingClientRect();
+  const b = bar.getBoundingClientRect();
+  return {
+    items: menu.querySelectorAll('button').length,
+    scrolls: menu.scrollHeight > menu.clientHeight,
+    inViewport: m.top >= 0 && m.bottom <= window.innerHeight && m.left >= 0 && m.right <= window.innerWidth,
+    opensUp: m.bottom <= b.top + 1,
+  };
+});
+log('translateMenu', translateMenu);
+assert.ok(translateMenu, 'translate menu opens');
+assert.equal(translateMenu.items, 16, 'translate menu lists all 16 languages');
+assert.ok(translateMenu.scrolls, 'translate menu scrolls when the list is taller than the viewport allows');
+assert.ok(translateMenu.inViewport, 'translate menu stays inside the viewport');
+await page.screenshot({ path: 'shots/studio-inline-ai-translate.png' });
+await page.keyboard.press('Escape');
 await page.locator('.iai-close').click();
 await wait(200);
 assert.equal(await page.locator('.iai-trigger').count(), 1, 'closing collapses back to the trigger');

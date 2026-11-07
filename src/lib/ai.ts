@@ -220,4 +220,4 @@ export const AI_LANGUAGES = [
   'Spanish', 'French', 'German', 'Portuguese', 'Italian', 'Japanese',
   'Korean', 'Mandarin Chinese', 'Arabic', 'Hindi', 'Dutch', 'Turkish',
   'Polish', 'Swedish', 'Indonesian', 'Vietnamese',
-];
+] as const;
