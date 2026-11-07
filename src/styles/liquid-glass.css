@@ -1,40 +1,31 @@
 /* ==========================================================================
    Liquid Glass — shared skin for the Photo and Video editors
    --------------------------------------------------------------------------
-   One visual language for both studios: a deep ink field, drifting violet and
-   amber light, floating glass chrome, specular edges and amber waveform glass.
-   Behaviour and layout dimensions stay untouched; this file only re-skins.
+   One neutral visual language for both studios: smoked glass chrome floating
+   over an ink field, white specular edges and translucent waveform glass.
+   No colour washes, no tinted gradients — just light, blur and glass.
    ========================================================================== */
 
-.photo-editor,
-.video-editor {
-  --lg-violet: #8b5cf6;
-  --lg-violet-bright: #a78bfa;
-  --lg-indigo: #6366f1;
-  --lg-amber: #e8b04a;
-  --lg-amber-bright: #ffd27a;
-  --lg-ink: #f8f4ff;
-  --lg-muted: rgba(248, 244, 255, 0.64);
-  --lg-muted-2: rgba(248, 244, 255, 0.4);
-  --lg-line: rgba(255, 255, 255, 0.14);
-  --lg-line-soft: rgba(255, 255, 255, 0.075);
-  --lg-line-bright: rgba(255, 255, 255, 0.24);
-  --lg-glass: rgba(20, 18, 29, 0.58);
-  --lg-glass-strong: rgba(25, 22, 36, 0.74);
+.photo-editor.photo-editor,
+.video-editor.video-editor {
+  --lg-ink: #f7f7f8;
+  --lg-muted: rgba(247, 247, 248, 0.62);
+  --lg-muted-2: rgba(247, 247, 248, 0.38);
+  --lg-line: rgba(255, 255, 255, 0.15);
+  --lg-line-soft: rgba(255, 255, 255, 0.08);
+  --lg-line-bright: rgba(255, 255, 255, 0.28);
+  --lg-glass: rgba(18, 18, 20, 0.58);
+  --lg-glass-strong: rgba(23, 23, 26, 0.74);
   --lg-glass-soft: rgba(255, 255, 255, 0.035);
   --lg-highlight: rgba(255, 255, 255, 0.32);
   --lg-shadow: 0 26px 80px rgba(0, 0, 0, 0.5), 0 4px 20px rgba(0, 0, 0, 0.24);
   --lg-inset: inset 0 1px 0 rgba(255, 255, 255, 0.28), inset 0 -1px 0 rgba(255, 255, 255, 0.035);
-  --lg-blur: blur(28px) saturate(155%);
+  --lg-blur: blur(28px) saturate(130%);
 
   position: relative;
   isolation: isolate;
   color: var(--lg-ink);
-  background:
-    radial-gradient(95% 72% at 12% -4%, rgba(109, 78, 196, 0.34), transparent 62%),
-    radial-gradient(62% 50% at 92% 10%, rgba(188, 132, 48, 0.14), transparent 68%),
-    radial-gradient(80% 64% at 62% 108%, rgba(55, 48, 160, 0.25), transparent 70%),
-    linear-gradient(158deg, #0c0a13 0%, #08070c 48%, #050509 100%);
+  background: #070708;
 }
 
 .photo-editor::before,
@@ -45,10 +36,10 @@
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(34% 38% at 20% 20%, rgba(139, 92, 246, 0.24), transparent 70%),
-    radial-gradient(30% 30% at 86% 30%, rgba(232, 176, 74, 0.11), transparent 72%),
-    radial-gradient(40% 38% at 54% 88%, rgba(79, 70, 229, 0.18), transparent 72%);
-  filter: blur(34px) saturate(125%);
+    radial-gradient(34% 38% at 20% 20%, rgba(255, 255, 255, 0.05), transparent 70%),
+    radial-gradient(30% 30% at 84% 28%, rgba(255, 255, 255, 0.03), transparent 72%),
+    radial-gradient(40% 38% at 54% 88%, rgba(255, 255, 255, 0.028), transparent 72%);
+  filter: blur(34px);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -76,7 +67,7 @@
 .video-editor .vd-export-card {
   border: 1px solid var(--lg-line);
   background:
-    linear-gradient(148deg, rgba(255, 255, 255, 0.105) 0%, rgba(255, 255, 255, 0.025) 38%, rgba(255, 255, 255, 0.06) 100%),
+    linear-gradient(148deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 38%, rgba(255, 255, 255, 0.05) 100%),
     var(--lg-glass);
   box-shadow: var(--lg-shadow), var(--lg-inset);
   backdrop-filter: var(--lg-blur);
@@ -122,29 +113,28 @@
 }
 
 .photo-editor .ph-rail-btn.is-active {
-  border-color: rgba(196, 181, 253, 0.42);
+  border-color: rgba(255, 255, 255, 0.3);
   background:
-    linear-gradient(145deg, rgba(167, 139, 250, 0.32), rgba(99, 102, 241, 0.12)),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.06)),
     rgba(255, 255, 255, 0.04);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.3),
-    0 8px 18px rgba(76, 42, 160, 0.25);
-  color: #e6dcff;
+    inset 0 1px 0 rgba(255, 255, 255, 0.36),
+    0 8px 18px rgba(0, 0, 0, 0.24);
+  color: #ffffff;
 }
 
 .photo-editor .ph-stage {
   border: 1px solid var(--lg-line-soft);
   border-radius: 24px;
   background:
-    radial-gradient(52% 48% at 50% 42%, rgba(255, 255, 255, 0.07), transparent 72%),
-    linear-gradient(155deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.008)),
-    rgba(12, 10, 18, 0.38);
+    radial-gradient(52% 48% at 50% 42%, rgba(255, 255, 255, 0.065), transparent 72%),
+    linear-gradient(155deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.006)),
+    rgba(10, 10, 12, 0.4);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    inset 0 0 90px rgba(112, 74, 200, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
     0 18px 50px rgba(0, 0, 0, 0.26);
-  backdrop-filter: blur(14px) saturate(130%);
-  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  backdrop-filter: blur(14px) saturate(115%);
+  -webkit-backdrop-filter: blur(14px) saturate(115%);
 }
 
 .photo-editor .ph-stage::before {
@@ -153,7 +143,7 @@
   width: min(64%, 620px);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.16), rgba(232, 176, 74, 0.05) 48%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.07), transparent 68%);
   filter: blur(54px);
   pointer-events: none;
 }
@@ -167,7 +157,7 @@
   box-shadow:
     0 34px 90px rgba(0, 0, 0, 0.62),
     0 0 0 1px rgba(255, 255, 255, 0.13),
-    0 0 0 9px rgba(255, 255, 255, 0.035);
+    0 0 0 9px rgba(255, 255, 255, 0.03);
 }
 
 .photo-editor .ph-inspector {
@@ -175,7 +165,7 @@
   border-left: 1px solid var(--lg-line);
   border-radius: 22px;
   background:
-    linear-gradient(150deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.05)),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.02) 40%, rgba(255, 255, 255, 0.045)),
     var(--lg-glass-strong);
   overflow: hidden;
 }
@@ -194,7 +184,7 @@
 }
 
 .photo-editor .ph-section-title {
-  color: rgba(226, 216, 255, 0.52);
+  color: rgba(247, 247, 248, 0.48);
 }
 
 .photo-editor .ph-icon-btn {
@@ -229,24 +219,20 @@
 
 .photo-editor .ph-export-btn,
 .photo-editor .ph-primary-btn {
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 42%),
-    linear-gradient(135deg, #a78bfa 0%, #7c3aed 52%, #4f46e5 100%);
-  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.9);
+  color: #0a0a0b;
   box-shadow:
-    0 12px 28px rgba(91, 33, 182, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    0 12px 28px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 #ffffff;
 }
 
 .photo-editor .ph-export-btn:hover:not(:disabled),
 .photo-editor .ph-primary-btn:hover:not(:disabled) {
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent 42%),
-    linear-gradient(135deg, #b9a4ff 0%, #8b5cf6 52%, #6366f1 100%);
+  background: #ffffff;
   box-shadow:
-    0 14px 34px rgba(91, 33, 182, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.58);
+    0 14px 32px rgba(0, 0, 0, 0.46),
+    inset 0 1px 0 #ffffff;
 }
 
 .photo-editor .ph-compare {
@@ -258,9 +244,9 @@
 
 .photo-editor .ph-compare:hover,
 .photo-editor .ph-compare.is-active {
-  border-color: rgba(196, 181, 253, 0.4);
-  background: rgba(139, 92, 246, 0.18);
-  color: #e8ddff;
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.13);
+  color: #ffffff;
 }
 
 .photo-editor .ph-aspect-btn,
@@ -281,9 +267,9 @@
 .photo-editor .ph-aspect-btn.is-active,
 .photo-editor .ph-tool-btn.is-active,
 .photo-editor .ph-text-item.is-active {
-  border-color: rgba(196, 181, 253, 0.42);
-  background: rgba(139, 92, 246, 0.17);
-  color: #e8ddff;
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
 }
 
 .photo-editor .ph-filter-tile {
@@ -297,9 +283,9 @@
 }
 
 .photo-editor .ph-filter-tile.is-active .ph-filter-thumb {
-  border-color: rgba(196, 181, 253, 0.75);
+  border-color: rgba(255, 255, 255, 0.75);
   box-shadow:
-    0 0 0 2px rgba(139, 92, 246, 0.34),
+    0 0 0 2px rgba(255, 255, 255, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
@@ -316,30 +302,30 @@
 .photo-editor .ph-textarea:focus,
 .photo-editor .ph-field input:focus,
 .photo-editor .ph-field select:focus {
-  border-color: rgba(167, 139, 250, 0.72);
-  background: rgba(139, 92, 246, 0.08);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.16);
+  border-color: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 }
 
 .photo-editor .ph-empty-mark {
   border-color: var(--lg-line);
   background:
     linear-gradient(145deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.02)),
-    rgba(139, 92, 246, 0.14);
+    rgba(255, 255, 255, 0.05);
   box-shadow: var(--lg-inset), 0 12px 30px rgba(0, 0, 0, 0.24);
-  color: #d8c8ff;
+  color: #ffffff;
 }
 
 .photo-editor .ph-export-overlay {
-  background: rgba(4, 3, 8, 0.62);
-  backdrop-filter: blur(18px) saturate(130%);
-  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  background: rgba(4, 4, 5, 0.62);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
 }
 
 .photo-editor .ph-export-card {
   border-radius: 24px;
   background:
-    linear-gradient(150deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.025) 44%, rgba(255, 255, 255, 0.06)),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.02) 44%, rgba(255, 255, 255, 0.05)),
     var(--lg-glass-strong);
 }
 
@@ -350,17 +336,16 @@
 }
 
 .photo-editor .ph-seg button.is-active {
-  background: linear-gradient(135deg, #a78bfa, #7c3aed);
-  color: #fff;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.92);
+  color: #0a0a0b;
+  box-shadow: inset 0 1px 0 #ffffff;
 }
 
 /* Photo sliders ------------------------------------------------------------ */
 
 .photo-editor input[type='range']::-webkit-slider-runnable-track {
   height: 4px;
-  background:
-    linear-gradient(90deg, rgba(167, 139, 250, 0.85), rgba(255, 255, 255, 0.14) 72%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.14) 72%);
   box-shadow:
     inset 0 1px 2px rgba(0, 0, 0, 0.36),
     0 1px 0 rgba(255, 255, 255, 0.1);
@@ -371,31 +356,31 @@
   height: 13px;
   margin-top: -4.5px;
   border: 1px solid rgba(255, 255, 255, 0.8);
-  background: linear-gradient(145deg, #ffffff, #cebdff);
+  background: linear-gradient(145deg, #ffffff, #d6d6da);
   box-shadow:
-    0 0 0 4px rgba(139, 92, 246, 0.18),
+    0 0 0 4px rgba(255, 255, 255, 0.1),
     0 3px 10px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 #fff;
+    inset 0 1px 0 #ffffff;
 }
 
 .photo-editor input[type='range']:hover::-webkit-slider-thumb {
   box-shadow:
-    0 0 0 6px rgba(139, 92, 246, 0.24),
+    0 0 0 6px rgba(255, 255, 255, 0.14),
     0 3px 12px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 #fff;
+    inset 0 1px 0 #ffffff;
 }
 
 .photo-editor input[type='range']::-moz-range-track {
   height: 4px;
-  background: linear-gradient(90deg, rgba(167, 139, 250, 0.85), rgba(255, 255, 255, 0.14) 72%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.14) 72%);
 }
 
 .photo-editor input[type='range']::-moz-range-thumb {
   width: 13px;
   height: 13px;
   border: 1px solid rgba(255, 255, 255, 0.8);
-  background: linear-gradient(145deg, #ffffff, #cebdff);
-  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.18);
+  background: linear-gradient(145deg, #ffffff, #d6d6da);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
 }
 
 /* Video editor ------------------------------------------------------------- */
@@ -448,7 +433,7 @@
   width: min(54%, 560px);
   aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.18), rgba(232, 176, 74, 0.06) 46%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.075), transparent 68%);
   filter: blur(56px);
   pointer-events: none;
 }
@@ -464,7 +449,7 @@
   box-shadow:
     0 26px 70px rgba(0, 0, 0, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.14),
-    0 0 0 7px rgba(255, 255, 255, 0.025);
+    0 0 0 7px rgba(255, 255, 255, 0.02);
 }
 
 .video-editor .vd-transport {
@@ -474,19 +459,19 @@
   border: 1px solid var(--lg-line-soft);
   border-radius: 15px;
   background:
-    linear-gradient(150deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.015)),
-    rgba(17, 15, 25, 0.56);
+    linear-gradient(150deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.012)),
+    rgba(16, 16, 18, 0.56);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
 }
 
 .video-editor .vd-timeline {
   border-radius: 22px;
   overflow: hidden;
   background:
-    linear-gradient(160deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.015) 42%, rgba(255, 255, 255, 0.04)),
-    rgba(16, 14, 23, 0.72);
+    linear-gradient(160deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.012) 42%, rgba(255, 255, 255, 0.035)),
+    rgba(15, 15, 17, 0.72);
 }
 
 .video-editor .vd-timeline-toolbar {
@@ -495,12 +480,12 @@
 }
 
 .video-editor .vd-timeline-title strong {
-  color: rgba(235, 228, 255, 0.62);
+  color: rgba(247, 247, 248, 0.58);
 }
 
 .video-editor .vd-track-heads {
   border-right: 1px solid var(--lg-line-soft);
-  background: rgba(18, 16, 26, 0.46);
+  background: rgba(18, 18, 20, 0.46);
 }
 
 .video-editor .vd-track-head-spacer,
@@ -512,21 +497,20 @@
   background: rgba(255, 255, 255, 0.012);
 }
 
-.video-editor .vd-track-icon.is-video {
-  color: var(--lg-amber-bright);
-  background: rgba(232, 176, 74, 0.18);
+.video-editor .vd-track-icon.is-video,
+.video-editor .vd-track-icon.is-overlay,
+.video-editor .vd-track-icon.is-audio {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 .video-editor .vd-track-icon.is-overlay {
-  color: #d8c8ff;
-  background: rgba(139, 92, 246, 0.22);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.075);
 }
 
 .video-editor .vd-track-icon.is-audio {
-  color: var(--lg-amber-bright);
-  background: rgba(232, 176, 74, 0.14);
+  background: rgba(255, 255, 255, 0.065);
 }
 
 .video-editor .vd-timeline-scroll {
@@ -535,7 +519,7 @@
 
 .video-editor .vd-ruler {
   border-bottom: 1px solid var(--lg-line-soft);
-  background: rgba(24, 21, 34, 0.78);
+  background: rgba(23, 23, 26, 0.78);
 }
 
 .video-editor .vd-lane {
@@ -544,11 +528,11 @@
 }
 
 .video-editor .vd-lane-overlay {
-  background-color: rgba(139, 92, 246, 0.035);
+  background-color: rgba(255, 255, 255, 0.022);
 }
 
 .video-editor .vd-lane-audio {
-  background-color: rgba(232, 176, 74, 0.03);
+  background-color: rgba(255, 255, 255, 0.014);
 }
 
 .video-editor .vd-clip {
@@ -569,77 +553,77 @@
   border-color: rgba(255, 255, 255, 0.9);
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.45),
-    0 0 24px rgba(139, 92, 246, 0.28),
+    0 0 24px rgba(255, 255, 255, 0.16),
     0 8px 22px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 #fff;
+    inset 0 1px 0 #ffffff;
 }
 
 .video-editor .vd-clip-video {
-  background-color: rgba(232, 176, 74, 0.34);
-  border-color: rgba(255, 210, 122, 0.56);
+  background-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.42);
 }
 
 .video-editor .vd-clip-image {
-  background-color: rgba(139, 92, 246, 0.32);
-  border-color: rgba(196, 181, 253, 0.56);
+  background-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.34);
 }
 
 .video-editor .vd-clip-text {
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent 44%),
-    linear-gradient(135deg, #a78bfa 0%, #7c3aed 58%, #5b21b6 100%);
-  border-color: rgba(255, 255, 255, 0.54);
-  color: #fff;
+    linear-gradient(135deg, rgba(255, 255, 255, 0.16), transparent 44%),
+    rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #ffffff;
 }
 
 .video-editor .vd-clip-audio {
-  background-color: rgba(232, 176, 74, 0.24);
-  border-color: rgba(255, 210, 122, 0.46);
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .video-editor .vd-waveform {
-  opacity: 0.55;
+  opacity: 0.6;
 }
 
 .video-editor .vd-waveform i {
-  background: linear-gradient(180deg, #ffe3a3, #e8b04a);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.62));
   border-radius: 2px;
-  box-shadow: 0 0 6px rgba(255, 193, 89, 0.35);
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.18);
 }
 
 .video-editor .vd-playhead {
-  background: #fff;
+  background: #ffffff;
   box-shadow:
     0 0 10px rgba(255, 255, 255, 0.55),
-    0 0 22px rgba(139, 92, 246, 0.25);
+    0 0 22px rgba(255, 255, 255, 0.2);
 }
 
 .video-editor .vd-playhead span {
   width: 12px;
   height: 9px;
   left: -5px;
-  background: #fff;
+  background: #ffffff;
   filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
 }
 
 .video-editor .vd-play {
-  background: linear-gradient(145deg, #ffffff, #d9cbff);
-  color: #1c1630;
+  background: linear-gradient(145deg, #ffffff, #d6d6da);
+  color: #141416;
   box-shadow:
     0 8px 22px rgba(0, 0, 0, 0.38),
-    inset 0 1px 0 #fff;
+    inset 0 1px 0 #ffffff;
 }
 
 .video-editor .vd-play:hover {
-  background: linear-gradient(145deg, #fff, #e6dcff);
+  background: #ffffff;
 }
 
 .video-editor .vd-time b {
-  color: #fff;
+  color: #ffffff;
 }
 
 .video-editor .vd-volume input {
-  accent-color: var(--lg-violet-bright);
+  accent-color: #ffffff;
 }
 
 .video-editor .vd-icon-btn {
@@ -674,35 +658,31 @@
 
 .video-editor .vd-export-btn,
 .video-editor .vd-primary-btn {
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 42%),
-    linear-gradient(135deg, #a78bfa 0%, #7c3aed 52%, #4f46e5 100%);
-  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  background: rgba(255, 255, 255, 0.9);
+  color: #0a0a0b;
   box-shadow:
-    0 12px 28px rgba(91, 33, 182, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    0 12px 28px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 #ffffff;
 }
 
 .video-editor .vd-export-btn:hover:not(:disabled),
 .video-editor .vd-primary-btn:hover {
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent 42%),
-    linear-gradient(135deg, #b9a4ff 0%, #8b5cf6 52%, #6366f1 100%);
+  background: #ffffff;
 }
 
 .video-editor .vd-media-card {
   border-color: var(--lg-line-soft);
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.012)),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.012)),
     rgba(255, 255, 255, 0.02);
   border-radius: 12px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .video-editor .vd-media-card:hover {
-  border-color: rgba(196, 181, 253, 0.5);
-  background: rgba(139, 92, 246, 0.11);
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.07);
 }
 
 .video-editor .vd-media-thumb {
@@ -722,14 +702,14 @@
 .video-editor .vd-field input:focus,
 .video-editor .vd-field select:focus,
 .video-editor .vd-field textarea:focus {
-  border-color: rgba(167, 139, 250, 0.72);
-  background: rgba(139, 92, 246, 0.08);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.16);
+  border-color: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
 }
 
 .video-editor .vd-field input[type='range'],
 .video-editor .vd-range input {
-  accent-color: var(--lg-violet-bright);
+  accent-color: #ffffff;
 }
 
 .video-editor .vd-aspect-grid button {
@@ -744,8 +724,8 @@
 }
 
 .video-editor .vd-aspect-grid button.is-active {
-  border-color: rgba(196, 181, 253, 0.55);
-  background: rgba(139, 92, 246, 0.16);
+  border-color: rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.11);
 }
 
 .video-editor .vd-selected-icon {
@@ -758,16 +738,97 @@
 }
 
 .video-editor .vd-export-overlay {
-  background: rgba(4, 3, 8, 0.62);
-  backdrop-filter: blur(18px) saturate(130%);
-  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  background: rgba(4, 4, 5, 0.62);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
 }
 
 .video-editor .vd-export-card {
   border-radius: 24px;
   background:
-    linear-gradient(150deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.025) 44%, rgba(255, 255, 255, 0.06)),
+    linear-gradient(150deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.02) 44%, rgba(255, 255, 255, 0.05)),
     var(--lg-glass-strong);
+}
+
+/* Neutralise the remaining legacy accent tokens ---------------------------- */
+
+.photo-editor.photo-editor {
+  --ph-cobalt: #ffffff;
+  --ph-lime: #ffffff;
+}
+
+.video-editor.video-editor {
+  --vd-cobalt: #ffffff;
+  --vd-lime: #ffffff;
+  --vd-teal: #ffffff;
+}
+
+.photo-editor .ph-title-wrap input:focus {
+  border-color: rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.photo-editor .ph-add-text {
+  color: #ffffff;
+}
+
+.photo-editor .ph-compare-badge {
+  color: #ffffff;
+}
+
+.photo-editor .ph-filter-tile.is-active .ph-filter-name {
+  color: #ffffff;
+}
+
+.video-editor .vd-icon-btn.is-active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.video-editor .vd-empty-mark {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.video-editor .vd-snap:hover,
+.video-editor .vd-snap.is-active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.video-editor .vd-media-add {
+  color: #0b0b0d;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.video-editor .vd-selected-icon,
+.video-editor .vd-selected-icon.is-text,
+.video-editor .vd-selected-icon.is-audio {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.video-editor .vd-align-buttons button.is-active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.34);
+}
+
+.video-editor .vd-export-progress {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.video-editor .vd-export-progress i {
+  background: linear-gradient(90deg, #ffffff, #d6d6da);
+}
+
+.video-editor input[type='checkbox'] {
+  accent-color: #ffffff;
 }
 
 /* Keep floating chrome usable on the responsive layouts ------------------- */
