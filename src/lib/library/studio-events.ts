@@ -11,7 +11,7 @@ export const STUDIO_EVENTS_TEMPLATES = [
   /* ---------- Invitations ---------- */
 
   invitation({
-    id: 'n7-garden-wedding', name: 'THE GARDEN — Wedding', category: 'Invitation',
+    id: 'n7-garden-wedding', name: 'THE GARDEN — Wedding Invitation', category: 'Invitation',
     description: 'A botanical wedding invitation with a masked flower image, a two-page details card and a warm paper field.',
     tags: ['wedding', 'invitation', 'botanical', 'garden', 'two pages'],
     palette: { bg: '#F3EDDF', ink: '#20251C', accent: '#6B7E56', soft: '#D8DCC4', deep: '#171C14' },
@@ -47,7 +47,7 @@ export const STUDIO_EVENTS_TEMPLATES = [
     note: 'Work on the walls, music on the floor, food from the corner.',
   }),
   invitation({
-    id: 'n7-birthday-40', name: 'FORTY — Birthday', category: 'Invitation',
+    id: 'n7-birthday-40', name: 'FORTY — Birthday Invitation', category: 'Invitation',
     description: 'A playful fortieth birthday invitation with huge type, a bright palette and a two-page details card.',
     tags: ['birthday', 'invitation', 'playful', 'bold', 'party'],
     palette: { bg: '#F3E8DC', ink: '#211716', accent: '#D9A24B', soft: '#E3CAB2', deep: '#171110' },
@@ -83,7 +83,7 @@ export const STUDIO_EVENTS_TEMPLATES = [
     note: 'Welcome dinner Friday, wedding Saturday, swim Sunday.',
   }),
   invitation({
-    id: 'n7-anniversary', name: 'TEN YEARS — Anniversary', category: 'Invitation',
+    id: 'n7-anniversary', name: 'TEN YEARS — Anniversary Invitation', category: 'Invitation',
     description: 'A black-tie anniversary invitation with a dark field, gold rules and a formal two-page details card.',
     tags: ['anniversary', 'invitation', 'black tie', 'formal', 'gold'],
     palette: { bg: '#F2EBDD', ink: '#171412', accent: '#C9A24A', soft: '#D9C9B4', deep: '#100E0D' },
@@ -150,7 +150,7 @@ export const STUDIO_EVENTS_TEMPLATES = [
     footer: 'ALL MATERIALS  /  LUNCH INCLUDED', cta: 'RESERVE A PLACE',
   }),
   flyer({
-    id: 'n7-night-market', name: 'MOON MARKET — Night Market', category: 'Flyer',
+    id: 'n7-night-market', name: 'MOON MARKET — Night Flyer', category: 'Flyer',
     description: 'A night market flyer with a market image, six stallholders, a weekend schedule and free entry.',
     tags: ['market', 'night', 'flyer', 'food', 'community'],
     palette: { bg: '#F0E8D8', ink: '#1B1715', accent: '#C39336', soft: '#D8C5AC', deep: '#13100E' },

@@ -9,7 +9,7 @@ import { deck } from './kitDeck';
 export const STUDIO_DECKS_TEMPLATES = [
 
   deck({
-    id: 'n4-harbor-seed', name: 'HARBOR — Seed Deck', category: 'Presentation',
+    id: 'n4-harbor-seed', name: 'HARBOR — Coastal Freight', category: 'Presentation',
     description: 'A climate logistics seed deck with a photographic cover, a clear argument, three metrics and an ask.',
     tags: ['seed deck', 'startup', 'logistics', 'climate', 'pitch'],
     palette: { bg: '#F1EBDD', ink: '#14211D', accent: '#C8D05A', soft: '#D7D2BE', deep: '#0D1815' },

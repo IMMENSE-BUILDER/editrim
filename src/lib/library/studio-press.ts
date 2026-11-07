@@ -284,7 +284,7 @@ export const STUDIO_PRESS_TEMPLATES = [
   /* ---------- Resumes ---------- */
 
   resume({
-    id: 'n8-maya-chen', name: 'Maya Chen — Product Designer', category: 'Resume',
+    id: 'n8-maya-chen', name: 'Maya Chen — Product Resume', category: 'Resume',
     description: 'A product designer resume with a dark sidebar, a clear profile and a three-role experience list.',
     tags: ['resume', 'product designer', 'sidebar', 'dark', 'technology'],
     palette: { bg: '#F3EEE2', ink: '#17201F', accent: '#C8D05A', soft: '#DDD7C8', deep: '#111817' },
