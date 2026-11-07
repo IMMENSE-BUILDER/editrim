@@ -88,6 +88,12 @@ const CATEGORY_ALIASES: Record<string, string> = {
   Flyer: 'flyer',
   Banner: 'linkedin-banner',
   Podcast: 'podcast-cover',
+  Editorial: 'doc',
+  'Book cover': 'book-cover',
+  Magazine: 'magazine-cover',
+  'Album cover': 'album-cover',
+  Web: 'website',
+  Certificate: 'certificate',
   Video: 'landscape-video',
   Upload: 'photo-collage',
 };

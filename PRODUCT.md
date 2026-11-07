@@ -19,7 +19,7 @@ People who need polished visuals without a design background: small-business own
 
 ## Core promises
 1. **Real editing, not a mockup.** Move, resize, rotate, snap, marquee select, layer, align, style text, crop and mask images, upload and replace images, undo/redo, multi-page, present, export — plus a photo editor that processes real pixels and a video studio that exports a real WebM.
-2. **Start fast, finish anywhere.** 44 hand-built templates, 59 size presets, resize variants for every channel, CSV bulk create, brand kits that restyle a whole design, and export to five formats.
+2. **Start fast, finish anywhere.** 300 hand-built templates, 59 size presets, resize variants for every channel, CSV bulk create, brand kits that restyle a whole design, and export to five formats.
 3. **Yours.** Projects autosave locally with version history, export without watermarks, work offline after first load. Imported photos and video media never leave the device.
 4. **No dark patterns.** No sign-up wall, no paywall. AI is opt-in, previewed before it changes anything, and honestly scoped. Everything shown is usable.
 5. **Your room, your light.** A labelled light/dark switch at the bottom of the dashboard rail changes the whole product — marketing, dashboard, editor and dialogs — and the choice is remembered on the device.

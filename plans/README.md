@@ -22,3 +22,4 @@ Implementation records. Each plan lists what shipped, the files involved and the
 | 016 | Vercel Web Analytics — React package, production page views and privacy docs | Implemented |
 | 017 | Library expansion — 24 new hand-built templates across six collections | Implemented |
 | 018 | AI model switch — MiniMax M3.1 Flash across server, client, docs and tests | Implemented |
+| 019 | Template catalog 44 → 300 — ten new packs, 256 templates and full-library audit | Implemented |

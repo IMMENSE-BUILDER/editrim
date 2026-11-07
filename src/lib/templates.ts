@@ -7,6 +7,16 @@ import { DECK_TEMPLATES } from './library/decks';
 import { BRAND_TEMPLATES } from './library/brand';
 import { EVENT_TEMPLATES } from './library/events';
 import { COMMERCE_TEMPLATES } from './library/commerce';
+import { FEED_ONE_TEMPLATES } from './library/feed-one';
+import { FEED_TWO_TEMPLATES } from './library/feed-two';
+import { DECKS_ONE_TEMPLATES } from './library/decks-one';
+import { DECKS_TWO_TEMPLATES } from './library/decks-two';
+import { PRINT_ONE_TEMPLATES } from './library/print-one';
+import { HOSPITALITY_TEMPLATES } from './library/hospitality';
+import { PROFESSIONAL_TEMPLATES } from './library/professional';
+import { BRAND_COVERS_TEMPLATES } from './library/brand-covers';
+import { CREATOR_TEMPLATES } from './library/creator';
+import { CULTURE_TEMPLATES } from './library/culture';
 
 /* ---------- helpers ---------- */
 
@@ -139,7 +149,7 @@ const cafe = page('Cover', bgImage(IMG_COFFEE, '#15110B', 0.5), [
   T('Bruma', 72, 195, 940, 190, {
     fontFamily: 'Instrument Serif', fontSize: 184, lineHeight: 1, color: CREAM, letterSpacing: -3,
   }),
-  T('COFFEE  &  BREAD', 86, 390, 600, 40, {
+  T('COFFEE  &  BREAD', 86, 390, 600, 54, {
     fontFamily: 'Bebas Neue', fontSize: 40, letterSpacing: 7, color: LIME,
   }),
   T('A slower kind of morning,\non the corner of Mill Lane.', 82, 690, 660, 180, {
@@ -165,7 +175,7 @@ const product = page('Cover', bgSolid('#EDE8DC'), [
   T('NEW RELEASE', 70, 119, 210, 22, { fontSize: 13, letterSpacing: 2.6, align: 'center', fontWeight: 600 }),
   T('FORM', 66, 188, 520, 160, { fontFamily: 'Archivo Black', fontSize: 152, lineHeight: 0.9, letterSpacing: -6 }),
   T('04', 66, 320, 300, 160, { fontFamily: 'Archivo Black', fontSize: 152, lineHeight: 0.9, letterSpacing: -6, color: COBALT }),
-  T('The watch that disappears\non your wrist.', 72, 512, 430, 140, {
+  T('The watch that disappears\non your wrist.', 72, 512, 430, 200, {
     fontFamily: 'Instrument Serif', fontSize: 54, lineHeight: 1.12, letterSpacing: -0.5,
   }),
   T('Brushed titanium · Sapphire glass · 40mm', 72, 684, 430, 30, { fontSize: 16, letterSpacing: 0.6, color: '#4F4B42' }),
@@ -178,7 +188,7 @@ const product = page('Cover', bgSolid('#EDE8DC'), [
 
 /* ---------- 03. Quote ---------- */
 const quote = page('Cover', bgSolid('#F5F1E7'), [
-  S('ellipse', 860, -130, 360, 360, { fill: CORAL, opacity: 0.92 }),
+  S('ellipse', 780, 0, 300, 300, { fill: CORAL, opacity: 0.92 }),
   S('rect', 80, 120, 14, 840, { fill: LIME }),
   T('“', 116, 40, 300, 300, { fontFamily: 'Instrument Serif', fontSize: 300, color: CORAL, lineHeight: 1 }),
   T('Make it simple,\nbut significant.', 150, 330, 830, 340, {
@@ -214,8 +224,8 @@ const travel = page('Cover', bgImage(IMG_MOUNTAIN, '#05080A', 0.18), [
   S('rect', 0, 0, 1080, 620, { fill: G('rgba(5,8,10,.72)', 'rgba(5,8,10,0)', 180) }),
   S('rect', 0, 1080, 1080, 840, { fill: G('rgba(5,8,10,0)', 'rgba(5,8,10,.82)', 0) }),
   T('FIELD NOTES  /  03', 74, 90, 500, 30, { fontSize: 18, letterSpacing: 4, color: 'rgba(255,255,255,.86)' }),
-  T('NORTH', 66, 220, 940, 190, { fontFamily: 'Bebas Neue', fontSize: 230, letterSpacing: 4, lineHeight: 0.9, color: '#FFFFFF' }),
-  T('COAST', 66, 390, 940, 190, { fontFamily: 'Bebas Neue', fontSize: 230, letterSpacing: 4, lineHeight: 0.9, color: '#FFFFFF' }),
+  T('NORTH', 66, 220, 940, 190, { fontFamily: 'Bebas Neue', fontSize: 210, letterSpacing: 4, lineHeight: 0.9, color: '#FFFFFF' }),
+  T('COAST', 66, 390, 940, 190, { fontFamily: 'Bebas Neue', fontSize: 210, letterSpacing: 4, lineHeight: 0.9, color: '#FFFFFF' }),
   T('Seven days above the treeline.', 74, 620, 700, 60, { fontFamily: 'Instrument Serif', fontSize: 46, color: '#FFFFFF' }),
   S('line', 74, 1310, 120, 2, { fill: NONE, stroke: LIME, strokeWidth: 2 }),
   T('The long way north', 74, 1340, 800, 110, { fontFamily: 'Instrument Serif', fontSize: 88, color: '#FFFFFF', lineHeight: 1 }),
@@ -251,7 +261,7 @@ const recipe = page('Cover', bgSolid('#F3ECDD'), [
 
 /* ---------- 07. Pitch deck ---------- */
 const pitch1 = page('Title', bgSolid(COBALT), [
-  S('ellipse', 1480, -300, 760, 760, { fill: LIME, opacity: 0.96 }),
+  S('ellipse', 1320, 0, 600, 600, { fill: LIME, opacity: 0.96 }),
   S('ellipse', 1500, 600, 420, 420, { fill: NONE, stroke: 'rgba(255,255,255,.35)', strokeWidth: 2 }),
   T('PORTER  /  SEED ROUND 2026', 120, 96, 800, 30, { fontSize: 18, letterSpacing: 4, color: LIME }),
   T('The operating system\nfor independent cafés.', 112, 300, 1380, 420, {
@@ -444,7 +454,7 @@ const cardFront = page('Front', bgSolid(INK), [
 ]);
 
 const cardBack = page('Back', bgSolid('#F1EDE2'), [
-  T('Ada Mensah', 84, 90, 700, 80, { fontFamily: 'Instrument Serif', fontSize: 76, letterSpacing: -1.5 }),
+  T('Ada Mensah', 84, 90, 700, 100, { fontFamily: 'Instrument Serif', fontSize: 76, letterSpacing: -1.5 }),
   T('Founder & Creative Director', 88, 176, 600, 30, { fontSize: 19, letterSpacing: 1.2, color: '#5C584E' }),
   S('line', 88, 320, 874, 1, { fill: NONE, stroke: 'rgba(20,19,15,.22)', strokeWidth: 1 }),
   ...[
@@ -563,7 +573,7 @@ const fitness = page('Flyer', bgSolid(LIME), [
 
 /* ---------- 18. LinkedIn banner ---------- */
 const linkedin = page('Banner', bgSolid(COBALT), [
-  S('ellipse', 1290, -80, 360, 360, { fill: LIME }),
+  S('ellipse', 1200, 0, 300, 300, { fill: LIME }),
   IC('arrow-up-right', 1430, 60, 110, COBALT, 1.3, { rotation: 8 }),
   T('ADA MENSAH', 70, 70, 500, 26, { fontSize: 13, letterSpacing: 3.6, color: 'rgba(255,255,255,.7)' }),
   T('Designing calm products\nfor complicated work.', 66, 120, 1100, 190, {
@@ -687,10 +697,28 @@ const ALL_TEMPLATES: Template[] = [
   ...BRAND_TEMPLATES,
   ...EVENT_TEMPLATES,
   ...COMMERCE_TEMPLATES,
+  ...FEED_ONE_TEMPLATES,
+  ...FEED_TWO_TEMPLATES,
+  ...DECKS_ONE_TEMPLATES,
+  ...DECKS_TWO_TEMPLATES,
+  ...PRINT_ONE_TEMPLATES,
+  ...HOSPITALITY_TEMPLATES,
+  ...PROFESSIONAL_TEMPLATES,
+  ...BRAND_COVERS_TEMPLATES,
+  ...CREATOR_TEMPLATES,
+  ...CULTURE_TEMPLATES,
 ];
 
 /** Lead with a curated mix so the expanded library is visible immediately. */
 const CURATED_ORDER = [
+  'f1-copperline',
+  'd1-harbor',
+  'p1-blue-hour',
+  'bc-years-book',
+  'cr-signal-review',
+  'cu-experimental-film',
+  'hp-garden-wedding',
+  'pr-maya-chen',
   'cafe-opening',
   'ed-field-notes',
   'dk-meridian',
@@ -699,6 +727,8 @@ const CURATED_ORDER = [
   'ev-sonic-bloom',
   'form-04',
   'co-good-shelf',
+  'f1-bramble-bone',
+  'd2-common-ground-biennale',
 ];
 
 export const TEMPLATES: Template[] = [
@@ -722,6 +752,12 @@ const CATEGORY_ORDER = [
   'Flyer',
   'Banner',
   'Podcast',
+  'Editorial',
+  'Book cover',
+  'Magazine',
+  'Album cover',
+  'Web',
+  'Certificate',
 ];
 
 export const TEMPLATE_CATEGORIES = [

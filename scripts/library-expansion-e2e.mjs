@@ -61,8 +61,8 @@ const gallery = await page.evaluate(() => ({
   }),
 }));
 console.log('gallery', { cards: gallery.cards, count: gallery.count, unique: new Set(gallery.ids).size });
-assert.equal(gallery.cards, 44, 'the gallery lists all 44 templates');
-assert.equal(new Set(gallery.ids).size, 44, 'template ids are unique');
+assert.equal(gallery.cards, 300, 'the gallery lists all 300 templates');
+assert.equal(new Set(gallery.ids).size, 300, 'template ids are unique');
 for (const id of Object.keys(NEW_TEMPLATES)) assert.ok(gallery.ids.includes(id), `${id} is in the gallery`);
 await page.screenshot({ path: 'shots/library-expanded-final.png', fullPage: false });
 

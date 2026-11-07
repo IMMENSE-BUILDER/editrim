@@ -13,7 +13,7 @@ import { SIZE_PRESETS } from '../lib/presets';
 import { FONTS } from '../lib/fonts';
 import { getBrand } from '../lib/storage';
 
-const featured = ['cafe-opening', 'porter-pitch', 'night-shift', 'form-04', 'flash-sale'];
+const featured = ['f1-copperline', 'd1-harbor', 'p1-blue-hour', 'bc-years-book', 'cr-signal-review'];
 
 const FAQS = [
   {
