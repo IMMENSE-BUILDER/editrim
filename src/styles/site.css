@@ -753,6 +753,16 @@
   flex: none;
 }
 
+.template-preview-placeholder {
+  width: 54%;
+  aspect-ratio: 3 / 4;
+  border-radius: 2px;
+  background:
+    linear-gradient(135deg, rgba(20, 19, 15, 0.1), rgba(20, 19, 15, 0.03)),
+    #f3efe4;
+  box-shadow: 0 10px 24px rgba(30, 25, 15, 0.08);
+}
+
 .template-stack {
   position: relative;
   width: 100%;

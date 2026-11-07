@@ -17,6 +17,7 @@ import { BrandKitModal } from '../components/BrandKitModal';
 import { Modal } from '../components/Modal';
 import { PagePreview } from '../components/PagePreview';
 import { FormatGlyph } from '../components/FormatGlyph';
+import { TemplateCard } from '../components/TemplateCard';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { CommandBar } from '../components/CommandBar';
 import type { StudioCommand } from '../lib/commands';
@@ -28,7 +29,7 @@ import {
   listDesigns, saveDesign, storageUsage,
 } from '../lib/storage';
 import { exportDesign } from '../lib/export';
-import { TEMPLATES } from '../lib/templates';
+import { TEMPLATES, TEMPLATE_CATEGORIES } from '../lib/templates';
 import { SIZE_PRESETS } from '../lib/presets';
 import { compressImage, formatBytes, timeAgo } from '../lib/utils';
 import { createImage } from '../editor/factory';
@@ -144,6 +145,7 @@ export default function Home() {
   const [uploading, setUploading] = useState(false);
   const [notificationsRead, setNotificationsRead] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [libraryCategory, setLibraryCategory] = useState('All');
   const searchRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -194,10 +196,19 @@ export default function Home() {
   const usage = storageUsage();
   const pageCount = entries.reduce((n, d) => n + d.pages.length, 0);
   const recent = entries.slice(0, 8);
-  const templateSuggestions = useMemo(() => {
-    const preferred = ['f1-copperline', 'd1-harbor', 'dk-meridian', 'ed-field-notes', 'p1-blue-hour', 'hp-garden-wedding', 'bc-years-book', 'cr-signal-review'];
-    return preferred.map(id => TEMPLATES.find(t => t.id === id)).filter((t): t is typeof TEMPLATES[number] => Boolean(t));
+
+  const libraryCounts = useMemo(() => {
+    const counts: Record<string, number> = { All: TEMPLATES.length };
+    for (const template of TEMPLATES) {
+      counts[template.category] = (counts[template.category] ?? 0) + 1;
+    }
+    return counts;
   }, []);
+
+  const libraryTemplates = useMemo(
+    () => (libraryCategory === 'All' ? TEMPLATES : TEMPLATES.filter(t => t.category === libraryCategory)),
+    [libraryCategory],
+  );
 
   const setView = (next: 'home' | 'projects') => {
     if (next === 'projects') setSearchParams({ view: 'projects' });
@@ -684,22 +695,37 @@ export default function Home() {
                   )}
                 </section>
 
-                <section className="home-section">
+                <section className="home-section home-library">
                   <div className="home-section-head">
-                    <div><h2>Templates for you</h2></div>
-                    <Link to="/templates">See all <EditrimIcon name="arrowUpRight" size={14} /></Link>
+                    <div>
+                      <h2>All templates</h2>
+                    </div>
+                    <span className="home-library-count">{libraryTemplates.length} of {TEMPLATES.length} templates</span>
                   </div>
-                  <div className="home-template-strip">
-                    {templateSuggestions.map(t => (
-                      <Link key={t.id} to={`/editor/new?template=${t.id}`} className="home-template-card">
-                        <div className="home-template-thumb">
-                          <div className="home-template-art" style={{ width: `${designArtWidth({ size: t.size } as Design, 0.8)}%` }}>
-                            <PagePreview page={t.pages[0]} size={t.size} />
-                          </div>
-                        </div>
-                        <strong>{t.name}</strong>
-                        <span className="home-template-meta"><FormatGlyph name={t.category} size="micro" /> {t.category} · {formatCount(t.pages.length, 'page', 'pages')}</span>
-                      </Link>
+                  <div className="home-library-filters" aria-label="Filter templates by category">
+                    {TEMPLATE_CATEGORIES.map(category => (
+                      <button
+                        key={category}
+                        type="button"
+                        aria-pressed={libraryCategory === category}
+                        className={`home-library-filter ${libraryCategory === category ? 'is-active' : ''}`}
+                        onClick={() => setLibraryCategory(category)}
+                      >
+                        {category}
+                        <span>{libraryCounts[category] ?? 0}</span>
+                      </button>
+                    ))}
+                  </div>
+                  <div className="home-library-grid">
+                    {libraryTemplates.map(template => (
+                      <TemplateCard
+                        key={template.id}
+                        template={template}
+                        to={`/editor/new?template=${template.id}`}
+                        className="home-library-card"
+                        stack={false}
+                        lazy
+                      />
                     ))}
                   </div>
                 </section>

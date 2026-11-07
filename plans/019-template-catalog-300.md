@@ -309,6 +309,8 @@ Banner seeds (1 page each, exact sizes): conference 1584×396, museum 1584×396,
 - Every page has at least 6 layers; no out-of-bounds elements, no text overflow, no console errors.
 - The three initial audit timeouts were Chrome resource exhaustion from three concurrent editors; they rendered cleanly when checked individually.
 
+> This 300-template stage was later expanded to 500. See `plans/020-template-catalog-500.md`.
+
 ---
 
 ## Integration contract

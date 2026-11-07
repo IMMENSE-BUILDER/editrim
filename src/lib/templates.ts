@@ -17,6 +17,14 @@ import { PROFESSIONAL_TEMPLATES } from './library/professional';
 import { BRAND_COVERS_TEMPLATES } from './library/brand-covers';
 import { CREATOR_TEMPLATES } from './library/creator';
 import { CULTURE_TEMPLATES } from './library/culture';
+import { STUDIO_SOCIAL_TEMPLATES } from './library/studio-social';
+import { STUDIO_STORIES_TEMPLATES } from './library/studio-stories';
+import { STUDIO_POSTERS_TEMPLATES } from './library/studio-posters';
+import { STUDIO_DECKS_TEMPLATES } from './library/studio-decks';
+import { STUDIO_COVERS_TEMPLATES } from './library/studio-covers';
+import { STUDIO_BRAND_TEMPLATES } from './library/studio-brand';
+import { STUDIO_EVENTS_TEMPLATES } from './library/studio-events';
+import { STUDIO_PRESS_TEMPLATES } from './library/studio-press';
 
 /* ---------- helpers ---------- */
 
@@ -707,13 +715,24 @@ const ALL_TEMPLATES: Template[] = [
   ...BRAND_COVERS_TEMPLATES,
   ...CREATOR_TEMPLATES,
   ...CULTURE_TEMPLATES,
+  ...STUDIO_SOCIAL_TEMPLATES,
+  ...STUDIO_STORIES_TEMPLATES,
+  ...STUDIO_POSTERS_TEMPLATES,
+  ...STUDIO_DECKS_TEMPLATES,
+  ...STUDIO_COVERS_TEMPLATES,
+  ...STUDIO_BRAND_TEMPLATES,
+  ...STUDIO_EVENTS_TEMPLATES,
+  ...STUDIO_PRESS_TEMPLATES,
 ];
 
 /** Lead with a curated mix so the expanded library is visible immediately. */
 const CURATED_ORDER = [
   'f1-copperline',
+  'n8-quiet-revolution',
   'd1-harbor',
+  'n4-harbor-seed',
   'p1-blue-hour',
+  'n5-house-of-small-hours',
   'bc-years-book',
   'cr-signal-review',
   'cu-experimental-film',

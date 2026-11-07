@@ -81,7 +81,7 @@ export default function Templates() {
         {results.length > 0 ? (
           <div className="gallery-grid" key={category}>
             {results.map(t => (
-              <TemplateCard key={t.id} template={t} to={`/editor/new?template=${t.id}`} />
+              <TemplateCard key={t.id} template={t} to={`/editor/new?template=${t.id}`} lazy />
             ))}
           </div>
         ) : (

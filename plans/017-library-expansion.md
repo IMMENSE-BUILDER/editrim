@@ -49,4 +49,4 @@ node scripts/icon-coverage.mjs      ICON COVERAGE OK
 node scripts/library-e2e.mjs        LIBRARY OK
 ```
 
-> This 44-template stage was later expanded to 300 templates. See `plans/019-template-catalog-300.md`.
+> This 44-template stage was later expanded to 300 templates (`plans/019-template-catalog-300.md`) and then to 500 (`plans/020-template-catalog-500.md`).
