@@ -35,6 +35,7 @@ import {
   type PhotoTextLayer,
 } from '../lib/photo/types';
 import '../styles/photo.css';
+import '../styles/liquid-glass.css';
 
 type Mode = 'adjust' | 'crop' | 'filters' | 'text';
 

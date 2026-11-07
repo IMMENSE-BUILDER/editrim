@@ -31,6 +31,7 @@ import { renderVideoFrame, type MediaElementMap } from '../lib/video/render';
 import { createVideoProject, loadVideoProject, saveMediaBlob, saveVideoProject } from '../lib/video/storage';
 import { clamp, downloadBlob, uid } from '../lib/utils';
 import '../styles/video.css';
+import '../styles/liquid-glass.css';
 
 type DragMode = 'move' | 'trim-left' | 'trim-right';
 type DragState = {
