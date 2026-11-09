@@ -50,7 +50,8 @@ assert.deepEqual(video.panels, ['Media', 'Project']);
 assert.equal(video.overflow, false);
 removedVideoCopy.forEach(copy => assert.ok(!video.text.includes(copy), `video copy remains: ${copy}`));
 
-await p.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
+await p.goto(`${base}/dashboard`, { waitUntil: 'domcontentloaded' });
+await p.waitForSelector('.home', { timeout: 20000 });
 await p.waitForTimeout(600);
 const home = await p.evaluate(() => ({
   text: document.body.innerText,

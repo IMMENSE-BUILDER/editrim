@@ -110,7 +110,7 @@ const stored = await context.storageState();
 await page.reload({ waitUntil: 'domcontentloaded' });
 const beforePaint = await page.evaluate(() => document.documentElement.dataset.theme);
 assert.equal(beforePaint, 'dark', 'stored theme applies before first paint');
-await page.waitForLoadState('networkidle');
+await page.waitForSelector('.home', { timeout: 20000 });
 await wait(600);
 assert.equal(await styleOf('.home', 'backgroundColor'), darkHome);
 

@@ -24,3 +24,4 @@ Implementation records. Each plan lists what shipped, the files involved and the
 | 018 | AI model switch — MiniMax M3.1 Flash across server, client, docs and tests | Implemented |
 | 019 | Template catalog 44 → 300 — ten new packs, 256 templates and full-library audit | Implemented |
 | 020 | Template catalog 300 to 500 - eight new packs, 200 templates and the full dashboard library | Implemented |
+| 021 | Create a design chooser - full-screen templates, sizes, details and editor handoff | Implemented |

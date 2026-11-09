@@ -494,10 +494,13 @@ console.log('drop import ok');
 
 // ---------- dashboard entry ----------
 await page.setViewportSize({ width: 1440, height: 1000 });
-await page.goto(`${base}/dashboard`, { waitUntil: 'networkidle' });
+await page.goto(`${base}/dashboard`, { waitUntil: 'domcontentloaded' });
+await page.waitForSelector('.home-cat[title="Photo"]', { timeout: 20000 });
 await wait(500);
 assert.equal(await page.locator('.home-cat[title="Photo"]').count(), 1);
 await page.locator('.home-cat[title="Photo"]').click();
+await page.waitForSelector('.cdm-shell', { timeout: 10000 });
+await page.locator('.cdm-card').filter({ hasText: 'Open photo editor' }).click();
 await page.waitForSelector('.photo-editor', { timeout: 10000 });
 await wait(500);
 assert.equal(await attr('data-ready'), 'yes');

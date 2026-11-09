@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { BrandMark } from '../components/Brand';
 import { EditrimIcon, type EditrimIconName } from '../components/EditrimIcon';
-import { NewDesignModal } from '../components/NewDesignModal';
+import { CreateDesignModal, type CreateDesignSection } from '../components/CreateDesignModal';
 import { BrandKitModal } from '../components/BrandKitModal';
 import { Modal } from '../components/Modal';
 import { PagePreview } from '../components/PagePreview';
@@ -34,7 +34,7 @@ import { SIZE_PRESETS } from '../lib/presets';
 import { compressImage, formatBytes, timeAgo } from '../lib/utils';
 import { createImage } from '../editor/factory';
 import type { Design } from '../lib/types';
-import { createDocDesign, createSheetDesign, createWebsiteDesign, createWhiteboardDesign } from '../lib/homeDesigns';
+import { createSheetDesign, createWebsiteDesign } from '../lib/homeDesigns';
 import '../styles/home.css';
 
 type FeatureKind = 'sheet' | 'website' | 'magic';
@@ -128,8 +128,8 @@ export default function Home() {
   const [brand, setBrand] = useState(() => getBrand());
   const [collapsed, setCollapsed] = useState(false);
   const [query, setQuery] = useState('');
-  const [newOpen, setNewOpen] = useState(false);
-  const [newCustom, setNewCustom] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createSection, setCreateSection] = useState<CreateDesignSection>('for-you');
   const [brandOpen, setBrandOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [feature, setFeature] = useState<FeatureKind | null>(null);
@@ -226,7 +226,7 @@ export default function Home() {
       { id: 'projects', label: 'Go to Projects', group: 'Navigate', icon: 'projects', run: () => setView('projects') },
       { id: 'templates', label: 'Browse templates', group: 'Navigate', icon: 'templates', keywords: ['gallery'], run: () => navigate('/templates') },
       { id: 'search', label: 'Search designs', group: 'Create', icon: 'search', keywords: ['find', 'lookup'], run: () => searchRef.current?.focus() },
-      { id: 'new', label: 'New design', group: 'Create', icon: 'plus', keywords: ['create', 'blank', 'canvas'], run: () => setNewOpen(true) },
+      { id: 'new', label: 'New design', group: 'Create', icon: 'plus', keywords: ['create', 'blank', 'canvas'], run: () => openCreate() },
       { id: 'theme', label: 'Toggle light / dark', group: 'Settings', icon: 'moon', keywords: ['appearance', 'dark mode'], run: () => { toggleTheme(); } },
     ];
     for (const design of entries.slice(0, 8)) {
@@ -248,8 +248,6 @@ export default function Home() {
     navigate(`/editor/${d.id}`);
   };
 
-  const startDoc = () => navigate(`/editor/${createDocDesign().id}`);
-  const startWhiteboard = () => navigate(`/editor/${createWhiteboardDesign().id}`);
   const startWebsite = () => {
     setFeature(null);
     navigate(`/editor/${createWebsiteDesign().id}`);
@@ -259,9 +257,9 @@ export default function Home() {
     navigate(`/editor/${createSheetDesign().id}`);
   };
 
-  const openCreate = (custom = false) => {
-    setNewCustom(custom);
-    setNewOpen(true);
+  const openCreate = (section: CreateDesignSection = 'for-you') => {
+    setCreateSection(section);
+    setCreateOpen(true);
     setRailPopover(null);
   };
 
@@ -384,16 +382,16 @@ export default function Home() {
   }, [query]);
 
   const actions: { label: string; hint: string; icon: EditrimIconName; run: () => void }[] = [
-    { label: 'Create a presentation', hint: '16:9 deck', icon: 'present', run: () => startBlank(1920, 1080, 'Untitled presentation', 'Presentation') },
-    { label: 'Open video studio', hint: 'Timeline, clips, audio and text overlays', icon: 'video', run: () => navigate('/videos') },
-    { label: 'Open photo editor', hint: 'Exposure, crop, filters, text and export', icon: 'photo', run: () => navigate('/photo') },
-    { label: 'Browse design library', hint: `${SIZE_PRESETS.length} formats, from social to print`, icon: 'templates', run: () => openCreate() },
+    { label: 'Create a presentation', hint: '16:9 deck', icon: 'present', run: () => openCreate('presentations') },
+    { label: 'Open video studio', hint: 'Timeline, clips, audio and text overlays', icon: 'video', run: () => openCreate('videos') },
+    { label: 'Open photo editor', hint: 'Exposure, crop, filters, text and export', icon: 'photo', run: () => openCreate('photo') },
+    { label: 'Browse design library', hint: `${SIZE_PRESETS.length} formats, from social to print`, icon: 'templates', run: () => openCreate('templates') },
     { label: 'Open AI Studio', hint: 'Design, write, edit or review with AI', icon: 'spark', run: () => navigate('/editor/new#ai') },
-    { label: 'Upload an image', hint: 'Turn a photo into a new design', icon: 'upload', run: () => fileRef.current?.click() },
+    { label: 'Upload an image', hint: 'Turn a photo into a new design', icon: 'upload', run: () => openCreate('upload') },
     { label: 'Print-ready PDF', hint: 'Download a print PDF', icon: 'print', run: openPrint },
-    { label: 'Custom size canvas', hint: 'Any dimensions', icon: 'custom', run: () => openCreate(true) },
+    { label: 'Custom size canvas', hint: 'Any dimensions', icon: 'custom', run: () => openCreate('custom') },
     { label: 'Brand kit', hint: 'Colours, fonts and voice', icon: 'palette', run: () => setBrandOpen(true) },
-    { label: 'Browse all templates', hint: 'Find a starting point', icon: 'templates', run: () => navigate('/templates') },
+    { label: 'Browse all templates', hint: 'Find a starting point', icon: 'templates', run: () => openCreate('templates') },
   ];
   const searchActions = query.trim()
     ? actions.filter(a => `${a.label} ${a.hint}`.toLowerCase().includes(query.trim().toLowerCase())).slice(0, 5)
@@ -409,19 +407,19 @@ export default function Home() {
   };
 
   const categories: { id: string; label: string; icon: EditrimIconName; tone: string; outline?: boolean; run: () => void }[] = [
-    { id: 'templates', label: 'Templates', icon: 'templates', tone: 'purple', run: () => navigate('/templates') },
-    { id: 'presentation', label: 'Presentation', icon: 'present', tone: 'orange', run: () => startBlank(1920, 1080, 'Untitled presentation', 'Presentation') },
-    { id: 'social', label: 'Social media', icon: 'social', tone: 'coral', run: () => startBlank(1080, 1080, 'Untitled social post', 'Instagram') },
-    { id: 'video', label: 'Video', icon: 'video', tone: 'pink', run: () => navigate('/video') },
-    { id: 'photo', label: 'Photo', icon: 'photo', tone: 'teal', run: () => navigate('/photo') },
-    { id: 'printables', label: 'Printables', icon: 'printable', tone: 'violet', run: () => navigate('/templates?category=Poster') },
-    { id: 'doc', label: 'Doc', icon: 'doc', tone: 'teal', run: startDoc },
-    { id: 'whiteboard', label: 'Whiteboard', icon: 'board', tone: 'green', run: startWhiteboard },
-    { id: 'sheet', label: 'Sheet', icon: 'sheet', tone: 'blue', run: () => setFeature('sheet') },
-    { id: 'website', label: 'Website', icon: 'website', tone: 'sky', run: () => setFeature('website') },
+    { id: 'templates', label: 'Templates', icon: 'templates', tone: 'purple', run: () => openCreate('templates') },
+    { id: 'presentation', label: 'Presentation', icon: 'present', tone: 'orange', run: () => openCreate('presentations') },
+    { id: 'social', label: 'Social media', icon: 'social', tone: 'coral', run: () => openCreate('social') },
+    { id: 'video', label: 'Video', icon: 'video', tone: 'pink', run: () => openCreate('videos') },
+    { id: 'photo', label: 'Photo', icon: 'photo', tone: 'teal', run: () => openCreate('photo') },
+    { id: 'printables', label: 'Printables', icon: 'printable', tone: 'violet', run: () => openCreate('printables') },
+    { id: 'doc', label: 'Doc', icon: 'doc', tone: 'teal', run: () => openCreate('docs') },
+    { id: 'whiteboard', label: 'Whiteboard', icon: 'board', tone: 'green', run: () => openCreate('whiteboards') },
+    { id: 'sheet', label: 'Sheet', icon: 'sheet', tone: 'blue', run: () => openCreate('sheets') },
+    { id: 'website', label: 'Website', icon: 'website', tone: 'sky', run: () => openCreate('websites') },
     { id: 'magic', label: 'Magic Layers', icon: 'magic', tone: 'magic', run: () => setFeature('magic') },
-    { id: 'custom', label: 'Custom size', icon: 'custom', tone: 'outline', outline: true, run: () => openCreate(true) },
-    { id: 'upload', label: 'Upload', icon: 'upload', tone: 'outline', outline: true, run: () => fileRef.current?.click() },
+    { id: 'custom', label: 'Custom size', icon: 'custom', tone: 'outline', outline: true, run: () => openCreate('custom') },
+    { id: 'upload', label: 'Upload', icon: 'upload', tone: 'outline', outline: true, run: () => openCreate('upload') },
     { id: 'more', label: 'More', icon: 'more', tone: 'outline', outline: true, run: () => setMoreOpen(true) },
   ];
 
@@ -534,7 +532,7 @@ export default function Home() {
           <div className="rail-popover rail-more">
             <div className="rail-popover-head"><strong>More</strong><button onClick={() => setRailPopover(null)}><EditrimIcon name="close" size={14} /></button></div>
             <button onClick={() => { setRailPopover(null); fileRef.current?.click(); }}><EditrimIcon name="upload" size={14} /> Upload image</button>
-            <button onClick={() => { setRailPopover(null); openCreate(true); }}><EditrimIcon name="custom" size={14} /> Custom size</button>
+            <button onClick={() => { setRailPopover(null); openCreate('custom'); }}><EditrimIcon name="custom" size={14} /> Custom size</button>
             <button onClick={() => { setRailPopover(null); openPrint(); }}><EditrimIcon name="print" size={14} /> Print-ready PDF</button>
             <button onClick={() => { setRailPopover(null); setHelpOpen(true); }}><EditrimIcon name="help" size={14} /> Help &amp; shortcuts</button>
             <a href="https://github.com/IMMENSE-BUILDER/editrim" target="_blank" rel="noreferrer"><EditrimIcon name="website" size={14} /> Source</a>
@@ -806,7 +804,14 @@ export default function Home() {
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f); e.target.value = ''; }} />
       {uploading && <div className="home-uploading"><span /><strong>Preparing your image…</strong></div>}
 
-      <NewDesignModal open={newOpen} onClose={() => setNewOpen(false)} initialCustom={newCustom} initialGroup={newCustom ? 'Social' : 'Social'} />
+      <CreateDesignModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        initialSection={createSection}
+        onUpload={file => uploadFile(file)}
+        onOpenBrand={() => setBrandOpen(true)}
+        onOpenPrint={openPrint}
+      />
       <BrandKitModal open={brandOpen} onClose={() => setBrandOpen(false)} onSaved={() => { setBrand(getBrand()); reload(); toast('Brand kit updated'); }} />
 
       <Modal
@@ -879,7 +884,7 @@ export default function Home() {
           <button onClick={() => { setMoreOpen(false); openCreate(); }}><EditrimIcon name="templates" size={18} /><strong>Design library</strong></button>
           <button onClick={() => { setMoreOpen(false); navigate('/video'); }}><EditrimIcon name="video" size={18} /><strong>Video studio</strong></button>
           <button onClick={() => { setMoreOpen(false); navigate('/photo'); }}><EditrimIcon name="photo" size={18} /><strong>Photo editor</strong></button>
-          <button onClick={() => { setMoreOpen(false); openCreate(true); }}><EditrimIcon name="custom" size={18} /><strong>Custom size</strong></button>
+          <button onClick={() => { setMoreOpen(false); openCreate('custom'); }}><EditrimIcon name="custom" size={18} /><strong>Custom size</strong></button>
           <button onClick={() => { setMoreOpen(false); fileRef.current?.click(); }}><EditrimIcon name="upload" size={18} /><strong>Upload image</strong></button>
           <button onClick={() => { setMoreOpen(false); openPrint(); }}><EditrimIcon name="print" size={18} /><strong>Print-ready PDF</strong></button>
           <button onClick={() => { setMoreOpen(false); setBrandOpen(true); }}><EditrimIcon name="palette" size={18} /><strong>Brand kit</strong></button>
