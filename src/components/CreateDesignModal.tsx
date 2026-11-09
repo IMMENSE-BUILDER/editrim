@@ -689,6 +689,7 @@ export function CreateDesignModal({
         active: templateCategory === category,
         run: () => {
           setTemplateCategory(category);
+          setQuery('');
           setVisibleTemplates(24);
           setSelection(null);
         },
@@ -700,6 +701,7 @@ export function CreateDesignModal({
           active: socialFilter === filter.id,
           run: () => {
             setSocialFilter(filter.id);
+            setQuery('');
             setSelection(null);
           },
         }))
@@ -710,6 +712,7 @@ export function CreateDesignModal({
             active: printFilter === filter.id,
             run: () => {
               setPrintFilter(filter.id);
+              setQuery('');
               setSelection(null);
             },
           }))
@@ -749,7 +752,7 @@ export function CreateDesignModal({
   ];
 
   const moreActions: PhotoAction[] = [
-    { id: 'all-templates', label: 'Browse all templates', hint: '500 designs, every category', icon: 'templates', run: () => { onClose(); navigate('/templates'); } },
+    { id: 'all-templates', label: 'Browse all templates', hint: `${TEMPLATES.length} designs, every category`, icon: 'templates', run: () => { onClose(); navigate('/templates'); } },
     { id: 'ai', label: 'AI Studio', hint: 'Design, write, edit or review', icon: 'spark', run: () => { onClose(); navigate('/editor/new#ai'); } },
     { id: 'photo', label: 'Photo editor', hint: 'Edit a photo on this device', icon: 'photo', run: () => { onClose(); navigate('/photo'); } },
     { id: 'video', label: 'Video studio', hint: 'Timeline, clips and overlays', icon: 'video', run: () => { onClose(); navigate('/videos'); } },
@@ -806,7 +809,7 @@ export function CreateDesignModal({
           </nav>
           <div className="cdm-side-foot">
             <span className="cdm-side-dot" />
-            500+ editable designs
+            {TEMPLATES.length} editable designs
           </div>
         </aside>
 
