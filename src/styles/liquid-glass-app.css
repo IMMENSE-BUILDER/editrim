@@ -11,9 +11,9 @@
    ========================================================================== */
 
 :root {
-  --glass-shell-bg: rgba(251, 250, 246, 0.72);
-  --glass-shell-strong: rgba(251, 250, 246, 0.84);
-  --glass-shell-border: rgba(255, 255, 255, 0.65);
+  --glass-shell-bg: rgba(238, 234, 224, 0.78);
+  --glass-shell-strong: rgba(240, 236, 227, 0.88);
+  --glass-shell-border: rgba(246, 243, 236, 0.55);
   --glass-shell-edge: rgba(20, 19, 15, 0.08);
   --glass-shell-shadow:
     0 18px 46px rgba(20, 19, 15, 0.1),

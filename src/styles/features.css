@@ -751,7 +751,7 @@ body.is-resizing-panel {
   height: 36px;
   padding: 0 6px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.94);
+  background: rgba(241, 238, 230, 0.95);
   border: 1px solid rgba(20, 19, 15, 0.14);
   color: #14130F;
   box-shadow: 0 6px 20px rgba(20, 19, 15, 0.1);

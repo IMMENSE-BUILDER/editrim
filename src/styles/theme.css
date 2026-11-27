@@ -320,7 +320,7 @@ html.theme-switching *::after {
 }
 
 :root[data-theme='light'] .home-project-open {
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(241, 238, 230, 0.88);
   color: var(--ink);
   box-shadow: 0 4px 14px rgba(30, 26, 16, 0.18);
 }
@@ -354,15 +354,15 @@ html.theme-switching *::after {
 }
 
 :root[data-theme='light'] .home-more-grid button {
-  background: #fff;
+  background: var(--card);
 }
 
 :root[data-theme='light'] .home-more-grid button:hover {
-  background: #f7f5ef;
+  background: var(--chrome-2);
 }
 
 :root[data-theme='light'] .home-delete {
-  background: #fff;
+  background: var(--card);
   color: var(--ink);
 }
 

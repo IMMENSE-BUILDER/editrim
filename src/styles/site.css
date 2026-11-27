@@ -326,7 +326,7 @@
 .hero-card {
   position: absolute;
   padding: 8px;
-  background: #fff;
+  background: var(--card);
   border-radius: 7px;
   box-shadow: 0 26px 60px rgba(35, 28, 15, 0.22), 0 4px 14px rgba(35, 28, 15, 0.1);
   transition: transform 0.35s var(--ease);
@@ -943,7 +943,7 @@
   align-items: center;
   gap: 16px;
   padding: 0 14px;
-  background: #fbfaf7;
+  background: var(--chrome);
   border-bottom: 1px solid var(--line);
 }
 
@@ -994,7 +994,7 @@
 }
 
 .app-shot-rail {
-  background: #f2efe7;
+  background: var(--chrome-2);
   border-right: 1px solid var(--line);
   display: flex;
   flex-direction: column;
@@ -1020,7 +1020,7 @@
 .app-shot-panel {
   border-right: 1px solid var(--line);
   padding: 11px 10px;
-  background: #faf8f3;
+  background: var(--paper);
 }
 
 .app-shot-panel-title {
@@ -1034,7 +1034,7 @@
   height: 22px;
   border-radius: 5px;
   border: 1px solid var(--line);
-  background: #fff;
+  background: var(--card);
   font-size: 8px;
   color: var(--muted-2);
   padding: 0 7px;
@@ -1134,14 +1134,14 @@
   bottom: 8px;
   font-size: 7px;
   color: var(--ink-soft);
-  background: #fff;
+  background: var(--card);
   border-radius: 3px;
   padding: 2px 5px;
 }
 
 .app-shot-inspector {
   border-left: 1px solid var(--line);
-  background: #faf8f3;
+  background: var(--paper);
   padding: 11px 9px;
 }
 
@@ -1208,7 +1208,7 @@
   height: 17px;
   border: 1px solid var(--line);
   border-radius: 3px;
-  background: #fff;
+  background: var(--card);
   font-size: 7px;
   display: flex;
   align-items: center;
