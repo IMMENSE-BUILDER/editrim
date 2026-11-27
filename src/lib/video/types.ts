@@ -54,6 +54,8 @@ export type TextOverlayStyle = {
   motion: TextMotion;
 };
 
+export type ClipTransitionKind = 'none' | 'fade' | 'slideLeft' | 'slideUp' | 'zoom' | 'wipe';
+
 export type VideoClip = {
   id: string;
   trackId: VideoTrack['id'];
@@ -73,6 +75,8 @@ export type VideoClip = {
   scale: number;
   filters: ClipFilters;
   text?: TextOverlayStyle;
+  transitionIn?: { kind: ClipTransitionKind; duration: number };
+  caption?: boolean;
 };
 
 export type VideoProject = {

@@ -448,3 +448,97 @@
   cursor: crosshair;
   touch-action: none;
 }
+
+
+/* Video Studio upgrades */
+.vd-lib-tabs {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.vd-lib-tabs button {
+  padding: 5px 10px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 0.72;
+  cursor: pointer;
+}
+
+.vd-lib-tabs button.is-active {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.vd-captions-pane {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.vd-caption-script {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(0, 0, 0, 0.28);
+  color: #f4f1ea;
+  font-size: 12px;
+  resize: vertical;
+}
+
+.vd-caption-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.vd-ghost-btn.is-recording {
+  border-color: rgba(239, 68, 68, 0.8);
+  color: #fca5a5;
+}
+
+.vd-caption-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vd-caption-cue {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 7px 9px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.vd-caption-cue small {
+  font-size: 10px;
+  opacity: 0.65;
+}
+
+.vd-caption-cue input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #f4f1ea;
+  font-size: 12px;
+}
+
+.vd-beat-mark {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  height: 10px;
+  background: #f59e0b;
+  opacity: 0.85;
+  pointer-events: none;
+}

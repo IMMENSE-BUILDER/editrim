@@ -260,10 +260,31 @@ export function renderVideoFrame(
     const element = asset ? elements.get(asset.id) : undefined;
     if (!asset || !mediaReady(element)) return;
     ctx.save();
-    ctx.globalAlpha = clipOpacity(clip, time);
+    let alpha = clipOpacity(clip, time);
+    let tx = 0;
+    let ty = 0;
+    let tScale = 1;
+    const trans = clip.transitionIn;
+    if (trans && trans.kind !== 'none' && trans.duration > 0) {
+      const elapsed = time - clip.start;
+      if (elapsed >= 0 && elapsed < trans.duration) {
+        const t = Math.max(0, Math.min(1, elapsed / trans.duration));
+        const eased = 1 - Math.pow(1 - t, 3);
+        if (trans.kind === 'fade') alpha *= eased;
+        else if (trans.kind === 'slideLeft') tx = (1 - eased) * width;
+        else if (trans.kind === 'slideUp') ty = (1 - eased) * height;
+        else if (trans.kind === 'zoom') tScale = 1.25 - 0.25 * eased;
+        else if (trans.kind === 'wipe') {
+          ctx.beginPath();
+          ctx.rect(0, 0, width * eased, height);
+          ctx.clip();
+        }
+      }
+    }
+    ctx.globalAlpha = alpha;
     ctx.filter = clipFilter(clip);
-    const zoom = Math.max(1, clip.scale || 1);
-    ctx.translate(width / 2, height / 2);
+    const zoom = Math.max(1, clip.scale || 1) * tScale;
+    ctx.translate(width / 2 + tx, height / 2 + ty);
     ctx.scale(zoom, zoom);
     ctx.translate(-width / 2, -height / 2);
     drawCover(ctx, element, 0, 0, width, height);

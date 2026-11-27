@@ -22,6 +22,7 @@ import {
   sanitizeVideoFilename,
   VIDEO_ASPECTS,
   type ClipFilters,
+  type ClipTransitionKind,
   type TextOverlayStyle,
   type VideoAsset,
   type VideoClip,
@@ -29,6 +30,13 @@ import {
   type VideoProject,
   type VideoTrack,
 } from '../lib/video/types';
+import {
+  decodeAudioBeats,
+  formatSrt,
+  formatVtt,
+  parseSrtOrVtt,
+  type BeatDetectionResult,
+} from '../lib/video/audioAnalysis';
 import { renderVideoFrame, type MediaElementMap } from '../lib/video/render';
 import { createVideoProject, loadVideoProject, saveMediaBlob, saveVideoProject } from '../lib/video/storage';
 import { clamp, downloadBlob, uid } from '../lib/utils';
@@ -221,6 +229,15 @@ export default function VideoEditor() {
   const exportingRef = useRef(false);
   const exportCancelRef = useRef(false);
   const [exportProgress, setExportProgress] = useState(0);
+  const [libraryTab, setLibraryTab] = useState<'media' | 'captions'>('media');
+  const [beatInfo, setBeatInfo] = useState<BeatDetectionResult | null>(null);
+  const beatInfoRef = useRef<BeatDetectionResult | null>(null);
+  const [beatSnap, setBeatSnap] = useState(true);
+  const beatSnapRef = useRef(true);
+  const [captionScript, setCaptionScript] = useState('');
+  const [recordingVo, setRecordingVo] = useState(false);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const subtitleInputRef = useRef<HTMLInputElement>(null);
   const [historyState, setHistoryState] = useState({ canUndo: false, canRedo: false });
   const pastRef = useRef<VideoProject[]>([]);
   const futureRef = useRef<VideoProject[]>([]);
@@ -535,8 +552,9 @@ export default function VideoEditor() {
       if (drag.mode === 'move') {
         let start = Math.max(0, drag.origStart + delta);
         if (snapRef.current) {
-          const points = [0, currentTimeRef.current, ...current.clips.filter(item => item.trackId === clip.trackId && item.id !== clip.id).flatMap(item => [item.start, clipEnd(item)])];
-          const match = points.find(point => Math.abs(point - start) < 0.09);
+          const beatPoints = beatSnapRef.current && beatInfoRef.current ? beatInfoRef.current.beats : [];
+          const points = [0, currentTimeRef.current, ...beatPoints, ...current.clips.filter(item => item.trackId === clip.trackId && item.id !== clip.id).flatMap(item => [item.start, clipEnd(item)])];
+          const match = points.find(point => Math.abs(point - start) < 0.12);
           if (match !== undefined) start = match;
         }
         start = resolveTrackStart(current, clip, start, drag.origDuration);
@@ -882,6 +900,215 @@ export default function VideoEditor() {
     commit(current => ({ ...current, name }), 'project:name');
   }, [commit]);
 
+  useEffect(() => { beatInfoRef.current = beatInfo; }, [beatInfo]);
+  useEffect(() => { beatSnapRef.current = beatSnap; }, [beatSnap]);
+
+  const analyzeAudioBeats = useCallback(async (assetId?: string) => {
+    const current = projectRef.current;
+    const audioAsset =
+      (assetId ? current.assets.find(a => a.id === assetId && a.kind === 'audio') : undefined) ??
+      current.assets.find(a => a.kind === 'audio' && a.src && !a.missing);
+    if (!audioAsset?.src) {
+      toast('Import an audio track first', 'error');
+      return;
+    }
+    try {
+      const result = await decodeAudioBeats(audioAsset.src);
+      setBeatInfo(result);
+      toast(`${result.bpm} BPM · ${result.beats.length} beats detected`);
+    } catch {
+      toast('Could not analyze beats for that audio', 'error');
+    }
+  }, [toast]);
+
+  const snapCutsToBeats = useCallback(() => {
+    if (!beatInfo?.beats.length) {
+      toast('Run Detect beats first', 'error');
+      return;
+    }
+    commit(current => {
+      const sorted = current.clips
+        .filter(c => c.trackId === 'video')
+        .sort((a, b) => a.start - b.start);
+      let cursor = 0;
+      const moved = new Map<string, number>();
+      for (const clip of sorted) {
+        let best = clip.start;
+        let bestDist = 0.35;
+        for (const b of beatInfo.beats) {
+          const d = Math.abs(b - clip.start);
+          if (d < bestDist && b >= cursor) {
+            bestDist = d;
+            best = b;
+          }
+        }
+        const clamped = Math.max(cursor, best);
+        moved.set(clip.id, clamped);
+        cursor = clamped + clip.duration;
+      }
+      return {
+        ...current,
+        clips: current.clips.map(c => (moved.has(c.id) ? { ...c, start: moved.get(c.id)! } : c)),
+      };
+    });
+    toast('Snapped cuts to nearest beats');
+  }, [beatInfo, commit, toast]);
+
+  const buildCaptionClip = useCallback((text: string, start: number, dur: number, idx: number): VideoClip => ({
+    ...createTextClip(start, { content: text }),
+    id: uid('cap'),
+    name: `Caption ${idx + 1}`,
+    duration: Math.max(0.4, dur),
+    x: 0.5,
+    y: 0.86,
+    caption: true,
+    text: {
+      ...DEFAULT_TEXT,
+      content: text,
+      fontSize: 44,
+      fontWeight: 600,
+      color: '#FFFFFF',
+      background: '#0F1115',
+      backgroundOpacity: 0.74,
+      width: 0.82,
+      lineHeight: 1.2,
+    },
+  }), []);
+
+  const generateCaptionsFromScript = useCallback(() => {
+    const raw = captionScript.trim();
+    if (!raw) {
+      toast('Enter a script to time captions', 'error');
+      return;
+    }
+    const parts = raw
+      .split(/\n+|(?<=[.!?])\s+/)
+      .map(s => s.trim())
+      .filter(Boolean);
+    const totalDur = Math.max(4, duration || parts.length * 2.5);
+    const slice = totalDur / Math.max(1, parts.length);
+    const nextCaps = parts.map((line, i) => buildCaptionClip(line, Number((i * slice).toFixed(2)), Math.max(0.6, Number((slice * 0.94).toFixed(2))), i));
+    commit(current => ({
+      ...current,
+      clips: [...current.clips.filter(c => !c.caption), ...nextCaps],
+    }));
+    toast(`Generated ${nextCaps.length} timed captions`);
+  }, [buildCaptionClip, captionScript, commit, duration, toast]);
+
+  const importSubtitleFile = useCallback(async (file: File) => {
+    const raw = await file.text();
+    const cues = parseSrtOrVtt(raw);
+    if (!cues.length) {
+      toast('No valid cues found in subtitle file', 'error');
+      return;
+    }
+    const nextCaps = cues.map((c, i) => buildCaptionClip(c.text, c.start, c.end - c.start, i));
+    commit(current => ({
+      ...current,
+      clips: [...current.clips.filter(c => !c.caption), ...nextCaps],
+    }));
+    toast(`Imported ${nextCaps.length} subtitle cues`);
+  }, [buildCaptionClip, commit, toast]);
+
+  const exportSubtitles = useCallback((kind: 'srt' | 'vtt') => {
+    const capClips = projectRef.current.clips
+      .filter(c => c.kind === 'text' && (c.caption || c.text?.content))
+      .filter(c => projectRef.current.clips.some(x => x.caption) ? Boolean(c.caption) : true)
+      .sort((a, b) => a.start - b.start)
+      .map(c => ({ start: c.start, end: clipEnd(c), text: c.text?.content ?? c.name }));
+    if (!capClips.length) {
+      toast('No captions or text clips to export', 'error');
+      return;
+    }
+    const text = kind === 'srt' ? formatSrt(capClips) : formatVtt(capClips);
+    const base = sanitizeVideoFilename(projectRef.current.name);
+    downloadBlob(new Blob([text], { type: 'text/plain;charset=utf-8' }), `${base}.${kind}`);
+    toast(`Exported ${kind.toUpperCase()}`);
+  }, [toast]);
+
+  const toggleVoiceoverRecord = useCallback(async () => {
+    if (recordingVo && mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setRecordingVo(false);
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === 'undefined') {
+      toast('Voiceover recording requires microphone support', 'error');
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const rec = new MediaRecorder(stream);
+      const chunks: BlobPart[] = [];
+      rec.ondataavailable = ev => { if (ev.data.size > 0) chunks.push(ev.data); };
+      rec.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        const blob = new Blob(chunks, { type: rec.mimeType || 'audio/webm' });
+        const file = new File([blob], `voiceover-${Date.now()}.webm`, { type: blob.type });
+        const src = URL.createObjectURL(blob);
+        try {
+          const id = uid('asset');
+          const asset = await buildVideoAsset(file, id, src, 'audio');
+          await saveMediaBlob(id, file).catch(() => {});
+          const clip: VideoClip = {
+            id: uid('clip'),
+            trackId: 'audio',
+            kind: 'audio',
+            name: 'Voiceover',
+            assetId: asset.id,
+            start: currentTimeRef.current,
+            duration: Math.max(0.5, asset.duration || 3),
+            inPoint: 0,
+            speed: 1,
+            opacity: 1,
+            volume: 1,
+            fadeIn: 0.05,
+            fadeOut: 0.05,
+            x: 0.5,
+            y: 0.5,
+            scale: 1,
+            filters: { ...DEFAULT_FILTERS },
+          };
+          commit(current => ({
+            ...current,
+            assets: [...current.assets, asset],
+            clips: [...current.clips, clip],
+          }));
+          toast('Voiceover added to audio track');
+        } catch {
+          URL.revokeObjectURL(src);
+          toast('Could not save recorded voiceover', 'error');
+        }
+      };
+      mediaRecorderRef.current = rec;
+      rec.start();
+      setRecordingVo(true);
+    } catch {
+      toast('Microphone permission unavailable in this browser', 'error');
+    }
+  }, [commit, recordingVo, toast]);
+
+  const speakScriptPreview = useCallback(() => {
+    const caps = projectRef.current.clips
+      .filter(c => c.kind === 'text' && (c.caption || c.text?.content))
+      .sort((a, b) => a.start - b.start)
+      .map(c => c.text?.content ?? '')
+      .filter(Boolean)
+      .join('. ');
+    const text = captionScript.trim() || caps;
+    if (!text) {
+      toast('Write a script or generate captions first', 'error');
+      return;
+    }
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      toast('Local speech synthesis unavailable', 'error');
+      return;
+    }
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+    toast('Reading script aloud locally');
+  }, [captionScript, toast]);
+
   const newProject = useCallback(() => {
     saveVideoProject(projectRef.current);
     const fresh = createVideoProject();
@@ -1152,57 +1379,123 @@ export default function VideoEditor() {
       <div className="vd-body">
         <aside className={`vd-panel vd-library ${libraryOpen ? 'is-open' : ''}`}>
           <div className="vd-panel-head">
-            <h2>Media</h2>
+            <div className="vd-lib-tabs" role="tablist" aria-label="Library panel">
+              <button type="button" className={libraryTab === 'media' ? 'is-active' : ''} onClick={() => setLibraryTab('media')}>Media</button>
+              <button type="button" className={libraryTab === 'captions' ? 'is-active' : ''} onClick={() => setLibraryTab('captions')}>Captions</button>
+            </div>
             <button className="vd-panel-close" onClick={() => setLibraryOpen(false)} aria-label="Close media library"><EditrimIcon name="close" size={15} /></button>
           </div>
-          <input
-            ref={fileInputRef}
-            className="vd-file-input"
-            type="file"
-            accept="video/*,image/*,audio/*"
-            multiple
-            onChange={event => {
-              if (event.target.files) handleFiles(event.target.files);
-              event.target.value = '';
-            }}
-          />
-          
-          <div className="vd-library-actions">
-            <button className="vd-primary-btn" onClick={() => fileInputRef.current?.click()}><EditrimIcon name="upload" size={15} /> Import</button>
-            <button className="vd-ghost-btn" onClick={addText}><EditrimIcon name="text" size={15} /> Text</button>
-          </div>
-          {project.assets.length > 0 && (
-            <div className="vd-media-list">
-              {project.assets.map(asset => (
-                <div
-                  key={asset.id}
-                  className={`vd-media-card ${asset.missing ? 'is-missing' : ''}`}
-                  data-asset-id={asset.id}
-                  data-kind={asset.kind}
-                  onClick={() => addAssetToTimeline(asset)}
-                  title={asset.missing ? 'Missing media — re-import the file' : 'Add to timeline'}
-                >
-                  <div className="vd-media-thumb" style={{ backgroundImage: `url(${asset.thumbnail})` }}>
-                    <span className="vd-media-kind"><EditrimIcon name={KIND_ICONS[asset.kind]} size={12} /></span>
-                    <span className="vd-media-duration">{asset.kind === 'image' ? 'still' : formatTimecode(asset.duration, false)}</span>
-                    <span className="vd-media-add"><EditrimIcon name="plus" size={14} /></span>
-                  </div>
-                  <div className="vd-media-meta">
-                    <strong>{asset.name}</strong>
-                  </div>
-                  <button
-                    className="vd-media-remove"
-                    onClick={event => { event.stopPropagation(); removeAsset(asset.id); }}
-                    title="Remove media"
-                    aria-label={`Remove ${asset.name}`}
-                  >
-                    <EditrimIcon name="trash" size={13} />
-                  </button>
+          {libraryTab === 'media' ? (
+            <>
+              <input
+                ref={fileInputRef}
+                className="vd-file-input"
+                type="file"
+                accept="video/*,image/*,audio/*"
+                multiple
+                onChange={event => {
+                  if (event.target.files) handleFiles(event.target.files);
+                  event.target.value = '';
+                }}
+              />
+              <div className="vd-library-actions">
+                <button className="vd-primary-btn" onClick={() => fileInputRef.current?.click()}><EditrimIcon name="upload" size={15} /> Import</button>
+                <button className="vd-ghost-btn" onClick={addText}><EditrimIcon name="text" size={15} /> Text</button>
+              </div>
+              {project.assets.length > 0 && (
+                <div className="vd-media-list">
+                  {project.assets.map(asset => (
+                    <div
+                      key={asset.id}
+                      className={`vd-media-card ${asset.missing ? 'is-missing' : ''}`}
+                      data-asset-id={asset.id}
+                      data-kind={asset.kind}
+                      onClick={() => addAssetToTimeline(asset)}
+                      title={asset.missing ? 'Missing media — re-import the file' : 'Add to timeline'}
+                    >
+                      <div className="vd-media-thumb" style={{ backgroundImage: `url(${asset.thumbnail})` }}>
+                        <span className="vd-media-kind"><EditrimIcon name={KIND_ICONS[asset.kind]} size={12} /></span>
+                        <span className="vd-media-duration">{asset.kind === 'image' ? 'still' : formatTimecode(asset.duration, false)}</span>
+                        <span className="vd-media-add"><EditrimIcon name="plus" size={14} /></span>
+                      </div>
+                      <div className="vd-media-meta">
+                        <strong>{asset.name}</strong>
+                      </div>
+                      <button
+                        className="vd-media-remove"
+                        onClick={event => { event.stopPropagation(); removeAsset(asset.id); }}
+                        title="Remove media"
+                        aria-label={`Remove ${asset.name}`}
+                      >
+                        <EditrimIcon name="trash" size={13} />
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
+            </>
+          ) : (
+            <div className="vd-captions-pane">
+              <textarea
+                className="vd-caption-script"
+                rows={4}
+                placeholder="Paste narration or script lines to split into timed captions..."
+                value={captionScript}
+                onChange={e => setCaptionScript(e.target.value)}
+              />
+              <div className="vd-caption-actions">
+                <button type="button" className="vd-primary-btn" onClick={generateCaptionsFromScript}>
+                  Generate timed captions
+                </button>
+                <button type="button" className="vd-ghost-btn" onClick={speakScriptPreview} title="Read script aloud locally">
+                  Read aloud
+                </button>
+              </div>
+              <div className="vd-caption-actions">
+                <button type="button" className="vd-ghost-btn" onClick={() => subtitleInputRef.current?.click()}>
+                  Import .srt / .vtt
+                </button>
+                <button type="button" className="vd-ghost-btn" onClick={() => exportSubtitles('srt')}>Export .srt</button>
+                <button type="button" className="vd-ghost-btn" onClick={() => exportSubtitles('vtt')}>Export .vtt</button>
+              </div>
+              <input
+                ref={subtitleInputRef}
+                type="file"
+                accept=".srt,.vtt,text/vtt,application/x-subrip"
+                hidden
+                onChange={e => {
+                  const file = e.target.files?.[0];
+                  if (file) void importSubtitleFile(file);
+                  e.target.value = '';
+                }}
+              />
+              <div className="vd-caption-actions">
+                <button
+                  type="button"
+                  className={`vd-ghost-btn ${recordingVo ? 'is-recording' : ''}`}
+                  onClick={() => void toggleVoiceoverRecord()}
+                >
+                  <EditrimIcon name="record" size={13} />
+                  {recordingVo ? 'Stop recording' : 'Record voiceover'}
+                </button>
+              </div>
+              <div className="vd-caption-list">
+                {project.clips
+                  .filter(c => c.kind === 'text' && c.caption)
+                  .sort((a, b) => a.start - b.start)
+                  .map(cap => (
+                    <div key={cap.id} className="vd-caption-cue" onClick={() => { selectClip(cap.id); seekTo(cap.start); }}>
+                      <small>{formatTimecode(cap.start, false)} · {cap.duration.toFixed(1)}s</small>
+                      <input
+                        value={cap.text?.content ?? ''}
+                        onChange={e => updateText(cap.id, { content: e.target.value }, `cap-${cap.id}`)}
+                      />
+                    </div>
+                  ))}
+              </div>
             </div>
           )}
-                  </aside>
+        </aside>
 
         <main className="vd-main">
           <div className="vd-stage" ref={stageRef}>
@@ -1259,6 +1552,22 @@ export default function VideoEditor() {
                 </GlassButtonGroup>
                 <span className="vd-tool-sep" />
                 <IconButton icon="text" label="Add text overlay (T)" onClick={addText} />
+                <button className="vd-snap" onClick={() => { setLibraryTab('captions'); setLibraryOpen(true); }} title="Captions, SRT/VTT & Voiceover">
+                  Captions
+                </button>
+                <button className="vd-snap" onClick={() => void analyzeAudioBeats()} title="Analyze audio beats">
+                  <EditrimIcon name="waveform" size={13} /> {beatInfo ? `${beatInfo.bpm} BPM` : 'Detect beats'}
+                </button>
+                {beatInfo && beatInfo.beats.length > 0 && (
+                  <>
+                    <button className={`vd-snap ${beatSnap ? 'is-active' : ''}`} onClick={() => setBeatSnap(v => !v)} title="Snap clip drags to beats">
+                      Beat snap
+                    </button>
+                    <button className="vd-snap" onClick={snapCutsToBeats} title="Align video cuts to nearest detected beats">
+                      Snap cuts
+                    </button>
+                  </>
+                )}
                 <button className={`vd-snap ${snap ? 'is-active' : ''}`} onClick={() => setSnap(value => !value)} title="Snap clips and playhead"><EditrimIcon name="bolt" size={14} /> Snap</button>
                 <span className="vd-tool-sep" />
                 <GlassButtonGroup size="sm" material="clear" aria-label="Timeline zoom">
@@ -1309,6 +1618,9 @@ export default function VideoEditor() {
                         </span>
                       );
                     })}
+                    {beatInfo?.beats.map((t, i) => (
+                      <span key={`b-${i}`} className="vd-beat-mark" style={{ left: t * zoom }} title={`Beat ${t.toFixed(2)}s`} />
+                    ))}
                   </div>
                   {project.tracks.map(track => (
                     <div className={`vd-lane vd-lane-${track.kind} ${track.hidden ? 'is-hidden' : ''}`} key={track.id}>
@@ -1397,7 +1709,46 @@ export default function VideoEditor() {
                       </Field>
                     </>
                   )}
-                  {selectedClip.kind === 'video' && <RangeField label="Zoom" value={selectedClip.scale || 1} min={1} max={2.5} step={0.01} suffix="×" onChange={value => updateClip(selectedClip.id, { scale: value }, 'scale')} />}
+                  {selectedClip.kind === 'video' && (
+                    <>
+                      <RangeField label="Zoom" value={selectedClip.scale || 1} min={1} max={2.5} step={0.01} suffix="×" onChange={value => updateClip(selectedClip.id, { scale: value }, 'scale')} />
+                      <div className="vd-inspector-grid">
+                        <Field label="Transition in">
+                          <select
+                            value={selectedClip.transitionIn?.kind ?? 'none'}
+                            onChange={e => updateClip(selectedClip.id, {
+                              transitionIn: {
+                                kind: e.target.value as ClipTransitionKind,
+                                duration: selectedClip.transitionIn?.duration ?? 0.5,
+                              },
+                            })}
+                          >
+                            <option value="none">None</option>
+                            <option value="fade">Fade</option>
+                            <option value="slideLeft">Slide left</option>
+                            <option value="slideUp">Slide up</option>
+                            <option value="zoom">Zoom</option>
+                            <option value="wipe">Wipe</option>
+                          </select>
+                        </Field>
+                        <Field label="Trans. dur (s)">
+                          <input
+                            type="number"
+                            step="0.1"
+                            min={0.1}
+                            max={2}
+                            value={selectedClip.transitionIn?.duration ?? 0.5}
+                            onChange={e => updateClip(selectedClip.id, {
+                              transitionIn: {
+                                kind: selectedClip.transitionIn?.kind ?? 'fade',
+                                duration: clamp(Number(e.target.value) || 0.5, 0.1, 2),
+                              },
+                            }, 'transition-dur')}
+                          />
+                        </Field>
+                      </div>
+                    </>
+                  )}
                   {selectedClip.kind === 'image' && (
                     <>
                       <RangeField label="Size" value={selectedClip.scale} min={0.08} max={1.3} step={0.01} suffix="" onChange={value => updateClip(selectedClip.id, { scale: value }, 'scale')} />
