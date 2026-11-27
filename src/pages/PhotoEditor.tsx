@@ -15,6 +15,7 @@ import { EditrimIcon } from '../components/EditrimIcon';
 import type { EditrimIconName } from '../components/EditrimIcon';
 import { useToast } from '../components/Toast';
 import { useSurface } from '../hooks/useSurface';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { clamp, downloadBlob, safeFilename } from '../lib/utils';
 import { FONTS } from '../lib/fonts';
 import { runInpaint, runRemoveBackground } from '../lib/magic/client';
@@ -229,6 +230,7 @@ function FilterThumb({ image, presetId }: { image: HTMLImageElement; presetId: P
 
 export default function PhotoEditor() {
   useSurface('neutral');
+  const isMobile = useMediaQuery('(max-width: 900px)');
   const { toast } = useToast();
   const [name, setName] = useState('Untitled photo');
   const [image, setImage] = useState<HTMLImageElement | null>(null);
@@ -798,7 +800,7 @@ export default function PhotoEditor() {
 
       <div className="ph-body">
         <nav className="ph-rail" aria-label="Photo tools">
-          <GlassButtonGroup orientation="vertical" size="md" material="clear" className="ph-rail-group w-full" aria-label="Photo tools">
+          <GlassButtonGroup orientation={isMobile ? 'horizontal' : 'vertical'} size="md" material="clear" className="ph-rail-group w-full" aria-label="Photo tools">
             {MODES.map(item => (
               <GlassButtonGroupItem
                 key={item.id}

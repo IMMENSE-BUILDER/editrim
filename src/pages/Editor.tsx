@@ -19,6 +19,7 @@ import { CommandBar } from '../components/CommandBar';
 import { InlineAiBar } from '../components/InlineAiBar';
 import { useToast } from '../components/Toast';
 import { useSurface } from '../hooks/useSurface';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { Switch } from '@/components/liquid-glass/controls/Switch';
 import { Canvas, type ViewPrefs } from '../editor/Canvas';
 import { Inspector } from '../editor/Inspector';
@@ -144,6 +145,7 @@ const TABS: { id: PanelTab; label: string; icon: EditrimIconName }[] = [
 ];
 
 function EditorWorkspace({ initial }: { initial: Design }) {
+  const isMobile = useMediaQuery('(max-width: 760px)');
   const store = useEditor(initial);
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -933,13 +935,21 @@ function EditorWorkspace({ initial }: { initial: Design }) {
             )}
           </div>
           <GlassButtonGroup size="sm" material="clear" aria-label="Tools">
-            <GlassButtonGroupItem className="ed-insp-toggle" onClick={() => setInspectorOpen(v => !v)} title="Design controls">
+            <GlassButtonGroupItem
+              className="ed-insp-toggle"
+              onClick={() => setInspectorOpen(v => {
+                const next = !v;
+                if (isMobile && next) setPanel(null);
+                return next;
+              })}
+              title="Design controls"
+            >
               <EditrimIcon name="sliders" size={17} />
             </GlassButtonGroupItem>
             <GlassButtonGroupItem onClick={() => setCommandOpen(true)} title="Quick actions (Ctrl K)">
               <EditrimIcon name="search" size={17} />
             </GlassButtonGroupItem>
-            <GlassButtonGroupItem onClick={() => setHistoryOpen(true)} title="Version history">
+            <GlassButtonGroupItem className="ed-btn-history" onClick={() => setHistoryOpen(true)} title="Version history">
               <EditrimIcon name="clock" size={17} />
             </GlassButtonGroupItem>
             <GlassButtonGroupItem className="ed-help" onClick={() => setShortcutsOpen(true)} title="Keyboard shortcuts">
@@ -947,14 +957,14 @@ function EditorWorkspace({ initial }: { initial: Design }) {
             </GlassButtonGroupItem>
           </GlassButtonGroup>
           {design.category === 'Website' && (
-            <GlassButton material="clear" size="sm" onClick={() => setSitePreviewOpen(true)} icon={<EditrimIcon name="website" size={14} />} iconPosition="start">
+            <GlassButton material="clear" size="sm" className="ed-btn-preview" onClick={() => setSitePreviewOpen(true)} icon={<EditrimIcon name="website" size={14} />} iconPosition="start">
               <span>Preview site</span>
             </GlassButton>
           )}
-          <GlassButton material="clear" size="sm" onClick={present} icon={<EditrimIcon name="play" size={14} />} iconPosition="start">
+          <GlassButton material="clear" size="sm" className="ed-btn-present" onClick={present} icon={<EditrimIcon name="play" size={14} />} iconPosition="start">
             <span>Present</span>
           </GlassButton>
-          <GlassButton material="clear" size="sm" onClick={openShare} icon={<EditrimIcon name="share" size={14} />} iconPosition="start">
+          <GlassButton material="clear" size="sm" className="ed-btn-share" onClick={openShare} icon={<EditrimIcon name="share" size={14} />} iconPosition="start">
             <span>Share</span>
           </GlassButton>
           <GlassButton
@@ -965,19 +975,23 @@ function EditorWorkspace({ initial }: { initial: Design }) {
             icon={<EditrimIcon name="download" size={14} />}
             iconPosition="start"
           >
-            Download
+            <span>Download</span>
           </GlassButton>
         </div>
       </header>
 
       <div className="ed-body">
         <nav className="ed-rail" aria-label="Editor panels">
-          <GlassButtonGroup orientation="vertical" size="md" material="clear" className="ed-rail-group w-full" aria-label="Editor panels">
+          <GlassButtonGroup orientation={isMobile ? 'horizontal' : 'vertical'} size="md" material="clear" className="ed-rail-group w-full" aria-label="Editor panels">
             {TABS.map(t => (
               <GlassButtonGroupItem
                 key={t.id}
                 className={`ed-rail-item ${panel === t.id ? 'active is-active-glass' : ''}`}
-                onClick={() => setPanel(panel === t.id ? null : t.id)}
+                onClick={() => {
+                  const next = panel === t.id ? null : t.id;
+                  setPanel(next);
+                  if (isMobile && next) setInspectorOpen(false);
+                }}
                 title={t.label}
               >
                 <EditrimIcon name={t.icon} size={18} />
@@ -1092,6 +1106,7 @@ function EditorWorkspace({ initial }: { initial: Design }) {
           onOpenBackground={() => setPanel('background')}
           onOpenResize={() => setResizeOpen(true)}
           onOpenBrand={() => setBrandOpen(true)}
+          onClose={() => setInspectorOpen(false)}
         />
       </div>
 

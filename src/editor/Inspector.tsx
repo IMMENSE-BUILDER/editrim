@@ -37,6 +37,7 @@ type Props = {
   onOpenBackground: () => void;
   onOpenResize: () => void;
   onOpenBrand: () => void;
+  onClose?: () => void;
 };
 
 const typeIcon = (el: El) => {
@@ -53,7 +54,7 @@ const typeIcon = (el: El) => {
   return <EditrimIcon name="elements" size={14} />;
 };
 
-export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenResize, onOpenBrand }: Props) {
+export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenResize, onOpenBrand, onClose }: Props) {
   const [tab, setTab] = useState<'design' | 'layers'>('design');
   const [alignTarget, setAlignTarget] = useState<'page' | 'selection'>('page');
   const [csvDraft, setCsvDraft] = useState('');
@@ -115,6 +116,11 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
             },
           ]}
         />
+        {onClose && (
+          <button type="button" className="insp-mobile-close" onClick={onClose} aria-label="Close inspector">
+            <EditrimIcon name="close" size={16} />
+          </button>
+        )}
       </div>
 
       {tab === 'layers' ? (

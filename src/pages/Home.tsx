@@ -32,6 +32,7 @@ import type { StudioCommand } from '../lib/commands';
 import { toggleTheme } from '../lib/theme';
 import { useToast } from '../components/Toast';
 import { useSurface } from '../hooks/useSurface';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import {
   addAsset, createDesign, deleteDesign, duplicateDesign, fromTemplate, getBrand, getDesign,
   listDesigns, saveDesign, storageUsage,
@@ -130,6 +131,7 @@ function formatCount(n: number, one: string, many: string) {
 
 export default function Home() {
   useSurface('neutral');
+  const isMobile = useMediaQuery('(max-width: 820px)');
   const navigate = useNavigate();
   const { toast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -521,7 +523,7 @@ export default function Home() {
         </GlassButton>
 
         <nav className="rail-nav" aria-label="Workspace">
-          <GlassButtonGroup orientation="vertical" size="md" material="clear" className="rail-nav-group w-full" aria-label="Workspace">
+          <GlassButtonGroup orientation={isMobile ? 'horizontal' : 'vertical'} size="md" material="clear" className="rail-nav-group w-full" aria-label="Workspace">
             <GlassButtonGroupItem
               className={`rail-nav-item ${view === 'home' ? 'active is-active-glass' : ''}`}
               onClick={() => setView('home')}

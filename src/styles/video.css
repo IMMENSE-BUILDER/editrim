@@ -1589,6 +1589,19 @@
 }
 
 @media (max-width: 1180px) {
+  .vd-header {
+    position: relative;
+    z-index: 80;
+  }
+
+  .vd-inspector-scroll {
+    overflow-x: hidden;
+  }
+
+  .vd-inspector-grid > * {
+    min-width: 0;
+  }
+
   .vd-body {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1668,10 +1681,24 @@
   .vd-mobile-btn,
   .vd-import-btn,
   .vd-export-btn {
-    width: 32px;
-    height: 32px;
-    padding: 0;
-    justify-content: center;
+    width: 32px !important;
+    min-width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    justify-content: center !important;
+  }
+
+  .vd-timeline-tools {
+    flex: 1 1 0%;
+    min-width: 0;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+
+  .vd-timeline-tools > * {
+    flex-shrink: 0;
   }
 
   .vd-mobile-btn span {
@@ -1735,9 +1762,11 @@
   }
 
   .vd-snap {
-    padding: 0 5px;
-    font-size: 0;
-    gap: 0;
+    padding: 0 8px;
+    height: 28px;
+    font-size: 11px;
+    gap: 4px;
+    white-space: nowrap;
   }
 
   .vd-track-heads {

@@ -1895,18 +1895,30 @@
 
   .rail-popover {
     left: 12px;
-    bottom: 68px;
+    top: 70px;
+    bottom: auto;
     width: min(290px, calc(100vw - 24px));
   }
 
   .home-main {
     height: auto;
     min-height: calc(100vh - 60px);
-    overflow: visible;
+    min-width: 0;
+    width: 100%;
+    overflow-x: clip;
   }
 
   .home-scroll {
     padding: 18px 18px 70px;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .home-design-strip,
+  .home-template-strip {
+    max-width: 100%;
+    overflow-x: auto;
   }
 
   .home-topline {
