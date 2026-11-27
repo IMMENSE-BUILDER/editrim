@@ -1,3 +1,4 @@
+import { resolveSrc } from '../storage';
 import { removeBackground, extractForegroundLayer, type RemoveBgOptions } from './segmentation';
 import { inpaintImage, type InpaintOptions } from './inpaint';
 import type { MagicWorkerRequest, MagicWorkerResponse } from './worker';
@@ -69,11 +70,12 @@ function runWorker(req: MagicWorkerRequest, transfer: Transferable[]): Promise<M
 }
 
 export async function loadImageDataFromSrc(src: string, maxSide = 1400): Promise<ImageData> {
+  const resolved = await resolveSrc(src);
   const img = new Image();
-  if (!src.startsWith('data:') && !src.startsWith('blob:')) {
+  if (!resolved.startsWith('data:') && !resolved.startsWith('blob:')) {
     img.crossOrigin = 'anonymous';
   }
-  img.src = src;
+  img.src = resolved;
   await img.decode();
   const scale = Math.min(1, maxSide / Math.max(1, img.naturalWidth, img.naturalHeight));
   const w = Math.max(1, Math.round(img.naturalWidth * scale));

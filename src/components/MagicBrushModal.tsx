@@ -4,6 +4,7 @@ import { GlassButton, GlassTabs } from '@/components/liquid-glass';
 import { RangeSlider } from '@/components/liquid-glass/controls/RangeSlider';
 import { EditrimIcon } from './EditrimIcon';
 import { Modal } from './Modal';
+import { resolveSrc } from '../lib/storage';
 
 export type MagicBrushMode = 'erase' | 'grab';
 
@@ -44,6 +45,8 @@ export function MagicBrushModal({
     dctx.restore();
   };
 
+  const [resolvedSrc, setResolvedSrc] = useState('');
+
   useEffect(() => {
     if (!open || !imageSrc) return;
     setBusy(false);
@@ -51,21 +54,25 @@ export function MagicBrushModal({
     setTool('paint');
     historyRef.current = [];
     let cancelled = false;
-    const img = new Image();
-    img.src = imageSrc;
-    img.decode()
-      .then(() => {
+    resolveSrc(imageSrc)
+      .then(realUrl => {
         if (cancelled) return;
-        const maxSide = 960;
-        const scale = Math.min(1, maxSide / Math.max(1, img.naturalWidth, img.naturalHeight));
-        const w = Math.max(1, Math.round(img.naturalWidth * scale));
-        const h = Math.max(1, Math.round(img.naturalHeight * scale));
-        setSize({ w, h });
-        const mask = document.createElement('canvas');
-        mask.width = w;
-        mask.height = h;
-        maskCanvasRef.current = mask;
-        requestAnimationFrame(() => redrawOverlay());
+        setResolvedSrc(realUrl);
+        const img = new Image();
+        img.src = realUrl;
+        return img.decode().then(() => {
+          if (cancelled) return;
+          const maxSide = 960;
+          const scale = Math.min(1, maxSide / Math.max(1, img.naturalWidth, img.naturalHeight));
+          const w = Math.max(1, Math.round(img.naturalWidth * scale));
+          const h = Math.max(1, Math.round(img.naturalHeight * scale));
+          setSize({ w, h });
+          const mask = document.createElement('canvas');
+          mask.width = w;
+          mask.height = h;
+          maskCanvasRef.current = mask;
+          requestAnimationFrame(() => redrawOverlay());
+        });
       })
       .catch(() => undefined);
     return () => {
@@ -236,7 +243,7 @@ export function MagicBrushModal({
 
       <div className="magic-brush-stage">
         <div className="magic-brush-frame" style={{ aspectRatio: `${size.w} / ${size.h}` }}>
-          <img src={imageSrc} alt="" draggable={false} />
+          <img src={resolvedSrc || imageSrc} alt="" draggable={false} />
           <canvas
             ref={displayRef}
             width={size.w}

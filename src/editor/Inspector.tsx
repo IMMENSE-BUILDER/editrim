@@ -635,7 +635,8 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                     setMagicBusy('bg');
                     try {
                       const nextSrc = await runRemoveBackground(image.src, { tolerance: bgTolerance });
-                      patch({ src: nextSrc } as Partial<ImageElement>);
+                      const stored = await addAsset(`${image.name || 'image'}-nobg.png`, nextSrc).catch(() => nextSrc);
+                      patch({ src: stored } as Partial<ImageElement>);
                       toast('Background removed locally');
                     } catch {
                       toast('Background removal failed', 'error');
@@ -1208,16 +1209,19 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
           if (!image) return;
           if (magicBrush === 'erase') {
             const nextSrc = await runInpaint(image.src, mask, mw, mh);
-            patch({ src: nextSrc } as Partial<ImageElement>);
+            const stored = await addAsset(`${image.name || 'image'}-erased.png`, nextSrc).catch(() => nextSrc);
+            patch({ src: stored } as Partial<ImageElement>);
             toast('Area erased locally');
           } else if (magicBrush === 'grab') {
             const grabbed = await runMagicGrab(image.src, mask, mw, mh);
-            patch({ src: grabbed.backgroundUrl } as Partial<ImageElement>);
+            const bgStored = await addAsset(`${image.name || 'image'}-bg.png`, grabbed.backgroundUrl).catch(() => grabbed.backgroundUrl);
+            const fgStored = await addAsset(`${image.name || 'image'}-subject.png`, grabbed.foregroundUrl).catch(() => grabbed.foregroundUrl);
+            patch({ src: bgStored } as Partial<ImageElement>);
             const fgEl: ImageElement = {
               ...image,
               id: uid('im'),
               name: `${image.name} · Subject`,
-              src: grabbed.foregroundUrl,
+              src: fgStored,
               x: Math.round(image.x + grabbed.bboxRatio.x * image.w),
               y: Math.round(image.y + grabbed.bboxRatio.y * image.h),
               w: Math.max(24, Math.round(grabbed.bboxRatio.w * image.w)),

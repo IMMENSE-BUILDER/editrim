@@ -1,4 +1,5 @@
 import { createWorker, type Worker as TesseractWorker } from 'tesseract.js';
+import { resolveSrc } from '../storage';
 
 export type OcrLine = {
   text: string;
@@ -21,7 +22,7 @@ async function getOcrWorker(): Promise<TesseractWorker> {
     const origin = typeof window !== 'undefined' ? window.location.origin : '';
     workerPromise = createWorker('eng', 1, {
       workerPath: `${origin}/tesseract/worker.min.js`,
-      corePath: `${origin}/tesseract/core`,
+      corePath: `${origin}/tesseract/core/tesseract-core-simd-lstm.wasm.js`,
       langPath: `${origin}/tesseract/lang`,
       gzip: true,
       workerBlobURL: false,
@@ -44,7 +45,7 @@ async function prepareSourceCanvas(
   if (source instanceof HTMLCanvasElement) {
     return { canvas: source, width: source.width, height: source.height };
   }
-  const url = typeof source === 'string' ? source : URL.createObjectURL(source);
+  const url = typeof source === 'string' ? await resolveSrc(source) : URL.createObjectURL(source);
   try {
     const img = new Image();
     if (!url.startsWith('data:') && !url.startsWith('blob:')) {
