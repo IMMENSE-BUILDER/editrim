@@ -1,9 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  ArrowRight, ArrowUpRight, Check, ChevronDown, Download, ImagePlus, Languages, Layers, Lock,
-  Palette, PenLine, Play, ScanEye, Sparkles, Type, Wand2, Zap, LayoutGrid, MonitorPlay, Images,
-} from 'lucide-react';
+import { GlassBadge, GlassButton, GlassCard, GlassTabs } from '@/components/liquid-glass';
 import { SiteHeader, SiteFooter } from '../components/SiteChrome';
 import { EditrimIcon, type EditrimIconName } from '../components/EditrimIcon';
 import { PagePreview } from '../components/PagePreview';
@@ -97,10 +94,15 @@ export default function Landing() {
 
       {/* ---------------- hero ---------------- */}
       <section className="hero">
+        <div className="hero-optical-grid" aria-hidden="true">
+          {Array.from({ length: 128 }, (_, i) => (
+            <span key={i} className="hero-optical-cell" />
+          ))}
+        </div>
         <div className="hero-grid">
           <div className="hero-copy">
             <Link to="/#ai" className="hero-badge">
-              <span className="chip chip-lime">New</span>
+              <GlassBadge className="bg-[#2440F0] text-white h-6 min-w-[54px] text-[11px]">New</GlassBadge>
               AI Studio is here
               <EditrimIcon name="arrowRight" size={13} />
             </Link>
@@ -114,13 +116,18 @@ export default function Landing() {
               resumes — start from a real template, a blank page, or a sentence.
             </p>
             <div className="hero-ctas">
-              <Link to="/dashboard" className="btn btn-cobalt btn-lg">
-                Start designing
-                <EditrimIcon name="arrowUpRight" size={17} />
-              </Link>
-              <Link to="/templates" className="btn btn-secondary btn-lg">
-                Browse templates
-              </Link>
+              <GlassButton
+                asChild
+                material="tinted"
+                size="lg"
+                className="bg-[#2440F0] text-white dark:bg-[#5B7CFF]"
+                icon={<EditrimIcon name="arrowUpRight" size={17} />}
+              >
+                <Link to="/dashboard">Start designing</Link>
+              </GlassButton>
+              <GlassButton asChild material="clear" size="lg">
+                <Link to="/templates">Browse templates</Link>
+              </GlassButton>
             </div>
             <div className="hero-meta">
               <span><EditrimIcon name="check" size={14} /> Free forever</span>
@@ -141,26 +148,26 @@ export default function Landing() {
             <div className="hero-card hero-card-c">
               <PagePreview page={gig.pages[0]} size={gig.size} ariaLabel="Music poster template" />
             </div>
-            <div className="hero-float-chip hero-chip-saved">
+            <GlassCard live blur={4} tint={0.55} className="hero-float-chip hero-chip-saved rounded-full px-3.5 py-2">
               <span className="hero-chip-dot" /> Autosaved
-            </div>
-            <div className="hero-float-chip hero-chip-cursor">
+            </GlassCard>
+            <GlassCard live blur={4} tint={0.55} className="hero-float-chip hero-chip-cursor rounded-full px-3.5 py-2">
               <span className="hero-cursor" />
               Snap to center
-            </div>
-            <div className="hero-float-chip hero-chip-type">
+            </GlassCard>
+            <GlassCard live blur={4} tint={0.55} className="hero-float-chip hero-chip-type rounded-full px-3.5 py-2">
               <EditrimIcon name="type" size={15} /> 15 fonts, zero fuss
-            </div>
+            </GlassCard>
           </div>
         </div>
 
-        <div className="hero-stats">
+        <GlassCard blur={6} tint={0.62} className="hero-stats rounded-[24px]">
           <div><strong>{TEMPLATES.length}</strong><span>designed templates</span></div>
           <div><strong>{SIZE_PRESETS.length}</strong><span>canvas sizes</span></div>
           <div><strong>6</strong><span>AI tools</span></div>
           <div><strong>3</strong><span>export formats</span></div>
           <div><strong>0</strong><span>sign-ups required</span></div>
-        </div>
+        </GlassCard>
       </section>
 
       <div className="marquee" aria-hidden="true">
@@ -182,21 +189,21 @@ export default function Landing() {
           <h2>Serious tools.<br /><span className="serif-italic">Unserious learning curve.</span></h2>
         </div>
         <div className="promise-grid">
-          <div className="promise-item">
+          <GlassCard blur={5} tint={0.62} className="promise-item rounded-[24px]">
             <span className="promise-num">01</span>
             <h3>Start with real design</h3>
             <p>{TEMPLATES.length} templates made by a designer, not generated from a prompt. Open one and it is already editable, layered and aligned.</p>
-          </div>
-          <div className="promise-item">
+          </GlassCard>
+          <GlassCard blur={5} tint={0.62} className="promise-item rounded-[24px]">
             <span className="promise-num">02</span>
             <h3>Edit like you mean it</h3>
             <p>Snap, align, distribute, rotate, layer, lock. Real typography controls, real multi-page documents, real undo. No fake toolbar.</p>
-          </div>
-          <div className="promise-item">
+          </GlassCard>
+          <GlassCard blur={5} tint={0.62} className="promise-item rounded-[24px]">
             <span className="promise-num">03</span>
             <h3>Leave with a file</h3>
             <p>Download a crisp PNG, a JPG, or a print-ready PDF. Present full screen straight from the browser. No watermark, ever.</p>
-          </div>
+          </GlassCard>
         </div>
       </section>
 
@@ -239,9 +246,16 @@ export default function Landing() {
             <li><EditrimIcon name="check" size={15} /> 15 curated fonts, gradients and shadows</li>
             <li><EditrimIcon name="check" size={15} /> Undo, autosave and multi-page documents</li>
           </ul>
-          <Link to="/editor/new" className="btn btn-primary" style={{ marginTop: 8 }}>
-            Open the editor <EditrimIcon name="arrowRight" size={16} />
-          </Link>
+          <GlassButton
+            asChild
+            material="tinted"
+            size="md"
+            className="bg-[#14130F] text-[#F4F1EA] dark:bg-white dark:text-[#14130F]"
+            icon={<EditrimIcon name="arrowRight" size={16} />}
+            style={{ marginTop: 8 }}
+          >
+            <Link to="/editor/new">Open the editor</Link>
+          </GlassButton>
         </div>
 
         <div className="app-shot-wrap">
@@ -326,9 +340,15 @@ export default function Landing() {
               })}
             </div>
             <div className="ai-section-actions">
-              <Link to="/editor/new#ai" className="btn btn-cobalt">
-                Try AI Studio <EditrimIcon name="arrowUpRight" size={16} />
-              </Link>
+              <GlassButton
+                asChild
+                material="tinted"
+                size="md"
+                className="bg-[#2440F0] text-white dark:bg-[#5B7CFF]"
+                icon={<EditrimIcon name="arrowUpRight" size={16} />}
+              >
+                <Link to="/editor/new#ai">Try AI Studio</Link>
+              </GlassButton>
               <span className="ai-powered"><span /> AI Studio · Server-side</span>
             </div>
           </div>
@@ -372,15 +392,18 @@ export default function Landing() {
         </div>
         <div className="formats-stage">
           <div className="formats-tabs">
-            {(Object.keys(formats) as (keyof typeof formats)[]).map(key => (
-              <button
-                key={key}
-                className={format === key ? 'active' : ''}
-                onClick={() => setFormat(key)}
-              >
-                {formats[key].label}
-              </button>
-            ))}
+            <GlassTabs
+              aria-label="Canvas format"
+              size="lg"
+              value={format}
+              onValueChange={setFormat}
+              highlightClassName="bg-white"
+              className="bg-white/10 [&_button]:text-white/75 [&_button:hover]:text-white [&_button[aria-checked=true]]:text-neutral-900"
+              options={(Object.keys(formats) as (keyof typeof formats)[]).map(key => ({
+                value: key,
+                label: formats[key].label,
+              }))}
+            />
             <div className="formats-tabs-note">{current.size}</div>
           </div>
           <div className="formats-preview">
@@ -406,7 +429,7 @@ export default function Landing() {
           <h2>The details that make<br /><span className="serif-italic">it feel finished.</span></h2>
         </div>
         <div className="bento">
-          <div className="bento-card bento-brand">
+          <GlassCard blur={5} tint={0.65} className="bento-card bento-brand rounded-[24px]">
             <div className="bento-icon"><EditrimIcon name="palette" size={18} /></div>
             <h3>Your brand, on tap</h3>
             <p>Save colours and fonts once. Apply them to any element from the brand panel.</p>
@@ -417,8 +440,8 @@ export default function Landing() {
               Aa
               <span style={{ fontFamily: `"${brand.fonts[1]}", sans-serif` }}>{brand.fonts[0].split(' ')[0]} + {brand.fonts[1]}</span>
             </div>
-          </div>
-          <div className="bento-card bento-multipage">
+          </GlassCard>
+          <GlassCard blur={5} tint={0.65} className="bento-card bento-multipage rounded-[24px]">
             <div className="bento-icon"><EditrimIcon name="layers" size={18} /></div>
             <h3>Real multi-page</h3>
             <p>Build a whole deck, not one lonely slide. Reorder, duplicate and present pages.</p>
@@ -429,8 +452,8 @@ export default function Landing() {
                 </div>
               ))}
             </div>
-          </div>
-          <div className="bento-card bento-present">
+          </GlassCard>
+          <GlassCard material="tinted" className="bento-card bento-present rounded-[24px] bg-[#14130F] text-[#F4F1EA]">
             <div className="bento-icon light"><EditrimIcon name="present" size={18} /></div>
             <h3>Present without leaving</h3>
             <p>Full-screen, keyboard-driven presentation mode. No export, no PowerPoint.</p>
@@ -438,8 +461,8 @@ export default function Landing() {
               <PagePreview page={pitch.pages[0]} size={pitch.size} />
               <span className="bento-play"><EditrimIcon name="play" size={14} fill="currentColor" /></span>
             </div>
-          </div>
-          <div className="bento-card bento-fonts">
+          </GlassCard>
+          <GlassCard blur={5} tint={0.65} className="bento-card bento-fonts rounded-[24px]">
             <div className="bento-icon"><EditrimIcon name="type" size={18} /></div>
             <h3>Type that behaves</h3>
             <p>Fifteen fonts, real weight and spacing controls, and text that wraps like it should.</p>
@@ -450,8 +473,8 @@ export default function Landing() {
                 </span>
               ))}
             </div>
-          </div>
-          <div className="bento-card bento-private">
+          </GlassCard>
+          <GlassCard blur={5} tint={0.65} className="bento-card bento-private rounded-[24px]">
             <div className="bento-icon"><EditrimIcon name="lock" size={18} /></div>
             <h3>Yours, privately</h3>
             <p>Designs live in your browser, not on our servers. No account, no tracking, no upload.</p>
@@ -459,15 +482,15 @@ export default function Landing() {
               <span>No account</span><span>No upload</span><span>No tracking</span>
             </div>
             <div className="bento-private-badge"><span /><b>Local only</b></div>
-          </div>
-          <div className="bento-card bento-export">
+          </GlassCard>
+          <GlassCard blur={5} tint={0.65} className="bento-card bento-export rounded-[24px]">
             <div className="bento-icon"><EditrimIcon name="download" size={18} /></div>
             <h3>Export-ready</h3>
             <p>PNG, JPG and PDF at up to 3× resolution. Transparent background when you need it.</p>
             <div className="bento-export-chips">
               <span>PNG</span><span>JPG</span><span>PDF</span><b>3×</b>
             </div>
-          </div>
+          </GlassCard>
         </div>
       </section>
 
@@ -514,14 +537,20 @@ export default function Landing() {
 
       {/* ---------------- pricing ---------------- */}
       <section className="pricing-section reveal" id="pricing">
-        <div className="pricing-card">
+        <GlassCard material="tinted" className="pricing-card rounded-[28px] bg-[#14130F] text-[#F4F1EA]">
           <div className="pricing-main">
             <span className="eyebrow">Pricing</span>
             <h2>Free. Actually free.</h2>
             <p>Every feature, every template, every export. No trial timer, no credit card, no “Pro” badge on the good fonts.</p>
-            <Link to="/dashboard" className="btn btn-lime btn-lg">
-              Start designing <EditrimIcon name="arrowUpRight" size={17} />
-            </Link>
+            <GlassButton
+              asChild
+              material="tinted"
+              size="lg"
+              className="bg-[#D8F55A] text-[#14130F]"
+              icon={<EditrimIcon name="arrowUpRight" size={17} />}
+            >
+              <Link to="/dashboard">Start designing</Link>
+            </GlassButton>
             <span className="pricing-small">No account needed. Nothing to cancel.</span>
           </div>
           <div className="pricing-list">
@@ -535,7 +564,7 @@ export default function Landing() {
             <div className="pricing-row muted"><span>Team collaboration</span><span className="chip">Later</span></div>
             <div className="pricing-row muted"><span>Cloud sync</span><span className="chip">Later</span></div>
           </div>
-        </div>
+        </GlassCard>
       </section>
 
       {/* ---------------- faq ---------------- */}
@@ -563,12 +592,24 @@ export default function Landing() {
           <span className="eyebrow light">Your move</span>
           <h2>Your next design<br />is <span className="serif-italic">already late.</span></h2>
           <div className="final-cta-actions">
-            <Link to="/editor/new" className="btn btn-lime btn-lg">
-              Start from blank <EditrimIcon name="arrowUpRight" size={17} />
-            </Link>
-            <Link to="/templates" className="btn final-btn-outline btn-lg">
-              Use a template <EditrimIcon name="arrowRight" size={16} />
-            </Link>
+            <GlassButton
+              asChild
+              material="tinted"
+              size="lg"
+              className="bg-[#D8F55A] text-[#14130F]"
+              icon={<EditrimIcon name="arrowUpRight" size={17} />}
+            >
+              <Link to="/editor/new">Start from blank</Link>
+            </GlassButton>
+            <GlassButton
+              asChild
+              material="clear"
+              size="lg"
+              className="text-white"
+              icon={<EditrimIcon name="arrowRight" size={16} />}
+            >
+              <Link to="/templates">Use a template</Link>
+            </GlassButton>
           </div>
         </div>
         <div className="final-cta-art" aria-hidden="true">

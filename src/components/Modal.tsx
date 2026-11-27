@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
+import { GlassButton } from '@/components/liquid-glass';
 import { EditrimIcon } from './EditrimIcon';
 
 export function Modal({
@@ -91,9 +92,9 @@ export function Modal({
               {title && <div className="modal-title">{title}</div>}
               {subtitle && <div className="modal-sub">{subtitle}</div>}
             </div>
-            <button className="btn-icon" onClick={onClose} aria-label="Close">
-              <EditrimIcon name="close" size={18} />
-            </button>
+            <GlassButton material="clear" size="sm" className="w-8 !px-0" onClick={onClose} aria-label="Close">
+              <EditrimIcon name="close" size={16} />
+            </GlassButton>
           </div>
         )}
         <div className="modal-body">{children}</div>

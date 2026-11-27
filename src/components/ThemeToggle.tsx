@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
+import { Switch } from '@/components/liquid-glass/controls/Switch';
 import { EditrimIcon } from './EditrimIcon';
 import { THEME_KEY, applyTheme, readTheme, subscribeTheme, toggleTheme, type Theme } from '../lib/theme';
 
 /**
- * Dark-mode switch for the dashboard rail. A labelled track, not a mystery icon:
- * the knob position, the label and the sun/moon always say which mode is active.
+ * Dark-mode switch for the dashboard rail. A labelled refracting glass track,
+ * not a mystery icon: the knob position, the label and the sun/moon always say
+ * which mode is active.
  */
 export function ThemeToggle() {
   const [theme, setTheme] = useState<Theme>(() => readTheme());
@@ -25,22 +27,31 @@ export function ThemeToggle() {
   const dark = theme === 'dark';
   const next = dark ? 'light' : 'dark';
 
+  const handleToggle = () => setTheme(toggleTheme());
+
   return (
-    <button
-      type="button"
+    <div
       className={`rail-theme ${dark ? 'is-dark' : 'is-light'}`}
-      onClick={() => setTheme(toggleTheme())}
-      aria-pressed={dark}
-      aria-label={`Switch to ${next} mode`}
       title={`Switch to ${next} mode`}
     >
-      <span className="rail-theme-track" aria-hidden="true">
-        <i />
-      </span>
-      <span className="rail-theme-label">
+      <Switch
+        size="sm"
+        checked={dark}
+        onChange={handleToggle}
+        color="#3b82f6"
+        theme={theme}
+        label=""
+      />
+      <button
+        type="button"
+        className="rail-theme-label"
+        onClick={handleToggle}
+        aria-pressed={dark}
+        aria-label={`Switch to ${next} mode`}
+      >
         <EditrimIcon name={dark ? 'moon' : 'sun'} size={11} />
         {dark ? 'Dark' : 'Light'}
-      </span>
-    </button>
+      </button>
+    </div>
   );
 }

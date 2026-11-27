@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
+import { GlassButton } from '@/components/liquid-glass';
 import { EditrimIcon, type EditrimIconName } from './EditrimIcon';
 import { PagePreview } from './PagePreview';
 import { TEMPLATES, TEMPLATE_CATEGORIES } from '../lib/templates';
@@ -786,9 +787,15 @@ export function CreateDesignModal({
         aria-label="Create a design"
         tabIndex={-1}
       >
-        <button className="cdm-close" onClick={onClose} aria-label="Close create a design">
-          <EditrimIcon name="close" size={20} />
-        </button>
+        <GlassButton
+          material="clear"
+          size="sm"
+          className="cdm-close w-9 !px-0"
+          onClick={onClose}
+          aria-label="Close create a design"
+        >
+          <EditrimIcon name="close" size={18} />
+        </GlassButton>
 
         <aside className="cdm-side">
           <h1 className="cdm-title">Create a design</h1>
@@ -859,7 +866,9 @@ export function CreateDesignModal({
                       <option value="cm">cm</option>
                     </select>
                   </label>
-                  <button className="cdm-primary" onClick={startCustom}>Create new design</button>
+                  <GlassButton material="tinted" size="md" className="bg-[#2440F0] text-white" onClick={startCustom}>
+                    Create new design
+                  </GlassButton>
                 </div>
                 <div className="cdm-custom-preview">
                   <div style={{ aspectRatio: `${customW} / ${customH}` }} />
@@ -998,9 +1007,9 @@ export function CreateDesignModal({
                     )}
                     {templateGrid(limitedTemplates)}
                     {section === 'templates' && templatePool.length > visibleTemplates && (
-                      <button className="cdm-more-btn" onClick={() => setVisibleTemplates(value => value + 24)}>
+                      <GlassButton material="clear" size="sm" onClick={() => setVisibleTemplates(value => value + 24)}>
                         Show more
-                      </button>
+                      </GlassButton>
                     )}
                   </section>
                 )}
@@ -1016,7 +1025,9 @@ export function CreateDesignModal({
                   <div className="cdm-empty">
                     <strong>Nothing matches “{query.trim()}”.</strong>
                     <p>Try another word, or browse all templates.</p>
-                    <button className="cdm-primary" onClick={() => { setQuery(''); setTemplateCategory('All'); }}>Clear search</button>
+                    <GlassButton material="tinted" size="sm" className="bg-[#2440F0] text-white" onClick={() => { setQuery(''); setTemplateCategory('All'); }}>
+                      Clear search
+                    </GlassButton>
                   </div>
                 )}
               </>
@@ -1034,9 +1045,15 @@ export function CreateDesignModal({
                   {'hint' in selection ? ` · ${selection.hint}` : ''}
                 </span>
               </div>
-              <button className="cdm-primary" onClick={startSelection}>
-                Use this layout <EditrimIcon name="arrowRight" size={15} />
-              </button>
+              <GlassButton
+                material="tinted"
+                size="sm"
+                className="bg-[#2440F0] text-white"
+                icon={<EditrimIcon name="arrowRight" size={15} />}
+                onClick={startSelection}
+              >
+                Use this layout
+              </GlassButton>
               <button className="cdm-detail-close" onClick={() => setSelection(null)} aria-label="Clear selection">
                 <EditrimIcon name="close" size={16} />
               </button>

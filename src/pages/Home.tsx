@@ -2,6 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { LucideIcon } from 'lucide-react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import { GlassButton, GlassButtonGroup, GlassButtonGroupItem, GlassCard } from '@/components/liquid-glass';
+import {
+  GlassDropdownMenu,
+  GlassDropdownMenuContent,
+  GlassDropdownMenuItem,
+  GlassDropdownMenuSeparator,
+  GlassDropdownMenuTrigger,
+} from '@/components/liquid-glass/glass-dropdown-menu';
 import {
   ArrowUpRight, Bell, CircleHelp, Clapperboard, Copy,
   CreditCard, Download, FileImage, FileText, FolderOpen, Frame, Globe2,
@@ -35,7 +43,6 @@ import { compressImage, formatBytes, timeAgo } from '../lib/utils';
 import { createImage } from '../editor/factory';
 import type { Design } from '../lib/types';
 import { createSheetDesign, createWebsiteDesign } from '../lib/homeDesigns';
-import '../styles/home.css';
 
 type FeatureKind = 'sheet' | 'website' | 'magic';
 type RailPopover = 'notifications' | 'avatar' | 'more' | null;
@@ -450,43 +457,74 @@ export default function Home() {
   return (
     <div className={`home ${collapsed ? 'rail-collapsed' : ''}`}>
       <aside className="home-rail">
-        <button className="rail-collapse" onClick={() => setCollapsed(v => !v)} aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}>
+        <GlassButton
+          material="clear"
+          size="sm"
+          className="rail-collapse w-9 h-8 !px-0"
+          onClick={() => setCollapsed(v => !v)}
+          aria-label={collapsed ? 'Expand navigation' : 'Collapse navigation'}
+        >
           {collapsed ? <EditrimIcon name="sidebarOpen" size={17} /> : <EditrimIcon name="sidebar" size={17} />}
-        </button>
+        </GlassButton>
 
-        <button className="rail-create" onClick={() => openCreate()} title="Open design library">
+        <GlassButton
+          material="tinted"
+          size="md"
+          className="rail-create-glass bg-[#2440F0] text-white dark:bg-white dark:text-neutral-900"
+          onClick={() => openCreate()}
+          title="Open design library"
+        >
           <span className="rail-create-icon"><EditrimIcon name="plus" size={20} /></span>
           <span className="rail-label">Create</span>
-        </button>
+        </GlassButton>
 
         <nav className="rail-nav" aria-label="Workspace">
-          <button className={view === 'home' ? 'active' : ''} onClick={() => setView('home')} title="Home">
-            <EditrimIcon name="home" size={19} /><span className="rail-label">Home</span>
-          </button>
-          <button className={view === 'projects' ? 'active' : ''} onClick={() => setView('projects')} title="Projects">
-            <EditrimIcon name="projects" size={19} /><span className="rail-label">Projects</span>
-          </button>
-          <Link to="/templates" title="Templates">
-            <EditrimIcon name="templates" size={19} /><span className="rail-label">Templates</span>
-          </Link>
-          <button onClick={() => setBrandOpen(true)} title="Brand kit">
-            <EditrimIcon name="brand" size={19} /><span className="rail-label">Brand</span>
-          </button>
-          <button onClick={() => navigate('/editor/new#ai')} title="AI Studio">
-            <EditrimIcon name="spark" size={19} /><span className="rail-label">AI Studio</span>
-          </button>
-          <button onClick={openPrint} title="Print-ready PDF">
-            <EditrimIcon name="print" size={19} /><span className="rail-label">Print</span>
-          </button>
-          <button onClick={() => setRailPopover(railPopover === 'more' ? null : 'more')} title="More" aria-expanded={railPopover === 'more'}>
-            <EditrimIcon name="more" size={19} /><span className="rail-label">More</span>
-          </button>
+          <GlassButtonGroup orientation="vertical" size="md" material="clear" className="rail-nav-group w-full" aria-label="Workspace">
+            <GlassButtonGroupItem
+              className={`rail-nav-item ${view === 'home' ? 'active is-active-glass' : ''}`}
+              onClick={() => setView('home')}
+              title="Home"
+            >
+              <EditrimIcon name="home" size={19} /><span className="rail-label">Home</span>
+            </GlassButtonGroupItem>
+            <GlassButtonGroupItem
+              className={`rail-nav-item ${view === 'projects' ? 'active is-active-glass' : ''}`}
+              onClick={() => setView('projects')}
+              title="Projects"
+            >
+              <EditrimIcon name="projects" size={19} /><span className="rail-label">Projects</span>
+            </GlassButtonGroupItem>
+            <GlassButtonGroupItem asChild className="rail-nav-item">
+              <Link to="/templates" title="Templates">
+                <EditrimIcon name="templates" size={19} /><span className="rail-label">Templates</span>
+              </Link>
+            </GlassButtonGroupItem>
+            <GlassButtonGroupItem className="rail-nav-item" onClick={() => setBrandOpen(true)} title="Brand kit">
+              <EditrimIcon name="brand" size={19} /><span className="rail-label">Brand</span>
+            </GlassButtonGroupItem>
+            <GlassButtonGroupItem className="rail-nav-item" onClick={() => navigate('/editor/new#ai')} title="AI Studio">
+              <EditrimIcon name="spark" size={19} /><span className="rail-label">AI Studio</span>
+            </GlassButtonGroupItem>
+            <GlassButtonGroupItem className="rail-nav-item" onClick={openPrint} title="Print-ready PDF">
+              <EditrimIcon name="print" size={19} /><span className="rail-label">Print</span>
+            </GlassButtonGroupItem>
+            <GlassButtonGroupItem
+              className={`rail-nav-item ${railPopover === 'more' ? 'is-active-glass' : ''}`}
+              onClick={() => setRailPopover(railPopover === 'more' ? null : 'more')}
+              title="More"
+              aria-expanded={railPopover === 'more'}
+            >
+              <EditrimIcon name="more" size={19} /><span className="rail-label">More</span>
+            </GlassButtonGroupItem>
+          </GlassButtonGroup>
         </nav>
 
         <div className="rail-bottom">
           <ThemeToggle />
-          <button
-            className="rail-bell"
+          <GlassButton
+            material="clear"
+            size="sm"
+            className="rail-bell w-9 h-9 !px-0 relative"
             onClick={() => {
               setRailPopover(railPopover === 'notifications' ? null : 'notifications');
               setNotificationsRead(true);
@@ -497,46 +535,48 @@ export default function Home() {
           >
             <EditrimIcon name="bell" size={18} />
             {!notificationsRead && <i />}
-          </button>
-          <button
-            className="rail-avatar"
+          </GlassButton>
+          <GlassButton
+            material="tinted"
+            size="sm"
+            className="rail-avatar w-9 h-9 !px-0 bg-[#2440F0] text-white dark:bg-[#5B7CFF]"
             onClick={() => setRailPopover(railPopover === 'avatar' ? null : 'avatar')}
             title="Local workspace"
             aria-label="Open profile menu"
             aria-expanded={railPopover === 'avatar'}
           >
             E
-          </button>
+          </GlassButton>
         </div>
 
         {railPopover && <div className="rail-popover-backdrop" onClick={() => setRailPopover(null)} />}
         {railPopover === 'notifications' && (
-          <div className="rail-popover rail-notifications">
+          <GlassCard blur={8} tint={0.78} className="rail-popover rail-notifications rounded-[22px]">
             <div className="rail-popover-head"><strong>Updates</strong><button onClick={() => setRailPopover(null)}><EditrimIcon name="close" size={14} /></button></div>
             <div className="rail-popover-item"><span className="rail-popover-dot" /><div><strong>Your designs are local</strong><p>Everything autosaves in this browser. Nothing is uploaded.</p></div></div>
             <div className="rail-popover-item"><span className="rail-popover-dot" /><div><strong>AI Studio is ready</strong><p>Design, edit, write and review with AI Studio.</p></div></div>
             <div className="rail-popover-item"><span className="rail-popover-dot" /><div><strong>Find anything</strong><p>Press <span className="kbd">/</span> to search designs, templates and actions.</p></div></div>
-          </div>
+          </GlassCard>
         )}
         {railPopover === 'avatar' && (
-          <div className="rail-popover rail-profile">
+          <GlassCard blur={8} tint={0.78} className="rail-popover rail-profile rounded-[22px]">
             <div className="rail-popover-head"><strong>Local workspace</strong><button onClick={() => setRailPopover(null)}><EditrimIcon name="close" size={14} /></button></div>
             <div className="rail-profile-id"><span>E</span><div><strong>You</strong><p>{formatCount(entries.length, 'design', 'designs')} · {formatCount(pageCount, 'page', 'pages')}</p></div></div>
             <div className="rail-storage"><div><span>Local storage</span><span>{formatBytes(usage)}</span></div><i><b style={{ width: `${Math.min(100, (usage / (5 * 1024 * 1024)) * 100)}%` }} /></i></div>
             <button onClick={() => { setRailPopover(null); setView('projects'); }}><EditrimIcon name="projects" size={14} /> Projects</button>
             <button onClick={() => { setRailPopover(null); setBrandOpen(true); }}><EditrimIcon name="palette" size={14} /> Brand kit</button>
             <button onClick={() => { setRailPopover(null); setHelpOpen(true); }}><EditrimIcon name="help" size={14} /> Help</button>
-          </div>
+          </GlassCard>
         )}
         {railPopover === 'more' && (
-          <div className="rail-popover rail-more">
+          <GlassCard blur={8} tint={0.78} className="rail-popover rail-more rounded-[22px]">
             <div className="rail-popover-head"><strong>More</strong><button onClick={() => setRailPopover(null)}><EditrimIcon name="close" size={14} /></button></div>
             <button onClick={() => { setRailPopover(null); fileRef.current?.click(); }}><EditrimIcon name="upload" size={14} /> Upload image</button>
             <button onClick={() => { setRailPopover(null); openCreate('custom'); }}><EditrimIcon name="custom" size={14} /> Custom size</button>
             <button onClick={() => { setRailPopover(null); openPrint(); }}><EditrimIcon name="print" size={14} /> Print-ready PDF</button>
             <button onClick={() => { setRailPopover(null); setHelpOpen(true); }}><EditrimIcon name="help" size={14} /> Help &amp; shortcuts</button>
             <a href="https://github.com/IMMENSE-BUILDER/editrim" target="_blank" rel="noreferrer"><EditrimIcon name="website" size={14} /> Source</a>
-          </div>
+          </GlassCard>
         )}
       </aside>
 
@@ -570,10 +610,23 @@ export default function Home() {
                   return (
                     <div className="home-cat-wrap" key={cat.id}>
                       {i === 1 && <span className="home-cat-sep" />}
-                      <button className={`home-cat ${cat.outline ? 'is-outline' : ''} tone-${cat.tone}`} onClick={cat.run} title={cat.label} style={{ '--icon-index': i } as CSSProperties}>
-                        <span className="home-cat-icon"><EditrimIcon name={cat.icon} size={22} /></span>
-                        <span className="home-cat-label">{cat.label}</span>
-                      </button>
+                      <div className={`home-cat ${cat.outline ? 'is-outline' : ''} tone-${cat.tone}`} style={{ '--icon-index': i } as CSSProperties}>
+                        <div className="home-cat-tile">
+                          {!cat.outline && <span className="home-cat-orb" aria-hidden="true" />}
+                          <GlassButton
+                            material="clear"
+                            size="lg"
+                            tint={cat.outline ? 0.12 : 0.08}
+                            className="home-cat-glass !w-[52px] !h-[52px] !px-0 rounded-[18px]"
+                            onClick={cat.run}
+                            title={cat.label}
+                            aria-label={cat.label}
+                          >
+                            <EditrimIcon name={cat.icon} size={22} />
+                          </GlassButton>
+                        </div>
+                        <span className="home-cat-label" onClick={cat.run}>{cat.label}</span>
+                      </div>
                     </div>
                   );
                 })}
@@ -685,11 +738,22 @@ export default function Home() {
                       </button>
                     </div>
                   ) : (
-                    <div className="home-empty-continue">
+                    <GlassCard blur={6} tint={0.68} className="home-empty-continue rounded-[22px]">
                       <div><strong>No designs</strong></div>
-                      <button className="btn home-btn-primary" onClick={() => openCreate()}><EditrimIcon name="plus" size={14} /> Create</button>
-                      <Link to="/templates" className="btn home-btn-ghost">Browse templates</Link>
-                    </div>
+                      <GlassButton
+                        material="tinted"
+                        size="sm"
+                        className="bg-[#2440F0] text-white"
+                        icon={<EditrimIcon name="plus" size={14} />}
+                        iconPosition="start"
+                        onClick={() => openCreate()}
+                      >
+                        Create
+                      </GlassButton>
+                      <GlassButton asChild material="clear" size="sm">
+                        <Link to="/templates">Browse templates</Link>
+                      </GlassButton>
+                    </GlassCard>
                   )}
                 </section>
 
@@ -728,10 +792,18 @@ export default function Home() {
                   </div>
                 </section>
 
-                <section className="home-section home-quiet-cta">
+                <GlassCard blur={6} tint={0.68} className="home-section home-quiet-cta rounded-[22px]">
                   <div><h2>AI Studio</h2></div>
-                  <button className="home-btn-ai" onClick={() => navigate('/editor/new#ai')}><EditrimIcon name="spark" size={15} /> Open <EditrimIcon name="arrowUpRight" size={14} /></button>
-                </section>
+                  <GlassButton
+                    material="tinted"
+                    size="sm"
+                    className="bg-[#2440F0] text-white"
+                    icon={<EditrimIcon name="arrowUpRight" size={14} />}
+                    onClick={() => navigate('/editor/new#ai')}
+                  >
+                    <EditrimIcon name="spark" size={15} /> Open
+                  </GlassButton>
+                </GlassCard>
               </>
             )}
 
@@ -741,14 +813,21 @@ export default function Home() {
                   <div><h2>Projects</h2></div>
                   <div className="home-project-actions">
                     <span>{formatCount(entries.length, 'design', 'designs')} · {formatCount(pageCount, 'page', 'pages')}</span>
-                    <button className="btn home-btn-primary" onClick={() => openCreate()}><EditrimIcon name="plus" size={14} /> New design</button>
+                    <GlassButton
+                      material="tinted"
+                      size="sm"
+                      className="bg-[#2440F0] text-white"
+                      icon={<EditrimIcon name="plus" size={14} />}
+                      iconPosition="start"
+                      onClick={() => openCreate()}
+                    >
+                      New design
+                    </GlassButton>
                   </div>
                 </div>
                 {entries.length > 0 ? (
                   <div className="home-project-grid">
                     {entries.map(d => {
-                      const meta = typeMeta(d.category);
-                      const Icon = meta.icon;
                       return (
                         <div className="home-project-card" key={d.id}>
                           <Link to={`/editor/${d.id}`} className="home-project-thumb">
@@ -759,24 +838,37 @@ export default function Home() {
                           </Link>
                           <div className="home-project-info">
                             <div><Link to={`/editor/${d.id}`}>{d.title}</Link><span><FormatGlyph name={d.category} size="micro" /> {d.category} · {formatCount(d.pages.length, 'page', 'pages')} · {timeAgo(d.updatedAt)}</span></div>
-                            <div className="home-project-menu-wrap" ref={menuId === d.id ? menuRef : undefined}>
-                              <button
-                                className="home-project-menu-btn"
-                                onClick={() => setMenuId(menuId === d.id ? null : d.id)}
-                                aria-label={`Options for ${d.title}`}
-                                aria-haspopup="menu"
-                                aria-expanded={menuId === d.id}
-                              ><EditrimIcon name="more" size={16} /></button>
-                              {menuId === d.id && (
-                                <div className="home-project-menu" role="menu" aria-label={`Options for ${d.title}`}>
-                                  <button role="menuitem" onClick={() => { setMenuId(null); navigate(`/editor/${d.id}`); }}><EditrimIcon name="pencil" size={13} /> Edit</button>
-                                  <button role="menuitem" onClick={() => onRename(d)}><EditrimIcon name="doc" size={13} /> Rename</button>
-                                  <button role="menuitem" onClick={() => onDuplicate(d)}><EditrimIcon name="duplicate" size={13} /> Duplicate</button>
-                                  <button role="menuitem" onClick={() => onDownload(d)}><EditrimIcon name="download" size={13} /> Download PNG</button>
-                                  <button role="menuitem" onClick={() => { setMenuId(null); navigate(`/present/${d.id}`); }}><EditrimIcon name="play" size={13} /> Present</button>
-                                  <button role="menuitem" className="danger" onClick={() => { setMenuId(null); setDeleting(d); }}><EditrimIcon name="trash" size={13} /> Delete</button>
-                                </div>
-                              )}
+                            <div className="home-project-menu-wrap">
+                              <GlassDropdownMenu>
+                                <GlassButtonGroup size="sm" material="clear">
+                                  <GlassDropdownMenuTrigger asChild>
+                                    <GlassButtonGroupItem aria-label={`Options for ${d.title}`}>
+                                      <EditrimIcon name="more" size={16} />
+                                    </GlassButtonGroupItem>
+                                  </GlassDropdownMenuTrigger>
+                                </GlassButtonGroup>
+                                <GlassDropdownMenuContent align="end">
+                                  <GlassDropdownMenuItem onSelect={() => navigate(`/editor/${d.id}`)}>
+                                    <EditrimIcon name="pencil" size={13} /> Edit
+                                  </GlassDropdownMenuItem>
+                                  <GlassDropdownMenuItem onSelect={() => onRename(d)}>
+                                    <EditrimIcon name="doc" size={13} /> Rename
+                                  </GlassDropdownMenuItem>
+                                  <GlassDropdownMenuItem onSelect={() => onDuplicate(d)}>
+                                    <EditrimIcon name="duplicate" size={13} /> Duplicate
+                                  </GlassDropdownMenuItem>
+                                  <GlassDropdownMenuItem onSelect={() => onDownload(d)}>
+                                    <EditrimIcon name="download" size={13} /> Download PNG
+                                  </GlassDropdownMenuItem>
+                                  <GlassDropdownMenuItem onSelect={() => navigate(`/present/${d.id}`)}>
+                                    <EditrimIcon name="play" size={13} /> Present
+                                  </GlassDropdownMenuItem>
+                                  <GlassDropdownMenuSeparator />
+                                  <GlassDropdownMenuItem destructive onSelect={() => setDeleting(d)}>
+                                    <EditrimIcon name="trash" size={13} /> Delete
+                                  </GlassDropdownMenuItem>
+                                </GlassDropdownMenuContent>
+                              </GlassDropdownMenu>
                             </div>
                           </div>
                         </div>
@@ -787,18 +879,36 @@ export default function Home() {
                     </button>
                   </div>
                 ) : (
-                  <div className="home-empty-continue">
+                  <GlassCard blur={6} tint={0.68} className="home-empty-continue rounded-[22px]">
                     <span className="home-empty-icon"><EditrimIcon name="magic" size={21} /></span>
                     <div><strong>No projects yet.</strong><p>Make your first design and it will show up here, saved in this browser.</p></div>
-                    <button className="btn home-btn-primary" onClick={() => openCreate()}><EditrimIcon name="plus" size={14} /> New design</button>
-                  </div>
+                    <GlassButton
+                      material="tinted"
+                      size="sm"
+                      className="bg-[#2440F0] text-white"
+                      icon={<EditrimIcon name="plus" size={14} />}
+                      iconPosition="start"
+                      onClick={() => openCreate()}
+                    >
+                      New design
+                    </GlassButton>
+                  </GlassCard>
                 )}
               </section>
             )}
           </section>
         </div>
 
-        <button className="home-help" onClick={() => setHelpOpen(true)} title="Help"><EditrimIcon name="help" size={22} /></button>
+        <GlassButton
+          material="clear"
+          size="md"
+          className="home-help w-11 h-11 !px-0"
+          onClick={() => setHelpOpen(true)}
+          title="Help"
+          aria-label="Help"
+        >
+          <EditrimIcon name="help" size={20} />
+        </GlassButton>
       </main>
 
       <input ref={fileRef} type="file" accept="image/*" hidden onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f); e.target.value = ''; }} />
@@ -822,9 +932,9 @@ export default function Home() {
         width={560}
         footer={featureMeta ? (
           <>
-            <button className="btn btn-ghost" onClick={() => setFeature(null)}>Not now</button>
-            {feature === 'magic' && <Link to="/templates" className="btn btn-secondary" onClick={() => setFeature(null)}>Browse templates</Link>}
-            <button className="btn btn-cobalt" onClick={featureMeta.run}>{featureMeta.primary} <EditrimIcon name="arrowUpRight" size={15} /></button>
+            <GlassButton material="clear" size="sm" onClick={() => setFeature(null)}>Not now</GlassButton>
+            {feature === 'magic' && <GlassButton asChild material="clear" size="sm"><Link to="/templates" onClick={() => setFeature(null)}>Browse templates</Link></GlassButton>}
+            <GlassButton material="tinted" size="sm" className="bg-[#2440F0] text-white" icon={<EditrimIcon name="arrowUpRight" size={15} />} onClick={featureMeta.run}>{featureMeta.primary}</GlassButton>
           </>
         ) : undefined}
       >
@@ -838,10 +948,10 @@ export default function Home() {
         width={560}
         footer={
           <>
-            <button className="btn btn-ghost" onClick={() => setPrintOpen(false)}>Cancel</button>
-            <button className="btn btn-cobalt" onClick={downloadPrintPdf} disabled={printing || !entries.length}>
-              {printing ? 'Rendering…' : 'Download PDF'} <EditrimIcon name="download" size={15} />
-            </button>
+            <GlassButton material="clear" size="sm" onClick={() => setPrintOpen(false)}>Cancel</GlassButton>
+            <GlassButton material="tinted" size="sm" className="bg-[#2440F0] text-white" icon={<EditrimIcon name="download" size={15} />} onClick={downloadPrintPdf} disabled={printing || !entries.length}>
+              {printing ? 'Rendering…' : 'Download PDF'}
+            </GlassButton>
           </>
         }
       >
@@ -855,7 +965,7 @@ export default function Home() {
             </label>
           </>
         ) : (
-          <div className="home-modal-empty"><strong>No designs yet.</strong><button className="btn btn-primary" onClick={() => { setPrintOpen(false); openCreate(); }}>Create a design</button></div>
+          <div className="home-modal-empty"><strong>No designs yet.</strong><GlassButton material="tinted" size="sm" className="bg-[#2440F0] text-white" onClick={() => { setPrintOpen(false); openCreate(); }}>Create a design</GlassButton></div>
         )}
       </Modal>
 
@@ -864,7 +974,7 @@ export default function Home() {
         onClose={() => setHelpOpen(false)}
         title="Welcome to Editrim"
         width={640}
-        footer={<button className="btn btn-cobalt" onClick={() => setHelpOpen(false)}>Back to work</button>}
+        footer={<GlassButton material="tinted" size="sm" className="bg-[#2440F0] text-white" onClick={() => setHelpOpen(false)}>Back to work</GlassButton>}
       >
         <div className="home-help-grid">
           <div><EditrimIcon name="spark" size={17} /><strong>Start anywhere</strong><p>Use a template, a category, a custom size or an upload. Everything can be edited.</p></div>
@@ -897,7 +1007,7 @@ export default function Home() {
         open={Boolean(renaming)}
         onClose={() => setRenaming(null)}
         title="Rename design"
-        footer={<><button className="btn btn-ghost" onClick={() => setRenaming(null)}>Cancel</button><button className="btn btn-cobalt" onClick={commitRename}>Save name</button></>}
+        footer={<><GlassButton material="clear" size="sm" onClick={() => setRenaming(null)}>Cancel</GlassButton><GlassButton material="tinted" size="sm" className="bg-[#2440F0] text-white" onClick={commitRename}>Save name</GlassButton></>}
       >
         <div className="field"><label className="field-label" htmlFor="home-rename">Design name</label><input id="home-rename" className="input" value={renameValue} onChange={e => setRenameValue(e.target.value)} onKeyDown={e => e.key === 'Enter' && commitRename()} autoFocus /></div>
       </Modal>
@@ -907,7 +1017,7 @@ export default function Home() {
         onClose={() => setDeleting(null)}
         title="Delete this design?"
         subtitle="This cannot be undone — the design is removed from this browser."
-        footer={<><button className="btn btn-ghost" onClick={() => setDeleting(null)}>Keep it</button><button className="btn btn-danger" onClick={confirmDelete}>Delete design</button></>}
+        footer={<><GlassButton material="clear" size="sm" onClick={() => setDeleting(null)}>Keep it</GlassButton><GlassButton material="tinted" size="sm" className="bg-[#D93A2B] text-white" onClick={confirmDelete}>Delete design</GlassButton></>}
       >
         <div className="home-delete"><EditrimIcon name="trash" size={18} /><div><strong>{deleting?.title}</strong><span>{deleting ? `${deleting.pages.length} pages · ${deleting.size.width}×${deleting.size.height}` : ''}</span></div></div>
       </Modal>

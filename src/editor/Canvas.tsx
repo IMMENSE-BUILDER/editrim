@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type React from 'react';
+import { GlassButtonGroup, GlassButtonGroupItem, GlassButtonGroupSeparator } from '@/components/liquid-glass';
 import { EditrimIcon } from '../components/EditrimIcon';
 
 import type { CanvasComment, El, Page, Point, Rect } from '../lib/types';
@@ -930,17 +931,31 @@ export function Canvas({
         </div>
       </div>
 
-      <div className="cv-controls" onPointerDown={e => e.stopPropagation()}>
-        <button onClick={() => zoomBy(0.9)} aria-label="Zoom out" title="Zoom out"><EditrimIcon name="minus" size={15} /></button>
-        <button className="cv-zoom-val" onClick={() => zoomBy(1 / view.zoom)} title="Reset zoom">
+      <GlassButtonGroup
+        size="sm"
+        material="clear"
+        className="cv-controls"
+        aria-label="Canvas zoom"
+        onPointerDown={e => e.stopPropagation()}
+      >
+        <GlassButtonGroupItem onClick={() => zoomBy(0.9)} aria-label="Zoom out" title="Zoom out">
+          <EditrimIcon name="minus" size={15} />
+        </GlassButtonGroupItem>
+        <GlassButtonGroupItem className="cv-zoom-val" onClick={() => zoomBy(1 / view.zoom)} title="Reset zoom">
           {Math.round(view.zoom * 100)}%
-        </button>
-        <button onClick={() => zoomBy(1.1)} aria-label="Zoom in" title="Zoom in"><EditrimIcon name="plus" size={15} /></button>
-        <span className="cv-ctrl-sep" />
-        <button onClick={fit} aria-label="Fit to screen" title="Fit to screen"><EditrimIcon name="fit" size={15} /></button>
-        <span className="cv-ctrl-sep" />
-        <button onClick={onOpenShortcuts} className="cv-help" title="Keyboard shortcuts">?</button>
-      </div>
+        </GlassButtonGroupItem>
+        <GlassButtonGroupItem onClick={() => zoomBy(1.1)} aria-label="Zoom in" title="Zoom in">
+          <EditrimIcon name="plus" size={15} />
+        </GlassButtonGroupItem>
+        <GlassButtonGroupSeparator />
+        <GlassButtonGroupItem onClick={fit} aria-label="Fit to screen" title="Fit to screen">
+          <EditrimIcon name="fit" size={15} />
+        </GlassButtonGroupItem>
+        <GlassButtonGroupSeparator />
+        <GlassButtonGroupItem onClick={onOpenShortcuts} className="cv-help" title="Keyboard shortcuts">
+          ?
+        </GlassButtonGroupItem>
+      </GlassButtonGroup>
     </div>
   );
 }

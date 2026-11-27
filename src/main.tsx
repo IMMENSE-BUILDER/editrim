@@ -41,18 +41,8 @@ import '@fontsource/montserrat/latin-800.css';
 import '@fontsource/caveat/latin-400.css';
 import '@fontsource/caveat/latin-700.css';
 
-import './styles/base.css';
-import './styles/site.css';
-import './styles/dashboard.css';
-import './styles/editor.css';
-import './styles/icon-motion.css';
-import './styles/theme.css';
-import './styles/studio.css';
-import './styles/violet.css';
-import './styles/vercel-dark.css';
-import './styles/neutral.css';
-import './styles/motion.css';
-import './styles/polish.css';
+import './styles/tailwind-glass.css';
+import './styles/editrim-bundle.css';
 import { migrateLegacyStorage } from './lib/migrate';
 
 const root = ReactDOM.createRoot(document.getElementById('root')!);

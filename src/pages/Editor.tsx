@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { GlassButton, GlassButtonGroup, GlassButtonGroupItem, GlassButtonGroupSeparator, GlassCard } from '@/components/liquid-glass';
 import {
   ArrowLeft, Check, ChevronLeft, ChevronRight, Cloud, Copy, Download, HelpCircle,
   ImageUp, LayoutTemplate, Loader2, Maximize2, MessageSquare, Palette, PaintBucket, Play, Plus,
@@ -781,58 +782,87 @@ function EditorWorkspace({ initial }: { initial: Design }) {
         </div>
 
         <div className="ed-top-center">
-          <button className="ed-ico" onClick={store.undo} disabled={!store.canUndo} title="Undo (⌘Z)"><EditrimIcon name="undo" size={16} /></button>
-          <button className="ed-ico" onClick={store.redo} disabled={!store.canRedo} title="Redo (⌘⇧Z)"><EditrimIcon name="redo" size={16} /></button>
-          <span className="ed-divider" />
-          <button className="ed-size-pill" onClick={() => setResizeOpen(true)} title="Resize canvas">
-            {design.size.width} × {design.size.height}
-            <EditrimIcon name="fit" size={12} />
-          </button>
-          <button className="ed-tool-pill" onClick={() => setResizeStudioOpen(true)} title="Resize & variants">
-            <EditrimIcon name="magic" size={13} />
-            <span>Resize</span>
-          </button>
+          <GlassButtonGroup size="sm" material="clear" aria-label="History">
+            <GlassButtonGroupItem onClick={store.undo} disabled={!store.canUndo} title="Undo (⌘Z)">
+              <EditrimIcon name="undo" size={16} />
+            </GlassButtonGroupItem>
+            <GlassButtonGroupItem onClick={store.redo} disabled={!store.canRedo} title="Redo (⌘⇧Z)">
+              <EditrimIcon name="redo" size={16} />
+            </GlassButtonGroupItem>
+          </GlassButtonGroup>
+          <GlassButtonGroup size="sm" material="clear" aria-label="Canvas size">
+            <GlassButtonGroupItem className="ed-size-pill" onClick={() => setResizeOpen(true)} title="Resize canvas">
+              {design.size.width} × {design.size.height}
+              <EditrimIcon name="fit" size={12} />
+            </GlassButtonGroupItem>
+            <GlassButtonGroupSeparator />
+            <GlassButtonGroupItem className="ed-tool-pill" onClick={() => setResizeStudioOpen(true)} title="Resize & variants">
+              <EditrimIcon name="magic" size={13} />
+              <span>Resize</span>
+            </GlassButtonGroupItem>
+          </GlassButtonGroup>
         </div>
 
         <div className="ed-top-right">
-          <button className="ed-ico ed-insp-toggle" onClick={() => setInspectorOpen(v => !v)} title="Design controls">
-            <EditrimIcon name="sliders" size={17} />
-          </button>
-          <button className="ed-ico" onClick={() => setCommandOpen(true)} title="Quick actions (Ctrl K)">
-            <EditrimIcon name="search" size={17} />
-          </button>
-          <button className="ed-ico" onClick={() => setHistoryOpen(true)} title="Version history">
-            <EditrimIcon name="clock" size={17} />
-          </button>
-          <button className="ed-ico ed-help" onClick={() => setShortcutsOpen(true)} title="Keyboard shortcuts"><EditrimIcon name="help" size={17} /></button>
-          <button className="ed-action" onClick={present}><EditrimIcon name="play" size={14} /> <span>Present</span></button>
-          <button className="ed-action" onClick={openShare}><EditrimIcon name="share" size={14} /> <span>Share</span></button>
-          <button className="btn btn-cobalt btn-sm ed-download" onClick={() => setExportOpen(true)}>
-            <EditrimIcon name="download" size={14} /> Download
-          </button>
+          <GlassButtonGroup size="sm" material="clear" aria-label="Tools">
+            <GlassButtonGroupItem className="ed-insp-toggle" onClick={() => setInspectorOpen(v => !v)} title="Design controls">
+              <EditrimIcon name="sliders" size={17} />
+            </GlassButtonGroupItem>
+            <GlassButtonGroupItem onClick={() => setCommandOpen(true)} title="Quick actions (Ctrl K)">
+              <EditrimIcon name="search" size={17} />
+            </GlassButtonGroupItem>
+            <GlassButtonGroupItem onClick={() => setHistoryOpen(true)} title="Version history">
+              <EditrimIcon name="clock" size={17} />
+            </GlassButtonGroupItem>
+            <GlassButtonGroupItem className="ed-help" onClick={() => setShortcutsOpen(true)} title="Keyboard shortcuts">
+              <EditrimIcon name="help" size={17} />
+            </GlassButtonGroupItem>
+          </GlassButtonGroup>
+          <GlassButton material="clear" size="sm" onClick={present} icon={<EditrimIcon name="play" size={14} />} iconPosition="start">
+            <span>Present</span>
+          </GlassButton>
+          <GlassButton material="clear" size="sm" onClick={openShare} icon={<EditrimIcon name="share" size={14} />} iconPosition="start">
+            <span>Share</span>
+          </GlassButton>
+          <GlassButton
+            material="tinted"
+            size="sm"
+            className="ed-download bg-[#2440F0] text-white dark:bg-[#5B7CFF]"
+            onClick={() => setExportOpen(true)}
+            icon={<EditrimIcon name="download" size={14} />}
+            iconPosition="start"
+          >
+            Download
+          </GlassButton>
         </div>
       </header>
 
       <div className="ed-body">
         <nav className="ed-rail" aria-label="Editor panels">
-          {TABS.map(t => {
-            return (
-              <button
+          <GlassButtonGroup orientation="vertical" size="md" material="clear" className="ed-rail-group w-full" aria-label="Editor panels">
+            {TABS.map(t => (
+              <GlassButtonGroupItem
                 key={t.id}
-                className={panel === t.id ? 'active' : ''}
+                className={`ed-rail-item ${panel === t.id ? 'active is-active-glass' : ''}`}
                 onClick={() => setPanel(panel === t.id ? null : t.id)}
                 title={t.label}
               >
-                <EditrimIcon name={t.icon} size={19} />
+                <EditrimIcon name={t.icon} size={18} />
                 <span>{t.label}</span>
-              </button>
-            );
-          })}
+              </GlassButtonGroupItem>
+            ))}
+          </GlassButtonGroup>
           <div className="ed-rail-bottom">
-            <button onClick={() => setShortcutsOpen(true)} title="Shortcuts">
+            <GlassButton
+              material="clear"
+              size="sm"
+              className="ed-rail-help-btn w-full flex-col !h-auto !py-2 !px-1 !gap-1 rounded-xl"
+              onClick={() => setShortcutsOpen(true)}
+              title="Shortcuts"
+            >
               <EditrimIcon name="help" size={18} />
               <span>Help</span>
-            </button>
+            </GlassButton>
           </div>
         </nav>
 
@@ -886,20 +916,25 @@ function EditorWorkspace({ initial }: { initial: Design }) {
                   {pageMenu?.index === i && (
                     <>
                       <div className="page-menu-backdrop" onClick={() => setPageMenu(null)} />
-                      <div className="page-menu" style={{ left: pageMenu.x, top: pageMenu.top }}>
+                      <GlassCard blur={8} tint={0.8} className="page-menu rounded-[18px]" style={{ left: pageMenu.x, top: pageMenu.top }}>
                         <button onClick={() => { store.duplicatePage(i); setPageMenu(null); }}><EditrimIcon name="duplicate" size={13} /> Duplicate</button>
                         <button onClick={() => { store.movePage(i, i - 1); setPageMenu(null); }} disabled={i === 0}><EditrimIcon name="chevronLeft" size={13} /> Move left</button>
                         <button onClick={() => { store.movePage(i, i + 1); setPageMenu(null); }} disabled={i === design.pages.length - 1}><EditrimIcon name="chevronRight" size={13} /> Move right</button>
                         <button className="danger" onClick={() => { store.deletePage(i); setPageMenu(null); }} disabled={design.pages.length <= 1}><EditrimIcon name="trash" size={13} /> Delete page</button>
-                      </div>
+                      </GlassCard>
                     </>
                   )}
                 </div>
               ))}
-              <button className="page-add" onClick={() => store.addPage()} title="Add page"><EditrimIcon name="plus" size={17} /><span>Add page</span></button>
-              <button className="page-bulk-btn" onClick={() => setBulkOpen(true)} title="Bulk create pages from a CSV">
-                <EditrimIcon name="sheet" size={16} /><span>Bulk create</span>
-              </button>
+              <GlassButtonGroup size="sm" material="clear" aria-label="Page actions">
+                <GlassButtonGroupItem onClick={() => store.addPage()} title="Add page">
+                  <EditrimIcon name="plus" size={16} /><span>Add page</span>
+                </GlassButtonGroupItem>
+                <GlassButtonGroupSeparator />
+                <GlassButtonGroupItem onClick={() => setBulkOpen(true)} title="Bulk create pages from a CSV">
+                  <EditrimIcon name="sheet" size={15} /><span>Bulk create</span>
+                </GlassButtonGroupItem>
+              </GlassButtonGroup>
             </div>
             <div className="page-strip-info">
               <span>Page {store.activePage + 1} of {design.pages.length}</span>
@@ -989,8 +1024,8 @@ function EditorWorkspace({ initial }: { initial: Design }) {
         width={480}
         footer={
           <>
-            <button className="btn btn-ghost" onClick={() => setComponentDraft(null)}>Cancel</button>
-            <button className="btn btn-cobalt" onClick={saveComponentDraft} disabled={!componentDraft?.name.trim()}>Save component</button>
+            <GlassButton material="clear" size="sm" onClick={() => setComponentDraft(null)}>Cancel</GlassButton>
+            <GlassButton material="tinted" size="sm" className="bg-[#2440F0] text-white" onClick={saveComponentDraft} disabled={!componentDraft?.name.trim()}>Save component</GlassButton>
           </>
         }
       >
@@ -1028,8 +1063,8 @@ function EditorWorkspace({ initial }: { initial: Design }) {
         width={560}
         footer={
           <>
-            <button className="btn btn-ghost" onClick={() => setCommentTarget(null)}>Close</button>
-            <button className="btn btn-cobalt" onClick={postComment} disabled={!commentText.trim()}>Post comment</button>
+            <GlassButton material="clear" size="sm" onClick={() => setCommentTarget(null)}>Close</GlassButton>
+            <GlassButton material="tinted" size="sm" className="bg-[#2440F0] text-white" onClick={postComment} disabled={!commentText.trim()}>Post comment</GlassButton>
           </>
         }
       >

@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { GlassButton } from '@/components/liquid-glass';
 import { EditrimIcon } from './EditrimIcon';
 import { Logo } from './Brand';
 
@@ -20,15 +21,30 @@ export function SiteHeader({ variant = 'default' }: { variant?: 'default' | 'pla
           <Link to="/#pricing">Pricing</Link>
         </nav>
         <div className="site-actions">
-          <Link to="/dashboard" className="site-login">Your designs</Link>
-          <Link to="/dashboard" className="btn btn-primary btn-sm">
-            Start designing
-            <EditrimIcon name="arrowUpRight" size={14} />
-          </Link>
+          <GlassButton asChild material="clear" size="sm">
+            <Link to="/dashboard" className="site-login">Your designs</Link>
+          </GlassButton>
+          <GlassButton
+            asChild
+            material="tinted"
+            size="sm"
+            className="bg-[#2440F0] text-white dark:bg-[#5B7CFF] dark:text-white"
+            icon={<EditrimIcon name="arrowUpRight" size={14} />}
+          >
+            <Link to="/dashboard">Start designing</Link>
+          </GlassButton>
         </div>
-        <button className="site-menu-btn" onClick={() => setOpen(v => !v)} aria-label="Menu">
-          {open ? <EditrimIcon name="close" size={20} /> : <EditrimIcon name="menu" size={20} />}
-        </button>
+        <div className="site-menu-wrap">
+          <GlassButton
+            material="clear"
+            size="sm"
+            className="site-menu-btn w-9 !px-0"
+            onClick={() => setOpen(v => !v)}
+            aria-label="Menu"
+          >
+            {open ? <EditrimIcon name="close" size={20} /> : <EditrimIcon name="menu" size={20} />}
+          </GlassButton>
+        </div>
       </div>
       {open && (
         <div className="site-mobile-nav">
@@ -38,7 +54,14 @@ export function SiteHeader({ variant = 'default' }: { variant?: 'default' | 'pla
           <Link to="/#how" onClick={() => setOpen(false)}>How it works</Link>
           <Link to="/#pricing" onClick={() => setOpen(false)}>Pricing</Link>
           <Link to="/dashboard" onClick={() => setOpen(false)}>Your designs</Link>
-          <Link to="/dashboard" className="btn btn-primary" onClick={() => setOpen(false)}>Start designing</Link>
+          <GlassButton
+            asChild
+            material="tinted"
+            size="md"
+            className="bg-[#2440F0] text-white"
+          >
+            <Link to="/dashboard" onClick={() => setOpen(false)}>Start designing</Link>
+          </GlassButton>
         </div>
       )}
     </header>
@@ -52,10 +75,15 @@ export function SiteFooter() {
         <div className="footer-brand">
           <Logo size={36} />
           <p>A complete design studio in your browser.<br />Free, fast, and yours to keep.</p>
-          <Link to="/dashboard" className="btn btn-lime btn-sm footer-cta">
-            Start designing
-            <EditrimIcon name="arrowUpRight" size={14} />
-          </Link>
+          <GlassButton
+            asChild
+            material="tinted"
+            size="md"
+            className="bg-[#D8F55A] text-[#14130F] footer-cta"
+            icon={<EditrimIcon name="arrowUpRight" size={14} />}
+          >
+            <Link to="/dashboard">Start designing</Link>
+          </GlassButton>
         </div>
         <div className="footer-cols">
           <div>

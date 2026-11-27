@@ -1,12 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GlassButton, GlassButtonGroup, GlassButtonGroupItem, GlassCard } from '@/components/liquid-glass';
+import {
+  GlassDropdownMenu,
+  GlassDropdownMenuContent,
+  GlassDropdownMenuItem,
+  GlassDropdownMenuSeparator,
+  GlassDropdownMenuTrigger,
+} from '@/components/liquid-glass/glass-dropdown-menu';
 import { Logo } from '../components/Brand';
 import { EditrimIcon } from '../components/EditrimIcon';
 import { useToast } from '../components/Toast';
 import { useSurface } from '../hooks/useSurface';
 import { createVideoProject, deleteVideoProject, duplicateVideoProject, listVideoProjects, renameVideoProject, type VideoProjectMeta } from '../lib/video/storage';
 import { formatTimecode } from '../lib/video/types';
-import '../styles/videos.css';
 
 export default function Videos() {
   useSurface('neutral');
@@ -79,22 +86,40 @@ export default function Videos() {
             <EditrimIcon name="search" size={15} />
             <input value={query} onChange={event => setQuery(event.target.value)} placeholder="Search videos" aria-label="Search videos" />
           </label>
-          <button className="videos-new" onClick={newVideo}><EditrimIcon name="plus" size={15} /> New video</button>
+          <GlassButton
+            material="tinted"
+            size="sm"
+            className="videos-new bg-[#2440F0] text-white"
+            onClick={newVideo}
+            icon={<EditrimIcon name="plus" size={15} />}
+            iconPosition="start"
+          >
+            New video
+          </GlassButton>
         </div>
       </header>
 
       <main className="videos-body">
         {projects.length === 0 ? (
-          <div className="videos-empty">
+          <GlassCard blur={6} tint={0.68} className="videos-empty rounded-[24px]">
             <span className="videos-empty-icon"><EditrimIcon name="film" size={28} /></span>
             <h2>No videos</h2>
-            <button className="videos-new" onClick={newVideo}><EditrimIcon name="plus" size={15} /> New video</button>
-          </div>
+            <GlassButton
+              material="tinted"
+              size="md"
+              className="videos-new bg-[#2440F0] text-white"
+              onClick={newVideo}
+              icon={<EditrimIcon name="plus" size={15} />}
+              iconPosition="start"
+            >
+              New video
+            </GlassButton>
+          </GlassCard>
         ) : results.length === 0 ? (
-          <div className="videos-empty">
+          <GlassCard blur={6} tint={0.68} className="videos-empty rounded-[24px]">
             <h2>No matches</h2>
-            <button className="videos-clear" onClick={() => setQuery('')}>Clear search</button>
-          </div>
+            <GlassButton material="clear" size="sm" onClick={() => setQuery('')}>Clear search</GlassButton>
+          </GlassCard>
         ) : (
           <div className="videos-grid">
             {results.map(project => (
@@ -102,26 +127,35 @@ export default function Videos() {
                 key={project.id}
                 className="video-card"
                 data-project-id={project.id}
-                onClick={() => { if (!menuId && renamingId !== project.id) navigate(`/video/${project.id}`); }}
+                onClick={() => { if (renamingId !== project.id) navigate(`/video/${project.id}`); }}
               >
                 <div className="video-card-poster" style={project.poster ? { backgroundImage: `url(${project.poster})` } : undefined}>
                   {!project.poster && <span className="video-card-fallback"><EditrimIcon name="film" size={28} /></span>}
                   <span className="video-card-duration">{formatTimecode(project.duration, false)}</span>
                   <span className="video-card-play"><EditrimIcon name="play" size={17} /></span>
-                  <button
-                    className="video-card-menu-btn"
-                    onClick={event => { event.stopPropagation(); setMenuId(menuId === project.id ? null : project.id); }}
-                    aria-label={`Actions for ${project.name}`}
-                  >
-                    <EditrimIcon name="more" size={16} />
-                  </button>
-                  {menuId === project.id && (
-                    <div className="video-card-menu" onClick={event => event.stopPropagation()}>
-                      <button onClick={() => beginRename(project)}><EditrimIcon name="pencil" size={13} /> Rename</button>
-                      <button onClick={() => duplicate(project.id)}><EditrimIcon name="duplicate" size={13} /> Duplicate</button>
-                      <button className="danger" onClick={() => remove(project.id)}><EditrimIcon name="trash" size={13} /> Delete</button>
-                    </div>
-                  )}
+                  <div className="video-card-menu-btn" onClick={event => event.stopPropagation()}>
+                    <GlassDropdownMenu>
+                      <GlassButtonGroup size="sm" material="clear">
+                        <GlassDropdownMenuTrigger asChild>
+                          <GlassButtonGroupItem aria-label={`Actions for ${project.name}`}>
+                            <EditrimIcon name="more" size={16} />
+                          </GlassButtonGroupItem>
+                        </GlassDropdownMenuTrigger>
+                      </GlassButtonGroup>
+                      <GlassDropdownMenuContent align="end">
+                        <GlassDropdownMenuItem onSelect={() => beginRename(project)}>
+                          <EditrimIcon name="pencil" size={13} /> Rename
+                        </GlassDropdownMenuItem>
+                        <GlassDropdownMenuItem onSelect={() => duplicate(project.id)}>
+                          <EditrimIcon name="duplicate" size={13} /> Duplicate
+                        </GlassDropdownMenuItem>
+                        <GlassDropdownMenuSeparator />
+                        <GlassDropdownMenuItem destructive onSelect={() => remove(project.id)}>
+                          <EditrimIcon name="trash" size={13} /> Delete
+                        </GlassDropdownMenuItem>
+                      </GlassDropdownMenuContent>
+                    </GlassDropdownMenu>
+                  </div>
                 </div>
                 <div className="video-card-meta">
                   {renamingId === project.id ? (

@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
+import { GlassButton, GlassTabs } from '@/components/liquid-glass';
+import { RangeSlider } from '@/components/liquid-glass/controls/RangeSlider';
+import { Switch } from '@/components/liquid-glass/controls/Switch';
 import { EditrimIcon } from '../components/EditrimIcon';
 
 import type { Paint, Shadow } from '../lib/types';
@@ -110,14 +113,19 @@ export function SliderField({
         <span>{label}</span>
         <span className="slider-value">{format ? format(value) : value}</span>
       </div>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={e => onChange(Number(e.target.value))}
-      />
+      <div className="insp-glass-slider">
+        <RangeSlider
+          label=""
+          showValue={false}
+          size="sm"
+          color="#2563eb"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={onChange}
+        />
+      </div>
     </div>
   );
 }
@@ -134,19 +142,14 @@ export function Segmented<T extends string>({
   full?: boolean;
 }) {
   return (
-    <div className={`segmented ${full ? 'full' : ''}`}>
-      {options.map(o => (
-        <button
-          key={o.value}
-          className={value === o.value ? 'active' : ''}
-          onClick={() => onChange(o.value)}
-          title={o.title}
-          type="button"
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
+    <GlassTabs
+      aria-label="Options"
+      size="sm"
+      value={value}
+      onValueChange={onChange}
+      options={options.map(o => ({ value: o.value, label: o.label, 'aria-label': o.title }))}
+      className={full ? 'w-full [&_[role=radio]]:flex-1' : ''}
+    />
   );
 }
 
@@ -360,14 +363,13 @@ export function ShadowField({ shadow, onChange }: { shadow?: Shadow | null; onCh
     <div className="shadow-field">
       <div className="toggle-row">
         <span>Drop shadow</span>
-        <button
-          className={`switch ${enabled ? 'on' : ''}`}
-          onClick={() => onChange(enabled ? null : { x: 0, y: 8, blur: 24, color: 'rgba(0,0,0,0.22)' })}
-          aria-pressed={enabled}
-          aria-label="Toggle drop shadow"
-        >
-          <i />
-        </button>
+        <Switch
+          size="sm"
+          color="#2563eb"
+          checked={enabled}
+          onChange={next => onChange(next ? { x: 0, y: 8, blur: 24, color: 'rgba(0,0,0,0.22)' } : null)}
+          label=""
+        />
       </div>
       {shadow && (
         <div className="shadow-controls">
@@ -403,17 +405,15 @@ export function ToggleRow({
   return (
     <div className="toggle-row">
       <span>{label}</span>
-      <button className={`switch ${checked ? 'on' : ''}`} onClick={() => onChange(!checked)} aria-pressed={checked} aria-label={label}>
-        <i />
-      </button>
+      <Switch size="sm" color="#2563eb" checked={checked} onChange={onChange} label="" />
     </div>
   );
 }
 
 export function ModalClose({ onClose }: { onClose: () => void }) {
   return (
-    <button className="btn-icon" onClick={onClose} aria-label="Close">
-      <EditrimIcon name="close" size={18} />
-    </button>
+    <GlassButton material="clear" size="sm" className="w-8 !px-0" onClick={onClose} aria-label="Close">
+      <EditrimIcon name="close" size={16} />
+    </GlassButton>
   );
 }

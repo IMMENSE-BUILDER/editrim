@@ -1,5 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  GlassActionButton,
+  GlassButton,
+  GlassButtonGroup,
+  GlassButtonGroupItem,
+  GlassButtonGroupSeparator,
+  GlassCard,
+  GlassTabs,
+} from '@/components/liquid-glass';
+import { RangeSlider } from '@/components/liquid-glass/controls/RangeSlider';
 import { Logo } from '../components/Brand';
 import { EditrimIcon } from '../components/EditrimIcon';
 import type { EditrimIconName } from '../components/EditrimIcon';
@@ -34,8 +44,6 @@ import {
   type PhotoSettings,
   type PhotoTextLayer,
 } from '../lib/photo/types';
-import '../styles/photo.css';
-import '../styles/liquid-glass.css';
 
 type Mode = 'adjust' | 'crop' | 'filters' | 'text';
 
@@ -628,8 +636,8 @@ export default function PhotoEditor() {
     return outputDimensions(image, settings, exportScale);
   }, [image, settings, exportScale]);
 
-  const runExport = async () => {
-    if (!image || exporting) return;
+  const runExport = async (): Promise<boolean> => {
+    if (!image || exporting) return false;
     setExporting(true);
     try {
       const blob = await exportPhotoBlob(image, settings, exportFormat, exportQuality, exportScale);
@@ -638,8 +646,10 @@ export default function PhotoEditor() {
       downloadBlob(blob, `${safeFilename(name || 'photo')}.${extension}`);
       toast('Photo exported');
       setExportOpen(false);
+      return true;
     } catch {
       toast('Export failed', 'error');
+      return false;
     } finally {
       setExporting(false);
     }
@@ -666,7 +676,7 @@ export default function PhotoEditor() {
 
   return (
     <div
-      className="photo-editor"
+      className="photo-editor dark"
       data-mode={mode}
       data-ready={image ? 'yes' : 'no'}
       data-crop={JSON.stringify(settings.crop)}
@@ -699,21 +709,28 @@ export default function PhotoEditor() {
           </div>
         </div>
         <div className="ph-center">
-          <button className="ph-icon-btn" onClick={undo} disabled={!historyState.canUndo} title="Undo" aria-label="Undo"><EditrimIcon name="undo" size={17} /></button>
-          <button className="ph-icon-btn" onClick={redo} disabled={!historyState.canRedo} title="Redo" aria-label="Redo"><EditrimIcon name="redo" size={17} /></button>
-          <button
-            className={`ph-compare ${comparing ? 'is-active' : ''}`}
-            onPointerDown={() => setComparing(true)}
-            onPointerUp={() => setComparing(false)}
-            onPointerLeave={() => setComparing(false)}
-            onPointerCancel={() => setComparing(false)}
-            onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') setComparing(true); }}
-            onKeyUp={() => setComparing(false)}
-            aria-pressed={comparing}
-            title="Hold to compare with the original"
-          >
-            <EditrimIcon name="compare" size={16} /><span>Compare</span>
-          </button>
+          <GlassButtonGroup size="sm" material="clear" aria-label="History and compare">
+            <GlassButtonGroupItem onClick={undo} disabled={!historyState.canUndo} title="Undo" aria-label="Undo">
+              <EditrimIcon name="undo" size={17} />
+            </GlassButtonGroupItem>
+            <GlassButtonGroupItem onClick={redo} disabled={!historyState.canRedo} title="Redo" aria-label="Redo">
+              <EditrimIcon name="redo" size={17} />
+            </GlassButtonGroupItem>
+            <GlassButtonGroupSeparator />
+            <GlassButtonGroupItem
+              className={`ph-compare ${comparing ? 'is-active' : ''}`}
+              onPointerDown={() => setComparing(true)}
+              onPointerUp={() => setComparing(false)}
+              onPointerLeave={() => setComparing(false)}
+              onPointerCancel={() => setComparing(false)}
+              onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') setComparing(true); }}
+              onKeyUp={() => setComparing(false)}
+              aria-pressed={comparing}
+              title="Hold to compare with the original"
+            >
+              <EditrimIcon name="compare" size={16} /><span>Compare</span>
+            </GlassButtonGroupItem>
+          </GlassButtonGroup>
         </div>
         <div className="ph-right">
           <input
@@ -727,37 +744,63 @@ export default function PhotoEditor() {
               event.target.value = '';
             }}
           />
-          <button className="ph-ghost-btn ph-import-btn" onClick={() => fileInputRef.current?.click()}><EditrimIcon name="upload" size={15} /><span>Import</span></button>
-          <button className="ph-ghost-btn ph-reset-btn" onClick={resetAll} disabled={!image}><EditrimIcon name="refresh" size={15} /><span>Reset</span></button>
-          <button className="ph-export-btn" onClick={() => setExportOpen(true)} disabled={!image}><EditrimIcon name="download" size={15} /><span>Export</span></button>
+          <GlassButtonGroup size="sm" material="clear" aria-label="Photo file actions">
+            <GlassButtonGroupItem className="ph-import-btn" onClick={() => fileInputRef.current?.click()}>
+              <EditrimIcon name="upload" size={15} /><span>Import</span>
+            </GlassButtonGroupItem>
+            <GlassButtonGroupSeparator />
+            <GlassButtonGroupItem className="ph-reset-btn" onClick={resetAll} disabled={!image}>
+              <EditrimIcon name="refresh" size={15} /><span>Reset</span>
+            </GlassButtonGroupItem>
+          </GlassButtonGroup>
+          <GlassButton
+            material="tinted"
+            size="sm"
+            className="ph-export-btn bg-[#D8F55A] !text-[#14130F] [&_svg]:!text-[#14130F]"
+            onClick={() => setExportOpen(true)}
+            disabled={!image}
+            icon={<EditrimIcon name="download" size={15} />}
+            iconPosition="start"
+          >
+            <span>Export</span>
+          </GlassButton>
         </div>
       </header>
 
       <div className="ph-body">
         <nav className="ph-rail" aria-label="Photo tools">
-          {MODES.map(item => (
-            <button
-              key={item.id}
-              className={`ph-rail-btn ${mode === item.id ? 'is-active' : ''}`}
-              onClick={() => setMode(item.id)}
-              disabled={!image}
-              aria-pressed={mode === item.id}
-            >
-              <EditrimIcon name={item.icon} size={18} />
-              <span>{item.label}</span>
-            </button>
-          ))}
+          <GlassButtonGroup orientation="vertical" size="md" material="clear" className="ph-rail-group w-full" aria-label="Photo tools">
+            {MODES.map(item => (
+              <GlassButtonGroupItem
+                key={item.id}
+                className={`ph-rail-btn ${mode === item.id ? 'is-active is-active-glass' : ''}`}
+                onClick={() => setMode(item.id)}
+                disabled={!image}
+                aria-pressed={mode === item.id}
+              >
+                <EditrimIcon name={item.icon} size={18} />
+                <span>{item.label}</span>
+              </GlassButtonGroupItem>
+            ))}
+          </GlassButtonGroup>
         </nav>
 
         <main className="ph-stage" ref={stageRef}>
           {!image ? (
-            <div className={`ph-empty ${loading ? 'is-loading' : ''}`}>
+            <GlassCard blur={8} tint={0.62} className={`ph-empty rounded-[24px] ${loading ? 'is-loading' : ''}`}>
               <span className="ph-empty-mark"><EditrimIcon name="photo" size={30} /></span>
               <h2>No photo</h2>
-              <button className="ph-primary-btn ph-choose" onClick={() => fileInputRef.current?.click()}>
-                <EditrimIcon name="upload" size={15} /> Choose photo
-              </button>
-            </div>
+              <GlassButton
+                material="tinted"
+                size="md"
+                className="ph-choose bg-[#D8F55A] !text-[#14130F] [&_svg]:!text-[#14130F]"
+                onClick={() => fileInputRef.current?.click()}
+                icon={<EditrimIcon name="upload" size={15} />}
+                iconPosition="start"
+              >
+                Choose photo
+              </GlassButton>
+            </GlassCard>
           ) : (
             <div className="ph-frame" style={{ width: `${displaySize.width}px` }}>
               <canvas
@@ -855,21 +898,8 @@ export default function PhotoEditor() {
                             <span>{item.label}</span>
                             <b>{formatValue(value, item.digits)}</b>
                           </span>
-                          <input
-                            type="range"
-                            min={item.min}
-                            max={item.max}
-                            step={item.step}
-                            value={value}
-                            onChange={event => {
-                              const next = Number(event.target.value);
-                              const current = settingsRef.current;
-                              applySettings({
-                                ...current,
-                                filter: 'custom',
-                                adjustments: { ...current.adjustments, [item.key]: next },
-                              }, { coalesce: `adjust-${item.key}` });
-                            }}
+                          <div
+                            className="ph-glass-slider"
                             onDoubleClick={() => {
                               const current = settingsRef.current;
                               applySettings({
@@ -877,8 +907,27 @@ export default function PhotoEditor() {
                                 adjustments: { ...current.adjustments, [item.key]: DEFAULT_ADJUSTMENTS[item.key] },
                               });
                             }}
-                            aria-label={item.label}
-                          />
+                          >
+                            <RangeSlider
+                              label=""
+                              showValue={false}
+                              size="sm"
+                              theme="dark"
+                              color="#D8F55A"
+                              min={item.min}
+                              max={item.max}
+                              step={item.step}
+                              value={value}
+                              onChange={next => {
+                                const current = settingsRef.current;
+                                applySettings({
+                                  ...current,
+                                  filter: 'custom',
+                                  adjustments: { ...current.adjustments, [item.key]: next },
+                                }, { coalesce: `adjust-${item.key}` });
+                              }}
+                            />
+                          </div>
                         </div>
                       );
                     })}
@@ -1140,32 +1189,30 @@ export default function PhotoEditor() {
 
             <div className="ph-export-field">
               <span>Format</span>
-              <div className="ph-seg">
-                {(['jpeg', 'png', 'webp'] as PhotoExportFormat[]).map(format => (
-                  <button
-                    key={format}
-                    className={exportFormat === format ? 'is-active' : ''}
-                    onClick={() => setExportFormat(format)}
-                  >
-                    {format === 'jpeg' ? 'JPEG' : format.toUpperCase()}
-                  </button>
-                ))}
-              </div>
+              <GlassTabs
+                aria-label="Photo export format"
+                size="sm"
+                value={exportFormat}
+                onValueChange={setExportFormat}
+                options={(['jpeg', 'png', 'webp'] as PhotoExportFormat[]).map(format => ({
+                  value: format,
+                  label: format === 'jpeg' ? 'JPEG' : format.toUpperCase(),
+                }))}
+              />
             </div>
 
             <div className="ph-export-field">
               <span>Size</span>
-              <div className="ph-seg">
-                {[1, 0.5].map(scale => (
-                  <button
-                    key={scale}
-                    className={exportScale === scale ? 'is-active' : ''}
-                    onClick={() => setExportScale(scale)}
-                  >
-                    {scale === 1 ? 'Full' : 'Half'}
-                  </button>
-                ))}
-              </div>
+              <GlassTabs
+                aria-label="Photo export size"
+                size="sm"
+                value={String(exportScale)}
+                onValueChange={v => setExportScale(Number(v))}
+                options={[1, 0.5].map(scale => ({
+                  value: String(scale),
+                  label: scale === 1 ? 'Full' : 'Half',
+                }))}
+              />
             </div>
 
             {exportFormat !== 'png' && (
@@ -1173,15 +1220,20 @@ export default function PhotoEditor() {
                 <span>Quality</span>
                 <div className="ph-range">
                   <span className="ph-range-head"><span>Compression</span><b>{Math.round(exportQuality * 100)}%</b></span>
-                  <input
-                    type="range"
-                    min={0.4}
-                    max={1}
-                    step={0.01}
-                    value={exportQuality}
-                    onChange={event => setExportQuality(Number(event.target.value))}
-                    aria-label="Export quality"
-                  />
+                  <div className="ph-glass-slider">
+                    <RangeSlider
+                      label=""
+                      showValue={false}
+                      size="sm"
+                      theme="dark"
+                      color="#D8F55A"
+                      min={0.4}
+                      max={1}
+                      step={0.01}
+                      value={exportQuality}
+                      onChange={setExportQuality}
+                    />
+                  </div>
                 </div>
               </div>
             )}
@@ -1192,10 +1244,20 @@ export default function PhotoEditor() {
             </div>
 
             <div className="ph-export-actions">
-              <button className="ph-ghost-btn" onClick={() => setExportOpen(false)}>Cancel</button>
-              <button className="ph-primary-btn" onClick={runExport} disabled={exporting}>
-                <EditrimIcon name="download" size={15} />{exporting ? 'Exporting' : 'Download'}
-              </button>
+              <GlassButton material="clear" size="sm" onClick={() => setExportOpen(false)}>Cancel</GlassButton>
+              <GlassActionButton
+                material="tinted"
+                size="sm"
+                className="bg-[#D8F55A] text-[#14130F]"
+                pendingLabel="Exporting"
+                successLabel="Exported"
+                resetAfter={1600}
+                onAction={async () => { if (!(await runExport())) throw new Error('Export failed'); }}
+                onActionError={() => {}}
+                disabled={exporting}
+              >
+                Download
+              </GlassActionButton>
             </div>
           </div>
         </div>

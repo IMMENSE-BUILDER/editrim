@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { GlassButton, GlassButtonGroup, GlassButtonGroupItem, GlassButtonGroupSeparator } from '@/components/liquid-glass';
+import { RangeSlider } from '@/components/liquid-glass/controls/RangeSlider';
 import { Logo } from '../components/Brand';
 import { EditrimIcon, type EditrimIconName } from '../components/EditrimIcon';
 import { useToast } from '../components/Toast';
@@ -30,8 +32,6 @@ import {
 import { renderVideoFrame, type MediaElementMap } from '../lib/video/render';
 import { createVideoProject, loadVideoProject, saveMediaBlob, saveVideoProject } from '../lib/video/storage';
 import { clamp, downloadBlob, uid } from '../lib/utils';
-import '../styles/video.css';
-import '../styles/liquid-glass.css';
 
 type DragMode = 'move' | 'trim-left' | 'trim-right';
 type DragState = {
@@ -137,19 +137,23 @@ function RangeField({
   onBegin?: () => void;
 }) {
   return (
-    <label className="vd-range">
+    <div className="vd-range">
       <span>{label}<b>{Math.round(value * 100) / 100}{suffix}</b></span>
-      <input
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onPointerDown={onBegin}
-        onFocus={onBegin}
-        onChange={event => onChange(Number(event.target.value))}
-      />
-    </label>
+      <div className="vd-glass-slider" onPointerDown={onBegin}>
+        <RangeSlider
+          label=""
+          showValue={false}
+          size="sm"
+          theme="dark"
+          color="#D8F55A"
+          min={min}
+          max={max}
+          step={step}
+          value={value}
+          onChange={onChange}
+        />
+      </div>
+    </div>
   );
 }
 
@@ -1109,16 +1113,39 @@ export default function VideoEditor() {
           </div>
         </div>
         <div className="vd-header-center">
-          <IconButton icon="undo" label="Undo" onClick={undo} disabled={!historyState.canUndo} />
-          <IconButton icon="redo" label="Redo" onClick={redo} disabled={!historyState.canRedo} />
+          <GlassButtonGroup size="sm" material="clear" aria-label="History">
+            <GlassButtonGroupItem onClick={undo} disabled={!historyState.canUndo} title="Undo" aria-label="Undo">
+              <EditrimIcon name="undo" size={16} />
+            </GlassButtonGroupItem>
+            <GlassButtonGroupItem onClick={redo} disabled={!historyState.canRedo} title="Redo" aria-label="Redo">
+              <EditrimIcon name="redo" size={16} />
+            </GlassButtonGroupItem>
+          </GlassButtonGroup>
         </div>
         <div className="vd-right">
           <button className="vd-mobile-btn" onClick={() => { setLibraryOpen(v => !v); setInspectorOpen(false); }} title="Media library"><EditrimIcon name="film" size={15} /><span>Media</span></button>
           <button className="vd-mobile-btn" onClick={() => { setInspectorOpen(v => !v); setLibraryOpen(false); }} title="Properties"><EditrimIcon name="sliders" size={15} /><span>Edit</span></button>
-          <button className="vd-import-btn" onClick={() => fileInputRef.current?.click()}><EditrimIcon name="upload" size={15} /><span>Import</span></button>
-          <button className="vd-export-btn" onClick={exportVideo} disabled={!clipCount || exporting}>
-            <EditrimIcon name="download" size={15} /><span>{exporting ? 'Rendering' : 'Export'}</span>
-          </button>
+          <GlassButton
+            material="clear"
+            size="sm"
+            className="vd-import-btn"
+            onClick={() => fileInputRef.current?.click()}
+            icon={<EditrimIcon name="upload" size={15} />}
+            iconPosition="start"
+          >
+            <span>Import</span>
+          </GlassButton>
+          <GlassButton
+            material="tinted"
+            size="sm"
+            className="vd-export-btn bg-[#D8F55A] text-[#14130F]"
+            onClick={exportVideo}
+            disabled={!clipCount || exporting}
+            icon={<EditrimIcon name="download" size={15} />}
+            iconPosition="start"
+          >
+            <span>{exporting ? 'Rendering' : 'Export'}</span>
+          </GlassButton>
         </div>
       </header>
 
@@ -1219,15 +1246,29 @@ export default function VideoEditor() {
             <div className="vd-timeline-toolbar">
               <div className="vd-timeline-title"><strong>Timeline</strong></div>
               <div className="vd-timeline-tools">
-                <IconButton icon="scissors" label="Split at playhead (S)" onClick={splitSelected} disabled={!selectedClip} />
-                <IconButton icon="duplicate" label="Duplicate selected (Ctrl+D)" onClick={duplicateSelected} disabled={!selectedClip} />
-                <IconButton icon="trash" label="Delete selected (Del)" onClick={deleteSelected} disabled={!selectedClip} />
+                <GlassButtonGroup size="sm" material="clear" aria-label="Clip actions">
+                  <GlassButtonGroupItem onClick={splitSelected} disabled={!selectedClip} title="Split at playhead (S)" aria-label="Split at playhead (S)">
+                    <EditrimIcon name="scissors" size={15} />
+                  </GlassButtonGroupItem>
+                  <GlassButtonGroupItem onClick={duplicateSelected} disabled={!selectedClip} title="Duplicate selected (Ctrl+D)" aria-label="Duplicate selected (Ctrl+D)">
+                    <EditrimIcon name="duplicate" size={15} />
+                  </GlassButtonGroupItem>
+                  <GlassButtonGroupItem onClick={deleteSelected} disabled={!selectedClip} title="Delete selected (Del)" aria-label="Delete selected (Del)">
+                    <EditrimIcon name="trash" size={15} />
+                  </GlassButtonGroupItem>
+                </GlassButtonGroup>
                 <span className="vd-tool-sep" />
                 <IconButton icon="text" label="Add text overlay (T)" onClick={addText} />
                 <button className={`vd-snap ${snap ? 'is-active' : ''}`} onClick={() => setSnap(value => !value)} title="Snap clips and playhead"><EditrimIcon name="bolt" size={14} /> Snap</button>
                 <span className="vd-tool-sep" />
-                <IconButton icon="zoomOut" label="Zoom out timeline" onClick={() => setZoom(value => clamp(value - 12, 34, 180))} />
-                <IconButton icon="zoomIn" label="Zoom in timeline" onClick={() => setZoom(value => clamp(value + 12, 34, 180))} />
+                <GlassButtonGroup size="sm" material="clear" aria-label="Timeline zoom">
+                  <GlassButtonGroupItem onClick={() => setZoom(value => clamp(value - 12, 34, 180))} title="Zoom out timeline" aria-label="Zoom out timeline">
+                    <EditrimIcon name="zoomOut" size={15} />
+                  </GlassButtonGroupItem>
+                  <GlassButtonGroupItem onClick={() => setZoom(value => clamp(value + 12, 34, 180))} title="Zoom in timeline" aria-label="Zoom in timeline">
+                    <EditrimIcon name="zoomIn" size={15} />
+                  </GlassButtonGroupItem>
+                </GlassButtonGroup>
               </div>
             </div>
             <div className="vd-timeline-body">

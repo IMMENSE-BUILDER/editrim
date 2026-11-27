@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { GlassButton, GlassTabs } from '@/components/liquid-glass';
 import {
   AlignCenter, AlignHorizontalJustifyCenter, AlignHorizontalJustifyEnd, AlignHorizontalJustifyStart,
   AlignHorizontalSpaceBetween, AlignLeft, AlignRight, AlignVerticalJustifyCenter, AlignVerticalJustifyEnd,
@@ -65,10 +66,24 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
   return (
     <aside className="inspector">
       <div className="insp-tabs">
-        <button className={tab === 'design' ? 'active' : ''} onClick={() => setTab('design')}>Design</button>
-        <button className={tab === 'layers' ? 'active' : ''} onClick={() => setTab('layers')}>
-          Layers <span>{page.elements.length}</span>
-        </button>
+        <GlassTabs
+          aria-label="Inspector view"
+          size="sm"
+          value={tab}
+          onValueChange={setTab}
+          className="w-full [&_[role=radio]]:flex-1"
+          options={[
+            { value: 'design', label: 'Design' },
+            {
+              value: 'layers',
+              label: (
+                <span className="inline-flex items-center gap-1.5">
+                  Layers <span>{page.elements.length}</span>
+                </span>
+              ),
+            },
+          ]}
+        />
       </div>
 
       {tab === 'layers' ? (
@@ -173,9 +188,9 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                 <strong>{design.size.width} × {design.size.height}</strong>
                 <span className="insp-muted">{design.size.name}</span>
               </div>
-              <button className="btn btn-secondary btn-sm" onClick={onOpenResize}>
-                <EditrimIcon name="fit" size={13} /> Resize
-              </button>
+              <GlassButton material="clear" size="sm" onClick={onOpenResize} icon={<EditrimIcon name="fit" size={13} />} iconPosition="start">
+                Resize
+              </GlassButton>
             </div>
           </InspectorSection>
 
@@ -235,7 +250,9 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
               {imageBg && (
                 <>
                   <div className="insp-bg-photo"><PagePreview page={{ ...page, elements: [] }} size={design.size} /></div>
-                  <button className="btn btn-secondary btn-sm btn-block" onClick={onOpenBackground}>Edit background photo</button>
+                  <GlassButton material="clear" size="sm" className="w-full" onClick={onOpenBackground}>
+                    Edit background photo
+                  </GlassButton>
                 </>
               )}
             </div>

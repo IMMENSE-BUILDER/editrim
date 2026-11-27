@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { Loader2 } from 'lucide-react';
+import { GlassButton, GlassCard } from '@/components/liquid-glass';
 import { EditrimIcon } from './EditrimIcon';
 import type { TextElement } from '../lib/types';
 import {
@@ -229,14 +230,18 @@ export function InlineAiBar({
         className={`iai-bar ${pos?.below ? 'is-below' : ''}`}
         style={style}
       >
-        <button
+        <GlassButton
+          material="clear"
+          size="sm"
           className="iai-trigger"
           onClick={() => setExpanded(true)}
           aria-label="Open inline AI actions"
           title="AI text actions"
+          icon={<EditrimIcon name="spark" size={13} />}
+          iconPosition="start"
         >
-          <EditrimIcon name="spark" size={13} /> AI
-        </button>
+          AI
+        </GlassButton>
       </div>
     );
   }
@@ -247,7 +252,7 @@ export function InlineAiBar({
       className={`iai-bar ${pos?.below ? 'is-below' : ''}`}
       style={style}
     >
-      <div className="iai-pill" role="toolbar" aria-label="Inline AI text actions" aria-busy={Boolean(busy)}>
+      <GlassCard blur={6} tint={0.72} className="iai-pill rounded-full" role="toolbar" aria-label="Inline AI text actions" aria-busy={Boolean(busy)}>
         <span className="iai-brand"><EditrimIcon name="spark" size={12} /> AI</span>
         <span className="iai-divider" aria-hidden="true" />
 
@@ -336,7 +341,7 @@ export function InlineAiBar({
         >
           <EditrimIcon name="close" size={13} />
         </button>
-      </div>
+      </GlassCard>
 
       {result && (
         <div className={`iai-result ${flipClass}`.trim()} role="dialog" aria-label="AI suggestion" aria-live="polite">

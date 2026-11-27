@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { GlassActionButton, GlassButton, GlassTabs } from '@/components/liquid-glass';
+import { RangeSlider } from '@/components/liquid-glass/controls/RangeSlider';
+import { Switch } from '@/components/liquid-glass/controls/Switch';
 import { EditrimIcon, type EditrimIconName } from '../components/EditrimIcon';
 import { Modal } from '../components/Modal';
 import type { Design } from '../lib/types';
@@ -104,6 +107,7 @@ export function ExportModal({
       onClose();
     } catch (err) {
       toast('Export failed. If a photo is blocked, try another image.', 'error');
+      throw err;
     } finally {
       setBusy(false);
     }
@@ -124,10 +128,18 @@ export function ExportModal({
       footer={
         <>
           <span className="export-note">{summary}</span>
-          <button className="btn btn-cobalt" onClick={run} disabled={busy}>
-            {busy ? <Loader2 size={16} className="spin" /> : <EditrimIcon name="download" size={16} />}
-            {busy ? 'Exporting…' : 'Download'}
-          </button>
+          <GlassActionButton
+            material="tinted"
+            size="md"
+            className="bg-[#2440F0] text-white"
+            pendingLabel="Exporting"
+            successLabel="Downloaded"
+            resetAfter={1800}
+            onAction={run}
+            disabled={busy}
+          >
+            Download
+          </GlassActionButton>
         </>
       }
     >
@@ -145,29 +157,35 @@ export function ExportModal({
       <div className="export-options">
         <div className="export-option-row">
           <span>Pages</span>
-          <div className="segmented">
-            <button className={pages === 'current' ? 'active' : ''} onClick={() => setPages('current')}>This page</button>
-            <button className={pages === 'all' ? 'active' : ''} onClick={() => setPages('all')}>All {design.pages.length}</button>
-          </div>
+          <GlassTabs
+            aria-label="Pages to export"
+            size="sm"
+            value={pages}
+            onValueChange={setPages}
+            options={[
+              { value: 'current', label: 'This page' },
+              { value: 'all', label: `All ${design.pages.length}` },
+            ]}
+          />
         </div>
 
         {raster && (
           <div className="export-option-row">
             <span>Resolution</span>
-            <div className="segmented">
-              {[1, 2, 3].map(s => (
-                <button key={s} className={scale === s ? 'active' : ''} onClick={() => setScale(s)}>{s}×</button>
-              ))}
-            </div>
+            <GlassTabs
+              aria-label="Export resolution"
+              size="sm"
+              value={String(scale)}
+              onValueChange={v => setScale(Number(v))}
+              options={[1, 2, 3].map(s => ({ value: String(s), label: `${s}×` }))}
+            />
           </div>
         )}
 
         {(format === 'png' || format === 'webp') && (
           <div className="export-option-row">
             <span>Transparent background</span>
-            <button className={`switch ${transparent ? 'on' : ''}`} onClick={() => setTransparent(v => !v)} aria-pressed={transparent}>
-              <i />
-            </button>
+            <Switch size="sm" color="#2563eb" checked={transparent} onChange={setTransparent} label="" />
           </div>
         )}
 
@@ -175,15 +193,19 @@ export function ExportModal({
           <div className="export-option-row">
             <span>Quality</span>
             <div className="export-quality">
-              <input
-                type="range"
-                min={50}
-                max={100}
-                step={1}
-                value={Math.round(quality * 100)}
-                onChange={e => setQuality(Number(e.target.value) / 100)}
-                aria-label="Quality"
-              />
+              <div className="w-40">
+                <RangeSlider
+                  label=""
+                  showValue={false}
+                  size="sm"
+                  color="#2563eb"
+                  min={50}
+                  max={100}
+                  step={1}
+                  value={Math.round(quality * 100)}
+                  onChange={v => setQuality(v / 100)}
+                />
+              </div>
               <span className="export-quality-value">{Math.round(quality * 100)}%</span>
             </div>
           </div>
@@ -192,10 +214,16 @@ export function ExportModal({
         {format === 'pdf' && (
           <div className="export-option-row">
             <span>PDF mode</span>
-            <div className="segmented">
-              <button className={pdfMode === 'standard' ? 'active' : ''} onClick={() => setPdfMode('standard')}>Standard</button>
-              <button className={pdfMode === 'print' ? 'active' : ''} onClick={() => setPdfMode('print')}>Print</button>
-            </div>
+            <GlassTabs
+              aria-label="PDF mode"
+              size="sm"
+              value={pdfMode}
+              onValueChange={setPdfMode}
+              options={[
+                { value: 'standard', label: 'Standard' },
+                { value: 'print', label: 'Print' },
+              ]}
+            />
           </div>
         )}
 
@@ -203,32 +231,37 @@ export function ExportModal({
           <>
             <div className="export-option-row">
               <span>Bleed</span>
-              <div className="segmented">
-                {([0, 3, 5] as const).map(mm => (
-                  <button key={mm} className={bleedMm === mm ? 'active' : ''} onClick={() => pickBleed(mm)}>
-                    {mm === 0 ? 'None' : `${mm} mm`}
-                  </button>
-                ))}
-              </div>
+              <GlassTabs
+                aria-label="PDF bleed"
+                size="sm"
+                value={String(bleedMm)}
+                onValueChange={v => pickBleed(Number(v) as 0 | 3 | 5)}
+                options={([0, 3, 5] as const).map(mm => ({
+                  value: String(mm),
+                  label: mm === 0 ? 'None' : `${mm} mm`,
+                }))}
+              />
             </div>
             <div className="export-option-row">
               <span>Crop marks</span>
-              <button
-                className={`switch ${cropMarks ? 'on' : ''}`}
-                onClick={() => setCropMarks(v => !v)}
-                aria-pressed={cropMarks}
+              <Switch
+                size="sm"
+                color="#2563eb"
+                checked={cropMarks}
+                onChange={setCropMarks}
                 disabled={bleedMm === 0}
-              >
-                <i />
-              </button>
+                label=""
+              />
             </div>
             <div className="export-option-row">
               <span>DPI</span>
-              <div className="segmented">
-                {([150, 300] as const).map(d => (
-                  <button key={d} className={dpi === d ? 'active' : ''} onClick={() => setDpi(d)}>{d}</button>
-                ))}
-              </div>
+              <GlassTabs
+                aria-label="PDF DPI"
+                size="sm"
+                value={String(dpi)}
+                onValueChange={v => setDpi(Number(v) as 150 | 300)}
+                options={([150, 300] as const).map(d => ({ value: String(d), label: String(d) }))}
+              />
             </div>
           </>
         )}
@@ -295,10 +328,18 @@ export function ShareModal({
       width={560}
       footer={
         <>
-          <button className="btn btn-ghost" onClick={onClose}>Close</button>
-          <button className="btn btn-cobalt" onClick={copy} disabled={!state?.ok}>
-            {copied ? <EditrimIcon name="check" size={15} /> : <EditrimIcon name="copy" size={15} />} {copied ? 'Copied' : 'Copy link'}
-          </button>
+          <GlassButton material="clear" size="sm" onClick={onClose}>Close</GlassButton>
+          <GlassButton
+            material="tinted"
+            size="sm"
+            className="bg-[#2440F0] text-white"
+            onClick={copy}
+            disabled={!state?.ok}
+            icon={<EditrimIcon name={copied ? 'check' : 'copy'} size={15} />}
+            iconPosition="start"
+          >
+            {copied ? 'Copied' : 'Copy link'}
+          </GlassButton>
         </>
       }
     >
@@ -370,14 +411,16 @@ export function ResizeModal({
       subtitle="Content scales proportionally and stays centred. Nothing is cropped."
       footer={
         <>
-          <button className="btn btn-ghost" onClick={onClose}>Cancel</button>
-          <button
-            className="btn btn-cobalt"
+          <GlassButton material="clear" size="sm" onClick={onClose}>Cancel</GlassButton>
+          <GlassButton
+            material="tinted"
+            size="sm"
+            className="bg-[#2440F0] text-white"
             onClick={() => { onResize(w, h); onClose(); }}
             disabled={w === design.size.width && h === design.size.height}
           >
             Resize canvas
-          </button>
+          </GlassButton>
         </>
       }
     >

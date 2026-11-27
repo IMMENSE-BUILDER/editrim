@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { GlassButton, GlassCard } from '@/components/liquid-glass';
 import { EditrimIcon } from '../components/EditrimIcon';
 import { PagePreview } from '../components/PagePreview';
 import { getDesign } from '../lib/storage';
 import type { Design } from '../lib/types';
-import '../styles/present.css';
 
 const SYNC_KEY = (id: string) => `editrim.present.v1.${id}`;
 const SYNC_CHANNEL = (id: string) => `editrim-present-${id}`;
@@ -448,9 +448,17 @@ export default function Present() {
         </div>
       </div>
 
-      <button className="present-exit" onClick={() => navigate(`/editor/${id}`)} title="Exit presentation (Esc)">
-        <EditrimIcon name="close" size={16} /> Exit
-      </button>
+      <GlassButton
+        material="clear"
+        size="sm"
+        className="present-exit"
+        onClick={() => navigate(`/editor/${id}`)}
+        title="Exit presentation (Esc)"
+        icon={<EditrimIcon name="close" size={16} />}
+        iconPosition="start"
+      >
+        Exit
+      </GlassButton>
 
       <div className="present-progress" onClick={e => e.stopPropagation()}>
         {design.pages.map((p, i) => (
@@ -465,25 +473,31 @@ export default function Present() {
       </div>
 
       <div className="present-nav">
-        <button
-          className="present-arrow present-arrow-left"
+        <GlassButton
+          material="tinted"
+          size="md"
+          pull={false}
+          className="present-arrow present-arrow-left w-11 !px-0 bg-white/15 text-white"
           onClick={e => { e.stopPropagation(); commit(index - 1); }}
           disabled={index === 0}
           aria-label="Previous page"
         >
           <EditrimIcon name="chevronLeft" size={22} />
-        </button>
-        <button
-          className="present-arrow present-arrow-right"
+        </GlassButton>
+        <GlassButton
+          material="tinted"
+          size="md"
+          pull={false}
+          className="present-arrow present-arrow-right w-11 !px-0 bg-white/15 text-white"
           onClick={e => { e.stopPropagation(); commit(index + 1); }}
           disabled={index === total - 1}
           aria-label="Next page"
         >
           <EditrimIcon name="chevronRight" size={22} />
-        </button>
+        </GlassButton>
       </div>
 
-      <div className="present-bar" onClick={e => e.stopPropagation()}>
+      <GlassCard blur={8} tint={0.68} className="present-bar rounded-full" onClick={e => e.stopPropagation()}>
         <button
           onClick={() => setAuto(a => !a)}
           title={auto ? 'Pause autoplay (A)' : 'Autoplay (A)'}
@@ -517,7 +531,7 @@ export default function Present() {
             <EditrimIcon name="arrowLeft" size={15} />
           </button>
         </div>
-      </div>
+      </GlassCard>
 
       {controls && (
         <div className="present-hint">

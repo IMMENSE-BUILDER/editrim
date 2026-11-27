@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GlassButton, GlassCard } from '@/components/liquid-glass';
 
 import { Logo } from '../components/Brand';
 import { PagePreview } from '../components/PagePreview';
@@ -10,7 +11,6 @@ import { downloadBlob, safeFilename, uid } from '../lib/utils';
 import { renderPageCanvas, canvasToBlob } from '../lib/render';
 import { useToast } from '../components/Toast';
 import { EditrimIcon } from '../components/EditrimIcon';
-import '../styles/present.css';
 
 export default function SharedView() {
   const navigate = useNavigate();
@@ -105,20 +105,20 @@ export default function SharedView() {
           </div>
         </div>
         <div className="shared-actions">
-          <button className="btn btn-ghost btn-sm" onClick={download} disabled={downloading}>
-            <EditrimIcon name="download" size={14} /> {downloading ? 'Exporting…' : 'PNG'}
-          </button>
-          <button className="btn btn-secondary btn-sm" onClick={importCopy}>
-            <EditrimIcon name="pencil" size={14} /> Edit a copy
-          </button>
-          <Link to="/editor/new" className="btn btn-cobalt btn-sm">
-            Make your own <EditrimIcon name="arrowRight" size={14} />
-          </Link>
+          <GlassButton material="clear" size="sm" onClick={download} disabled={downloading} icon={<EditrimIcon name="download" size={14} />} iconPosition="start">
+            {downloading ? 'Exporting…' : 'PNG'}
+          </GlassButton>
+          <GlassButton material="clear" size="sm" onClick={importCopy} icon={<EditrimIcon name="pencil" size={14} />} iconPosition="start">
+            Edit a copy
+          </GlassButton>
+          <GlassButton asChild material="tinted" size="sm" className="bg-[#2440F0] text-white" icon={<EditrimIcon name="arrowRight" size={14} />}>
+            <Link to="/editor/new">Make your own</Link>
+          </GlassButton>
         </div>
       </header>
 
       <div className="shared-body">
-        <aside className="shared-info">
+        <GlassCard blur={6} tint={0.68} className="shared-info rounded-[24px]">
           <span className="eyebrow"><span className="dot" /> Shared with Editrim</span>
           <h1>{design.title}</h1>
           <div className="shared-meta">
@@ -128,8 +128,12 @@ export default function SharedView() {
           </div>
           <p>A read-only preview, packed entirely into the link. Edit a copy to make it yours — the original stays untouched.</p>
           <div className="shared-buttons">
-            <button className="btn btn-primary" onClick={importCopy}>Edit a copy <EditrimIcon name="external" size={14} /></button>
-            <button className="btn btn-secondary" onClick={() => setPage(p => (p + 1) % pages)}>Next page</button>
+            <GlassButton material="tinted" size="md" className="bg-[#14130F] text-[#F4F1EA]" onClick={importCopy} icon={<EditrimIcon name="external" size={14} />}>
+              Edit a copy
+            </GlassButton>
+            <GlassButton material="clear" size="md" onClick={() => setPage(p => (p + 1) % pages)}>
+              Next page
+            </GlassButton>
           </div>
           <div className="shared-facts">
             <span>You can</span>
@@ -139,7 +143,7 @@ export default function SharedView() {
               <li>Make an editable copy</li>
             </ul>
           </div>
-        </aside>
+        </GlassCard>
 
         <main className="shared-stage">
           <div className="shared-page-wrap" style={{ aspectRatio: aspect }}>

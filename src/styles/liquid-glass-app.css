@@ -1,0 +1,703 @@
+/* ==========================================================================
+   Editrim Liquid Glass — Full-App Optical Surface & Depth System
+   --------------------------------------------------------------------------
+   Pairs with bilalgursen/liquid-glass WebGL2 components:
+   - Rich ambient studio backdrops so clear WebGL2 lenses visibly refract
+     gradients, grids, and artwork behind them.
+   - Floating frosted glass chrome (headers, rails, panels, inspectors,
+     page strips, popovers, dialogs, and toast notifications).
+   - Overflow-safe containers around [data-glass-host] so gel pull & rim
+     shadows never clip.
+   ========================================================================== */
+
+:root {
+  --glass-shell-bg: rgba(251, 250, 246, 0.72);
+  --glass-shell-strong: rgba(251, 250, 246, 0.84);
+  --glass-shell-border: rgba(255, 255, 255, 0.65);
+  --glass-shell-edge: rgba(20, 19, 15, 0.08);
+  --glass-shell-shadow:
+    0 18px 46px rgba(20, 19, 15, 0.1),
+    0 2px 10px rgba(20, 19, 15, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    inset 0 -1px 0 rgba(20, 19, 15, 0.04);
+  --glass-shell-blur: blur(22px) saturate(145%);
+}
+
+:root[data-theme='dark'],
+:root[data-surface='neutral'][data-theme='dark'] {
+  --glass-shell-bg: rgba(22, 22, 28, 0.68);
+  --glass-shell-strong: rgba(20, 20, 26, 0.84);
+  --glass-shell-border: rgba(255, 255, 255, 0.16);
+  --glass-shell-edge: rgba(255, 255, 255, 0.08);
+  --glass-shell-shadow:
+    0 22px 54px rgba(0, 0, 0, 0.55),
+    0 3px 12px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  --glass-shell-blur: blur(26px) saturate(140%);
+}
+
+/* ---------------- Ambient refractive studio backdrops ---------------- */
+
+.landing,
+.gallery-page {
+  position: relative;
+  background-image:
+    radial-gradient(62% 45% at 14% 6%, rgba(36, 64, 240, 0.11), transparent 68%),
+    radial-gradient(48% 40% at 86% 12%, rgba(216, 245, 90, 0.18), transparent 66%),
+    radial-gradient(50% 42% at 72% 48%, rgba(255, 106, 70, 0.08), transparent 70%);
+}
+
+:root[data-theme='dark'] .landing,
+:root[data-theme='dark'] .gallery-page {
+  background-image:
+    radial-gradient(60% 45% at 16% 6%, rgba(91, 124, 255, 0.18), transparent 68%),
+    radial-gradient(45% 38% at 84% 12%, rgba(216, 245, 90, 0.09), transparent 66%),
+    radial-gradient(50% 42% at 68% 52%, rgba(255, 106, 70, 0.08), transparent 70%);
+}
+
+.home {
+  background-image:
+    radial-gradient(55% 45% at 22% 8%, rgba(37, 99, 235, 0.09), transparent 68%),
+    radial-gradient(44% 40% at 85% 14%, rgba(216, 245, 90, 0.13), transparent 68%),
+    radial-gradient(55% 45% at 58% 92%, rgba(168, 85, 247, 0.07), transparent 70%);
+}
+
+:root[data-theme='dark'] .home {
+  background: #09090d;
+  background-image:
+    radial-gradient(55% 45% at 24% 8%, rgba(59, 130, 246, 0.16), transparent 68%),
+    radial-gradient(44% 40% at 86% 14%, rgba(216, 245, 90, 0.07), transparent 68%),
+    radial-gradient(55% 45% at 58% 92%, rgba(139, 92, 246, 0.09), transparent 70%);
+}
+
+.editor {
+  background-image:
+    radial-gradient(48% 42% at 22% 18%, rgba(37, 99, 235, 0.08), transparent 68%),
+    radial-gradient(42% 38% at 80% 78%, rgba(216, 245, 90, 0.11), transparent 68%);
+}
+
+:root[data-theme='dark'] .editor {
+  background-image:
+    radial-gradient(48% 42% at 22% 18%, rgba(59, 130, 246, 0.14), transparent 68%),
+    radial-gradient(42% 38% at 80% 78%, rgba(216, 245, 90, 0.06), transparent 68%);
+}
+
+/* ---------------- Floating Site Header ---------------- */
+
+.site-header {
+  position: sticky;
+  top: 12px;
+  z-index: 60;
+  margin: 12px auto 0;
+  width: min(1280px, calc(100% - 24px));
+  border-radius: 20px;
+  border: 1px solid var(--glass-shell-border);
+  outline: 1px solid var(--glass-shell-edge);
+  background: var(--glass-shell-bg);
+  box-shadow: var(--glass-shell-shadow);
+  backdrop-filter: var(--glass-shell-blur);
+  -webkit-backdrop-filter: var(--glass-shell-blur);
+  overflow: visible;
+}
+
+.site-header-inner {
+  overflow: visible;
+}
+
+.site-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: visible;
+}
+
+.site-menu-wrap {
+  display: none;
+  margin-left: auto;
+}
+
+@media (max-width: 920px) {
+  .site-menu-wrap {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.site-mobile-nav {
+  border-radius: 0 0 20px 20px;
+  background: var(--glass-shell-strong);
+  backdrop-filter: var(--glass-shell-blur);
+  -webkit-backdrop-filter: var(--glass-shell-blur);
+}
+
+/* ---------------- Landing Refractive Optical Grid & Glass Surfaces ---------------- */
+
+.hero {
+  position: relative;
+  overflow-x: clip;
+}
+
+.hero-optical-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+  opacity: 0.42;
+}
+
+.hero-optical-cell {
+  border-top: 1px solid rgba(20, 19, 15, 0.06);
+  border-left: 1px solid rgba(20, 19, 15, 0.06);
+}
+
+:root[data-theme='dark'] .hero-optical-cell {
+  border-top-color: rgba(255, 255, 255, 0.06);
+  border-left-color: rgba(255, 255, 255, 0.06);
+}
+
+.hero-grid,
+.hero-stats {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-ctas,
+.final-cta-actions,
+.ai-section-actions {
+  overflow: visible;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 14px 5px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-shell-border);
+  background: var(--glass-shell-bg);
+  box-shadow: var(--glass-shell-shadow);
+  backdrop-filter: var(--glass-shell-blur);
+  -webkit-backdrop-filter: var(--glass-shell-blur);
+}
+
+.hero-float-chip[data-glass-host] {
+  position: absolute !important;
+  z-index: 5;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.hero-stats[data-glass-host] {
+  position: relative;
+  display: grid;
+  padding: 18px 24px;
+}
+
+.promise-item[data-glass-host],
+.bento-card[data-glass-host] {
+  position: relative;
+}
+
+.bento-card.bento-present[data-glass-host],
+.pricing-card[data-glass-host] {
+  color: #f4f1ea;
+}
+
+.bento-card.bento-present[data-glass-host] p,
+.pricing-card[data-glass-host] p {
+  color: rgba(244, 241, 234, 0.78);
+}
+
+.formats-stage {
+  overflow: visible;
+}
+
+/* ---------------- Templates Gallery ---------------- */
+
+.gallery-bar {
+  position: sticky;
+  top: 86px;
+  z-index: 45;
+  width: min(1280px, calc(100% - 24px));
+  margin: 0 auto 12px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-shell-border);
+  outline: 1px solid var(--glass-shell-edge);
+  background: var(--glass-shell-bg);
+  box-shadow: var(--glass-shell-shadow);
+  backdrop-filter: var(--glass-shell-blur);
+  -webkit-backdrop-filter: var(--glass-shell-blur);
+}
+
+.tpl-card {
+  border: 1px solid var(--glass-shell-border);
+  background: var(--glass-shell-bg);
+  box-shadow:
+    0 10px 28px rgba(20, 19, 15, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(14px) saturate(135%);
+  -webkit-backdrop-filter: blur(14px) saturate(135%);
+  transition: transform 180ms var(--ease-out), box-shadow 180ms var(--ease), border-color 180ms var(--ease);
+}
+
+.tpl-card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 18px 42px rgba(20, 19, 15, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+/* ---------------- Dashboard / Home ---------------- */
+
+.home-rail {
+  margin: 10px 0 10px 10px;
+  border-radius: 24px;
+  border: 1px solid var(--glass-shell-border) !important;
+  outline: 1px solid var(--glass-shell-edge);
+  background: var(--glass-shell-strong) !important;
+  box-shadow: var(--glass-shell-shadow);
+  backdrop-filter: var(--glass-shell-blur);
+  -webkit-backdrop-filter: var(--glass-shell-blur);
+  overflow: visible !important;
+}
+
+.rail-create-glass {
+  width: 64px !important;
+  height: auto !important;
+  padding: 7px 6px !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  border-radius: 16px !important;
+  font-size: 10px !important;
+  line-height: 1.1 !important;
+}
+
+.rail-create-glass .rail-create-icon {
+  width: 24px;
+  height: 24px;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.home.rail-collapsed .rail-create-glass {
+  width: 44px !important;
+  padding: 8px 4px !important;
+}
+
+.home.rail-collapsed .rail-create-glass .rail-label {
+  display: none;
+}
+
+:root:not([data-theme='dark']) .home-rail .rail-nav button,
+:root:not([data-theme='dark']) .home-rail .rail-nav a,
+:root:not([data-theme='dark']) .home-rail .rail-collapse,
+:root:not([data-theme='dark']) .home-rail .rail-bell,
+:root:not([data-theme='dark']) .home-rail .rail-theme-label {
+  color: var(--ink-soft);
+}
+
+:root:not([data-theme='dark']) .home-rail .rail-nav button.active {
+  color: var(--cobalt);
+  background: rgba(37, 99, 235, 0.09);
+}
+
+/* Workspace vertical GlassButtonGroup inside home-rail */
+.home-rail .rail-nav {
+  overflow: visible;
+  width: 100%;
+  margin-top: 6px;
+}
+
+.home-rail .rail-nav-group {
+  width: 100%;
+  padding: 4px !important;
+}
+
+.home-rail .rail-nav-item {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 46px !important;
+  padding: 6px 4px !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  border-radius: 14px !important;
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  line-height: 1.1 !important;
+}
+
+.home.rail-collapsed .home-rail .rail-nav-item {
+  min-height: 40px !important;
+  padding: 7px 2px !important;
+}
+
+.home-rail .rail-nav-item.is-active-glass {
+  background: rgba(36, 64, 240, 0.14) !important;
+  color: #2440f0 !important;
+}
+
+:root[data-theme='dark'] .home-rail .rail-nav-item.is-active-glass {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+}
+
+.home-help[data-glass-host] {
+  position: fixed !important;
+  right: 22px;
+  bottom: 22px;
+  z-index: 45;
+}
+
+:root[data-theme='dark'] .home-help[data-glass-host],
+:root[data-theme='dark'] .home-help[data-glass-host] .editrim-icon {
+  color: #f4f1ea !important;
+}
+
+/* Category strip: real clear WebGL2 GlassButtons refracting radial orbs */
+.home-categories {
+  padding: 18px 8px 28px !important;
+  overflow-x: auto;
+  overflow-y: visible !important;
+}
+
+.home-cat {
+  width: 82px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  overflow: visible;
+}
+
+.home-cat-tile {
+  position: relative;
+  isolation: isolate;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  overflow: visible;
+}
+
+.home-cat-orb {
+  position: absolute;
+  inset: 3px;
+  z-index: -1;
+  border-radius: 16px;
+  pointer-events: none;
+  opacity: 0.92;
+  transition: transform 220ms var(--ease-out), opacity 220ms var(--ease);
+}
+
+.home-cat:hover .home-cat-orb {
+  transform: scale(1.08);
+  opacity: 1;
+}
+
+.home-cat.tone-purple .home-cat-orb { background: radial-gradient(circle at 30% 28%, #c4b5fd, #6f4cff 65%, #4338ca); }
+.home-cat.tone-orange .home-cat-orb { background: radial-gradient(circle at 30% 28%, #fed7aa, #fb923c 62%, #ea580c); }
+.home-cat.tone-coral .home-cat-orb { background: radial-gradient(circle at 30% 28%, #fecdd3, #fb7185 62%, #e11d48); }
+.home-cat.tone-pink .home-cat-orb { background: radial-gradient(circle at 30% 28%, #fbcfe8, #f472b6 62%, #db2777); }
+.home-cat.tone-violet .home-cat-orb { background: radial-gradient(circle at 30% 28%, #ddd6fe, #a78bfa 62%, #7c3aed); }
+.home-cat.tone-teal .home-cat-orb { background: radial-gradient(circle at 30% 28%, #99f6e4, #2dd4bf 62%, #0d9488); }
+.home-cat.tone-green .home-cat-orb { background: radial-gradient(circle at 30% 28%, #bbf7d0, #4ade80 62%, #16a34a); }
+.home-cat.tone-blue .home-cat-orb { background: radial-gradient(circle at 30% 28%, #bfdbfe, #60a5fa 62%, #2563eb); }
+.home-cat.tone-sky .home-cat-orb { background: radial-gradient(circle at 30% 28%, #bae6fd, #38bdf8 62%, #0284c7); }
+.home-cat.tone-magic .home-cat-orb {
+  background:
+    radial-gradient(circle at 25% 25%, #67e8f9, transparent 58%),
+    radial-gradient(circle at 75% 75%, #c084fc, #4f46e5 70%);
+}
+
+.home-cat-glass {
+  color: #ffffff !important;
+  box-shadow: 0 8px 20px rgba(20, 19, 15, 0.14);
+}
+
+.home-cat.is-outline .home-cat-glass {
+  color: var(--ink) !important;
+}
+
+:root[data-theme='dark'] .home-cat.is-outline .home-cat-glass {
+  color: #f4f1ea !important;
+}
+
+.home-cat-label {
+  cursor: pointer;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+:root[data-theme='dark'] .home-cat-label {
+  color: rgba(244, 241, 234, 0.85);
+}
+
+/* Editor & Photo vertical GlassButtonGroup rails */
+.ed-rail {
+  width: 74px !important;
+  overflow: visible !important;
+  padding: 6px !important;
+}
+
+.ed-rail .ed-rail-group,
+.ph-rail .ph-rail-group {
+  width: 100%;
+  padding: 4px !important;
+}
+
+.ed-rail .ed-rail-item,
+.ph-rail .ph-rail-btn {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 46px !important;
+  padding: 6px 2px !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  border-radius: 14px !important;
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  line-height: 1.1 !important;
+}
+
+.photo-editor .ph-rail-btn,
+.photo-editor .ph-header [data-glass-host] button:not(.ph-export-btn) {
+  color: rgba(244, 241, 234, 0.92) !important;
+}
+
+.photo-editor .ph-rail-btn:disabled,
+.photo-editor .ph-header [data-glass-host] button:disabled {
+  color: rgba(244, 241, 234, 0.85) !important;
+  opacity: 0.55 !important;
+}
+
+.photo-editor .ph-rail-btn.is-active {
+  background: rgba(216, 245, 90, 0.18) !important;
+  color: var(--ph-lime) !important;
+}
+
+.ed-rail .ed-rail-item.is-active-glass {
+  background: rgba(36, 64, 240, 0.14) !important;
+  color: #2440f0 !important;
+}
+
+:root[data-theme='dark'] .ed-rail .ed-rail-item.is-active-glass {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+}
+
+.ed-rail .ed-rail-help-btn {
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  color: var(--muted);
+}
+
+.rail-theme {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 4px;
+  width: 100%;
+  background: transparent;
+  border: none;
+}
+
+.rail-popover[data-glass-host] {
+  position: fixed !important;
+  z-index: 90;
+  border-radius: 22px;
+}
+
+.home-search-wrap {
+  border: 1px solid var(--glass-shell-border) !important;
+  outline: 1px solid var(--glass-shell-edge);
+  background: var(--glass-shell-strong) !important;
+  box-shadow: var(--glass-shell-shadow) !important;
+  backdrop-filter: var(--glass-shell-blur);
+  -webkit-backdrop-filter: var(--glass-shell-blur);
+}
+
+.home-design-card,
+.home-project-card,
+.home-library-card {
+  border: 1px solid var(--glass-shell-border);
+  background: var(--glass-shell-bg);
+  box-shadow:
+    0 10px 26px rgba(20, 19, 15, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(14px) saturate(135%);
+  -webkit-backdrop-filter: blur(14px) saturate(135%);
+}
+
+/* ---------------- Editor Floating Glass Chrome ---------------- */
+
+.editor {
+  padding: 8px;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.editor .ed-topbar {
+  border-radius: 18px;
+  border: 1px solid var(--glass-shell-border);
+  outline: 1px solid var(--glass-shell-edge);
+  background: var(--glass-shell-strong);
+  box-shadow: var(--glass-shell-shadow);
+  backdrop-filter: var(--glass-shell-blur);
+  -webkit-backdrop-filter: var(--glass-shell-blur);
+  overflow: visible;
+}
+
+.editor .ed-top-center,
+.editor .ed-top-right {
+  gap: 8px;
+  overflow: visible;
+}
+
+.editor .ed-body {
+  gap: 8px;
+  min-height: 0;
+}
+
+.editor .ed-rail,
+.editor .left-panel,
+.editor .inspector {
+  border-radius: 20px;
+  border: 1px solid var(--glass-shell-border);
+  outline: 1px solid var(--glass-shell-edge);
+  background: var(--glass-shell-strong);
+  box-shadow: var(--glass-shell-shadow);
+  backdrop-filter: var(--glass-shell-blur);
+  -webkit-backdrop-filter: var(--glass-shell-blur);
+}
+
+.editor .ed-canvas-area {
+  border-radius: 20px;
+  overflow: visible;
+}
+
+.editor .page-strip {
+  border-radius: 18px;
+  margin: 0 8px 6px;
+  border: 1px solid var(--glass-shell-border);
+  outline: 1px solid var(--glass-shell-edge);
+  background: var(--glass-shell-strong);
+  box-shadow: var(--glass-shell-shadow);
+  backdrop-filter: var(--glass-shell-blur);
+  -webkit-backdrop-filter: var(--glass-shell-blur);
+  overflow: visible;
+}
+
+.cv-controls[data-glass-host] {
+  position: absolute !important;
+  left: 16px !important;
+  right: auto !important;
+  bottom: 14px !important;
+  width: fit-content !important;
+  height: auto !important;
+  z-index: 20;
+  padding: 4px !important;
+}
+
+.cv-controls .cv-zoom-val {
+  min-width: 52px;
+  font-variant-numeric: tabular-nums;
+}
+
+:root[data-surface='neutral'] .ai-chip-row button.active {
+  background: var(--cobalt);
+  border-color: var(--cobalt);
+  color: #fff;
+}
+
+/* ---------------- Modals, Drawers, Popups & Toasts ---------------- */
+
+.modal-overlay {
+  backdrop-filter: blur(12px) saturate(125%);
+  -webkit-backdrop-filter: blur(12px) saturate(125%);
+}
+
+.modal,
+.cmd-panel,
+.history-drawer,
+.cdm-shell,
+.ctx-menu,
+.toast {
+  border: 1px solid var(--glass-shell-border) !important;
+  outline: 1px solid var(--glass-shell-edge);
+  background: var(--glass-shell-strong) !important;
+  box-shadow: var(--glass-shell-shadow) !important;
+  backdrop-filter: var(--glass-shell-blur);
+  -webkit-backdrop-filter: var(--glass-shell-blur);
+}
+
+.iai-bar[data-glass-host],
+.iai-pill-glass {
+  overflow: visible;
+}
+
+/* ---------------- Videos, Present & SharedView ---------------- */
+
+.videos-header,
+.shared-top {
+  margin: 12px auto 0;
+  width: min(1320px, calc(100% - 24px));
+  border-radius: 20px;
+  border: 1px solid var(--glass-shell-border);
+  outline: 1px solid var(--glass-shell-edge);
+  background: var(--glass-shell-strong);
+  box-shadow: var(--glass-shell-shadow);
+  backdrop-filter: var(--glass-shell-blur);
+  -webkit-backdrop-filter: var(--glass-shell-blur);
+  overflow: visible;
+}
+
+.video-card {
+  border: 1px solid var(--glass-shell-border);
+  background: var(--glass-shell-bg);
+  box-shadow: var(--glass-shell-shadow);
+  backdrop-filter: blur(16px) saturate(135%);
+  -webkit-backdrop-filter: blur(16px) saturate(135%);
+}
+
+.present-bar[data-glass-host] {
+  position: fixed !important;
+  overflow: visible;
+}
+
+/* ---------------- Ensure [data-glass-host] never fights unlayered resets ---------------- */
+
+[data-glass-host] {
+  overflow: visible;
+}
+
+.inspector .slider-field,
+.ph-range,
+.vd-range {
+  overflow: visible;
+}
+
+.inspector .slider-field .slider-head,
+.ph-range .ph-range-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+/* Make Three.js RangeSlider fit snugly in narrow 272px–322px inspectors */
+.insp-glass-slider,
+.ph-glass-slider,
+.vd-glass-slider {
+  width: 100%;
+  min-height: 28px;
+  display: block;
+}

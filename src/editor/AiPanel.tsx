@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
+import { GlassActionButton, GlassButton, GlassTabs } from '@/components/liquid-glass';
 import type { BrandKit, Page } from '../lib/types';
 import type { EditorStore } from './useEditor';
 import { useToast } from '../components/Toast';
@@ -227,12 +228,14 @@ export function AiPanel({
       }
       setDesignPage(page);
       setDesignMeta({ name: page.name, elapsed: res.elapsedMs, requestId: res.requestId });
+      return true;
     } catch (err) {
       const e = err instanceof AiRequestError ? err : new AiRequestError({
         message: err instanceof Error ? err.message : 'Design generation failed.',
         stage: 'unknown', code: 'DESIGN_FAILED',
       });
       setDesignError(e);
+      return false;
     } finally {
       setDesignBusy(false);
     }
@@ -318,12 +321,14 @@ export function AiPanel({
         });
         setCopy(res.text);
       }
+      return true;
     } catch (err) {
       const e = err instanceof AiRequestError ? err : new AiRequestError({
         message: err instanceof Error ? err.message : 'Copy generation failed.',
         stage: 'unknown', code: 'WRITE_FAILED', action,
       });
       setCopyError(e);
+      return false;
     } finally {
       setCopyBusy(false);
     }
@@ -387,12 +392,14 @@ export function AiPanel({
         image: await renderPageSnapshot(store),
       });
       setCritique(res.critique);
+      return true;
     } catch (err) {
       const e = err instanceof AiRequestError ? err : new AiRequestError({
         message: err instanceof Error ? err.message : 'Design review failed.',
         stage: 'unknown', code: 'CRITIQUE_FAILED',
       });
       setCritiqueError(e);
+      return false;
     } finally {
       setCritiqueBusy(false);
     }
@@ -435,12 +442,14 @@ export function AiPanel({
       }
       setEditPlan(plan);
       setEditPreview(applyEditPlan(store.page, plan));
+      return true;
     } catch (err) {
       const e = err instanceof AiRequestError ? err : new AiRequestError({
         message: err instanceof Error ? err.message : 'The edit could not be planned.',
         stage: 'unknown', code: 'EDIT_FAILED', action: 'edit',
       });
       setEditError(e);
+      return false;
     } finally {
       setEditBusy(false);
     }
@@ -498,20 +507,23 @@ export function AiPanel({
         </div>
       )}
 
-      <div className="ai-tabs" role="tablist" aria-label="AI Studio mode">
-        {modeTabs.map(t => {
-          return (
-            <button
-              key={t.id}
-              role="tab"
-              aria-selected={mode === t.id}
-              className={mode === t.id ? 'active' : ''}
-              onClick={() => setMode(t.id)}
-            >
-              <EditrimIcon name={t.icon} size={13} /> {t.label}
-            </button>
-          );
-        })}
+      <div className="ai-tabs">
+        <GlassTabs
+          aria-label="AI Studio mode"
+          size="sm"
+          value={mode}
+          onValueChange={setMode}
+          className="w-full [&_[role=radio]]:flex-1"
+          options={modeTabs.map(t => ({
+            value: t.id,
+            label: (
+              <span className="inline-flex items-center gap-1">
+                <EditrimIcon name={t.icon} size={13} />
+                {t.label}
+              </span>
+            ),
+          }))}
+        />
       </div>
 
       <div className="lp-scroll ai-scroll">
@@ -553,10 +565,19 @@ export function AiPanel({
               </div>
             </div>
 
-            <button className="btn btn-cobalt ai-run" onClick={generateDesign} disabled={designBusy || !designPrompt.trim()}>
-              {designBusy ? <Loader2 size={15} className="spin" /> : <EditrimIcon name="spark" size={15} />}
-              {designBusy ? 'Designing…' : designPage ? 'Regenerate draft' : 'Generate design'}
-            </button>
+            <GlassActionButton
+              material="tinted"
+              size="md"
+              className="ai-run w-full justify-between bg-[#2440F0] text-white"
+              pendingLabel="Designing"
+              successLabel="Draft ready"
+              resetAfter={2000}
+              onAction={async () => { if (!(await generateDesign())) throw new Error('Design aborted'); }}
+              onActionError={() => {}}
+              disabled={designBusy || !designPrompt.trim()}
+            >
+              {designPage ? 'Regenerate draft' : 'Generate design'}
+            </GlassActionButton>
 
               {designBusy && (
               <div className="ai-loading">
@@ -657,10 +678,19 @@ export function AiPanel({
               ))}
             </div>
 
-            <button className="btn btn-cobalt ai-run" onClick={generateEditPlan} disabled={editBusy || !editInstruction.trim() || !store.page.elements.length}>
-              {editBusy ? <Loader2 size={15} className="spin" /> : <EditrimIcon name="magic" size={15} />}
-              {editBusy ? 'Planning changes…' : editPlan ? 'Plan another change' : 'Plan this edit'}
-            </button>
+            <GlassActionButton
+              material="tinted"
+              size="md"
+              className="ai-run w-full justify-between bg-[#2440F0] text-white"
+              pendingLabel="Planning"
+              successLabel="Plan ready"
+              resetAfter={2000}
+              onAction={async () => { if (!(await generateEditPlan())) throw new Error('Plan aborted'); }}
+              onActionError={() => {}}
+              disabled={editBusy || !editInstruction.trim() || !store.page.elements.length}
+            >
+              {editPlan ? 'Plan another change' : 'Plan this edit'}
+            </GlassActionButton>
 
             {!store.page.elements.length && (
               <p className="ai-inline-note">This page is empty. Add elements or use AI Design first.</p>
@@ -779,10 +809,19 @@ export function AiPanel({
               )}
             </div>
 
-            <button className="btn btn-cobalt ai-run" onClick={() => generateCopy('write')} disabled={copyBusy || (writeMode !== 'compose' && !selectedText)}>
-              {copyBusy && copyAction === 'write' ? <Loader2 size={15} className="spin" /> : <EditrimIcon name="spark" size={15} />}
-              {copyBusy && copyAction === 'write' ? 'Writing…' : writeMode === 'compose' ? 'Write copy' : `${writeMode.charAt(0).toUpperCase()}${writeMode.slice(1)} selection`}
-            </button>
+            <GlassActionButton
+              material="tinted"
+              size="md"
+              className="ai-run w-full justify-between bg-[#2440F0] text-white"
+              pendingLabel="Writing"
+              successLabel="Done"
+              resetAfter={2000}
+              onAction={async () => { if (!(await generateCopy('write'))) throw new Error('Write aborted'); }}
+              onActionError={() => {}}
+              disabled={copyBusy || (writeMode !== 'compose' && !selectedText)}
+            >
+              {writeMode === 'compose' ? 'Write copy' : `${writeMode.charAt(0).toUpperCase()}${writeMode.slice(1)} selection`}
+            </GlassActionButton>
 
             {copyError && copyAction === 'write' && <AiErrorCard error={copyError} onRetry={() => generateCopy('write')} />}
 
@@ -835,10 +874,19 @@ export function AiPanel({
             </div>
             <p className="ai-privacy-note">Visual review sends a temporary snapshot of this page for inspection. Nothing is stored.</p>
 
-            <button className="btn btn-cobalt ai-run" onClick={generateCritique} disabled={critiqueBusy || !store.page.elements.length}>
-              {critiqueBusy ? <Loader2 size={15} className="spin" /> : <EditrimIcon name="scan" size={15} />}
-              {critiqueBusy ? 'Reading the page…' : critique ? 'Review again' : 'Review this page'}
-            </button>
+            <GlassActionButton
+              material="tinted"
+              size="md"
+              className="ai-run w-full justify-between bg-[#2440F0] text-white"
+              pendingLabel="Reviewing"
+              successLabel="Reviewed"
+              resetAfter={2000}
+              onAction={async () => { if (!(await generateCritique())) throw new Error('Review aborted'); }}
+              onActionError={() => {}}
+              disabled={critiqueBusy || !store.page.elements.length}
+            >
+              {critique ? 'Review again' : 'Review this page'}
+            </GlassActionButton>
 
             {critiqueError && <AiErrorCard error={critiqueError} onRetry={generateCritique} />}
 

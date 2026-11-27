@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { GlassButton, GlassCard } from '@/components/liquid-glass';
 
 import { SiteHeader, SiteFooter } from '../components/SiteChrome';
 import { TemplateCard } from '../components/TemplateCard';
@@ -85,30 +86,42 @@ export default function Templates() {
             ))}
           </div>
         ) : (
-          <div className="gallery-empty">
+          <GlassCard blur={6} tint={0.66} className="gallery-empty rounded-[24px]">
             <h3>Nothing here yet.</h3>
             <p>Try another category or a different search. Or start with a blank canvas.</p>
-            <button className="btn btn-primary" onClick={() => { setQuery(''); setCategory('All'); }} style={{ marginTop: 18 }}>
+            <GlassButton
+              material="tinted"
+              size="md"
+              className="bg-[#2440F0] text-white"
+              onClick={() => { setQuery(''); setCategory('All'); }}
+              style={{ marginTop: 18 }}
+            >
               Clear filters
-            </button>
-          </div>
+            </GlassButton>
+          </GlassCard>
         )}
       </div>
 
-      <div className="gallery-cta">
+      <GlassCard blur={6} tint={0.68} className="gallery-cta rounded-[26px]">
         <div>
           <h2>Can’t find the right starting point?</h2>
           <p>Open a blank canvas at any size, or let us pick a template at random.</p>
         </div>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <button className="btn btn-secondary" onClick={surprise}>
-            <EditrimIcon name="shuffle" size={15} /> Surprise me
-          </button>
-          <Link to="/editor/new" className="btn btn-primary">
-            Start from blank <EditrimIcon name="arrowUpRight" size={16} />
-          </Link>
+          <GlassButton material="clear" size="md" onClick={surprise} icon={<EditrimIcon name="shuffle" size={15} />} iconPosition="start">
+            Surprise me
+          </GlassButton>
+          <GlassButton
+            asChild
+            material="tinted"
+            size="md"
+            className="bg-[#2440F0] text-white dark:bg-[#5B7CFF]"
+            icon={<EditrimIcon name="arrowUpRight" size={16} />}
+          >
+            <Link to="/editor/new">Start from blank</Link>
+          </GlassButton>
         </div>
-      </div>
+      </GlassCard>
 
       <SiteFooter />
     </div>
