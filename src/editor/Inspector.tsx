@@ -21,7 +21,11 @@ import { PALETTES } from '../lib/palettes';
 import { addAsset } from '../lib/storage';
 import { canvasToBlob, renderPageCanvas } from '../lib/render';
 import { compressImage } from '../lib/utils';
-import { createChart, createConnector } from './factory';
+import { createChart, createConnector, createText } from './factory';
+import { uid } from '../lib/utils';
+import { runInpaint, runMagicGrab, runRemoveBackground } from '../lib/magic/client';
+import { recognizeImageText } from '../lib/magic/ocr';
+import { MagicBrushModal, type MagicBrushMode } from '../components/MagicBrushModal';
 import { useToast } from '../components/Toast';
 import { PagePreview } from '../components/PagePreview';
 import { EditrimIcon } from '../components/EditrimIcon';
@@ -54,6 +58,9 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
   const [alignTarget, setAlignTarget] = useState<'page' | 'selection'>('page');
   const [csvDraft, setCsvDraft] = useState('');
   const [gridCellIndex, setGridCellIndex] = useState<number | null>(null);
+  const [magicBusy, setMagicBusy] = useState<string | null>(null);
+  const [magicBrush, setMagicBrush] = useState<MagicBrushMode | null>(null);
+  const [bgTolerance, setBgTolerance] = useState(36);
   const { toast } = useToast();
   const replaceImageRef = useRef<HTMLInputElement>(null);
   const gridFileRef = useRef<HTMLInputElement>(null);
@@ -609,6 +616,101 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
             </InspectorSection>
           )}
 
+          {image && (
+            <InspectorSection title="Magic">
+              <SliderField
+                label="BG tolerance"
+                value={bgTolerance}
+                min={10}
+                max={80}
+                step={2}
+                onChange={setBgTolerance}
+              />
+              <div className="magic-btn-grid">
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  disabled={Boolean(magicBusy)}
+                  onClick={async () => {
+                    setMagicBusy('bg');
+                    try {
+                      const nextSrc = await runRemoveBackground(image.src, { tolerance: bgTolerance });
+                      patch({ src: nextSrc } as Partial<ImageElement>);
+                      toast('Background removed locally');
+                    } catch {
+                      toast('Background removal failed', 'error');
+                    } finally {
+                      setMagicBusy(null);
+                    }
+                  }}
+                >
+                  <EditrimIcon name="magic" size={13} />
+                  {magicBusy === 'bg' ? 'Removing…' : 'Remove background'}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  disabled={Boolean(magicBusy)}
+                  onClick={() => setMagicBrush('erase')}
+                >
+                  <EditrimIcon name="paintbrush" size={13} /> Magic Eraser
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  disabled={Boolean(magicBusy)}
+                  onClick={() => setMagicBrush('grab')}
+                >
+                  <EditrimIcon name="layers" size={13} /> Magic Grab
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary btn-sm"
+                  disabled={Boolean(magicBusy)}
+                  onClick={async () => {
+                    setMagicBusy('ocr');
+                    try {
+                      const res = await recognizeImageText(image.src);
+                      if (!res.lines.length) {
+                        toast('No readable text detected in this image');
+                        return;
+                      }
+                      const created: TextElement[] = res.lines.map(line => {
+                        const base = createText('body', page, design.size, brand);
+                        const rx = line.bbox.x0 / Math.max(1, res.width);
+                        const ry = line.bbox.y0 / Math.max(1, res.height);
+                        const rw = Math.max(40 / Math.max(1, image.w), (line.bbox.x1 - line.bbox.x0) / Math.max(1, res.width));
+                        const rh = Math.max(20 / Math.max(1, image.h), (line.bbox.y1 - line.bbox.y0) / Math.max(1, res.height));
+                        return {
+                          ...base,
+                          id: uid('tx'),
+                          name: line.text.slice(0, 24),
+                          text: line.text,
+                          x: Math.round(image.x + rx * image.w),
+                          y: Math.round(image.y + ry * image.h),
+                          w: Math.max(48, Math.round(rw * image.w * 1.12)),
+                          h: Math.max(24, Math.round(rh * image.h * 1.15)),
+                          fontSize: Math.max(12, Math.round(rh * image.h * 0.78)),
+                          align: 'left',
+                          color: '#14130F',
+                        };
+                      });
+                      store.addElements(created);
+                      toast(`Extracted ${created.length} text ${created.length === 1 ? 'layer' : 'layers'} locally`);
+                    } catch {
+                      toast('Local OCR failed on this image', 'error');
+                    } finally {
+                      setMagicBusy(null);
+                    }
+                  }}
+                >
+                  <EditrimIcon name="text" size={13} />
+                  {magicBusy === 'ocr' ? 'Reading text…' : 'Grab Text (OCR)'}
+                </button>
+              </div>
+            </InspectorSection>
+          )}
+
           {icon && (
             <InspectorSection title="Icon">
               <ColorField value={icon.color} onChange={c => patch({ color: c } as Partial<El>)} />
@@ -1096,6 +1198,40 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
           </div>
         </div>
       )}
+
+      <MagicBrushModal
+        open={Boolean(magicBrush && image)}
+        onClose={() => setMagicBrush(null)}
+        imageSrc={image?.src ?? ''}
+        mode={magicBrush ?? 'erase'}
+        onApply={async (mask, mw, mh) => {
+          if (!image) return;
+          if (magicBrush === 'erase') {
+            const nextSrc = await runInpaint(image.src, mask, mw, mh);
+            patch({ src: nextSrc } as Partial<ImageElement>);
+            toast('Area erased locally');
+          } else if (magicBrush === 'grab') {
+            const grabbed = await runMagicGrab(image.src, mask, mw, mh);
+            patch({ src: grabbed.backgroundUrl } as Partial<ImageElement>);
+            const fgEl: ImageElement = {
+              ...image,
+              id: uid('im'),
+              name: `${image.name} · Subject`,
+              src: grabbed.foregroundUrl,
+              x: Math.round(image.x + grabbed.bboxRatio.x * image.w),
+              y: Math.round(image.y + grabbed.bboxRatio.y * image.h),
+              w: Math.max(24, Math.round(grabbed.bboxRatio.w * image.w)),
+              h: Math.max(24, Math.round(grabbed.bboxRatio.h * image.h)),
+              offsetX: 0,
+              offsetY: 0,
+              zoom: 1,
+              mask: 'none',
+            };
+            store.addElements([fgEl]);
+            toast('Subject lifted into its own layer');
+          }
+        }}
+      />
     </aside>
   );
 }

@@ -17,6 +17,9 @@ import { useToast } from '../components/Toast';
 import { useSurface } from '../hooks/useSurface';
 import { clamp, downloadBlob, safeFilename } from '../lib/utils';
 import { FONTS } from '../lib/fonts';
+import { runInpaint, runRemoveBackground } from '../lib/magic/client';
+import { recognizeImageText } from '../lib/magic/ocr';
+import { MagicBrushModal } from '../components/MagicBrushModal';
 import {
   computeHistogram,
   exportPhotoBlob,
@@ -45,7 +48,7 @@ import {
   type PhotoTextLayer,
 } from '../lib/photo/types';
 
-type Mode = 'adjust' | 'crop' | 'filters' | 'text';
+type Mode = 'adjust' | 'crop' | 'filters' | 'text' | 'magic';
 
 const PREVIEW_MAX = 1400;
 const DRAFT_MAX = 880;
@@ -55,6 +58,7 @@ const MODES: { id: Mode; label: string; icon: EditrimIconName }[] = [
   { id: 'crop', label: 'Crop', icon: 'crop' },
   { id: 'filters', label: 'Filters', icon: 'palette' },
   { id: 'text', label: 'Text', icon: 'text' },
+  { id: 'magic', label: 'Magic', icon: 'magic' },
 ];
 
 const ADJUSTMENT_GROUPS: {
@@ -245,6 +249,9 @@ export default function PhotoEditor() {
   const [exportQuality, setExportQuality] = useState(0.92);
   const [exportScale, setExportScale] = useState(1);
   const [exporting, setExporting] = useState(false);
+  const [magicBusy, setMagicBusy] = useState<string | null>(null);
+  const [magicEraseOpen, setMagicEraseOpen] = useState(false);
+  const [magicTol, setMagicTol] = useState(36);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const stageRef = useRef<HTMLElement | null>(null);
@@ -451,6 +458,28 @@ export default function PhotoEditor() {
       setLoading(false);
     }
   }, [syncHistory, toast]);
+
+  const replaceImageFromDataUrl = useCallback(async (dataUrl: string) => {
+    const blob = await (await fetch(dataUrl)).blob();
+    const url = URL.createObjectURL(blob);
+    const nextImg = new Image();
+    nextImg.src = url;
+    await nextImg.decode();
+    const file = new File([blob], `${name || 'photo'}.png`, { type: 'image/png' });
+    await savePhotoSource(file).catch(() => undefined);
+    if (sourceUrlRef.current) URL.revokeObjectURL(sourceUrlRef.current);
+    sourceUrlRef.current = url;
+    setImage(nextImg);
+    setSaveState('saved');
+    savePhotoSession({
+      name,
+      sourceKey: 'current',
+      width: nextImg.naturalWidth,
+      height: nextImg.naturalHeight,
+      settings: settingsRef.current,
+      updatedAt: Date.now(),
+    });
+  }, [name]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -1175,6 +1204,105 @@ export default function PhotoEditor() {
                 )}
               </>
             )}
+
+            {image && mode === 'magic' && (
+              <>
+                <section className="ph-section">
+                  <h3 className="ph-section-title">Cutout</h3>
+                  <div className="ph-range">
+                    <span className="ph-range-head"><span>Edge tolerance</span><b>{magicTol}</b></span>
+                    <div className="ph-glass-slider">
+                      <RangeSlider
+                        label=""
+                        showValue={false}
+                        size="sm"
+                        theme="dark"
+                        color="#D8F55A"
+                        min={10}
+                        max={80}
+                        step={2}
+                        value={magicTol}
+                        onChange={setMagicTol}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    className="ph-primary-btn"
+                    style={{ width: '100%', marginTop: 10 }}
+                    disabled={Boolean(magicBusy)}
+                    onClick={async () => {
+                      const src = sourceUrlRef.current;
+                      if (!src) return;
+                      setMagicBusy('bg');
+                      try {
+                        const resUrl = await runRemoveBackground(src, { tolerance: magicTol });
+                        await replaceImageFromDataUrl(resUrl);
+                        toast('Background removed locally');
+                      } catch {
+                        toast('Background removal failed', 'error');
+                      } finally {
+                        setMagicBusy(null);
+                      }
+                    }}
+                  >
+                    <EditrimIcon name="magic" size={15} />
+                    <span>{magicBusy === 'bg' ? 'Removing background…' : 'Remove background'}</span>
+                  </button>
+                </section>
+
+                <section className="ph-section">
+                  <h3 className="ph-section-title">Retouch &amp; Text</h3>
+                  <div className="ph-btn-row ph-btn-row-spaced">
+                    <button
+                      className="ph-tool-btn"
+                      disabled={Boolean(magicBusy)}
+                      onClick={() => setMagicEraseOpen(true)}
+                    >
+                      <EditrimIcon name="paintbrush" size={15} />
+                      <span>Magic Eraser</span>
+                    </button>
+                    <button
+                      className="ph-tool-btn"
+                      disabled={Boolean(magicBusy)}
+                      onClick={async () => {
+                        const src = sourceUrlRef.current;
+                        if (!src) return;
+                        setMagicBusy('ocr');
+                        try {
+                          const res = await recognizeImageText(src);
+                          if (!res.lines.length) {
+                            toast('No readable text detected');
+                            return;
+                          }
+                          const added = res.lines.map(line => {
+                            const layer = createTextLayer(line.text);
+                            layer.x = clamp(((line.bbox.x0 + line.bbox.x1) / 2) / Math.max(1, res.width), 0.08, 0.92);
+                            layer.y = clamp(((line.bbox.y0 + line.bbox.y1) / 2) / Math.max(1, res.height), 0.08, 0.92);
+                            layer.size = clamp(Math.round((line.bbox.y1 - line.bbox.y0) * 0.85), 18, 180);
+                            return layer;
+                          });
+                          const current = settingsRef.current;
+                          applySettings({ ...current, text: [...current.text, ...added] });
+                          setSelectedTextId(added[0].id);
+                          setMode('text');
+                          toast(`Extracted ${added.length} text ${added.length === 1 ? 'layer' : 'layers'} locally`);
+                        } catch {
+                          toast('Local OCR failed on this image', 'error');
+                        } finally {
+                          setMagicBusy(null);
+                        }
+                      }}
+                    >
+                      <EditrimIcon name="text" size={15} />
+                      <span>{magicBusy === 'ocr' ? 'Reading…' : 'Grab Text'}</span>
+                    </button>
+                  </div>
+                  <p className="ph-note" style={{ marginTop: 10 }}>
+                    Runs entirely in this browser using local image processing and offline Tesseract OCR.
+                  </p>
+                </section>
+              </>
+            )}
           </div>
         </aside>
       </div>
@@ -1262,6 +1390,20 @@ export default function PhotoEditor() {
           </div>
         </div>
       )}
+
+      <MagicBrushModal
+        open={magicEraseOpen && Boolean(image)}
+        onClose={() => setMagicEraseOpen(false)}
+        imageSrc={sourceUrlRef.current ?? ''}
+        mode="erase"
+        onApply={async (mask, mw, mh) => {
+          const src = sourceUrlRef.current;
+          if (!src) return;
+          const nextUrl = await runInpaint(src, mask, mw, mh);
+          await replaceImageFromDataUrl(nextUrl);
+          toast('Selected area erased locally');
+        }}
+      />
     </div>
   );
 }
