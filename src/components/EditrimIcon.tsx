@@ -21,7 +21,8 @@ export type EditrimIconName =
   | 'film' | 'music' | 'volume' | 'volumeOff' | 'scissors' | 'split'
   | 'skipStart' | 'skipEnd' | 'loop' | 'record' | 'waveform'
   | 'photo' | 'crop' | 'flipX' | 'flipY' | 'sun' | 'contrast' | 'thermometer'
-  | 'histogram' | 'compare' | 'droplet' | 'moon';
+  | 'histogram' | 'compare' | 'droplet' | 'moon'
+  | 'chart' | 'table' | 'qr' | 'mockup' | 'animate' | 'draw';
 
 const ICONS: Record<EditrimIconName, string[]> = {
   home: ['M3 10.8 12 3.5l9 7.3V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-9.2Z', 'M9.5 21v-6h5v6'],
@@ -158,6 +159,12 @@ const ICONS: Record<EditrimIconName, string[]> = {
   compare: ['M12 3v18', 'M8 8 4 12l4 4', 'M16 8l4 4-4 4'],
   droplet: ['M12 3s6 6.4 6 10.4A6 6 0 0 1 6 13.4C6 9.4 12 3 12 3z'],
   moon: ['M20 14.6A8.6 8.6 0 0 1 9.4 4a8.6 8.6 0 1 0 10.6 10.6z'],
+  chart: ['M4 20h16', 'M7 20v-7h3v7', 'M12 20V8h3v12', 'M17 20v-4h3v4'],
+  table: ['M4 5h16v14H4z', 'M4 10h16M4 15h16M10 5v14M15 5v14'],
+  qr: ['M4 4h6v6H4z', 'M14 4h6v6h-6z', 'M4 14h6v6H4z', 'M14 14h2v2h-2z', 'M18 14h2v2h-2z', 'M14 18h2v2h-2z', 'M18 18h2v2h-2z'],
+  mockup: ['M7 3h10a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z', 'M10 6h4'],
+  animate: ['M12 3l1.6 4.2L18 8.8l-4.4 1.6L12 14.6l-1.6-4.2L6 8.8l4.4-1.6L12 3z', 'M5 17l2-2M17 17l2 2M12 18v3'],
+  draw: ['M12 19l7-7 3 3-7 7-3 0 0-3z', 'M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z'],
 };
 
 export function EditrimIcon({

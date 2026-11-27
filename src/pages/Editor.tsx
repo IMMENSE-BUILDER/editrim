@@ -21,12 +21,12 @@ import { useToast } from '../components/Toast';
 import { useSurface } from '../hooks/useSurface';
 import { Canvas } from '../editor/Canvas';
 import { Inspector } from '../editor/Inspector';
-import { LeftPanel, type PanelTab } from '../editor/Panels';
+import { LeftPanel, type DrawSettings, type PanelTab } from '../editor/Panels';
 import { ExportModal, ResizeModal, ShareModal, ShortcutsModal } from '../editor/Modals';
 import { CanvasContextMenu, type CanvasMenuState } from '../editor/ContextMenu';
-import { createShape, createText } from '../editor/factory';
+import { createConnector, createShape, createText } from '../editor/factory';
 import { useEditor } from '../editor/useEditor';
-import { createDesign, fromTemplate, getBrand, getDesign, saveDesign } from '../lib/storage';
+import { addAsset, createDesign, fromTemplate, getBrand, getDesign, saveDesign } from '../lib/storage';
 import { getTemplate } from '../lib/templates';
 import { exportSelection } from '../lib/export';
 import { copyStyle, pasteStyle, type StylePayload } from '../lib/styleClipboard';
@@ -36,7 +36,7 @@ import { recordAutoSnapshot } from '../lib/versionHistory';
 import { toggleTheme } from '../lib/theme';
 import type { StudioCommand } from '../lib/commands';
 import type { BrandKit, Design, El, Point } from '../lib/types';
-import { clamp, rotatedBBox, timeAgo, uid, unionRect } from '../lib/utils';
+import { clamp, compressImage, rotatedBBox, timeAgo, uid, unionRect } from '../lib/utils';
 
 export default function Editor() {
   useSurface('neutral');
@@ -133,6 +133,7 @@ const TABS: { id: PanelTab; label: string; icon: EditrimIconName }[] = [
   { id: 'ai', label: 'AI', icon: 'spark' },
   { id: 'elements', label: 'Elements', icon: 'elements' },
   { id: 'text', label: 'Text', icon: 'text' },
+  { id: 'draw', label: 'Draw', icon: 'draw' },
   { id: 'uploads', label: 'Uploads', icon: 'uploads' },
   { id: 'background', label: 'Background', icon: 'background' },
   { id: 'brand', label: 'Brand', icon: 'brand' },
@@ -182,6 +183,13 @@ function EditorWorkspace({ initial }: { initial: Design }) {
   const [commentTarget, setCommentTarget] = useState<{ pageId: string; elementId?: string; x: number; y: number } | null>(null);
   const [commentText, setCommentText] = useState('');
   const [aiFocus, setAiFocus] = useState<{ focus: 'write' | 'translate'; nonce: number } | null>(null);
+  const [drawSettings, setDrawSettings] = useState<DrawSettings>(() => ({
+    tool: 'pen',
+    color: brand.colors[0] ?? '#14130F',
+    size: 8,
+    smoothing: 50,
+    shapeAssist: true,
+  }));
   const clipboard = useRef<El[]>([]);
   const errorShown = useRef(false);
 
@@ -872,6 +880,8 @@ function EditorWorkspace({ initial }: { initial: Design }) {
             store={store}
             brand={brand}
             aiFocus={aiFocus}
+            drawSettings={drawSettings}
+            onDrawSettingsChange={setDrawSettings}
             onClose={() => setPanel(null)}
             onOpenBrand={() => setBrandOpen(true)}
           />
@@ -888,6 +898,11 @@ function EditorWorkspace({ initial }: { initial: Design }) {
             updateElements={store.updateElements}
             pushHistory={store.pushHistory}
             comments={design.comments ?? []}
+            drawMode={panel === 'draw'}
+            drawSettings={drawSettings}
+            onAddElements={store.addElements}
+            onRemoveElement={elId => store.updatePage(p => ({ ...p, elements: p.elements.filter(e => e.id !== elId) }))}
+            onDropAsset={async file => addAsset(file.name, await compressImage(file))}
             onElementContextMenu={openElementMenu}
             onCanvasContextMenu={openCanvasMenu}
             onCommentClick={openCommentThread}
@@ -1013,6 +1028,11 @@ function EditorWorkspace({ initial }: { initial: Design }) {
           onAddPage={() => store.addPage()}
           onDuplicatePage={() => store.duplicatePage()}
           onFit={() => window.dispatchEvent(new CustomEvent('editrim:fit'))}
+          onConnect={() => {
+            if (store.selected.length === 2) {
+              store.addElements([createConnector(store.selected[0], store.selected[1], 'elbow', brand)]);
+            }
+          }}
         />
       )}
 

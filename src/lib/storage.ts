@@ -266,11 +266,19 @@ export async function hydrateAssets(design: Design): Promise<Design> {
   const copy = structuredClone(design);
   await Promise.all(
     copy.pages.flatMap(p =>
-      p.elements.map(async el => {
+      p.elements.flatMap(el => {
         if (el.type === 'image' && isAssetSrc(el.src)) {
-          const data = await resolveSrc(el.src);
-          if (data) el.src = data;
+          return [resolveSrc(el.src).then(data => { if (data) el.src = data; })];
         }
+        if (el.type === 'mockup' && el.src && isAssetSrc(el.src)) {
+          return [resolveSrc(el.src).then(data => { if (data) el.src = data; })];
+        }
+        if (el.type === 'grid') {
+          return el.cells
+            .filter(c => c.src && isAssetSrc(c.src))
+            .map(c => resolveSrc(c.src!).then(data => { if (data) c.src = data; }));
+        }
+        return [];
       }),
     ),
   );

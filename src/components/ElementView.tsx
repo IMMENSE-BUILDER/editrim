@@ -1,9 +1,11 @@
-import { useId } from 'react';
+import { useEffect, useId, useMemo, useState } from 'react';
 import type { CSSProperties } from 'react';
-import type { Background, El, ImageElement, Paint, ShapeElement, TextElement } from '../lib/types';
+import type { Background, El, ImageElement, Page, Paint, ShapeElement, TextElement } from '../lib/types';
 import { FONT_CSS_STACK } from '../lib/fonts';
 import { iconById } from '../lib/icons';
 import { paintToCss, shadowToCss } from '../lib/render';
+import { isAssetSrc, resolveSrc } from '../lib/storage';
+import { buildPrims, primImages, primsToSvg } from '../lib/rich';
 import { useResolvedSrc } from '../hooks/useResolvedSrc';
 
 function shapePath(el: ShapeElement): string {
@@ -119,30 +121,96 @@ export function ShapeView({ el }: { el: ShapeElement }) {
   );
 }
 
+function hexToRgba(hex: string, alpha: number): string {
+  const clean = hex.replace('#', '');
+  const full = clean.length === 3 ? clean.split('').map(c => c + c).join('') : clean.slice(0, 6);
+  const r = parseInt(full.slice(0, 2), 16) || 0;
+  const g = parseInt(full.slice(2, 4), 16) || 0;
+  const b = parseInt(full.slice(4, 6), 16) || 0;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function textEffectStyles(el: TextElement): Partial<CSSProperties> {
+  const effect = el.effect ?? 'none';
+  const inten = Math.max(0.1, Math.min(1, (el.effectIntensity ?? 55) / 100));
+  const eColor = el.effectColor || (effect === 'neon' ? '#38BDF8' : effect === 'glitch' ? '#22D3EE' : '#14130F');
+  const shadows: string[] = [];
+  if (el.shadow) {
+    shadows.push(`${el.shadow.x}px ${el.shadow.y}px ${el.shadow.blur}px ${el.shadow.color}`);
+  }
+
+  let color = el.color;
+  let stroke = el.strokeWidth ? `${el.strokeWidth}px ${el.strokeColor}` : undefined;
+  let background = el.background && el.background.kind !== 'none' ? paintToCss(el.background) : undefined;
+  let borderRadius = el.backgroundRadius || 0;
+  let padding = el.padding || 0;
+
+  if (effect === 'shadow') {
+    const d = Math.round(3 + inten * 6);
+    shadows.push(`${d}px ${d}px ${Math.round(inten * 4)}px ${hexToRgba(eColor, 0.45)}`);
+  } else if (effect === 'lift') {
+    shadows.push(`0 ${Math.round(6 + inten * 10)}px ${Math.round(14 + inten * 22)}px ${hexToRgba(eColor, 0.52)}`);
+  } else if (effect === 'hollow') {
+    color = 'transparent';
+    stroke = `${Math.max(1.5, Math.round((el.fontSize * 0.04) * (0.6 + inten)))}px ${el.effectColor || el.color}`;
+  } else if (effect === 'splice') {
+    color = 'transparent';
+    stroke = `${Math.max(1.5, Math.round(el.fontSize * 0.035))}px ${el.color}`;
+    const d = Math.round(3 + inten * 6);
+    shadows.push(`${d}px ${d}px 0 ${eColor}`);
+  } else if (effect === 'echo') {
+    const d = Math.round(4 + inten * 7);
+    const base = el.effectColor || el.color;
+    shadows.push(`${d}px ${d}px 0 ${hexToRgba(base, 0.5)}`, `${d * 2}px ${d * 2}px 0 ${hexToRgba(base, 0.25)}`);
+  } else if (effect === 'neon') {
+    const glow = Math.round(8 + inten * 24);
+    shadows.push(`0 0 ${Math.round(glow * 0.35)}px ${eColor}`, `0 0 ${glow}px ${eColor}`, `0 0 ${glow * 2}px ${eColor}`);
+  } else if (effect === 'glitch') {
+    const d = Math.round(2 + inten * 6);
+    shadows.push(`${-d}px 0 0 ${eColor}`, `${d}px 0 0 #EC4899`);
+  } else if (effect === 'background') {
+    if (!background) {
+      background = el.effectColor || '#D8F55A';
+      borderRadius = borderRadius || 12;
+      padding = padding || 12;
+    }
+  }
+
+  return {
+    color,
+    WebkitTextStroke: stroke,
+    textShadow: shadows.length ? shadows.join(', ') : undefined,
+    background,
+    borderRadius,
+    padding,
+  };
+}
+
 function TextView({ el }: { el: TextElement }) {
   const justify = el.valign === 'middle' ? 'center' : el.valign === 'bottom' ? 'flex-end' : 'flex-start';
+  const fx = textEffectStyles(el);
   const style: CSSProperties = {
     width: '100%',
     height: '100%',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: justify,
-    background: el.background && el.background.kind !== 'none' ? paintToCss(el.background) : undefined,
-    borderRadius: el.backgroundRadius || 0,
-    padding: el.padding || 0,
+    background: fx.background,
+    borderRadius: fx.borderRadius,
+    padding: fx.padding,
     boxSizing: 'border-box',
     fontFamily: FONT_CSS_STACK(el.fontFamily),
     fontSize: el.fontSize,
     fontWeight: el.fontWeight,
     fontStyle: el.italic ? 'italic' : 'normal',
-    color: el.color,
+    color: fx.color,
     lineHeight: el.lineHeight,
     letterSpacing: el.letterSpacing,
     textAlign: el.align,
     textTransform: el.uppercase ? 'uppercase' : 'none',
     textDecoration: el.underline ? 'underline' : 'none',
-    textShadow: el.shadow ? `${el.shadow.x}px ${el.shadow.y}px ${el.shadow.blur}px ${el.shadow.color}` : undefined,
-    WebkitTextStroke: el.strokeWidth ? `${el.strokeWidth}px ${el.strokeColor}` : undefined,
+    textShadow: fx.textShadow,
+    WebkitTextStroke: fx.WebkitTextStroke,
     overflow: 'visible',
   };
   return (
@@ -212,19 +280,61 @@ function ImageView({ el }: { el: ImageElement }) {
   );
 }
 
-export function ElementView({ el }: { el: El }) {
+function useResolvedMap(srcs: string[]): Record<string, string> {
+  const [map, setMap] = useState<Record<string, string>>({});
+  const key = srcs.join('|');
+  useEffect(() => {
+    let cancelled = false;
+    const assets = srcs.filter(isAssetSrc);
+    if (!assets.length) return;
+    Promise.all(assets.map(async s => [s, await resolveSrc(s)] as const)).then(entries => {
+      if (cancelled) return;
+      const next: Record<string, string> = {};
+      for (const [k, v] of entries) {
+        if (v) next[k] = v;
+      }
+      setMap(next);
+    });
+    return () => { cancelled = true; };
+  }, [key]);
+  return map;
+}
+
+function RichPrimsView({ el, page }: { el: El; page?: Page }) {
+  const prims = useMemo(() => buildPrims(el, page) ?? [], [el, page]);
+  const imgs = useMemo(() => primImages(prims), [prims]);
+  const resolved = useResolvedMap(imgs);
+  const rawId = useId();
+  const idPrefix = rawId.replace(/[^a-zA-Z0-9]/g, '');
+  const svg = useMemo(
+    () =>
+      primsToSvg(prims, el.w, el.h, {
+        idPrefix,
+        imageHref: src => resolved[src] ?? (isAssetSrc(src) ? '' : src),
+      }),
+    [prims, el.w, el.h, idPrefix, resolved],
+  );
+  const filter = el.shadow ? `drop-shadow(${shadowToCss(el.shadow)})` : undefined;
+  return <div style={{ width: '100%', height: '100%', filter }} dangerouslySetInnerHTML={{ __html: svg }} />;
+}
+
+export function ElementView({ el, page }: { el: El; page?: Page }) {
+  const rich = buildPrims(el, page);
+  if (rich !== null) return <RichPrimsView el={el} page={page} />;
   if (el.type === 'text') return <TextView el={el} />;
   if (el.type === 'shape') return <ShapeView el={el} />;
   if (el.type === 'image') return <ImageView el={el} />;
-
-  const icon = iconById(el.icon);
-  return (
-    <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke={el.color} strokeWidth={el.strokeWidth ?? 1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      {icon.paths.map((d, i) => (
-        <path key={i} d={d} />
-      ))}
-    </svg>
-  );
+  if (el.type === 'icon') {
+    const icon = iconById(el.icon);
+    return (
+      <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke={el.color} strokeWidth={el.strokeWidth ?? 1.8} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        {icon.paths.map((d, i) => (
+          <path key={i} d={d} />
+        ))}
+      </svg>
+    );
+  }
+  return null;
 }
 
 export function PageBackground({ bg }: { bg: Background }) {

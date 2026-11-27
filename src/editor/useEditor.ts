@@ -3,6 +3,7 @@ import type { Background, CanvasComment, Design, El, Page } from '../lib/types';
 import { rotatedBBox, unionRect, uid } from '../lib/utils';
 import { computeTidyPositions } from '../lib/tidy';
 import { newPage } from '../lib/storage';
+import { syncConnectors } from '../lib/rich/connector';
 
 type UpdateOpts = { transient?: boolean; merge?: string };
 type AlignKind = 'left' | 'hcenter' | 'right' | 'top' | 'vcenter' | 'bottom';
@@ -67,8 +68,18 @@ export function useEditor(initial: Design) {
   const apply = useCallback(
     (updater: (d: Design) => Design, opts?: UpdateOpts) => {
       const prev = designRef.current;
-      const next = updater(prev);
+      let next = updater(prev);
       if (next === prev) return;
+      if (next.pages !== prev.pages) {
+        let pagesChanged = false;
+        const syncedPages = next.pages.map((p, idx) => {
+          if (p === prev.pages[idx]) return p;
+          const sp = syncConnectors(p);
+          if (sp !== p) pagesChanged = true;
+          return sp;
+        });
+        if (pagesChanged) next = { ...next, pages: syncedPages };
+      }
       if (!opts?.transient) {
         const now = Date.now();
         const merge = opts?.merge;

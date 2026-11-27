@@ -7,16 +7,21 @@ import {
   Copy, Eye, EyeOff, Image as ImageIcon, Lock, LockOpen, Maximize2, Palette, Shapes,
   Sparkles, Trash2, Type, Unlock, Wand2,
 } from 'lucide-react';
-import type { El, ImageElement, Page, ShapeElement, TextElement } from '../lib/types';
-import type { BrandKit } from '../lib/types';
+import type {
+  BrandKit, ChartElement, ChartKind, ConnectorElement, ConnectorRoute, DrawingElement,
+  El, GridElement, ImageElement, MockupDevice, MockupElement, Page, QrElement,
+  ShapeElement, TableElement, TextEffect, TextElement,
+} from '../lib/types';
 import type { EditorStore } from './useEditor';
 import {
   ColorField, FontField, InspectorSection, NumberField, PaintField, Segmented, ShadowField, SliderField, ToggleRow,
 } from './controls';
-import { fontByFamily } from '../lib/fonts';
+import { fontByFamily, FONTS } from '../lib/fonts';
 import { PALETTES } from '../lib/palettes';
 import { addAsset } from '../lib/storage';
+import { canvasToBlob, renderPageCanvas } from '../lib/render';
 import { compressImage } from '../lib/utils';
+import { createConnector } from './factory';
 import { useToast } from '../components/Toast';
 import { PagePreview } from '../components/PagePreview';
 import { EditrimIcon } from '../components/EditrimIcon';
@@ -34,14 +39,25 @@ const typeIcon = (el: El) => {
   if (el.type === 'text') return <EditrimIcon name="text" size={14} />;
   if (el.type === 'image') return <EditrimIcon name="image" size={14} />;
   if (el.type === 'icon') return <EditrimIcon name="spark" size={14} />;
+  if (el.type === 'chart') return <EditrimIcon name="chart" size={14} />;
+  if (el.type === 'table') return <EditrimIcon name="table" size={14} />;
+  if (el.type === 'qr') return <EditrimIcon name="qr" size={14} />;
+  if (el.type === 'drawing') return <EditrimIcon name="draw" size={14} />;
+  if (el.type === 'grid') return <EditrimIcon name="elements" size={14} />;
+  if (el.type === 'mockup') return <EditrimIcon name="mockup" size={14} />;
+  if (el.type === 'connector') return <EditrimIcon name="arrowRight" size={14} />;
   return <EditrimIcon name="elements" size={14} />;
 };
 
 export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenResize, onOpenBrand }: Props) {
   const [tab, setTab] = useState<'design' | 'layers'>('design');
   const [alignTarget, setAlignTarget] = useState<'page' | 'selection'>('page');
+  const [csvDraft, setCsvDraft] = useState('');
+  const [gridCellIndex, setGridCellIndex] = useState<number | null>(null);
   const { toast } = useToast();
   const replaceImageRef = useRef<HTMLInputElement>(null);
+  const gridFileRef = useRef<HTMLInputElement>(null);
+  const mockupFileRef = useRef<HTMLInputElement>(null);
   const { page, selected, selectedIds, design } = store;
   const single = selected.length === 1 ? selected[0] : null;
   const none = selected.length === 0;
@@ -49,6 +65,14 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
   const shape = single?.type === 'shape' ? (single as ShapeElement) : null;
   const image = single?.type === 'image' ? (single as ImageElement) : null;
   const icon = single?.type === 'icon' ? single : null;
+  const chart = single?.type === 'chart' ? (single as ChartElement) : null;
+  const table = single?.type === 'table' ? (single as TableElement) : null;
+  const qr = single?.type === 'qr' ? (single as QrElement) : null;
+  const drawing = single?.type === 'drawing' ? (single as DrawingElement) : null;
+  const grid = single?.type === 'grid' ? (single as GridElement) : null;
+  const mockup = single?.type === 'mockup' ? (single as MockupElement) : null;
+  const connector = single?.type === 'connector' ? (single as ConnectorElement) : null;
+  const pageTables = page.elements.filter((e): e is TableElement => e.type === 'table');
   const bg = page.background;
   const linearBg = bg.kind === 'linear' ? bg : { kind: 'linear' as const, from: '#F7F3E8', to: '#D8F55A', angle: 135 };
   const solidBg = bg.kind === 'solid' ? bg : { kind: 'solid' as const, color: '#FFFDF7' };
@@ -349,49 +373,58 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                   onChange={v => patch({ valign: v } as Partial<TextElement>)}
                 />
               </div>
+              <div className="insp-subhead">Curve</div>
+              <SliderField
+                label="Arc"
+                value={text.curve ?? 0}
+                min={-100}
+                max={100}
+                onChange={v => patch({ curve: v } as Partial<TextElement>, 'text-curve')}
+                format={v => `${v}%`}
+              />
               <div className="insp-subhead">Text effects</div>
               <div className="insp-effect-grid">
                 {([
                   ['none', 'None'],
-                  ['outline', 'Outline'],
                   ['shadow', 'Shadow'],
-                  ['glow', 'Glow'],
-                  ['highlight', 'Highlight'],
-                  ['pill', 'Pill'],
-                ] as const).map(([kind, label]) => (
+                  ['lift', 'Lift'],
+                  ['hollow', 'Hollow'],
+                  ['splice', 'Splice'],
+                  ['echo', 'Echo'],
+                  ['neon', 'Neon'],
+                  ['glitch', 'Glitch'],
+                  ['background', 'Backdrop'],
+                ] as [TextEffect, string][]).map(([kind, label]) => (
                   <button
                     key={kind}
-                    className={
-                      kind === 'none'
-                        ? (!text.strokeWidth && !text.shadow && text.background?.kind !== 'solid' ? 'active' : '')
-                        : kind === 'pill'
-                          ? (text.background?.kind === 'solid' && (text.backgroundRadius ?? 0) > 100 ? 'active' : '')
-                          : kind === 'highlight'
-                            ? (text.background?.kind === 'solid' && (text.backgroundRadius ?? 0) <= 100 ? 'active' : '')
-                            : kind === 'outline'
-                              ? (Boolean(text.strokeWidth) && !text.shadow ? 'active' : '')
-                              : ''
-                    }
-                    onClick={() => {
-                      if (kind === 'none') {
-                        patch({ strokeWidth: 0, shadow: null, background: { kind: 'none' }, padding: 0, backgroundRadius: 0 } as Partial<TextElement>);
-                      } else if (kind === 'outline') {
-                        patch({ strokeColor: '#14130F', strokeWidth: Math.max(1, Math.round(text.fontSize * 0.03)), shadow: null, background: { kind: 'none' } } as Partial<TextElement>);
-                      } else if (kind === 'shadow') {
-                        patch({ strokeWidth: 0, shadow: { x: 0, y: 6, blur: 18, color: 'rgba(20,19,15,0.35)' }, background: { kind: 'none' } } as Partial<TextElement>);
-                      } else if (kind === 'glow') {
-                        patch({ strokeWidth: 0, shadow: { x: 0, y: 0, blur: 22, color: brand.colors[1] ?? '#D8F55A' }, background: { kind: 'none' } } as Partial<TextElement>);
-                      } else if (kind === 'highlight') {
-                        patch({ shadow: null, background: { kind: 'solid', color: brand.colors[1] ?? '#D8F55A' }, backgroundRadius: 4, padding: 6, color: '#14130F' } as Partial<TextElement>);
-                      } else {
-                        patch({ shadow: null, background: { kind: 'solid', color: '#14130F' }, backgroundRadius: 999, padding: 14, color: '#F4F1EA' } as Partial<TextElement>);
-                      }
-                    }}
+                    className={(text.effect ?? 'none') === kind ? 'active' : ''}
+                    onClick={() => patch({
+                      effect: kind,
+                      effectColor: text.effectColor ?? (kind === 'neon' ? '#38BDF8' : kind === 'glitch' ? '#22D3EE' : brand.colors[0] ?? '#14130F'),
+                      effectIntensity: text.effectIntensity ?? 60,
+                    } as Partial<TextElement>)}
                   >
                     {label}
                   </button>
                 ))}
               </div>
+              {(text.effect ?? 'none') !== 'none' && (
+                <div style={{ marginTop: 8 }}>
+                  <ColorField
+                    label="Effect colour"
+                    value={text.effectColor ?? '#14130F'}
+                    onChange={c => patch({ effectColor: c } as Partial<TextElement>)}
+                  />
+                  <SliderField
+                    label="Intensity"
+                    value={text.effectIntensity ?? 60}
+                    min={10}
+                    max={100}
+                    onChange={v => patch({ effectIntensity: v } as Partial<TextElement>, 'text-effect-inten')}
+                    format={v => `${v}%`}
+                  />
+                </div>
+              )}
               {text.strokeWidth ? (
                 <div style={{ marginTop: 8 }}>
                   <ColorField label="Outline colour" value={text.strokeColor ?? '#14130F'} onChange={c => patch({ strokeColor: c } as Partial<TextElement>)} />
@@ -583,6 +616,350 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
             </InspectorSection>
           )}
 
+          {chart && (
+            <InspectorSection title="Chart">
+              <label className="field">
+                <span className="field-label">Type</span>
+                <select
+                  className="insp-select"
+                  value={chart.chartKind}
+                  onChange={e => patch({ chartKind: e.target.value as ChartKind } as Partial<ChartElement>)}
+                >
+                  {(['bar', 'column', 'line', 'area', 'pie', 'donut', 'progress'] as ChartKind[]).map(k => (
+                    <option key={k} value={k}>{k[0].toUpperCase() + k.slice(1)}</option>
+                  ))}
+                </select>
+              </label>
+              <label className="field" style={{ marginTop: 8 }}>
+                <span className="field-label">Link to table</span>
+                <select
+                  className="insp-select"
+                  value={chart.source?.tableId ?? ''}
+                  onChange={e => patch({ source: e.target.value ? { tableId: e.target.value } : undefined } as Partial<ChartElement>)}
+                >
+                  <option value="">Manual data</option>
+                  {pageTables.map(t => (
+                    <option key={t.id} value={t.id}>{t.name}</option>
+                  ))}
+                </select>
+              </label>
+              {!chart.source?.tableId && (
+                <>
+                  <div className="insp-subhead">Data</div>
+                  <div className="insp-data-table">
+                    {chart.data.labels.map((lbl, r) => (
+                      <div key={r} className="insp-data-row">
+                        <input
+                          value={lbl}
+                          aria-label={`Label ${r + 1}`}
+                          onChange={e => {
+                            const labels = chart.data.labels.map((v, i) => (i === r ? e.target.value : v));
+                            patch({ data: { ...chart.data, labels } } as Partial<ChartElement>, 'chart-data');
+                          }}
+                        />
+                        {chart.data.series.map((s, si) => (
+                          <input
+                            key={si}
+                            type="number"
+                            value={s.values[r] ?? 0}
+                            aria-label={`${s.name} value ${r + 1}`}
+                            onChange={e => {
+                              const series = chart.data.series.map((ss, j) =>
+                                j === si
+                                  ? { ...ss, values: ss.values.map((v, i) => (i === r ? Number(e.target.value) || 0 : v)) }
+                                  : ss,
+                              );
+                              patch({ data: { ...chart.data, series } } as Partial<ChartElement>, 'chart-data');
+                            }}
+                          />
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                  <div className="insp-duo" style={{ marginTop: 6 }}>
+                    <button
+                      className="btn btn-secondary btn-sm"
+                      onClick={() => patch({
+                        data: {
+                          labels: [...chart.data.labels, `Item ${chart.data.labels.length + 1}`],
+                          series: chart.data.series.map(s => ({ ...s, values: [...s.values, 50] })),
+                        },
+                      } as Partial<ChartElement>)}
+                    >+ Row</button>
+                    <button
+                      className="btn btn-secondary btn-sm"
+                      disabled={chart.data.labels.length <= 1}
+                      onClick={() => patch({
+                        data: {
+                          labels: chart.data.labels.slice(0, -1),
+                          series: chart.data.series.map(s => ({ ...s, values: s.values.slice(0, -1) })),
+                        },
+                      } as Partial<ChartElement>)}
+                    >− Row</button>
+                  </div>
+                  <div className="insp-subhead">Paste CSV</div>
+                  <textarea
+                    className="insp-csv"
+                    rows={3}
+                    placeholder={'Q1,40,60\nQ2,70,80'}
+                    value={csvDraft}
+                    onChange={e => setCsvDraft(e.target.value)}
+                  />
+                  <button
+                    className="btn btn-secondary btn-sm btn-block"
+                    style={{ marginTop: 6 }}
+                    onClick={() => {
+                      const lines = csvDraft.trim().split(/\r?\n/).map(l => l.split(',').map(c => c.trim())).filter(r => r.length >= 2);
+                      if (!lines.length) return;
+                      const labels = lines.map(r => r[0]);
+                      const sCount = Math.max(1, lines[0].length - 1);
+                      const series = Array.from({ length: sCount }, (_, si) => ({
+                        name: `Series ${si + 1}`,
+                        values: lines.map(r => Number(r[si + 1]) || 0),
+                      }));
+                      patch({ data: { labels, series } } as Partial<ChartElement>);
+                      toast('Chart data imported');
+                    }}
+                  >Apply CSV</button>
+                </>
+              )}
+              <div className="insp-subhead">Options</div>
+              <ToggleRow label="Legend" checked={chart.showLegend} onChange={v => patch({ showLegend: v } as Partial<ChartElement>)} />
+              <ToggleRow label="Value labels" checked={chart.showValues} onChange={v => patch({ showValues: v } as Partial<ChartElement>)} />
+              <ToggleRow label="Gridlines" checked={chart.showGrid} onChange={v => patch({ showGrid: v } as Partial<ChartElement>)} />
+              <ColorField label="Text colour" value={chart.textColor} onChange={c => patch({ textColor: c } as Partial<ChartElement>)} />
+              <div style={{ marginTop: 8 }}>
+                <FontField value={chart.fontFamily} onChange={f => patch({ fontFamily: f } as Partial<ChartElement>)} />
+              </div>
+              <div className="insp-subhead">Palette</div>
+              <div className="swatch-grid">
+                {PALETTES.slice(0, 6).map(p => (
+                  <button
+                    key={p.name}
+                    title={p.name}
+                    style={{ background: p.colors[0] }}
+                    onClick={() => patch({ colors: p.colors } as Partial<ChartElement>)}
+                  />
+                ))}
+              </div>
+            </InspectorSection>
+          )}
+
+          {table && (
+            <InspectorSection title="Table">
+              <div className="insp-duo" style={{ marginBottom: 8 }}>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => {
+                    const cols = table.cells[0]?.length ?? 1;
+                    const next = [...table.cells.map(r => [...r]), Array.from({ length: cols }, () => '')];
+                    patch({ cells: next, rowHeights: Array.from({ length: next.length }, () => 1 / next.length) } as Partial<TableElement>);
+                  }}
+                >+ Row</button>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={() => {
+                    const next = table.cells.map(r => [...r, '']);
+                    const cols = next[0]?.length ?? 1;
+                    patch({ cells: next, colWidths: Array.from({ length: cols }, () => 1 / cols) } as Partial<TableElement>);
+                  }}
+                >+ Col</button>
+              </div>
+              <div className="insp-duo" style={{ marginBottom: 8 }}>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  disabled={table.cells.length <= 1}
+                  onClick={() => {
+                    const next = table.cells.slice(0, -1);
+                    patch({ cells: next, rowHeights: Array.from({ length: next.length }, () => 1 / next.length) } as Partial<TableElement>);
+                  }}
+                >− Row</button>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  disabled={(table.cells[0]?.length ?? 1) <= 1}
+                  onClick={() => {
+                    const next = table.cells.map(r => r.slice(0, -1));
+                    const cols = next[0]?.length ?? 1;
+                    patch({ cells: next, colWidths: Array.from({ length: cols }, () => 1 / cols) } as Partial<TableElement>);
+                  }}
+                >− Col</button>
+              </div>
+              <ToggleRow label="Header row" checked={table.header} onChange={v => patch({ header: v } as Partial<TableElement>)} />
+              <ColorField label="Header fill" value={table.headerFill} onChange={c => patch({ headerFill: c } as Partial<TableElement>)} />
+              <ColorField label="Header text" value={table.headerColor} onChange={c => patch({ headerColor: c } as Partial<TableElement>)} />
+              <ColorField label="Cell fill" value={table.fill} onChange={c => patch({ fill: c } as Partial<TableElement>)} />
+              <ColorField label="Alt row fill" value={table.altFill ?? '#F7F4EC'} onChange={c => patch({ altFill: c } as Partial<TableElement>)} allowNone />
+              <ColorField label="Border colour" value={table.borderColor} onChange={c => patch({ borderColor: c } as Partial<TableElement>)} />
+              <ColorField label="Text colour" value={table.textColor} onChange={c => patch({ textColor: c } as Partial<TableElement>)} />
+              <div className="insp-grid-2" style={{ marginTop: 8 }}>
+                <NumberField label="Border" value={table.borderWidth} min={0} max={8} onChange={n => patch({ borderWidth: n } as Partial<TableElement>, 'tbl-bw')} />
+                <NumberField label="Size" value={table.fontSize} min={8} max={48} onChange={n => patch({ fontSize: n } as Partial<TableElement>, 'tbl-fs')} />
+                <NumberField label="Padding" value={table.padding} min={2} max={40} onChange={n => patch({ padding: n } as Partial<TableElement>, 'tbl-pad')} />
+              </div>
+              <div className="insp-row" style={{ marginTop: 8 }}>
+                <Segmented
+                  value={table.align}
+                  options={[
+                    { value: 'left', label: 'Left' },
+                    { value: 'center', label: 'Center' },
+                    { value: 'right', label: 'Right' },
+                  ]}
+                  onChange={v => patch({ align: v } as Partial<TableElement>)}
+                />
+              </div>
+              <label className="field" style={{ marginTop: 8 }}>
+                <span className="field-label">Font</span>
+                <select className="insp-select" value={table.fontFamily} onChange={e => patch({ fontFamily: e.target.value } as Partial<TableElement>)}>
+                  {FONTS.map(f => <option key={f.family} value={f.family}>{f.family}</option>)}
+                </select>
+              </label>
+            </InspectorSection>
+          )}
+
+          {qr && (
+            <InspectorSection title="QR Code">
+              <label className="field">
+                <span className="field-label">URL or text</span>
+                <input
+                  className="insp-input"
+                  value={qr.value}
+                  onChange={e => patch({ value: e.target.value } as Partial<QrElement>, 'qr-val')}
+                />
+              </label>
+              <ColorField label="Modules" value={qr.fg} onChange={c => patch({ fg: c } as Partial<QrElement>)} />
+              <ColorField label="Background" value={qr.bg} onChange={c => patch({ bg: c } as Partial<QrElement>)} />
+              <div className="insp-grid-2" style={{ marginTop: 8 }}>
+                <label className="field">
+                  <span className="field-label">ECC</span>
+                  <select className="insp-select" value={qr.ecc} onChange={e => patch({ ecc: e.target.value as QrElement['ecc'] } as Partial<QrElement>)}>
+                    {(['L', 'M', 'Q', 'H'] as const).map(lv => <option key={lv} value={lv}>{lv}</option>)}
+                  </select>
+                </label>
+                <NumberField label="Margin" value={qr.margin} min={0} max={8} onChange={n => patch({ margin: n } as Partial<QrElement>, 'qr-margin')} />
+              </div>
+              <ToggleRow label="Rounded modules" checked={qr.rounded} onChange={v => patch({ rounded: v } as Partial<QrElement>)} />
+            </InspectorSection>
+          )}
+
+          {drawing && (
+            <InspectorSection title="Drawing">
+              <ColorField
+                label="Stroke colour"
+                value={drawing.strokes[0]?.color ?? '#14130F'}
+                onChange={c => patch({ strokes: drawing.strokes.map(s => ({ ...s, color: c })) } as Partial<DrawingElement>)}
+              />
+            </InspectorSection>
+          )}
+
+          {grid && (
+            <InspectorSection title="Photo Grid">
+              <SliderField label="Gap" value={grid.gap} min={0} max={40} onChange={v => patch({ gap: v } as Partial<GridElement>, 'grid-gap')} format={v => `${v}px`} />
+              <SliderField label="Corner radius" value={grid.radius} min={0} max={48} onChange={v => patch({ radius: v } as Partial<GridElement>, 'grid-rad')} format={v => `${v}px`} />
+              <div className="insp-subhead">Cells</div>
+              <div className="insp-cell-list">
+                {grid.cells.map((cell, ci) => (
+                  <button
+                    key={ci}
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => {
+                      setGridCellIndex(ci);
+                      gridFileRef.current?.click();
+                    }}
+                  >
+                    Replace #{ci + 1}
+                  </button>
+                ))}
+              </div>
+              <input
+                ref={gridFileRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={async e => {
+                  const file = e.target.files?.[0];
+                  e.currentTarget.value = '';
+                  if (!file || gridCellIndex === null) return;
+                  try {
+                    const data = await compressImage(file, 2000, 0.9);
+                    const src = await addAsset(file.name, data);
+                    const nextCells = grid.cells.map((c, idx) => (idx === gridCellIndex ? { ...c, src } : c));
+                    patch({ cells: nextCells } as Partial<GridElement>);
+                    toast(`Updated cell #${gridCellIndex + 1}`);
+                  } catch {
+                    toast('Could not load that image', 'error');
+                  }
+                }}
+              />
+            </InspectorSection>
+          )}
+
+          {mockup && (
+            <InspectorSection title="Mockup">
+              <label className="field">
+                <span className="field-label">Device</span>
+                <select className="insp-select" value={mockup.device} onChange={e => patch({ device: e.target.value as MockupDevice } as Partial<MockupElement>)}>
+                  {(['phone', 'tablet', 'laptop', 'browser', 'poster', 'polaroid'] as MockupDevice[]).map(d => (
+                    <option key={d} value={d}>{d[0].toUpperCase() + d.slice(1)}</option>
+                  ))}
+                </select>
+              </label>
+              <ColorField label="Frame colour" value={mockup.frameColor} onChange={c => patch({ frameColor: c } as Partial<MockupElement>)} />
+              <div className="insp-duo" style={{ marginTop: 8 }}>
+                <button className="btn btn-secondary btn-sm" onClick={() => mockupFileRef.current?.click()}>Replace image</button>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  onClick={async () => {
+                    const canvas = await renderPageCanvas(page, design.size, { scale: 1 });
+                    const blob = await canvasToBlob(canvas, 'image/png', 0.92);
+                    const dataUrl = await new Promise<string>((res, rej) => {
+                      const fr = new FileReader();
+                      fr.onload = () => res(String(fr.result));
+                      fr.onerror = rej;
+                      fr.readAsDataURL(blob);
+                    });
+                    const src = await addAsset(`${design.title}-mockup.png`, dataUrl);
+                    patch({ src } as Partial<MockupElement>);
+                    toast('Captured page into mockup');
+                  }}
+                >Use current page</button>
+              </div>
+              <input
+                ref={mockupFileRef}
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={async e => {
+                  const file = e.target.files?.[0];
+                  e.currentTarget.value = '';
+                  if (!file) return;
+                  const data = await compressImage(file, 2000, 0.9);
+                  const src = await addAsset(file.name, data);
+                  patch({ src } as Partial<MockupElement>);
+                  toast('Mockup image updated');
+                }}
+              />
+            </InspectorSection>
+          )}
+
+          {connector && (
+            <InspectorSection title="Connector">
+              <Segmented
+                value={connector.route}
+                options={[
+                  { value: 'straight', label: 'Straight' },
+                  { value: 'elbow', label: 'Elbow' },
+                  { value: 'curved', label: 'Curved' },
+                ]}
+                onChange={v => patch({ route: v as ConnectorRoute } as Partial<ConnectorElement>)}
+              />
+              <ColorField label="Stroke colour" value={connector.stroke} onChange={c => patch({ stroke: c } as Partial<ConnectorElement>)} />
+              <NumberField label="Width" value={connector.strokeWidth} min={1} max={16} onChange={n => patch({ strokeWidth: n } as Partial<ConnectorElement>, 'conn-sw')} />
+              <ToggleRow label="Start arrow" checked={connector.arrowStart} onChange={v => patch({ arrowStart: v } as Partial<ConnectorElement>)} />
+              <ToggleRow label="End arrow" checked={connector.arrowEnd} onChange={v => patch({ arrowEnd: v } as Partial<ConnectorElement>)} />
+              <ToggleRow label="Dashed" checked={Boolean(connector.dash)} onChange={v => patch({ dash: v } as Partial<ConnectorElement>)} />
+            </InspectorSection>
+          )}
+
           {!text && <InspectorSection title="Effects"><ShadowField shadow={selected[0]?.shadow} onChange={s => patchAll({ shadow: s })} /></InspectorSection>}
           {text && <InspectorSection title="Effects"><ShadowField shadow={text.shadow} onChange={s => patch({ shadow: s } as Partial<TextElement>)} /></InspectorSection>}
 
@@ -621,6 +998,15 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                 title="Arrange the selection into an even grid"
               >
                 <EditrimIcon name="elements" size={13} /> Tidy up
+              </button>
+            )}
+            {selected.length === 2 && (
+              <button
+                className="btn btn-secondary btn-sm btn-block"
+                style={{ marginTop: 6 }}
+                onClick={() => store.addElements([createConnector(selected[0], selected[1], 'elbow', brand)])}
+              >
+                <EditrimIcon name="arrowRight" size={13} /> Connect selection
               </button>
             )}
             <div className="insp-duo">

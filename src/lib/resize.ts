@@ -272,8 +272,41 @@ function reflowElement(el: El, f: Frame): { el: El; warning: boolean } {
       return { el: reflowImage(el, f), warning: false };
     case 'icon':
       return { el: reflowIcon(el, f), warning: false };
-    default:
-      return { el, warning: false };
+    case 'connector': {
+      const w = clamp(Math.max(16, el.w * f.sx), 16, f.newW);
+      const h = clamp(Math.max(16, el.h * f.sy), 16, f.newH);
+      return {
+        el: {
+          ...el,
+          x: round(el.x * f.sx, 10),
+          y: round(el.y * f.sy, 10),
+          w,
+          h,
+          from: { ...el.from, x: round(el.from.x * f.sx, 10), y: round(el.from.y * f.sy, 10) },
+          to: { ...el.to, x: round(el.to.x * f.sx, 10), y: round(el.to.y * f.sy, 10) },
+          strokeWidth: round(el.strokeWidth * f.scale, 10),
+        },
+        warning: false,
+      };
+    }
+    default: {
+      const w = clamp(Math.max(16, el.w * f.sx), 16, f.newW);
+      const h = clamp(Math.max(16, el.h * f.sy), 16, f.newH);
+      const { x, y } = placeInFrame(el, w, h, f);
+      const next: El = {
+        ...el,
+        x,
+        y,
+        w,
+        h,
+        shadow: scaleShadow(el.shadow, f.scale),
+      };
+      if (next.type === 'table') {
+        next.fontSize = Math.max(9, round(next.fontSize * f.scale, 10));
+        next.padding = Math.max(3, round(next.padding * f.scale, 10));
+      }
+      return { el: next, warning: false };
+    }
   }
 }
 

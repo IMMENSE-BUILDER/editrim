@@ -155,7 +155,8 @@ export function summarizePage(design: Design, page: Page): string {
       return `${base}; shape ${el.shape}, fill ${el.fill.kind === 'solid' ? el.fill.color : el.fill.kind === 'linear' ? `gradient ${el.fill.from}→${el.fill.to}` : 'none'}, stroke ${el.stroke} ${el.strokeWidth}px`;
     }
     if (el.type === 'image') return `${base}; image`;
-    return `${base}; icon`;
+    if (el.type === 'icon') return `${base}; icon`;
+    return `${base}; ${el.name}`;
   });
 
   return [
@@ -188,7 +189,10 @@ export function summarizePageForEdit(design: Design, page: Page): string {
       if (el.type === 'image') {
         return `id="${el.id}" type="image" role="${el.name}" x=${Math.round(el.x)} y=${Math.round(el.y)} w=${Math.round(el.w)} h=${Math.round(el.h)} rotation=${el.rotation} radius=${el.radius}${flags}`;
       }
-      return `id="${el.id}" type="icon" role="${el.name}" x=${Math.round(el.x)} y=${Math.round(el.y)} w=${Math.round(el.w)} h=${Math.round(el.h)} color="${el.color}"${flags}`;
+      if (el.type === 'icon') {
+        return `id="${el.id}" type="icon" role="${el.name}" x=${Math.round(el.x)} y=${Math.round(el.y)} w=${Math.round(el.w)} h=${Math.round(el.h)} color="${el.color}"${flags}`;
+      }
+      return `id="${el.id}" type="${el.type}" role="${el.name}" x=${Math.round(el.x)} y=${Math.round(el.y)} w=${Math.round(el.w)} h=${Math.round(el.h)}${flags}`;
     });
 
   return [

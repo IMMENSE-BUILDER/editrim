@@ -1,5 +1,7 @@
 import type {
-  Background, BrandKit, DesignSize, El, IconElement, ImageElement, Page, ShapeElement, ShapeKind, TextElement,
+  Background, BrandKit, ChartElement, ChartKind, ConnectorElement, ConnectorRoute, DesignSize,
+  DrawingElement, El, GridCell, GridElement, IconElement, ImageElement, MockupDevice,
+  MockupElement, Page, QrElement, ShapeElement, ShapeKind, TableElement, TextElement,
 } from '../lib/types';
 import { TEMPLATE_IMAGES } from '../lib/templates';
 import { iconById } from '../lib/icons';
@@ -238,6 +240,298 @@ export function createImage(src: string, page: Page, size: DesignSize, aspect = 
     fit: 'cover',
     radius: 0,
     filters: { brightness: 100, contrast: 100, saturate: 100, blur: 0, grayscale: 0, sepia: 0, hue: 0 },
+    shadow: null,
+  };
+}
+
+export function createChart(kind: ChartKind, page: Page, size: DesignSize, brand?: BrandKit): ChartElement {
+  const m = Math.min(size.width, size.height);
+  const w = Math.round(m * 0.56);
+  const h = Math.round(m * 0.38);
+  const off = stagger(page);
+  const palette = brand?.colors?.length ? brand.colors : [COBALT, '#14B8A6', CORAL, '#8B5CF6'];
+  const labels = kind === 'progress' ? ['Goal reached'] : ['Q1', 'Q2', 'Q3', 'Q4'];
+  const series =
+    kind === 'progress'
+      ? [{ name: 'Progress', values: [74] }]
+      : kind === 'pie' || kind === 'donut'
+        ? [{ name: 'Share', values: [38, 27, 21, 14] }]
+        : [
+            { name: '2025', values: [42, 68, 54, 86] },
+            { name: '2026', values: [58, 79, 72, 96] },
+          ];
+  return {
+    id: uid('ch'),
+    type: 'chart',
+    name: `${kind[0].toUpperCase() + kind.slice(1)} chart`,
+    chartKind: kind,
+    data: { labels, series },
+    colors: [...palette, '#F59E0B', '#EC4899'],
+    showLegend: kind !== 'progress',
+    showValues: true,
+    showGrid: true,
+    fontFamily: brand?.fonts?.[1] ?? 'Inter',
+    textColor: INK,
+    x: Math.round((size.width - w) / 2 + off),
+    y: Math.round((size.height - h) / 2 + off),
+    w,
+    h,
+    rotation: 0,
+    opacity: 1,
+    shadow: null,
+  };
+}
+
+export function createTable(rows = 4, cols = 3, page: Page, size: DesignSize, brand?: BrandKit): TableElement {
+  const m = Math.min(size.width, size.height);
+  const w = Math.round(m * 0.62);
+  const h = Math.round(m * 0.36);
+  const off = stagger(page);
+  const cells = Array.from({ length: rows }, (_, r) =>
+    Array.from({ length: cols }, (_, c) => {
+      if (r === 0) return c === 0 ? 'Item' : `Col ${c}`;
+      return c === 0 ? `Row ${r}` : String((r * 10 + c * 5));
+    }),
+  );
+  return {
+    id: uid('tb'),
+    type: 'table',
+    name: 'Table',
+    cells,
+    colWidths: Array.from({ length: cols }, () => 1 / cols),
+    rowHeights: Array.from({ length: rows }, () => 1 / rows),
+    merges: [],
+    header: true,
+    headerFill: brand?.colors?.[0] ?? COBALT,
+    headerColor: '#FFFFFF',
+    fill: '#FFFFFF',
+    altFill: '#F7F4EC',
+    borderColor: '#D6D0C4',
+    textColor: INK,
+    borderWidth: 1,
+    fontFamily: brand?.fonts?.[1] ?? 'Inter',
+    fontSize: Math.max(12, Math.round(m * 0.018)),
+    padding: 10,
+    align: 'left',
+    x: Math.round((size.width - w) / 2 + off),
+    y: Math.round((size.height - h) / 2 + off),
+    w,
+    h,
+    rotation: 0,
+    opacity: 1,
+    shadow: null,
+  };
+}
+
+export function createQr(value: string, page: Page, size: DesignSize, brand?: BrandKit): QrElement {
+  const m = Math.min(size.width, size.height);
+  const side = Math.round(m * 0.24);
+  const off = stagger(page);
+  return {
+    id: uid('qr'),
+    type: 'qr',
+    name: 'QR code',
+    value: value || 'https://editrim.app',
+    fg: brand?.colors?.[0] ?? INK,
+    bg: '#FFFFFF',
+    ecc: 'M',
+    margin: 2,
+    rounded: false,
+    x: Math.round((size.width - side) / 2 + off),
+    y: Math.round((size.height - side) / 2 + off),
+    w: side,
+    h: side,
+    rotation: 0,
+    opacity: 1,
+    shadow: null,
+  };
+}
+
+export type GridLayoutId = '2-up' | '3-col' | '2x2' | 'hero-left' | 'hero-top' | 'mosaic-5';
+
+const GRID_LAYOUTS: Record<GridLayoutId, { name: string; cells: GridCell[] }> = {
+  '2-up': {
+    name: '2-up grid',
+    cells: [
+      { x: 0, y: 0, w: 0.5, h: 1 },
+      { x: 0.5, y: 0, w: 0.5, h: 1 },
+    ],
+  },
+  '3-col': {
+    name: '3-col grid',
+    cells: [
+      { x: 0, y: 0, w: 1 / 3, h: 1 },
+      { x: 1 / 3, y: 0, w: 1 / 3, h: 1 },
+      { x: 2 / 3, y: 0, w: 1 / 3, h: 1 },
+    ],
+  },
+  '2x2': {
+    name: '2×2 grid',
+    cells: [
+      { x: 0, y: 0, w: 0.5, h: 0.5 },
+      { x: 0.5, y: 0, w: 0.5, h: 0.5 },
+      { x: 0, y: 0.5, w: 0.5, h: 0.5 },
+      { x: 0.5, y: 0.5, w: 0.5, h: 0.5 },
+    ],
+  },
+  'hero-left': {
+    name: 'Hero left',
+    cells: [
+      { x: 0, y: 0, w: 0.6, h: 1 },
+      { x: 0.6, y: 0, w: 0.4, h: 0.5 },
+      { x: 0.6, y: 0.5, w: 0.4, h: 0.5 },
+    ],
+  },
+  'hero-top': {
+    name: 'Hero top',
+    cells: [
+      { x: 0, y: 0, w: 1, h: 0.6 },
+      { x: 0, y: 0.6, w: 0.5, h: 0.4 },
+      { x: 0.5, y: 0.6, w: 0.5, h: 0.4 },
+    ],
+  },
+  'mosaic-5': {
+    name: 'Mosaic 5',
+    cells: [
+      { x: 0, y: 0, w: 0.5, h: 0.55 },
+      { x: 0.5, y: 0, w: 0.5, h: 0.36 },
+      { x: 0, y: 0.55, w: 0.5, h: 0.45 },
+      { x: 0.5, y: 0.36, w: 0.5, h: 0.32 },
+      { x: 0.5, y: 0.68, w: 0.5, h: 0.32 },
+    ],
+  },
+};
+
+export function createGrid(layoutId: GridLayoutId, page: Page, size: DesignSize): GridElement {
+  const m = Math.min(size.width, size.height);
+  const w = Math.round(m * 0.58);
+  const h = Math.round(m * 0.44);
+  const off = stagger(page);
+  const def = GRID_LAYOUTS[layoutId] ?? GRID_LAYOUTS['2x2'];
+  return {
+    id: uid('gr'),
+    type: 'grid',
+    name: def.name,
+    cells: def.cells.map(c => ({ ...c })),
+    gap: 10,
+    radius: 10,
+    bg: 'transparent',
+    x: Math.round((size.width - w) / 2 + off),
+    y: Math.round((size.height - h) / 2 + off),
+    w,
+    h,
+    rotation: 0,
+    opacity: 1,
+    shadow: null,
+  };
+}
+
+export function createMockup(device: MockupDevice, page: Page, size: DesignSize, src?: string): MockupElement {
+  const m = Math.min(size.width, size.height);
+  const ratio =
+    device === 'phone' ? 0.5
+      : device === 'tablet' ? 0.74
+        : device === 'polaroid' ? 0.84
+          : device === 'poster' ? 0.72
+            : 1.45;
+  const h = Math.round(m * 0.48);
+  const w = Math.round(h * ratio);
+  const off = stagger(page);
+  return {
+    id: uid('mk'),
+    type: 'mockup',
+    name: `${device[0].toUpperCase() + device.slice(1)} mockup`,
+    device,
+    src: src ?? TEMPLATE_IMAGES.coffee,
+    frameColor: '#1C1B18',
+    x: Math.round((size.width - w) / 2 + off),
+    y: Math.round((size.height - h) / 2 + off),
+    w,
+    h,
+    rotation: 0,
+    opacity: 1,
+    shadow: { x: 0, y: 12, blur: 28, color: 'rgba(20,19,15,0.2)' },
+  };
+}
+
+export function createSticky(color = '#FEF08A', page: Page, size: DesignSize): TextElement {
+  const m = Math.min(size.width, size.height);
+  const side = Math.max(180, Math.round(m * 0.22));
+  const off = stagger(page);
+  return {
+    ...textBase(page),
+    id: uid('st'),
+    name: 'Sticky note',
+    text: 'New idea…',
+    x: Math.round((size.width - side) / 2 + off),
+    y: Math.round((size.height - side) / 2 + off),
+    w: side,
+    h: side,
+    fontSize: 28,
+    fontFamily: 'Caveat',
+    fontWeight: 600,
+    color: INK,
+    align: 'left',
+    valign: 'top',
+    background: { kind: 'solid', color },
+    backgroundRadius: 6,
+    padding: 20,
+    shadow: { x: 0, y: 8, blur: 20, color: 'rgba(20,19,15,0.16)' },
+  };
+}
+
+export function createConnector(
+  fromEl: El,
+  toEl: El,
+  route: ConnectorRoute = 'elbow',
+  brand?: BrandKit,
+): ConnectorElement {
+  const x1 = fromEl.x + fromEl.w / 2;
+  const y1 = fromEl.y + fromEl.h / 2;
+  const x2 = toEl.x + toEl.w / 2;
+  const y2 = toEl.y + toEl.h / 2;
+  const pad = 16;
+  return {
+    id: uid('cn'),
+    type: 'connector',
+    name: 'Connector',
+    from: { elementId: fromEl.id, x: x1, y: y1 },
+    to: { elementId: toEl.id, x: x2, y: y2 },
+    route,
+    stroke: brand?.colors?.[0] ?? INK,
+    strokeWidth: 3,
+    arrowStart: false,
+    arrowEnd: true,
+    dash: false,
+    x: Math.min(x1, x2) - pad,
+    y: Math.min(y1, y2) - pad,
+    w: Math.max(24, Math.abs(x2 - x1) + pad * 2),
+    h: Math.max(24, Math.abs(y2 - y1) + pad * 2),
+    rotation: 0,
+    opacity: 1,
+  };
+}
+
+export function createDrawing(
+  strokes: DrawingElement['strokes'],
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+): DrawingElement {
+  return {
+    id: uid('dr'),
+    type: 'drawing',
+    name: 'Drawing',
+    strokes,
+    baseW: Math.max(1, w),
+    baseH: Math.max(1, h),
+    x,
+    y,
+    w: Math.max(1, w),
+    h: Math.max(1, h),
+    rotation: 0,
+    opacity: 1,
     shadow: null,
   };
 }

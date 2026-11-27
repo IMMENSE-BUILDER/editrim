@@ -64,6 +64,7 @@ export function CanvasContextMenu({
   onAddPage,
   onDuplicatePage,
   onFit,
+  onConnect,
 }: {
   menu: CanvasMenuState;
   onClose: () => void;
@@ -85,6 +86,7 @@ export function CanvasContextMenu({
   onAddPage: () => void;
   onDuplicatePage: () => void;
   onFit: () => void;
+  onConnect: () => void;
 }) {
   const [sub, setSub] = useState<'layer' | 'align' | 'lock' | null>(null);
 
@@ -204,6 +206,9 @@ export function CanvasContextMenu({
               <Row icon="ungroup" label="Ungroup" shortcut="Ctrl+Shift+G" onClick={act(store.ungroupSelected)} />
             ) : (
               <Row icon="group" label="Group" shortcut="Ctrl+G" onClick={act(store.groupSelected)} disabled={selected.length < 2} />
+            )}
+            {selected.length === 2 && (
+              <Row icon="arrowRight" label="Connect elements" onClick={act(onConnect)} />
             )}
             <Row icon="component" label="Create component" shortcut="Ctrl+Alt+K" onClick={act(onCreateComponent)} />
             <Row icon="comment" label="Comment" shortcut="Ctrl+Alt+N" onClick={act(onComment)} />

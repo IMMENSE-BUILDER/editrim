@@ -43,7 +43,7 @@ export function PagePreview({
         >
           <PageBackground bg={page.background} />
           {page.elements.map(el => (
-            <PreviewElement key={el.id} el={el} />
+            <PreviewElement key={el.id} el={el} page={page} />
           ))}
         </div>
       )}
@@ -51,7 +51,7 @@ export function PagePreview({
   );
 }
 
-function PreviewElement({ el }: { el: El }) {
+function PreviewElement({ el, page }: { el: El; page: Page }) {
   if (el.hidden) return null;
   const filter =
     el.type === 'image' || el.type === 'icon'
@@ -72,7 +72,7 @@ function PreviewElement({ el }: { el: El }) {
         filter,
       }}
     >
-      <ElementView el={el} />
+      <ElementView el={el} page={page} />
     </div>
   );
 }

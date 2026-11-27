@@ -4,6 +4,7 @@ import { iconById } from './icons';
 import { fontString } from './render';
 import { resolveSrc } from './storage';
 import { downloadBlob, safeFilename } from './utils';
+import { buildPrims, primImages, primsToSvg } from './rich';
 
 /* ------------------------------------------------------------------ *
  * Scalar helpers
@@ -357,12 +358,19 @@ export async function renderPageSvg(page: Page, size: DesignSize): Promise<strin
 
   const textInner = (el: TextElement) => {
     const parts: string[] = [];
+    const effect = el.effect ?? 'none';
+    const inten = Math.max(0.1, Math.min(1, (el.effectIntensity ?? 55) / 100));
+    const eColor = el.effectColor || (effect === 'neon' ? '#38BDF8' : effect === 'glitch' ? '#22D3EE' : '#14130F');
+    let pad = el.padding ?? 0;
+
     if (el.background && el.background.kind !== 'none') {
       const fill = paintFill(el.background, el.w, el.h);
       parts.push(`<rect width="${n(el.w)}" height="${n(el.h)}" rx="${n(el.backgroundRadius ?? 0)}" fill="${esc(fill)}"/>`);
+    } else if (effect === 'background') {
+      pad = pad || 12;
+      parts.push(`<rect width="${n(el.w)}" height="${n(el.h)}" rx="${n(el.backgroundRadius || 12)}" fill="${esc(el.effectColor || '#D8F55A')}"/>`);
     }
 
-    const pad = el.padding ?? 0;
     const lines = layoutText(el);
     const lineH = el.fontSize * el.lineHeight;
     const totalH = lines.length * lineH;
@@ -373,20 +381,32 @@ export async function renderPageSvg(page: Page, size: DesignSize): Promise<strin
     const anchor = el.align === 'center' ? 'middle' : el.align === 'right' ? 'end' : 'start';
     const anchorX = el.align === 'center' ? el.w / 2 : el.align === 'right' ? el.w - pad : pad;
 
-    const fontAttrs =
+    const baseFill = effect === 'hollow' || effect === 'splice' ? 'none' : el.color;
+    const baseStroke =
+      effect === 'hollow' || effect === 'splice'
+        ? ` stroke="${esc(effect === 'hollow' ? el.effectColor || el.color : el.color)}" stroke-width="${n(Math.max(1.5, Math.round(el.fontSize * 0.04)))}" stroke-linejoin="round"`
+        : el.strokeWidth && el.strokeColor
+          ? ` stroke="${esc(el.strokeColor)}" stroke-width="${n(el.strokeWidth)}" stroke-linejoin="round"`
+          : '';
+
+    const commonFontAttrs =
       `font-family="${esc(FONT_CSS_STACK(el.fontFamily))}" font-size="${n(el.fontSize)}" font-weight="${el.fontWeight}"` +
       `${el.italic ? ' font-style="italic"' : ''}${el.letterSpacing ? ` letter-spacing="${n(el.letterSpacing)}"` : ''}` +
-      ` fill="${esc(el.color)}" text-anchor="${anchor}" dominant-baseline="text-before-edge" xml:space="preserve"` +
-      `${el.strokeWidth && el.strokeColor ? ` stroke="${esc(el.strokeColor)}" stroke-width="${n(el.strokeWidth)}" stroke-linejoin="round"` : ''}`;
+      ` text-anchor="${anchor}" dominant-baseline="text-before-edge" xml:space="preserve"`;
 
-    const tspans: string[] = [];
+    const buildTspans = (ox = 0, oy = 0) =>
+      lines
+        .map((item, i) => {
+          const y = top + i * lineH + (lineH - el.fontSize) / 2 + oy;
+          return item.line ? `<tspan x="${n(anchorX + ox)}" y="${n(y)}">${esc(item.line)}</tspan>` : '';
+        })
+        .join('');
+
+    const tspans = buildTspans();
     const underlineNodes: string[] = [];
     for (let i = 0; i < lines.length; i++) {
-      const { line, width } = lines[i];
+      const { width } = lines[i];
       const y = top + i * lineH + (lineH - el.fontSize) / 2;
-      if (line) {
-        tspans.push(`<tspan x="${n(anchorX)}" y="${n(y)}">${esc(line)}</tspan>`);
-      }
       if (el.underline && width > 0) {
         const startX = anchor === 'middle' ? anchorX - width / 2 : anchor === 'end' ? anchorX - width : anchorX;
         underlineNodes.push(
@@ -394,7 +414,33 @@ export async function renderPageSvg(page: Page, size: DesignSize): Promise<strin
         );
       }
     }
-    parts.push(`<g${shadowAttr(el.shadow)}><text ${fontAttrs}>${tspans.join('')}</text>${underlineNodes.join('')}</g>`);
+
+    const extraLayers: string[] = [];
+    if (effect === 'echo') {
+      const d = Math.round(4 + inten * 7);
+      const c = el.effectColor || el.color;
+      extraLayers.push(`<text ${commonFontAttrs} fill="${esc(c)}" opacity="0.25">${buildTspans(d * 2, d * 2)}</text>`);
+      extraLayers.push(`<text ${commonFontAttrs} fill="${esc(c)}" opacity="0.5">${buildTspans(d, d)}</text>`);
+    } else if (effect === 'glitch') {
+      const d = Math.round(2 + inten * 6);
+      extraLayers.push(`<text ${commonFontAttrs} fill="${esc(eColor)}">${buildTspans(-d, 0)}</text>`);
+      extraLayers.push(`<text ${commonFontAttrs} fill="#EC4899">${buildTspans(d, 0)}</text>`);
+    } else if (effect === 'splice') {
+      const d = Math.round(3 + inten * 6);
+      extraLayers.push(`<text ${commonFontAttrs} fill="${esc(eColor)}">${buildTspans(d, d)}</text>`);
+    }
+
+    let effShadow = el.shadow;
+    if (!effShadow && effect === 'shadow') {
+      const d = Math.round(3 + inten * 6);
+      effShadow = { x: d, y: d, blur: Math.round(inten * 4), color: eColor };
+    } else if (!effShadow && effect === 'lift') {
+      effShadow = { x: 0, y: Math.round(6 + inten * 10), blur: Math.round(14 + inten * 22), color: eColor };
+    } else if (!effShadow && effect === 'neon') {
+      effShadow = { x: 0, y: 0, blur: Math.round(12 + inten * 26), color: eColor };
+    }
+
+    parts.push(`<g${shadowAttr(effShadow)}>${extraLayers.join('')}<text ${commonFontAttrs} fill="${esc(baseFill)}"${baseStroke}>${tspans}</text>${underlineNodes.join('')}</g>`);
     return parts.join('');
   };
 
@@ -442,19 +488,34 @@ export async function renderPageSvg(page: Page, size: DesignSize): Promise<strin
   };
 
   const sources = new Map<string, string>();
+  const rawSrcs = new Set<string>();
+  for (const el of page.elements) {
+    if (el.type === 'image' && el.src) rawSrcs.add(el.src);
+    const prims = buildPrims(el, page);
+    if (prims) for (const s of primImages(prims)) rawSrcs.add(s);
+  }
   await Promise.all(
-    page.elements.map(async el => {
-      if (el.type !== 'image') return;
-      const href = await embedImage(el.src);
-      sources.set(el.id, href && (await imageLoads(href)) ? href : '');
+    [...rawSrcs].map(async src => {
+      const href = await embedImage(src);
+      sources.set(src, href && (await imageLoads(href)) ? href : '');
     }),
   );
 
   for (const el of page.elements) {
     if (el.hidden) continue;
+    const rich = buildPrims(el, page);
+    if (rich !== null) {
+      const inner = primsToSvg(rich, el.w, el.h, {
+        innerOnly: true,
+        idPrefix: nextId('rp'),
+        imageHref: src => sources.get(src) ?? '',
+      });
+      body.push(wrap(el, `<g${shadowAttr(el.shadow)}>${inner}</g>`));
+      continue;
+    }
     if (el.type === 'shape') body.push(wrap(el, shapeInner(el)));
     else if (el.type === 'text') body.push(wrap(el, textInner(el)));
-    else if (el.type === 'image') body.push(wrap(el, imageInner(el, sources.get(el.id) ?? '')));
+    else if (el.type === 'image') body.push(wrap(el, imageInner(el, sources.get(el.src) ?? '')));
     else if (el.type === 'icon') body.push(wrap(el, iconInner(el)));
   }
 

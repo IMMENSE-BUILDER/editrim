@@ -3,13 +3,17 @@ import type React from 'react';
 import { GlassButtonGroup, GlassButtonGroupItem, GlassButtonGroupSeparator } from '@/components/liquid-glass';
 import { EditrimIcon } from '../components/EditrimIcon';
 
-import type { CanvasComment, El, Page, Point, Rect } from '../lib/types';
+import type { CanvasComment, El, GridElement, MockupElement, Page, Point, Rect, ShapeKind, TableElement } from '../lib/types';
 import type { Design } from '../lib/types';
 import { PageBackground, ElementView } from '../components/ElementView';
+import { TableEditor } from './TableEditor';
+import { createDrawing } from './factory';
+import type { DrawSettings } from './Panels';
+import { pointsToStrokePath } from '../lib/rich/drawing';
 import { FONT_CSS_STACK } from '../lib/fonts';
 import { paintToCss } from '../lib/render';
 import { measureTextHeight } from '../lib/render';
-import { clamp, rotatePoint, rotatedBBox, round, unionRect } from '../lib/utils';
+import { clamp, rotatePoint, rotatedBBox, round, uid, unionRect } from '../lib/utils';
 import '../styles/canvas-craft.css';
 
 type Handle = 'nw' | 'n' | 'ne' | 'e' | 'se' | 's' | 'sw' | 'w';
@@ -46,6 +50,11 @@ type Props = {
   updateElements: (updates: Record<string, Partial<El>>, opts?: { transient?: boolean; merge?: string }) => void;
   pushHistory: () => void;
   comments?: CanvasComment[];
+  drawMode?: boolean;
+  drawSettings?: DrawSettings;
+  onAddElements?: (els: El[]) => void;
+  onRemoveElement?: (id: string) => void;
+  onDropAsset?: (file: File) => Promise<string | null>;
   onElementContextMenu?: (e: React.MouseEvent, el: El) => void;
   onCanvasContextMenu?: (e: React.MouseEvent, point: Point) => void;
   onCommentClick?: (target: { elementId?: string; x: number; y: number }) => void;
@@ -128,6 +137,11 @@ export function Canvas({
   updateElements,
   pushHistory,
   comments = [],
+  drawMode = false,
+  drawSettings,
+  onAddElements,
+  onRemoveElement,
+  onDropAsset,
   onElementContextMenu,
   onCanvasContextMenu,
   onCommentClick,
@@ -142,6 +156,10 @@ export function Canvas({
   const [gaps, setGaps] = useState<{ id: string; x: number; y: number; label: string; vertical: boolean }[]>([]);
   const [hint, setHint] = useState<{ text: string; x: number; y: number } | null>(null);
   const [marquee, setMarquee] = useState<Rect | null>(null);
+  const [liveStroke, setLiveStroke] = useState<[number, number, number][] | null>(null);
+  const [snapReady, setSnapReady] = useState(false);
+  const drawPtsRef = useRef<[number, number, number][]>([]);
+  const holdTimerRef = useRef<number | null>(null);
   const marqueeCleanup = useRef<(() => void) | null>(null);
   const fittedFor = useRef('');
 
@@ -640,9 +658,192 @@ export function Canvas({
   const hintScale = 1 / view.zoom;
 
   const editText = (el: El) => {
+    if (el.type === 'table') {
+      setSelectedIds([el.id]);
+      setEditingId(el.id);
+      return;
+    }
     if (el.type !== 'text') return;
     setSelectedIds([el.id]);
     setEditingId(el.id);
+  };
+
+  /* ---------- draw tool pointer handlers ---------- */
+  const eraseAt = (p: Point) => {
+    if (!onRemoveElement) return;
+    for (let i = page.elements.length - 1; i >= 0; i--) {
+      const el = page.elements[i];
+      if (el.type !== 'drawing') continue;
+      if (p.x >= el.x - 8 && p.x <= el.x + el.w + 8 && p.y >= el.y - 8 && p.y <= el.y + el.h + 8) {
+        onRemoveElement(el.id);
+        break;
+      }
+    }
+  };
+
+  const finishStroke = (pts: [number, number, number][], snapped: boolean) => {
+    if (!drawSettings || !onAddElements || pts.length < 2) return;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const [x, y] of pts) {
+      if (x < minX) minX = x;
+      if (y < minY) minY = y;
+      if (x > maxX) maxX = x;
+      if (y > maxY) maxY = y;
+    }
+    const bw = Math.max(12, maxX - minX);
+    const bh = Math.max(12, maxY - minY);
+
+    if (snapped && drawSettings.shapeAssist && pts.length >= 4) {
+      const p0 = pts[0];
+      const p1 = pts[pts.length - 1];
+      const endDist = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]);
+      const diag = Math.hypot(bw, bh);
+      let kind: ShapeKind = 'rect';
+      if (endDist > diag * 0.4) {
+        kind = 'line';
+      } else {
+        const cx = (minX + maxX) / 2;
+        const cy = (minY + maxY) / 2;
+        const radii = pts.map(([x, y]) => Math.hypot((x - cx) / (bw / 2 || 1), (y - cy) / (bh / 2 || 1)));
+        const meanR = radii.reduce((a, b) => a + b, 0) / radii.length;
+        const variance = radii.reduce((a, r) => a + (r - meanR) ** 2, 0) / radii.length;
+        kind = variance < 0.08 ? 'ellipse' : 'rect';
+      }
+      const shapeEl: El = {
+        id: uid('sh'),
+        type: 'shape',
+        name: kind === 'line' ? 'Drawn line' : kind === 'ellipse' ? 'Drawn circle' : 'Drawn box',
+        shape: kind,
+        x: round(minX, 1),
+        y: round(kind === 'line' ? (p0[1] + p1[1]) / 2 - drawSettings.size / 2 : minY, 1),
+        w: round(bw, 1),
+        h: round(kind === 'line' ? Math.max(4, drawSettings.size) : bh, 1),
+        rotation: kind === 'line' ? round((Math.atan2(p1[1] - p0[1], p1[0] - p0[0]) * 180) / Math.PI, 1) : 0,
+        opacity: 1,
+        fill: kind === 'line' ? { kind: 'none' } : { kind: 'none' },
+        stroke: drawSettings.color,
+        strokeWidth: Math.max(2, drawSettings.size),
+        radius: kind === 'rect' ? 8 : 0,
+        shadow: null,
+      };
+      onAddElements([shapeEl]);
+      return;
+    }
+
+    const pad = Math.max(8, drawSettings.size);
+    const x0 = round(minX - pad, 1);
+    const y0 = round(minY - pad, 1);
+    const w = round(bw + pad * 2, 1);
+    const h = round(bh + pad * 2, 1);
+    const rel: [number, number, number][] = pts.map(([x, y, pr]) => [
+      round(x - x0, 1),
+      round(y - y0, 1),
+      round(pr, 2),
+    ]);
+    const tool = drawSettings.tool === 'eraser' ? 'pen' : drawSettings.tool;
+    const drawingEl = createDrawing(
+      [{ points: rel, color: drawSettings.color, size: drawSettings.size, tool }],
+      x0,
+      y0,
+      w,
+      h,
+    );
+    onAddElements([drawingEl]);
+  };
+
+  const onDrawPointerDown = (e: React.PointerEvent) => {
+    if (!drawMode || !drawSettings || e.button !== 0 || space) return;
+    e.stopPropagation();
+    e.preventDefault();
+    const start = toPage(e.clientX, e.clientY);
+    if (drawSettings.tool === 'eraser') {
+      eraseAt(start);
+      const moveErase = (ev: PointerEvent) => eraseAt(toPage(ev.clientX, ev.clientY));
+      const upErase = () => {
+        window.removeEventListener('pointermove', moveErase);
+        window.removeEventListener('pointerup', upErase);
+      };
+      window.addEventListener('pointermove', moveErase);
+      window.addEventListener('pointerup', upErase);
+      return;
+    }
+
+    let snapped = false;
+    setSnapReady(false);
+    const first: [number, number, number] = [round(start.x, 1), round(start.y, 1), e.pressure > 0 ? e.pressure : 0.5];
+    drawPtsRef.current = [first];
+    setLiveStroke([first]);
+
+    let lastAnchor = start;
+    const resetHold = (pt: Point) => {
+      if (holdTimerRef.current) window.clearTimeout(holdTimerRef.current);
+      if (!drawSettings.shapeAssist) return;
+      if (Math.hypot(pt.x - lastAnchor.x, pt.y - lastAnchor.y) > 6) {
+        lastAnchor = pt;
+        snapped = false;
+        setSnapReady(false);
+      }
+      holdTimerRef.current = window.setTimeout(() => {
+        snapped = true;
+        setSnapReady(true);
+      }, 500);
+    };
+    resetHold(start);
+
+    const move = (ev: PointerEvent) => {
+      const p = toPage(ev.clientX, ev.clientY);
+      const nextPt: [number, number, number] = [round(p.x, 1), round(p.y, 1), ev.pressure > 0 ? ev.pressure : 0.5];
+      drawPtsRef.current = [...drawPtsRef.current, nextPt];
+      setLiveStroke(drawPtsRef.current);
+      resetHold(p);
+    };
+    const up = () => {
+      if (holdTimerRef.current) {
+        window.clearTimeout(holdTimerRef.current);
+        holdTimerRef.current = null;
+      }
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      const pts = drawPtsRef.current;
+      drawPtsRef.current = [];
+      setLiveStroke(null);
+      setSnapReady(false);
+      finishStroke(pts, snapped);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
+  /* ---------- image drop onto Grid or Mockup ---------- */
+  const onPageDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    let imgSrc = e.dataTransfer.getData('application/x-editrim-img');
+    if (!imgSrc && e.dataTransfer.files?.length && onDropAsset) {
+      const f = Array.from(e.dataTransfer.files).find(x => x.type.startsWith('image/'));
+      if (f) imgSrc = (await onDropAsset(f)) ?? '';
+    }
+    if (!imgSrc) return;
+    const p = toPage(e.clientX, e.clientY);
+    for (let i = page.elements.length - 1; i >= 0; i--) {
+      const el = page.elements[i];
+      if (el.hidden || el.locked) continue;
+      if (p.x < el.x || p.x > el.x + el.w || p.y < el.y || p.y > el.y + el.h) continue;
+      if (el.type === 'grid') {
+        const grid = el as GridElement;
+        const fx = (p.x - grid.x) / Math.max(1, grid.w);
+        const fy = (p.y - grid.y) / Math.max(1, grid.h);
+        const idx = grid.cells.findIndex(c => fx >= c.x && fx <= c.x + c.w && fy >= c.y && fy <= c.y + c.h);
+        if (idx >= 0) {
+          const nextCells = grid.cells.map((c, ci) => (ci === idx ? { ...c, src: imgSrc } : c));
+          updateElements({ [grid.id]: { cells: nextCells } });
+          return;
+        }
+      } else if (el.type === 'mockup') {
+        const mk = el as MockupElement;
+        updateElements({ [mk.id]: { src: imgSrc } });
+        return;
+      }
+    }
   };
 
   const commentPins = (() => {
@@ -739,6 +940,8 @@ export function Canvas({
           className="cv-page"
           ref={pageRef}
           onPointerDown={onPageDown}
+          onDragOver={e => e.preventDefault()}
+          onDrop={e => { void onPageDrop(e); }}
           style={{ width: size.width, height: size.height }}
         >
           <div className="cv-page-clip">
@@ -770,7 +973,17 @@ export function Canvas({
                     editText(el);
                   }}
                 >
-                  {editingId === el.id && el.type === 'text' ? renderTextEditor(el) : <ElementView el={el} />}
+                  {editingId === el.id && el.type === 'text'
+                    ? renderTextEditor(el)
+                    : editingId === el.id && el.type === 'table'
+                      ? (
+                        <TableEditor
+                          el={el as TableElement}
+                          onPatch={(patch, merge) => updateElements({ [el.id]: patch }, merge ? { merge } : undefined)}
+                          onExit={() => setEditingId(null)}
+                        />
+                      )
+                      : <ElementView el={el} page={page} />}
                   {el.locked && selectedIds.includes(el.id) && (
                     <span className="cv-lock-badge"><EditrimIcon name="lock" size={Math.max(8, 10 / view.zoom)} /></span>
                   )}
@@ -778,6 +991,42 @@ export function Canvas({
               );
             })}
           </div>
+
+          {drawMode && (
+            <svg
+              className="draw-overlay"
+              viewBox={`0 0 ${size.width} ${size.height}`}
+              onPointerDown={onDrawPointerDown}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                zIndex: 25,
+                cursor: drawSettings?.tool === 'eraser' ? 'cell' : 'crosshair',
+              }}
+            >
+              {liveStroke && drawSettings && drawSettings.tool !== 'eraser' && (
+                drawSettings.tool === 'highlighter' ? (
+                  <path
+                    d={liveStroke.map(([x, y], i) => `${i === 0 ? 'M' : 'L'} ${x} ${y}`).join(' ')}
+                    fill="none"
+                    stroke={drawSettings.color}
+                    strokeWidth={drawSettings.size}
+                    strokeOpacity={0.35}
+                    strokeLinecap="butt"
+                    strokeLinejoin="round"
+                  />
+                ) : (
+                  <path
+                    d={pointsToStrokePath(liveStroke, drawSettings.size, drawSettings.tool)}
+                    fill={snapReady ? '#2440F0' : drawSettings.color}
+                    fillOpacity={drawSettings.tool === 'marker' ? 0.88 : 1}
+                  />
+                )
+              )}
+            </svg>
+          )}
 
           {commentPins.map(pin => (
             <button

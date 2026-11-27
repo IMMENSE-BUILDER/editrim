@@ -4,15 +4,18 @@ import { Link } from 'react-router-dom';
 import {
   ArrowUpRight, Boxes, Check, ImagePlus, LayoutTemplate, Palette, Sparkles, Trash2, Upload, X,
 } from 'lucide-react';
-import type { BrandKit, El, Page, Paint, ShapeKind } from '../lib/types';
+import type { BrandKit, ChartKind, DrawingTool, El, MockupDevice, Page, Paint, ShapeKind } from '../lib/types';
 import type { EditorStore } from './useEditor';
 import { addAsset, deleteAsset, listAssets, type AssetRecord } from '../lib/storage';
 import { compressImage, uid } from '../lib/utils';
 import { TEMPLATE_IMAGES } from '../lib/templates';
 import { ICONS } from '../lib/icons';
 import { FONT_PAIRS, PALETTES, SWATCHES } from '../lib/palettes';
-import { CREATE_SHAPES, createIcon, createImage, createNumber, createShape, createText, PAGE_LAYOUTS } from './factory';
-import { ColorField, Segmented, SliderField } from './controls';
+import {
+  CREATE_SHAPES, createChart, createGrid, createIcon, createImage, createMockup,
+  createNumber, createQr, createShape, createTable, createText, type GridLayoutId, PAGE_LAYOUTS,
+} from './factory';
+import { ColorField, Segmented, SliderField, ToggleRow } from './controls';
 import { ShapeView } from '../components/ElementView';
 import { PagePreview } from '../components/PagePreview';
 import { useToast } from '../components/Toast';
@@ -23,7 +26,15 @@ import { EditrimIcon } from '../components/EditrimIcon';
 import { useResolvedSrc } from '../hooks/useResolvedSrc';
 import { applyBrandToDesign, auditBrand, type BrandIssue } from '../lib/brandApply';
 
-export type PanelTab = 'templates' | 'ai' | 'elements' | 'text' | 'uploads' | 'background' | 'brand';
+export type PanelTab = 'templates' | 'ai' | 'elements' | 'text' | 'draw' | 'uploads' | 'background' | 'brand';
+
+export type DrawSettings = {
+  tool: DrawingTool | 'eraser';
+  color: string;
+  size: number;
+  smoothing: number;
+  shapeAssist: boolean;
+};
 
 const PHOTOS = [
   { name: 'Coffee', src: TEMPLATE_IMAGES.coffee, ratio: 0.8 },
@@ -52,6 +63,8 @@ export function LeftPanel({
   store,
   brand,
   aiFocus,
+  drawSettings,
+  onDrawSettingsChange,
   onClose,
   onOpenBrand,
 }: {
@@ -59,6 +72,8 @@ export function LeftPanel({
   store: EditorStore;
   brand: BrandKit;
   aiFocus?: { focus: 'write' | 'translate'; nonce: number } | null;
+  drawSettings?: DrawSettings;
+  onDrawSettingsChange?: (next: DrawSettings) => void;
   onClose: () => void;
   onOpenBrand: () => void;
 }) {
@@ -66,6 +81,7 @@ export function LeftPanel({
   const page = store.page;
   const [components, setComponents] = useState<SavedComponent[]>(() => listComponents());
   const [brandScope, setBrandScope] = useState<'page' | 'all'>('page');
+  const [qrInput, setQrInput] = useState('https://editrim.app');
 
   useEffect(() => onComponentsChange(() => setComponents(listComponents())), []);
 
@@ -260,15 +276,168 @@ export function LeftPanel({
             ))}
           </div>
 
+          <div className="lp-section-title">Charts</div>
+          <div className="shape-grid">
+            {([
+              ['bar', 'Bar'],
+              ['column', 'Column'],
+              ['line', 'Line'],
+              ['area', 'Area'],
+              ['pie', 'Pie'],
+              ['donut', 'Donut'],
+              ['progress', 'Progress'],
+            ] as [ChartKind, string][]).map(([kind, label]) => (
+              <button
+                key={kind}
+                className="shape-btn"
+                onClick={() => store.addElements([createChart(kind, store.page, store.design.size, brand)])}
+                title={`Add ${label} chart`}
+              >
+                <span className="shape-glyph"><EditrimIcon name="chart" size={20} /></span>
+                <small>{label}</small>
+              </button>
+            ))}
+          </div>
+
+          <div className="lp-section-title">Tables</div>
+          <div className="line-presets">
+            <button onClick={() => store.addElements([createTable(3, 3, store.page, store.design.size, brand)])}>3 × 3</button>
+            <button onClick={() => store.addElements([createTable(4, 4, store.page, store.design.size, brand)])}>4 × 4</button>
+            <button
+              onClick={() => {
+                const t = createTable(5, 3, store.page, store.design.size, brand);
+                t.name = 'Pricing table';
+                t.cells = [
+                  ['Plan', 'Monthly', 'Annual'],
+                  ['Starter', '$0', '$0'],
+                  ['Studio', '$14', '$140'],
+                  ['Team', '$29', '$290'],
+                  ['Total', '=SUM(B2:B4)', '=SUM(C2:C4)'],
+                ];
+                store.addElements([t]);
+              }}
+            >
+              Pricing
+            </button>
+          </div>
+
+          <div className="lp-section-title">Grids</div>
+          <div className="shape-grid">
+            {([
+              ['2-up', '2-up'],
+              ['3-col', '3-col'],
+              ['2x2', '2×2'],
+              ['hero-left', 'Hero L'],
+              ['hero-top', 'Hero T'],
+              ['mosaic-5', 'Mosaic 5'],
+            ] as [GridLayoutId, string][]).map(([id, label]) => (
+              <button
+                key={id}
+                className="shape-btn"
+                onClick={() => store.addElements([createGrid(id, store.page, store.design.size)])}
+                title={`Add ${label} grid`}
+              >
+                <span className="shape-glyph"><EditrimIcon name="table" size={19} /></span>
+                <small>{label}</small>
+              </button>
+            ))}
+          </div>
+
+          <div className="lp-section-title">Mockups</div>
+          <div className="shape-grid">
+            {([
+              ['phone', 'Phone'],
+              ['tablet', 'Tablet'],
+              ['laptop', 'Laptop'],
+              ['browser', 'Browser'],
+              ['poster', 'Poster'],
+              ['polaroid', 'Polaroid'],
+            ] as [MockupDevice, string][]).map(([dev, label]) => (
+              <button
+                key={dev}
+                className="shape-btn"
+                onClick={() => store.addElements([createMockup(dev, store.page, store.design.size)])}
+                title={`Add ${label} mockup`}
+              >
+                <span className="shape-glyph"><EditrimIcon name="mockup" size={19} /></span>
+                <small>{label}</small>
+              </button>
+            ))}
+          </div>
+
+          <div className="lp-section-title">QR Code</div>
+          <div className="qr-add-row">
+            <input
+              type="text"
+              className="insp-input"
+              value={qrInput}
+              onChange={e => setQrInput(e.target.value)}
+              placeholder="https://editrim.app"
+              aria-label="QR code URL"
+            />
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() => store.addElements([createQr(qrInput, store.page, store.design.size, brand)])}
+            >
+              Add QR
+            </button>
+          </div>
+
           <div className="lp-section-title">Photos</div>
           <div className="photo-grid">
             {PHOTOS.map(p => (
-              <button key={p.name} className="photo-btn" onClick={() => store.addElements([createImage(p.src, store.page, store.design.size, p.ratio)])} title={`Add ${p.name}`}>
+              <button
+                key={p.name}
+                className="photo-btn"
+                draggable
+                onDragStart={e => e.dataTransfer.setData('application/x-editrim-img', p.src)}
+                onClick={() => store.addElements([createImage(p.src, store.page, store.design.size, p.ratio)])}
+                title={`Add ${p.name}`}
+              >
                 <img src={p.src} alt={p.name} loading="lazy" />
                 <span>{p.name}</span>
               </button>
             ))}
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (tab === 'draw' && drawSettings && onDrawSettingsChange) {
+    const ds = drawSettings;
+    return (
+      <div className="lp">
+        <PanelHead title="Draw" onClose={onClose} />
+        <div className="lp-scroll">
+          <div className="lp-section-title">Tool</div>
+          <Segmented
+            value={ds.tool}
+            options={[
+              { value: 'pen', label: 'Pen' },
+              { value: 'marker', label: 'Marker' },
+              { value: 'highlighter', label: 'Highlight' },
+              { value: 'eraser', label: 'Eraser' },
+            ]}
+            onChange={tool => onDrawSettingsChange({ ...ds, tool })}
+          />
+          <div className="lp-section-title">Colour</div>
+          <ColorField value={ds.color} onChange={color => onDrawSettingsChange({ ...ds, color })} />
+          <div className="swatch-grid">
+            {[...new Set([...brand.colors, '#14130F', '#2440F0', '#EF4444', '#10B981', '#F59E0B', '#FFFFFF'])].slice(0, 12).map(c => (
+              <button key={c} style={{ background: c }} onClick={() => onDrawSettingsChange({ ...ds, color: c })} title={c} />
+            ))}
+          </div>
+          <div className="lp-section-title">Brush</div>
+          <SliderField label="Size" value={ds.size} min={2} max={48} onChange={size => onDrawSettingsChange({ ...ds, size })} format={v => `${v}px`} />
+          <SliderField label="Smoothing" value={ds.smoothing} min={0} max={100} onChange={smoothing => onDrawSettingsChange({ ...ds, smoothing })} format={v => `${v}%`} />
+          <div className="lp-section-title">Shape assist</div>
+          <ToggleRow
+            label="Hold 0.5s to snap to shape"
+            checked={ds.shapeAssist}
+            onChange={shapeAssist => onDrawSettingsChange({ ...ds, shapeAssist })}
+          />
+          <p className="lp-hint">Drag anywhere on the canvas to draw freehand strokes. Hold still at the end of a stroke to snap into a line, circle, or box.</p>
         </div>
       </div>
     );
@@ -628,7 +797,12 @@ function UploadsPanel({ store, onClose }: { store: EditorStore; onClose: () => v
             <div className="asset-grid">
               {assets.map(a => (
                 <div key={a.id} className="asset-item">
-                  <button onClick={() => insert(a)} title={`Insert ${a.name}`}>
+                  <button
+                    draggable
+                    onDragStart={e => e.dataTransfer.setData('application/x-editrim-img', `asset:${a.id}`)}
+                    onClick={() => insert(a)}
+                    title={`Insert ${a.name}`}
+                  >
                     <img src={a.dataUrl} alt={a.name} loading="lazy" />
                   </button>
                   <button

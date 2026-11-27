@@ -2,6 +2,7 @@ import type { Background, DesignSize, El, ImageElement, MaskKind, Page, Paint, S
 import { resolveSrc } from './storage';
 import { FONT_CSS_STACK } from './fonts';
 import { iconById } from './icons';
+import { buildPrims, drawPrims, primFonts, primImages } from './rich';
 
 const imageCache = new Map<string, HTMLImageElement>();
 const failedImages = new Set<string>();
@@ -30,13 +31,24 @@ function loadImage(src: string): Promise<HTMLImageElement | null> {
   });
 }
 
-export async function preloadImages(page: Page): Promise<void> {
-  const srcs: string[] = [];
-  if (page.background.kind === 'image') srcs.push(await resolveSrc(page.background.src));
+export async function preloadImages(page: Page): Promise<Map<string, string>> {
+  const rawSrcs: string[] = [];
+  if (page.background.kind === 'image') rawSrcs.push(page.background.src);
   for (const el of page.elements) {
-    if (el.type === 'image') srcs.push(await resolveSrc(el.src));
+    if (el.type === 'image') rawSrcs.push(el.src);
+    const prims = buildPrims(el, page);
+    if (prims) rawSrcs.push(...primImages(prims));
   }
-  await Promise.all(srcs.filter(Boolean).map(loadImage));
+  const map = new Map<string, string>();
+  const resolvedList = await Promise.all(
+    [...new Set(rawSrcs)].filter(Boolean).map(async raw => {
+      const res = await resolveSrc(raw);
+      if (res) map.set(raw, res);
+      return res;
+    }),
+  );
+  await Promise.all(resolvedList.filter(Boolean).map(loadImage));
+  return map;
 }
 
 function paintToStyle(ctx: CanvasRenderingContext2D, paint: Paint | undefined, w: number, h: number): string | CanvasGradient | null {
@@ -297,7 +309,11 @@ export function measureTextHeight(el: TextElement): number {
 }
 
 function drawText(ctx: CanvasRenderingContext2D, el: TextElement, scale: number) {
-  const pad = el.padding ?? 0;
+  const effect = el.effect ?? 'none';
+  const inten = Math.max(0.1, Math.min(1, (el.effectIntensity ?? 55) / 100));
+  const eColor = el.effectColor || (effect === 'neon' ? '#38BDF8' : effect === 'glitch' ? '#22D3EE' : '#14130F');
+  let pad = el.padding ?? 0;
+
   if (el.background && el.background.kind !== 'none') {
     const style = paintToStyle(ctx, el.background, el.w, el.h);
     if (style) {
@@ -305,6 +321,11 @@ function drawText(ctx: CanvasRenderingContext2D, el: TextElement, scale: number)
       roundRect(ctx, 0, 0, el.w, el.h, el.backgroundRadius ?? 0);
       ctx.fill();
     }
+  } else if (effect === 'background') {
+    pad = pad || 12;
+    ctx.fillStyle = el.effectColor || '#D8F55A';
+    roundRect(ctx, 0, 0, el.w, el.h, el.backgroundRadius || 12);
+    ctx.fill();
   }
   const text = el.uppercase ? el.text.toUpperCase() : el.text;
   ctx.font = fontString(el);
@@ -325,8 +346,24 @@ function drawText(ctx: CanvasRenderingContext2D, el: TextElement, scale: number)
     ctx.shadowBlur = el.shadow.blur * scale;
     ctx.shadowOffsetX = el.shadow.x * scale;
     ctx.shadowOffsetY = el.shadow.y * scale;
+  } else if (effect === 'shadow') {
+    const d = Math.round(3 + inten * 6);
+    ctx.shadowColor = eColor;
+    ctx.shadowBlur = Math.round(inten * 4) * scale;
+    ctx.shadowOffsetX = d * scale;
+    ctx.shadowOffsetY = d * scale;
+  } else if (effect === 'lift') {
+    ctx.shadowColor = eColor;
+    ctx.shadowBlur = Math.round(14 + inten * 22) * scale;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = Math.round(6 + inten * 10) * scale;
+  } else if (effect === 'neon') {
+    ctx.shadowColor = eColor;
+    ctx.shadowBlur = Math.round(12 + inten * 26) * scale;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
   }
-  ctx.fillStyle = el.color;
+
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
     const lineW = ctx.measureText(line).width;
@@ -334,13 +371,54 @@ function drawText(ctx: CanvasRenderingContext2D, el: TextElement, scale: number)
     if (el.align === 'center') x = (el.w - lineW) / 2;
     else if (el.align === 'right') x = el.w - pad - lineW;
     const y = top + i * lineH + (lineH - el.fontSize) / 2;
-    ctx.fillText(line, x, y);
-    if (el.strokeWidth && el.strokeColor) {
+
+    if (effect === 'echo') {
+      const d = Math.round(4 + inten * 7);
+      const base = el.effectColor || el.color;
+      ctx.save();
+      ctx.globalAlpha *= 0.25;
+      ctx.fillStyle = base;
+      ctx.fillText(line, x + d * 2, y + d * 2);
+      ctx.restore();
+      ctx.save();
+      ctx.globalAlpha *= 0.5;
+      ctx.fillStyle = base;
+      ctx.fillText(line, x + d, y + d);
+      ctx.restore();
+    } else if (effect === 'glitch') {
+      const d = Math.round(2 + inten * 6);
+      ctx.save();
+      ctx.fillStyle = eColor;
+      ctx.fillText(line, x - d, y);
+      ctx.fillStyle = '#EC4899';
+      ctx.fillText(line, x + d, y);
+      ctx.restore();
+    } else if (effect === 'splice') {
+      const d = Math.round(3 + inten * 6);
+      ctx.save();
+      ctx.fillStyle = eColor;
+      ctx.fillText(line, x + d, y + d);
+      ctx.restore();
+    }
+
+    if (effect !== 'hollow' && effect !== 'splice') {
+      ctx.fillStyle = el.color;
+      ctx.fillText(line, x, y);
+      if (effect === 'neon') ctx.fillText(line, x, y);
+    }
+
+    if (effect === 'hollow' || effect === 'splice') {
+      ctx.strokeStyle = effect === 'hollow' ? el.effectColor || el.color : el.color;
+      ctx.lineWidth = Math.max(1.5, Math.round(el.fontSize * 0.04));
+      ctx.lineJoin = 'round';
+      ctx.strokeText(line, x, y);
+    } else if (el.strokeWidth && el.strokeColor) {
       ctx.strokeStyle = el.strokeColor;
       ctx.lineWidth = el.strokeWidth;
       ctx.strokeText(line, x, y);
     }
     if (el.underline) {
+      ctx.fillStyle = el.color;
       ctx.fillRect(x, y + el.fontSize * 0.96, lineW, Math.max(1, el.fontSize * 0.045));
     }
   }
@@ -396,13 +474,35 @@ function getIconPath(icon: string): Path2D {
   return p;
 }
 
-async function drawElement(ctx: CanvasRenderingContext2D, el: El, scale: number) {
+async function drawElement(
+  ctx: CanvasRenderingContext2D,
+  el: El,
+  scale: number,
+  page: Page,
+  resolvedMap: Map<string, string>,
+) {
   if (el.hidden) return;
+  const prims = buildPrims(el, page);
   ctx.save();
   ctx.globalAlpha = el.opacity ?? 1;
   ctx.translate(el.x + el.w / 2, el.y + el.h / 2);
   ctx.rotate((el.rotation * Math.PI) / 180);
   ctx.translate(-el.w / 2, -el.h / 2);
+
+  if (prims !== null) {
+    if (el.shadow) {
+      ctx.shadowColor = el.shadow.color;
+      ctx.shadowBlur = el.shadow.blur * scale;
+      ctx.shadowOffsetX = el.shadow.x * scale;
+      ctx.shadowOffsetY = el.shadow.y * scale;
+    }
+    drawPrims(ctx, prims, src => {
+      const actual = resolvedMap.get(src) || src;
+      return imageCache.get(actual) ?? null;
+    });
+    ctx.restore();
+    return;
+  }
 
   if (el.shadow && el.type === 'shape') {
     ctx.shadowColor = el.shadow.color;
@@ -522,6 +622,12 @@ async function ensureFonts(page: Page) {
     if (el.type === 'text') {
       jobs.push(document.fonts.load(`${el.italic ? 'italic ' : ''}${el.fontWeight} 16px "${el.fontFamily}"`).catch(() => null));
     }
+    const prims = buildPrims(el, page);
+    if (prims) {
+      for (const pf of primFonts(prims)) {
+        jobs.push(document.fonts.load(`${pf.italic ? 'italic ' : ''}${pf.weight} 16px "${pf.family}"`).catch(() => null));
+      }
+    }
   }
   await Promise.all(jobs);
   await document.fonts.ready.catch(() => null);
@@ -540,13 +646,13 @@ export async function renderPageCanvas(
   ctx.imageSmoothingQuality = 'high';
   ctx.scale(scale, scale);
   await ensureFonts(page);
-  await preloadImages(page);
+  const resolvedMap = await preloadImages(page);
 
   if (!opts.transparent) {
     await drawBackground(ctx, page.background, size.width, size.height);
   }
   for (const el of page.elements) {
-    await drawElement(ctx, el, scale);
+    await drawElement(ctx, el, scale, page, resolvedMap);
   }
   return canvas;
 }

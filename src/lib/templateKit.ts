@@ -1,5 +1,6 @@
 import type {
   Background,
+  El,
   IconElement,
   ImageElement,
   ImageFilters,
@@ -165,7 +166,7 @@ export const rule = (x: number, y: number, w: number, color: string, thickness =
 export function page(
   name: string,
   background: Background,
-  elements: (TextElement | ShapeElement | ImageElement | IconElement)[],
+  elements: El[],
 ): Page {
   return { id: uid('p'), name, background, elements };
 }
