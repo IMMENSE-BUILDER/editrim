@@ -9,10 +9,12 @@ playwright-report/
 test-results/
 .DS_Store
 *.local
-.vercel/
+.vercel
+public/tesseract//
 .env
 .env.*
 !.env.example
 tsconfig.tsbuildinfo
 
 .vercel
+public/tesseract/

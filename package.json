@@ -6,7 +6,10 @@
   "description": "Editrim — a complete browser design studio.",
   "license": "Apache-2.0",
   "scripts": {
+    "postinstall": "node scripts/copy-ocr-assets.mjs",
+    "predev": "node scripts/copy-ocr-assets.mjs",
     "dev": "vite --port 5173",
+    "prebuild": "node scripts/copy-ocr-assets.mjs",
     "build": "tsc -b && vite build",
     "preview": "vite preview --port 4173"
   },
@@ -26,17 +29,25 @@
     "@fontsource/playfair-display": "^5.2.5",
     "@fontsource/poppins": "^5.2.5",
     "@fontsource/space-grotesk": "^5.2.5",
+    "@tesseract.js-data/eng": "^1.0.0",
     "@ui-sdk/core": "^0.1.0-beta.13",
     "@ui-sdk/react": "^0.1.0-beta.13",
     "@vercel/analytics": "^2.0.1",
+    "gifenc": "^1.0.3",
     "jsonrepair": "^3.15.0",
     "jspdf": "^4.2.1",
     "lucide-react": "^1.81.0",
     "lz-string": "^1.5.0",
+    "mp4-muxer": "^5.2.2",
+    "perfect-freehand": "^1.2.3",
+    "qrcode-generator": "^2.0.4",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
     "react-router-dom": "^7.18.7",
-    "three": "^0.185.1"
+    "tesseract.js": "^7.0.0",
+    "tesseract.js-core": "^6.1.2",
+    "three": "^0.185.1",
+    "webm-muxer": "^5.1.4"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.5",
