@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactElement } from 'react';
 import '../styles/resize.css';
 import { Modal } from './Modal';
 import { EditrimIcon } from './EditrimIcon';
@@ -65,7 +65,7 @@ export function ResizeStudio({
   onClose: () => void;
   design: Design;
   onOpenVariant: (id: string) => void;
-}): JSX.Element {
+}): ReactElement {
   const { toast } = useToast();
   const rootId = design.rootId ?? design.id;
 

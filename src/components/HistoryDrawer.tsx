@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { EditrimIcon } from './EditrimIcon';
 import { PagePreview } from './PagePreview';
 import { useToast } from './Toast';
@@ -172,7 +172,7 @@ export function HistoryDrawer({
   onClose: () => void;
   design: Design;
   onRestore: (design: Design) => void;
-}): JSX.Element {
+}): ReactElement {
   const { toast } = useToast();
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
   const [loading, setLoading] = useState(true);
