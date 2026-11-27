@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import {
   ArrowUpRight, Boxes, Check, ImagePlus, LayoutTemplate, Palette, Sparkles, Trash2, Upload, X,
 } from 'lucide-react';
-import type { BrandKit, ChartKind, DrawingTool, El, MockupDevice, Page, Paint, ShapeKind } from '../lib/types';
+import type { BrandKit, ChartKind, ConnectorElement, ConnectorRoute, DrawingTool, El, MockupDevice, Page, Paint, ShapeKind } from '../lib/types';
 import type { EditorStore } from './useEditor';
 import { addAsset, deleteAsset, listAssets, type AssetRecord } from '../lib/storage';
 import { compressImage, uid } from '../lib/utils';
@@ -12,8 +12,8 @@ import { TEMPLATE_IMAGES } from '../lib/templates';
 import { ICONS } from '../lib/icons';
 import { FONT_PAIRS, PALETTES, SWATCHES } from '../lib/palettes';
 import {
-  CREATE_SHAPES, createChart, createGrid, createIcon, createImage, createMockup,
-  createNumber, createQr, createShape, createTable, createText, type GridLayoutId, PAGE_LAYOUTS,
+  CREATE_SHAPES, createChart, createConnector, createGrid, createIcon, createImage, createMockup,
+  createNumber, createQr, createShape, createSticky, createTable, createText, type GridLayoutId, PAGE_LAYOUTS,
 } from './factory';
 import { ColorField, Segmented, SliderField, ToggleRow } from './controls';
 import { ShapeView } from '../components/ElementView';
@@ -29,7 +29,7 @@ import { applyBrandToDesign, auditBrand, type BrandIssue } from '../lib/brandApp
 import { ANIM_PRESETS, DEFAULT_ANIM, magicAnimate, type MagicAnimateStyle } from '../lib/animation';
 import { Modal } from '../components/Modal';
 
-export type PanelTab = 'templates' | 'ai' | 'elements' | 'text' | 'draw' | 'animate' | 'uploads' | 'background' | 'brand';
+export type PanelTab = 'templates' | 'ai' | 'elements' | 'text' | 'draw' | 'animate' | 'board' | 'uploads' | 'background' | 'brand';
 
 export type DrawSettings = {
   tool: DrawingTool | 'eraser';
@@ -89,6 +89,7 @@ export function LeftPanel({
   const [animPreviewOpen, setAnimPreviewOpen] = useState(false);
   const [animPlayTime, setAnimPlayTime] = useState(0);
   const [animPlaying, setAnimPlaying] = useState(true);
+  const [boardRoute, setBoardRoute] = useState<ConnectorRoute>('elbow');
 
   useEffect(() => {
     if (!animPreviewOpen || !animPlaying) return;
@@ -612,6 +613,121 @@ export function LeftPanel({
             <PagePreview page={page} size={store.design.size} time={animPlayTime} />
           </div>
         </Modal>
+      </div>
+    );
+  }
+
+  if (tab === 'board') {
+    const stickyColors = ['#FEF08A', '#FBCFE8', '#BAE6FD', '#BBF7D0', '#DDD6FE', '#FED7AA'];
+    const stamps = ['👍', '❤️', '⭐', '✅', '❓', '🔥'];
+    const addStandaloneArrow = () => {
+      const cx = store.design.size.width / 2;
+      const cy = store.design.size.height / 2;
+      const conn: ConnectorElement = {
+        id: uid('cn'),
+        type: 'connector',
+        name: 'Connector',
+        from: { x: cx - 120, y: cy - 30 },
+        to: { x: cx + 120, y: cy + 30 },
+        route: boardRoute,
+        stroke: brand.colors[0] ?? '#14130F',
+        strokeWidth: 4,
+        arrowStart: false,
+        arrowEnd: true,
+        x: cx - 136,
+        y: cy - 46,
+        w: 272,
+        h: 92,
+        rotation: 0,
+        opacity: 1,
+      };
+      store.addElements([conn]);
+    };
+    const addStamp = (emoji: string) => {
+      const t = createText('heading', store.page, store.design.size, brand);
+      t.name = `Stamp ${emoji}`;
+      t.text = emoji;
+      t.w = 96;
+      t.h = 96;
+      t.fontSize = 68;
+      t.align = 'center';
+      t.valign = 'middle';
+      t.x = store.design.size.width / 2 - 48 + (store.page.elements.length % 5) * 18;
+      t.y = store.design.size.height / 2 - 48 + (store.page.elements.length % 5) * 18;
+      store.addElements([t]);
+    };
+    const addDotVote = () => {
+      const s = createShape('ellipse', store.page, store.design.size, brand);
+      s.name = 'Dot vote';
+      s.w = 34;
+      s.h = 34;
+      s.fill = { kind: 'solid', color: brand.colors[0] ?? '#2440F0' };
+      s.stroke = '#FFFFFF';
+      s.strokeWidth = 3;
+      store.addElements([s]);
+    };
+
+    return (
+      <div className="lp">
+        <PanelHead title="Board" onClose={onClose} />
+        <div className="lp-scroll">
+          <div className="lp-section-title">Sticky notes</div>
+          <div className="board-sticky-grid">
+            {stickyColors.map(c => (
+              <button
+                key={c}
+                className="board-sticky-btn"
+                style={{ background: c }}
+                onClick={() => store.addElements([createSticky(c, store.page, store.design.size)])}
+                title={`Add ${c} sticky note`}
+              >
+                Sticky
+              </button>
+            ))}
+          </div>
+
+          <div className="lp-section-title">Connectors</div>
+          <Segmented
+            value={boardRoute}
+            options={[
+              { value: 'straight', label: 'Straight' },
+              { value: 'elbow', label: 'Elbow' },
+              { value: 'curved', label: 'Curved' },
+            ]}
+            onChange={setBoardRoute}
+          />
+          <div className="insp-duo" style={{ marginTop: 8 }}>
+            <button
+              className="btn btn-secondary btn-sm"
+              disabled={store.selected.length !== 2}
+              onClick={() => store.addElements([createConnector(store.selected[0], store.selected[1], boardRoute, brand)])}
+              title="Select 2 elements first"
+            >
+              Connect selected
+            </button>
+            <button className="btn btn-secondary btn-sm" onClick={addStandaloneArrow}>
+              Add arrow
+            </button>
+          </div>
+
+          <div className="lp-section-title">Stamps &amp; Voting</div>
+          <div className="board-stamp-grid">
+            {stamps.map(em => (
+              <button key={em} className="board-stamp-btn" onClick={() => addStamp(em)} title={`Stamp ${em}`}>{em}</button>
+            ))}
+          </div>
+          <button className="btn btn-secondary btn-sm btn-block" style={{ marginTop: 8 }} onClick={addDotVote}>
+            Add dot vote
+          </button>
+
+          <div className="lp-section-title">Board canvas</div>
+          <button
+            className="btn btn-secondary btn-sm btn-block"
+            onClick={() => window.dispatchEvent(new CustomEvent('editrim:fit'))}
+          >
+            <EditrimIcon name="fit" size={14} /> Fit board to content
+          </button>
+        </div>
       </div>
     );
   }

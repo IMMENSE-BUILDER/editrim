@@ -21,7 +21,7 @@ import { PALETTES } from '../lib/palettes';
 import { addAsset } from '../lib/storage';
 import { canvasToBlob, renderPageCanvas } from '../lib/render';
 import { compressImage } from '../lib/utils';
-import { createConnector } from './factory';
+import { createChart, createConnector } from './factory';
 import { useToast } from '../components/Toast';
 import { PagePreview } from '../components/PagePreview';
 import { EditrimIcon } from '../components/EditrimIcon';
@@ -813,6 +813,21 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
                   {FONTS.map(f => <option key={f.family} value={f.family}>{f.family}</option>)}
                 </select>
               </label>
+              <button
+                className="btn btn-secondary btn-sm btn-block"
+                style={{ marginTop: 10 }}
+                onClick={() => {
+                  const ch = createChart('column', page, design.size, brand);
+                  ch.name = `${table.name} chart`;
+                  ch.source = { tableId: table.id };
+                  ch.x = Math.max(24, Math.min(design.size.width - ch.w - 24, table.x + 24));
+                  ch.y = Math.max(24, Math.min(design.size.height - ch.h - 24, table.y + 40));
+                  store.addElements([ch]);
+                  toast('Chart linked to table');
+                }}
+              >
+                <EditrimIcon name="chart" size={13} /> Create chart from this table
+              </button>
             </InspectorSection>
           )}
 
@@ -1016,7 +1031,38 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
           </InspectorSection>
 
           {single && (
-            <InspectorSection title="Position & size">
+            <>
+              <InspectorSection title="Link">
+                <label className="field">
+                  <span className="field-label">External URL</span>
+                  <input
+                    className="insp-input"
+                    placeholder="https://..."
+                    value={single.link?.url ?? ''}
+                    onChange={e => {
+                      const url = e.target.value.trim();
+                      patch({ link: url || single.link?.pageId ? { ...single.link, url: url || undefined } : undefined }, 'el-link-url');
+                    }}
+                  />
+                </label>
+                <label className="field" style={{ marginTop: 8 }}>
+                  <span className="field-label">Go to page</span>
+                  <select
+                    className="insp-select"
+                    value={single.link?.pageId ?? ''}
+                    onChange={e => {
+                      const pageId = e.target.value || undefined;
+                      patch({ link: pageId || single.link?.url ? { ...single.link, pageId } : undefined });
+                    }}
+                  >
+                    <option value="">None</option>
+                    {design.pages.map((p, pi) => (
+                      <option key={p.id} value={p.id}>{pi + 1}. {p.name}</option>
+                    ))}
+                  </select>
+                </label>
+              </InspectorSection>
+              <InspectorSection title="Position & size">
               <div className="insp-grid-2">
                 <NumberField label="X" value={single.x} onChange={n => patch({ x: n }, 'x')} />
                 <NumberField label="Y" value={single.y} onChange={n => patch({ y: n }, 'y')} />
@@ -1026,6 +1072,7 @@ export function Inspector({ store, brand, onEditText, onOpenBackground, onOpenRe
               </div>
               <SliderField label="Opacity" value={Math.round(single.opacity * 100)} min={0} max={100} onChange={v => patchAll({ opacity: v / 100 }, 'opacity')} format={v => `${v}%`} />
             </InspectorSection>
+            </>
           )}
 
           <div className="insp-brand-strip">

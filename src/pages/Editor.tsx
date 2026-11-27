@@ -23,7 +23,7 @@ import { Switch } from '@/components/liquid-glass/controls/Switch';
 import { Canvas, type ViewPrefs } from '../editor/Canvas';
 import { Inspector } from '../editor/Inspector';
 import { LeftPanel, type DrawSettings, type PanelTab } from '../editor/Panels';
-import { ExportModal, ResizeModal, ShareModal, ShortcutsModal } from '../editor/Modals';
+import { ExportModal, ResizeModal, ShareModal, ShortcutsModal, WebsitePreviewModal } from '../editor/Modals';
 import { CanvasContextMenu, type CanvasMenuState } from '../editor/ContextMenu';
 import { createConnector, createShape, createText } from '../editor/factory';
 import { useEditor } from '../editor/useEditor';
@@ -136,6 +136,7 @@ const TABS: { id: PanelTab; label: string; icon: EditrimIconName }[] = [
   { id: 'text', label: 'Text', icon: 'text' },
   { id: 'draw', label: 'Draw', icon: 'draw' },
   { id: 'animate', label: 'Animate', icon: 'animate' },
+  { id: 'board', label: 'Board', icon: 'board' },
   { id: 'uploads', label: 'Uploads', icon: 'uploads' },
   { id: 'background', label: 'Background', icon: 'background' },
   { id: 'brand', label: 'Brand', icon: 'brand' },
@@ -147,8 +148,10 @@ function EditorWorkspace({ initial }: { initial: Design }) {
   const navigate = useNavigate();
   const [panel, setPanel] = useState<PanelTab | null>(() => {
     if (typeof window !== 'undefined' && window.location.hash === '#ai') return 'ai';
+    if (initial.category === 'Whiteboard') return 'board';
     return typeof window !== 'undefined' && window.innerWidth > 1180 ? 'templates' : null;
   });
+  const [sitePreviewOpen, setSitePreviewOpen] = useState(false);
   const [brand, setBrand] = useState<BrandKit>(() => getBrand());
   const [brandOpen, setBrandOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
@@ -933,6 +936,11 @@ function EditorWorkspace({ initial }: { initial: Design }) {
               <EditrimIcon name="help" size={17} />
             </GlassButtonGroupItem>
           </GlassButtonGroup>
+          {design.category === 'Website' && (
+            <GlassButton material="clear" size="sm" onClick={() => setSitePreviewOpen(true)} icon={<EditrimIcon name="website" size={14} />} iconPosition="start">
+              <span>Preview site</span>
+            </GlassButton>
+          )}
           <GlassButton material="clear" size="sm" onClick={present} icon={<EditrimIcon name="play" size={14} />} iconPosition="start">
             <span>Present</span>
           </GlassButton>
@@ -1078,7 +1086,8 @@ function EditorWorkspace({ initial }: { initial: Design }) {
       </div>
 
       <ExportModal open={exportOpen} onClose={() => setExportOpen(false)} design={design} pageIndex={store.activePage} />
-      <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} design={design} />
+      <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} design={design} onPreviewSite={() => { setShareOpen(false); setSitePreviewOpen(true); }} />
+      <WebsitePreviewModal open={sitePreviewOpen} onClose={() => setSitePreviewOpen(false)} design={design} />
       <ResizeModal open={resizeOpen} onClose={() => setResizeOpen(false)} design={design} onResize={(w, h) => { store.resizeDesign(w, h); setPanel(null); toast('Canvas resized — content scaled to fit'); }} />
       <ShortcutsModal open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
       <ResizeStudio

@@ -1,6 +1,6 @@
 import type { Background, Design, El, Page } from './types';
 import { createDesign, getBrand, saveDesign } from './storage';
-import { createImage, createShape, createText } from '../editor/factory';
+import { createImage, createShape, createTable, createText } from '../editor/factory';
 import { TEMPLATE_IMAGES } from './templates';
 
 function finish(design: Design, page: Page): Design {
@@ -309,80 +309,37 @@ export function createWebsiteDesign(): Design {
 }
 
 export function createSheetDesign(): Design {
-  const { design, page, size, brand } = start('Untitled sheet layout', 1600, 1000, 'Sheet', { kind: 'solid', color: '#FFFFFF' });
-
-  const title = createText('heading', page, size, brand);
-  title.text = 'Q4 content plan';
-  title.x = 80;
-  title.y = 64;
-  title.w = 800;
-  title.h = 60;
-  title.fontFamily = 'Bricolage Grotesque';
-  title.fontSize = 42;
-  title.letterSpacing = -1.4;
-  title.color = '#14130F';
-
-  const meta = createText('caption', page, size, brand);
-  meta.text = 'OWNER  ·  ADA MENSAH        STATUS  ·  IN PROGRESS';
-  meta.x = 82;
-  meta.y = 126;
-  meta.w = 800;
-  meta.h = 24;
-  meta.fontSize = 10;
-  meta.letterSpacing = 2;
-  meta.color = '#6B675D';
-
-  const rows = [
-    ['CHANNEL', 'FORMAT', 'THE IDEA', 'OWNER', 'STATUS'],
-    ['Instagram', 'Carousel', 'The quiet ritual of opening', 'Ada', 'In review'],
-    ['TikTok', 'Video', 'One minute, one pour', 'Mina', 'Draft'],
-    ['Newsletter', 'Email', 'A slower kind of launch', 'Jon', 'Approved'],
-    ['LinkedIn', 'Post', 'What a good brief feels like', 'Ada', 'Draft'],
-    ['Print', 'Poster', 'The long way to the cup', 'Mina', 'Approved'],
+  const { design, page, size, brand } = start('Untitled sheet', 1600, 1000, 'Sheet', { kind: 'solid', color: '#FFFFFF' });
+  const rows = 12;
+  const cols = 6;
+  const cells: string[][] = [
+    ['Item', 'Q1', 'Q2', 'Q3', 'Q4', 'Total'],
+    ['Social campaigns', '1200', '1450', '1600', '1900', '=SUM(B2:E2)'],
+    ['Brand design', '950', '1100', '1250', '1400', '=SUM(B3:E3)'],
+    ['Video reels', '800', '1200', '1500', '1850', '=SUM(B4:E4)'],
+    ['Print kits', '450', '620', '710', '880', '=SUM(B5:E5)'],
+    ['Web assets', '600', '750', '920', '1150', '=SUM(B6:E6)'],
+    ['', '', '', '', '', '=SUM(B7:E7)'],
+    ['', '', '', '', '', '=SUM(B8:E8)'],
+    ['', '', '', '', '', '=SUM(B9:E9)'],
+    ['', '', '', '', '', '=SUM(B10:E10)'],
+    ['', '', '', '', '', '=SUM(B11:E11)'],
+    ['Total', '=SUM(B2:B11)', '=SUM(C2:C11)', '=SUM(D2:D11)', '=SUM(E2:E11)', '=SUM(F2:F11)'],
   ];
-  const elements: El[] = [title, meta];
-  const startX = 80;
-  const startY = 190;
-  const colW = [220, 200, 560, 220, 220];
-  rows.forEach((row, r) => {
-    let x = startX;
-    row.forEach((cell, c) => {
-      const isHeader = r === 0;
-      const cellText = createText('body', page, size, brand);
-      cellText.text = cell;
-      cellText.x = x + 14;
-      cellText.y = startY + r * 58 + 18;
-      cellText.w = colW[c] - 28;
-      cellText.h = 34;
-      cellText.fontSize = 16;
-      cellText.fontWeight = isHeader ? 700 : 400;
-      cellText.color = isHeader ? '#14130F' : '#3A372F';
-      cellText.uppercase = isHeader;
-      if (isHeader) cellText.letterSpacing = 1.4;
-      elements.push(cellText);
-      x += colW[c];
-    });
-    const line = createShape('line', page, size, brand);
-    line.x = startX;
-    line.y = startY + r * 58;
-    line.w = colW.reduce((a, b) => a + b, 0);
-    line.h = 1;
-    line.stroke = r === 0 ? 'rgba(20,19,15,.4)' : 'rgba(20,19,15,.14)';
-    line.strokeWidth = 1;
-    elements.push(line);
-  });
 
-  const footer = createText('caption', page, size, brand);
-  footer.text = 'STATIC SHEET LAYOUT  ·  EDITRIM';
-  footer.x = 80;
-  footer.y = 930;
-  footer.w = 800;
-  footer.fontSize = 10;
-  footer.letterSpacing = 2;
-  footer.color = '#8A8477';
-  elements.push(footer);
+  const table = createTable(rows, cols, page, size, brand);
+  table.name = 'Quarterly budget sheet';
+  table.x = 48;
+  table.y = 48;
+  table.w = size.width - 96;
+  table.h = size.height - 96;
+  table.cells = cells;
+  table.colWidths = [0.28, 0.14, 0.14, 0.14, 0.14, 0.16];
+  table.rowHeights = Array.from({ length: rows }, () => 1 / rows);
+  table.fontSize = 18;
+  table.padding = 14;
 
-  page.elements = elements;
+  page.elements = [table];
   return finish(design, page);
 }
 

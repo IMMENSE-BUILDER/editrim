@@ -2,8 +2,9 @@ import type { Design, El, Page } from './types';
 import { renderPageCanvas, canvasToBlob } from './render';
 import { downloadBlob, rotatedBBox, safeFilename, unionRect } from './utils';
 import { exportSvg } from './svgExport';
+import { exportHtml } from './htmlExport';
 
-export type ExportFormat = 'png' | 'jpg' | 'webp' | 'pdf' | 'svg';
+export type ExportFormat = 'png' | 'jpg' | 'webp' | 'pdf' | 'svg' | 'html';
 
 export type ExportOptions = {
   format: ExportFormat;
@@ -79,6 +80,11 @@ export async function exportDesign(design: Design, currentPage: number, opts: Ex
   const base = safeFilename(design.title);
   const indexes = opts.pages === 'all' ? design.pages.map((_, i) => i) : [currentPage];
   const quality = Math.min(1, Math.max(0.5, opts.quality ?? 0.92));
+
+  if (opts.format === 'html') {
+    await exportHtml(design);
+    return { files: 1, pages: design.pages.length, format: 'html' };
+  }
 
   if (opts.format === 'svg') {
     for (const i of indexes) {

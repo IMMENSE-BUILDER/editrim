@@ -147,7 +147,15 @@ export default function SharedView() {
 
         <main className="shared-stage">
           <div className="shared-page-wrap" style={{ aspectRatio: aspect }}>
-            <PagePreview page={design.pages[page]} size={design.size} />
+            <PagePreview
+              page={design.pages[page]}
+              size={design.size}
+              interactiveLinks
+              onNavigatePage={pid => {
+                const idx = design.pages.findIndex(pp => pp.id === pid);
+                if (idx >= 0) setPage(idx);
+              }}
+            />
           </div>
           {pages > 1 && (
             <div className="shared-pager">

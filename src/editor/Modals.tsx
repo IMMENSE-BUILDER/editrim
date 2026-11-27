@@ -5,6 +5,7 @@ import { RangeSlider } from '@/components/liquid-glass/controls/RangeSlider';
 import { Switch } from '@/components/liquid-glass/controls/Switch';
 import { EditrimIcon, type EditrimIconName } from '../components/EditrimIcon';
 import { Modal } from '../components/Modal';
+import { PagePreview } from '../components/PagePreview';
 import type { Design } from '../lib/types';
 import { exportDesign, type ExportFormat } from '../lib/export';
 import { exportMotion, type MotionFormat } from '../lib/motionExport';
@@ -20,6 +21,7 @@ const FORMATS: { id: ModalFormat; label: string; note: string; icon: EditrimIcon
   { id: 'pdf', label: 'PDF', note: 'Print · bleed', icon: 'doc' },
   { id: 'webp', label: 'WebP', note: 'Web-ready · small', icon: 'website' },
   { id: 'svg', label: 'SVG', note: 'Vector text & shapes', icon: 'code' },
+  { id: 'html', label: 'HTML', note: 'Interactive site', icon: 'website' },
   { id: 'gif', label: 'GIF', note: 'Animated loop', icon: 'animate' },
   { id: 'mp4', label: 'MP4', note: 'H.264 video', icon: 'video' },
   { id: 'webm', label: 'WebM', note: 'VP9/VP8 video', icon: 'film' },
@@ -101,6 +103,7 @@ export function ExportModal({
       return `${paperLabel(design.size.width, design.size.height)}${bleed ? ` · ${bleed} mm bleed` : ''} · PDF`;
     }
     if (format === 'svg') return `${design.size.width} × ${design.size.height} px · SVG`;
+    if (format === 'html') return `${design.size.width} × ${design.size.height} px · HTML (${design.pages.length} ${design.pages.length === 1 ? 'section' : 'sections'})`;
     if (motion) {
       const effFps = format === 'gif' ? Math.min(15, fps) : fps;
       return `${Math.round(design.size.width * motionScale)} × ${Math.round(design.size.height * motionScale)} · ${effFps} fps · ${format.toUpperCase()}`;
@@ -358,7 +361,10 @@ export function ExportModal({
         <div className="export-warning">Standard PDF is a 2× raster of each page, sized to the design.</div>
       )}
       {format === 'svg' && <div className="export-warning">Text and shapes stay vector; photos are embedded.</div>}
-      {!motion && format !== 'pdf' && pages === 'all' && (
+      {format === 'html' && (
+        <div className="export-warning">Self-contained HTML exports all pages as stacked responsive sections with links.</div>
+      )}
+      {!motion && format !== 'pdf' && format !== 'html' && pages === 'all' && (
         <div className="export-warning">Multi-page {format.toUpperCase()} downloads one numbered file per page.</div>
       )}
     </Modal>
@@ -369,10 +375,12 @@ export function ShareModal({
   open,
   onClose,
   design,
+  onPreviewSite,
 }: {
   open: boolean;
   onClose: () => void;
   design: Design;
+  onPreviewSite?: () => void;
 }) {
   const { toast } = useToast();
   const [state, setState] = useState<{ url: string; ok: boolean; reason?: string } | null>(null);
@@ -414,6 +422,17 @@ export function ShareModal({
       width={560}
       footer={
         <>
+          {onPreviewSite && (
+            <GlassButton
+              material="clear"
+              size="sm"
+              onClick={onPreviewSite}
+              icon={<EditrimIcon name="website" size={15} />}
+              iconPosition="start"
+            >
+              Preview site
+            </GlassButton>
+          )}
           <GlassButton material="clear" size="sm" onClick={onClose}>Close</GlassButton>
           <GlassButton
             material="tinted"
@@ -455,6 +474,59 @@ export function ShareModal({
           </div>
         </>
       )}
+    </Modal>
+  );
+}
+
+export function WebsitePreviewModal({
+  open,
+  onClose,
+  design,
+}: {
+  open: boolean;
+  onClose: () => void;
+  design: Design;
+}) {
+  const [viewport, setViewport] = useState<'desktop' | 'mobile'>('desktop');
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title={`${design.title || 'Untitled'} — Site preview`}
+      subtitle="Stacked pages rendered locally with clickable links. Export HTML for a standalone file."
+      width={900}
+      footer={
+        <div className="flex w-full items-center justify-between gap-3">
+          <GlassTabs
+            aria-label="Site preview viewport"
+            size="sm"
+            value={viewport}
+            onValueChange={v => setViewport(v as 'desktop' | 'mobile')}
+            options={[
+              { value: 'desktop', label: 'Desktop · 1280' },
+              { value: 'mobile', label: 'Mobile · 390' },
+            ]}
+          />
+          <GlassButton material="clear" size="sm" onClick={onClose}>Close</GlassButton>
+        </div>
+      }
+    >
+      <div className="site-preview-wrap">
+        <div className={`site-preview-frame ${viewport === 'mobile' ? 'is-mobile' : 'is-desktop'}`}>
+          {design.pages.map(page => (
+            <section key={page.id} id={`site-sec-${page.id}`} className="site-preview-section">
+              <PagePreview
+                page={page}
+                size={design.size}
+                interactiveLinks
+                onNavigatePage={pid => {
+                  document.getElementById(`site-sec-${pid}`)?.scrollIntoView({ behavior: 'smooth' });
+                }}
+              />
+            </section>
+          ))}
+        </div>
+      </div>
     </Modal>
   );
 }

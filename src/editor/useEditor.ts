@@ -71,14 +71,55 @@ export function useEditor(initial: Design) {
       let next = updater(prev);
       if (next === prev) return;
       if (next.pages !== prev.pages) {
+        let curSize = next.size;
         let pagesChanged = false;
-        const syncedPages = next.pages.map((p, idx) => {
+        const nextPages = next.pages.map((p, idx) => {
           if (p === prev.pages[idx]) return p;
-          const sp = syncConnectors(p);
+          let updatedPage = p;
+          if (next.category === 'Whiteboard' && updatedPage.elements.length > 0) {
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            for (const el of updatedPage.elements) {
+              if (el.hidden) continue;
+              minX = Math.min(minX, el.x);
+              minY = Math.min(minY, el.y);
+              maxX = Math.max(maxX, el.x + el.w);
+              maxY = Math.max(maxY, el.y + el.h);
+            }
+            const shiftX = minX < 40 ? 400 : 0;
+            const shiftY = minY < 40 ? 400 : 0;
+            if (shiftX > 0 || shiftY > 0) {
+              updatedPage = {
+                ...updatedPage,
+                elements: updatedPage.elements.map(el => {
+                  const base = { ...el, x: el.x + shiftX, y: el.y + shiftY };
+                  if (base.type === 'connector') {
+                    return {
+                      ...base,
+                      from: { ...base.from, x: base.from.x + shiftX, y: base.from.y + shiftY },
+                      to: { ...base.to, x: base.to.x + shiftX, y: base.to.y + shiftY },
+                    };
+                  }
+                  return base;
+                }),
+              };
+              maxX += shiftX;
+              maxY += shiftY;
+            }
+            let nw = curSize.width + shiftX;
+            let nh = curSize.height + shiftY;
+            while (maxX > nw - 80) nw += 400;
+            while (maxY > nh - 80) nh += 400;
+            if (nw !== curSize.width || nh !== curSize.height) {
+              curSize = { ...curSize, width: nw, height: nh };
+            }
+          }
+          const sp = syncConnectors(updatedPage);
           if (sp !== p) pagesChanged = true;
           return sp;
         });
-        if (pagesChanged) next = { ...next, pages: syncedPages };
+        if (pagesChanged || curSize !== next.size) {
+          next = { ...next, size: curSize, pages: nextPages };
+        }
       }
       if (!opts?.transient) {
         const now = Date.now();
