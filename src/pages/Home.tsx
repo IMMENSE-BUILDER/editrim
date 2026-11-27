@@ -523,44 +523,50 @@ export default function Home() {
         </GlassButton>
 
         <nav className="rail-nav" aria-label="Workspace">
-          <GlassButtonGroup orientation={isMobile ? 'horizontal' : 'vertical'} size="md" material="clear" className="rail-nav-group w-full" aria-label="Workspace">
-            <GlassButtonGroupItem
+          <GlassCard
+            material="clear"
+            role="group"
+            aria-label="Workspace"
+            className={`rail-nav-group w-full inline-flex shrink-0 ${isMobile ? 'flex-row items-center rounded-full' : 'flex-col items-stretch rounded-[20px]'} p-1 font-semibold whitespace-nowrap select-none`}
+          >
+            <button
+              type="button"
               className={`rail-nav-item ${view === 'home' ? 'active is-active-glass' : ''}`}
               onClick={() => setView('home')}
               title="Home"
             >
               <EditrimIcon name="home" size={19} /><span className="rail-label">Home</span>
-            </GlassButtonGroupItem>
-            <GlassButtonGroupItem
+            </button>
+            <button
+              type="button"
               className={`rail-nav-item ${view === 'projects' ? 'active is-active-glass' : ''}`}
               onClick={() => setView('projects')}
               title="Projects"
             >
               <EditrimIcon name="projects" size={19} /><span className="rail-label">Projects</span>
-            </GlassButtonGroupItem>
-            <GlassButtonGroupItem asChild className="rail-nav-item">
-              <Link to="/templates" title="Templates">
-                <EditrimIcon name="templates" size={19} /><span className="rail-label">Templates</span>
-              </Link>
-            </GlassButtonGroupItem>
-            <GlassButtonGroupItem className="rail-nav-item" onClick={() => setBrandOpen(true)} title="Brand kit">
+            </button>
+            <Link to="/templates" className="rail-nav-item" title="Templates">
+              <EditrimIcon name="templates" size={19} /><span className="rail-label">Templates</span>
+            </Link>
+            <button type="button" className="rail-nav-item" onClick={() => setBrandOpen(true)} title="Brand kit">
               <EditrimIcon name="brand" size={19} /><span className="rail-label">Brand</span>
-            </GlassButtonGroupItem>
-            <GlassButtonGroupItem className="rail-nav-item" onClick={() => navigate('/editor/new#ai')} title="AI Studio">
+            </button>
+            <button type="button" className="rail-nav-item" onClick={() => navigate('/editor/new#ai')} title="AI Studio">
               <EditrimIcon name="spark" size={19} /><span className="rail-label">AI Studio</span>
-            </GlassButtonGroupItem>
-            <GlassButtonGroupItem className="rail-nav-item" onClick={openPrint} title="Print-ready PDF">
+            </button>
+            <button type="button" className="rail-nav-item" onClick={openPrint} title="Print-ready PDF">
               <EditrimIcon name="print" size={19} /><span className="rail-label">Print</span>
-            </GlassButtonGroupItem>
-            <GlassButtonGroupItem
+            </button>
+            <button
+              type="button"
               className={`rail-nav-item ${railPopover === 'more' ? 'is-active-glass' : ''}`}
               onClick={() => setRailPopover(railPopover === 'more' ? null : 'more')}
               title="More"
               aria-expanded={railPopover === 'more'}
             >
               <EditrimIcon name="more" size={19} /><span className="rail-label">More</span>
-            </GlassButtonGroupItem>
-          </GlassButtonGroup>
+            </button>
+          </GlassCard>
         </nav>
 
         <div className="rail-bottom">

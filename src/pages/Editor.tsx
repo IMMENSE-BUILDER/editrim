@@ -1031,10 +1031,16 @@ function EditorWorkspace({ initial }: { initial: Design }) {
 
       <div className="ed-body">
         <nav className="ed-rail" aria-label="Editor panels">
-          <GlassButtonGroup orientation={isMobile ? 'horizontal' : 'vertical'} size="md" material="clear" className="ed-rail-group w-full" aria-label="Editor panels">
+          <GlassCard
+            material="clear"
+            role="group"
+            aria-label="Editor panels"
+            className={`ed-rail-group w-full inline-flex shrink-0 ${isMobile ? 'flex-row items-center rounded-full' : 'flex-col items-stretch rounded-[20px]'} p-1 font-semibold whitespace-nowrap select-none`}
+          >
             {TABS.map(t => (
-              <GlassButtonGroupItem
+              <button
                 key={t.id}
+                type="button"
                 className={`ed-rail-item ${panel === t.id ? 'active is-active-glass' : ''}`}
                 onClick={() => {
                   const next = panel === t.id ? null : t.id;
@@ -1045,9 +1051,9 @@ function EditorWorkspace({ initial }: { initial: Design }) {
               >
                 <EditrimIcon name={t.icon} size={18} />
                 <span>{t.label}</span>
-              </GlassButtonGroupItem>
+              </button>
             ))}
-          </GlassButtonGroup>
+          </GlassCard>
           <div className="ed-rail-bottom">
             <GlassButton
               material="clear"
