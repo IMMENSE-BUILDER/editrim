@@ -33,12 +33,15 @@ import { toggleTheme } from '../lib/theme';
 import { useToast } from '../components/Toast';
 import { useSurface } from '../hooks/useSurface';
 import {
-  addAsset, createDesign, deleteDesign, duplicateDesign, getBrand, getDesign,
+  addAsset, createDesign, deleteDesign, duplicateDesign, fromTemplate, getBrand, getDesign,
   listDesigns, saveDesign, storageUsage,
 } from '../lib/storage';
 import { exportDesign } from '../lib/export';
 import { TEMPLATES, TEMPLATE_CATEGORIES } from '../lib/templates';
 import { SIZE_PRESETS } from '../lib/presets';
+import { RESIZE_TARGETS } from '../lib/resize';
+import { generateCampaignVariants } from '../lib/campaign';
+import { Switch } from '@/components/liquid-glass/controls/Switch';
 import { compressImage, formatBytes, timeAgo } from '../lib/utils';
 import { createImage } from '../editor/factory';
 import type { Design } from '../lib/types';
@@ -153,6 +156,21 @@ export default function Home() {
   const [notificationsRead, setNotificationsRead] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [libraryCategory, setLibraryCategory] = useState('All');
+  const briefTemplates = useMemo(() => {
+    const seen = new Set<string>();
+    const picked = TEMPLATES.filter(t => {
+      if (seen.has(t.category)) return false;
+      seen.add(t.category);
+      return true;
+    }).slice(0, 6);
+    return picked.length ? picked : TEMPLATES.slice(0, 6);
+  }, []);
+  const [briefHeadline, setBriefHeadline] = useState('');
+  const [briefSub, setBriefSub] = useState('');
+  const [briefCta, setBriefCta] = useState('');
+  const [briefTplId, setBriefTplId] = useState(() => briefTemplates[0]?.id ?? TEMPLATES[0]?.id ?? '');
+  const [briefSizes, setBriefSizes] = useState<string[]>(['Instagram post', 'Story', 'LinkedIn']);
+  const [briefBrand, setBriefBrand] = useState(true);
   const searchRef = useRef<HTMLInputElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -221,6 +239,30 @@ export default function Home() {
     if (next === 'projects') setSearchParams({ view: 'projects' });
     else setSearchParams({});
     setRailPopover(null);
+  };
+
+  const runMagicCampaign = () => {
+    const tpl = TEMPLATES.find(t => t.id === briefTplId) ?? briefTemplates[0] ?? TEMPLATES[0];
+    if (!tpl) return;
+    const targets = RESIZE_TARGETS.filter(t => briefSizes.includes(t.name));
+    if (!targets.length) {
+      toast('Select at least one output size', 'error');
+      return;
+    }
+    const createdBase = fromTemplate(tpl);
+    if (briefHeadline.trim()) {
+      createdBase.title = briefHeadline.trim().slice(0, 48);
+    }
+    const { base, variants } = generateCampaignVariants(
+      createdBase,
+      targets,
+      { headline: briefHeadline, subheadline: briefSub, cta: briefCta, applyBrand: briefBrand },
+      brand,
+    );
+    reload();
+    setFeature(null);
+    toast(`Created campaign (${1 + variants.length} designs saved locally)`);
+    navigate(`/editor/${base.id}`);
   };
 
   /**
@@ -446,11 +488,11 @@ export default function Home() {
       run: startWebsite,
     },
     magic: {
-      title: 'Magic Layers needs a vision model.',
-      subtitle: 'A text model cannot separate a flat image into editable objects.',
-      body: 'Editrim will not pretend to do image segmentation. For now, use AI Illustration for vector art, or start from a template and rebuild the composition with real layers.',
-      primary: 'Open AI Studio',
-      run: () => { setFeature(null); navigate('/editor/new#ai'); },
+      title: 'Magic Campaign Brief',
+      subtitle: 'Pick a starter layout, enter your copy, and generate multi-size designs locally.',
+      body: '',
+      primary: 'Generate campaign',
+      run: () => runMagicCampaign(),
     },
   }[feature] : null;
 
@@ -929,7 +971,7 @@ export default function Home() {
         onClose={() => setFeature(null)}
         title={featureMeta?.title}
         subtitle={featureMeta?.subtitle}
-        width={560}
+        width={feature === 'magic' ? 720 : 560}
         footer={featureMeta ? (
           <>
             <GlassButton material="clear" size="sm" onClick={() => setFeature(null)}>Not now</GlassButton>
@@ -938,7 +980,65 @@ export default function Home() {
           </>
         ) : undefined}
       >
-        <p className="home-modal-copy">{featureMeta?.body}</p>
+        {feature === 'magic' ? (
+          <div className="campaign-modal-body">
+            <div className="campaign-copy-grid">
+              <label className="field">
+                <span className="field-label">Headline</span>
+                <input className="input" placeholder="e.g. Summer launch" value={briefHeadline} onChange={e => setBriefHeadline(e.target.value)} />
+              </label>
+              <label className="field">
+                <span className="field-label">Subheadline</span>
+                <input className="input" placeholder="e.g. Crafted for everyday teams" value={briefSub} onChange={e => setBriefSub(e.target.value)} />
+              </label>
+              <label className="field">
+                <span className="field-label">CTA</span>
+                <input className="input" placeholder="e.g. Get started" value={briefCta} onChange={e => setBriefCta(e.target.value)} />
+              </label>
+            </div>
+            <div className="campaign-section-head">
+              <span className="field-label">Starter template</span>
+            </div>
+            <div className="brief-template-grid">
+              {briefTemplates.map(t => (
+                <button
+                  key={t.id}
+                  type="button"
+                  className={`brief-template-card ${briefTplId === t.id ? 'is-active' : ''}`}
+                  onClick={() => setBriefTplId(t.id)}
+                >
+                  <div className="brief-template-thumb"><PagePreview page={t.pages[0]} size={t.size} /></div>
+                  <span>{t.name}</span>
+                </button>
+              ))}
+            </div>
+            <div className="campaign-section-head">
+              <span className="field-label">Output sizes ({briefSizes.length})</span>
+            </div>
+            <div className="campaign-size-grid">
+              {RESIZE_TARGETS.slice(0, 6).map(t => {
+                const on = briefSizes.includes(t.name);
+                return (
+                  <button
+                    key={t.name}
+                    type="button"
+                    className={`campaign-size-chip ${on ? 'is-active' : ''}`}
+                    onClick={() => setBriefSizes(prev => (prev.includes(t.name) ? prev.filter(n => n !== t.name) : [...prev, t.name]))}
+                  >
+                    <strong>{t.name}</strong>
+                    <small>{t.width}×{t.height}</small>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="campaign-brand-toggle">
+              <span>Apply Brand Kit colours &amp; fonts</span>
+              <Switch size="sm" color="#2440F0" checked={briefBrand} onChange={setBriefBrand} label="" />
+            </div>
+          </div>
+        ) : (
+          <p className="home-modal-copy">{featureMeta?.body}</p>
+        )}
       </Modal>
 
       <Modal

@@ -536,11 +536,13 @@ export function ResizeModal({
   onClose,
   design,
   onResize,
+  onOpenCampaign,
 }: {
   open: boolean;
   onClose: () => void;
   design: Design;
   onResize: (w: number, h: number) => void;
+  onOpenCampaign?: () => void;
 }) {
   const [w, setW] = useState(design.size.width);
   const [h, setH] = useState(design.size.height);
@@ -569,6 +571,17 @@ export function ResizeModal({
       subtitle="Content scales proportionally and stays centred. Nothing is cropped."
       footer={
         <>
+          {onOpenCampaign && (
+            <GlassButton
+              material="clear"
+              size="sm"
+              onClick={onOpenCampaign}
+              icon={<EditrimIcon name="magic" size={14} />}
+              iconPosition="start"
+            >
+              Campaign batch…
+            </GlassButton>
+          )}
           <GlassButton material="clear" size="sm" onClick={onClose}>Cancel</GlassButton>
           <GlassButton
             material="tinted"

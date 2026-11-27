@@ -542,3 +542,126 @@
   opacity: 0.85;
   pointer-events: none;
 }
+
+
+/* Campaign batch & Home Magic Brief */
+.campaign-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.campaign-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.campaign-size-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
+  gap: 8px;
+}
+
+.campaign-size-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px solid rgba(120, 128, 145, 0.25);
+  background: rgba(255, 255, 255, 0.35);
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.campaign-size-chip strong {
+  font-size: 12px;
+}
+
+.campaign-size-chip small {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.campaign-size-chip.is-active {
+  border-color: #2440F0;
+  background: rgba(36, 64, 240, 0.1);
+}
+
+.campaign-copy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.campaign-brand-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(120, 128, 145, 0.2);
+  font-size: 13px;
+}
+
+.campaign-result-grid,
+.brief-template-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.campaign-result-card,
+.brief-template-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(120, 128, 145, 0.24);
+  background: rgba(255, 255, 255, 0.28);
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.brief-template-card.is-active {
+  border-color: #2440F0;
+  box-shadow: 0 0 0 2px rgba(36, 64, 240, 0.18);
+}
+
+.campaign-result-thumb,
+.brief-template-thumb {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.04);
+}
+
+.brief-template-card span,
+.campaign-result-meta strong {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.campaign-result-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.campaign-result-meta small {
+  font-size: 11px;
+  opacity: 0.7;
+}

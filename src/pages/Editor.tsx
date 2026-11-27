@@ -24,6 +24,7 @@ import { Canvas, type ViewPrefs } from '../editor/Canvas';
 import { Inspector } from '../editor/Inspector';
 import { LeftPanel, type DrawSettings, type PanelTab } from '../editor/Panels';
 import { ExportModal, ResizeModal, ShareModal, ShortcutsModal, WebsitePreviewModal } from '../editor/Modals';
+import { CampaignModal } from '../components/CampaignModal';
 import { CanvasContextMenu, type CanvasMenuState } from '../editor/ContextMenu';
 import { createConnector, createShape, createText } from '../editor/factory';
 import { useEditor } from '../editor/useEditor';
@@ -158,6 +159,7 @@ function EditorWorkspace({ initial }: { initial: Design }) {
   const [shareOpen, setShareOpen] = useState(false);
   const [resizeOpen, setResizeOpen] = useState(false);
   const [resizeStudioOpen, setResizeStudioOpen] = useState(false);
+  const [campaignOpen, setCampaignOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [bulkOpen, setBulkOpen] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
@@ -753,6 +755,14 @@ function EditorWorkspace({ initial }: { initial: Design }) {
       run: () => setPanel('ai'),
     },
     {
+      id: 'campaign-batch',
+      label: 'Generate campaign batch',
+      group: 'Share',
+      icon: 'magic',
+      keywords: ['resize', 'campaign', 'social', 'batch'],
+      run: () => setCampaignOpen(true),
+    },
+    {
       id: 'present',
       label: 'Present this design',
       group: 'Share',
@@ -1088,7 +1098,18 @@ function EditorWorkspace({ initial }: { initial: Design }) {
       <ExportModal open={exportOpen} onClose={() => setExportOpen(false)} design={design} pageIndex={store.activePage} />
       <ShareModal open={shareOpen} onClose={() => setShareOpen(false)} design={design} onPreviewSite={() => { setShareOpen(false); setSitePreviewOpen(true); }} />
       <WebsitePreviewModal open={sitePreviewOpen} onClose={() => setSitePreviewOpen(false)} design={design} />
-      <ResizeModal open={resizeOpen} onClose={() => setResizeOpen(false)} design={design} onResize={(w, h) => { store.resizeDesign(w, h); setPanel(null); toast('Canvas resized — content scaled to fit'); }} />
+      <ResizeModal
+        open={resizeOpen}
+        onClose={() => setResizeOpen(false)}
+        design={design}
+        onResize={(w, h) => { store.resizeDesign(w, h); setPanel(null); toast('Canvas resized — content scaled to fit'); }}
+        onOpenCampaign={() => { setResizeOpen(false); setCampaignOpen(true); }}
+      />
+      <CampaignModal
+        open={campaignOpen}
+        onClose={() => setCampaignOpen(false)}
+        sourceDesign={design}
+      />
       <ShortcutsModal open={shortcutsOpen} onClose={() => setShortcutsOpen(false)} />
       <ResizeStudio
         open={resizeStudioOpen}
