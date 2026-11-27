@@ -19,7 +19,8 @@ import { CommandBar } from '../components/CommandBar';
 import { InlineAiBar } from '../components/InlineAiBar';
 import { useToast } from '../components/Toast';
 import { useSurface } from '../hooks/useSurface';
-import { Canvas } from '../editor/Canvas';
+import { Switch } from '@/components/liquid-glass/controls/Switch';
+import { Canvas, type ViewPrefs } from '../editor/Canvas';
 import { Inspector } from '../editor/Inspector';
 import { LeftPanel, type DrawSettings, type PanelTab } from '../editor/Panels';
 import { ExportModal, ResizeModal, ShareModal, ShortcutsModal } from '../editor/Modals';
@@ -134,6 +135,7 @@ const TABS: { id: PanelTab; label: string; icon: EditrimIconName }[] = [
   { id: 'elements', label: 'Elements', icon: 'elements' },
   { id: 'text', label: 'Text', icon: 'text' },
   { id: 'draw', label: 'Draw', icon: 'draw' },
+  { id: 'animate', label: 'Animate', icon: 'animate' },
   { id: 'uploads', label: 'Uploads', icon: 'uploads' },
   { id: 'background', label: 'Background', icon: 'background' },
   { id: 'brand', label: 'Brand', icon: 'brand' },
@@ -190,6 +192,24 @@ function EditorWorkspace({ initial }: { initial: Design }) {
     smoothing: 50,
     shapeAssist: true,
   }));
+  const [viewMenuOpen, setViewMenuOpen] = useState(false);
+  const [viewPrefs, setViewPrefs] = useState<ViewPrefs>(() => {
+    try {
+      const raw = localStorage.getItem('editrim_view_prefs');
+      if (raw) return { rulers: false, margins: false, bleed: false, guides: true, ...JSON.parse(raw) };
+    } catch {
+      // ignore storage errors
+    }
+    return { rulers: false, margins: false, bleed: false, guides: true };
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('editrim_view_prefs', JSON.stringify(viewPrefs));
+    } catch {
+      // ignore storage errors
+    }
+  }, [viewPrefs]);
   const clipboard = useRef<El[]>([]);
   const errorShown = useRef(false);
 
@@ -446,6 +466,16 @@ function EditorWorkspace({ initial }: { initial: Design }) {
       if (!mod && e.shiftKey && key === 'd') {
         e.preventDefault();
         setDensity(current => (current === 'compact' ? 'comfortable' : 'compact'));
+        return;
+      }
+      if (!mod && e.shiftKey && key === 'r') {
+        e.preventDefault();
+        setViewPrefs(p => ({ ...p, rulers: !p.rulers }));
+        return;
+      }
+      if (!mod && e.shiftKey && (e.key === ';' || e.key === ':' || code === 'Semicolon')) {
+        e.preventDefault();
+        setViewPrefs(p => ({ ...p, guides: !p.guides }));
         return;
       }
 
@@ -767,6 +797,40 @@ function EditorWorkspace({ initial }: { initial: Design }) {
       keywords: ['keys', 'help'],
       run: () => setShortcutsOpen(true),
     },
+    {
+      id: 'toggle-rulers',
+      label: 'Toggle rulers',
+      group: 'Workspace',
+      icon: 'custom',
+      hint: 'Shift+R',
+      keywords: ['ruler', 'measure', 'guides'],
+      run: () => setViewPrefs(p => ({ ...p, rulers: !p.rulers })),
+    },
+    {
+      id: 'toggle-guides',
+      label: 'Toggle guides',
+      group: 'Workspace',
+      icon: 'custom',
+      hint: 'Shift+;',
+      keywords: ['guide', 'snap'],
+      run: () => setViewPrefs(p => ({ ...p, guides: !p.guides })),
+    },
+    {
+      id: 'toggle-margins',
+      label: 'Toggle margins',
+      group: 'Workspace',
+      icon: 'custom',
+      keywords: ['safe', 'margin', 'print'],
+      run: () => setViewPrefs(p => ({ ...p, margins: !p.margins })),
+    },
+    {
+      id: 'toggle-bleed',
+      label: 'Toggle print bleed',
+      group: 'Workspace',
+      icon: 'print',
+      keywords: ['bleed', 'print', 'trim'],
+      run: () => setViewPrefs(p => ({ ...p, bleed: !p.bleed })),
+    },
   ];
 
   return (
@@ -812,6 +876,49 @@ function EditorWorkspace({ initial }: { initial: Design }) {
         </div>
 
         <div className="ed-top-right">
+          <div className="ed-view-wrap">
+            <GlassButton
+              material="clear"
+              size="sm"
+              className="ed-view-btn"
+              onClick={() => setViewMenuOpen(v => !v)}
+              title="Rulers, guides, margins & bleed"
+            >
+              View
+            </GlassButton>
+            {viewMenuOpen && (
+              <>
+                <div className="view-popover-backdrop" onClick={() => setViewMenuOpen(false)} />
+                <GlassCard blur={8} tint={0.82} className="ed-view-popover rounded-[18px]">
+                  <div className="ed-view-row">
+                    <span>Rulers <small>Shift+R</small></span>
+                    <Switch size="sm" color="#2440F0" checked={viewPrefs.rulers} onChange={rulers => setViewPrefs(p => ({ ...p, rulers }))} label="" />
+                  </div>
+                  <div className="ed-view-row">
+                    <span>Guides <small>Shift+;</small></span>
+                    <Switch size="sm" color="#2440F0" checked={viewPrefs.guides} onChange={guides => setViewPrefs(p => ({ ...p, guides }))} label="" />
+                  </div>
+                  <div className="ed-view-row">
+                    <span>Show margins</span>
+                    <Switch size="sm" color="#2440F0" checked={viewPrefs.margins} onChange={margins => setViewPrefs(p => ({ ...p, margins }))} label="" />
+                  </div>
+                  <div className="ed-view-row">
+                    <span>Print bleed</span>
+                    <Switch size="sm" color="#2440F0" checked={viewPrefs.bleed} onChange={bleed => setViewPrefs(p => ({ ...p, bleed }))} label="" />
+                  </div>
+                  {(design.guides?.x.length || design.guides?.y.length) ? (
+                    <button
+                      type="button"
+                      className="ed-view-clear"
+                      onClick={() => store.setGuides({ x: [], y: [] })}
+                    >
+                      Clear guides ({(design.guides?.x.length ?? 0) + (design.guides?.y.length ?? 0)})
+                    </button>
+                  ) : null}
+                </GlassCard>
+              </>
+            )}
+          </div>
           <GlassButtonGroup size="sm" material="clear" aria-label="Tools">
             <GlassButtonGroupItem className="ed-insp-toggle" onClick={() => setInspectorOpen(v => !v)} title="Design controls">
               <EditrimIcon name="sliders" size={17} />
@@ -900,6 +1007,8 @@ function EditorWorkspace({ initial }: { initial: Design }) {
             comments={design.comments ?? []}
             drawMode={panel === 'draw'}
             drawSettings={drawSettings}
+            viewPrefs={viewPrefs}
+            onSetGuides={store.setGuides}
             onAddElements={store.addElements}
             onRemoveElement={elId => store.updatePage(p => ({ ...p, elements: p.elements.filter(e => e.id !== elId) }))}
             onDropAsset={async file => addAsset(file.name, await compressImage(file))}

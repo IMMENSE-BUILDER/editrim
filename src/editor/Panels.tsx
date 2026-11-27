@@ -26,7 +26,10 @@ import { EditrimIcon } from '../components/EditrimIcon';
 import { useResolvedSrc } from '../hooks/useResolvedSrc';
 import { applyBrandToDesign, auditBrand, type BrandIssue } from '../lib/brandApply';
 
-export type PanelTab = 'templates' | 'ai' | 'elements' | 'text' | 'draw' | 'uploads' | 'background' | 'brand';
+import { ANIM_PRESETS, DEFAULT_ANIM, magicAnimate, type MagicAnimateStyle } from '../lib/animation';
+import { Modal } from '../components/Modal';
+
+export type PanelTab = 'templates' | 'ai' | 'elements' | 'text' | 'draw' | 'animate' | 'uploads' | 'background' | 'brand';
 
 export type DrawSettings = {
   tool: DrawingTool | 'eraser';
@@ -82,6 +85,24 @@ export function LeftPanel({
   const [components, setComponents] = useState<SavedComponent[]>(() => listComponents());
   const [brandScope, setBrandScope] = useState<'page' | 'all'>('page');
   const [qrInput, setQrInput] = useState('https://editrim.app');
+  const [animScope, setAnimScope] = useState<'page' | 'all'>('page');
+  const [animPreviewOpen, setAnimPreviewOpen] = useState(false);
+  const [animPlayTime, setAnimPlayTime] = useState(0);
+  const [animPlaying, setAnimPlaying] = useState(true);
+
+  useEffect(() => {
+    if (!animPreviewOpen || !animPlaying) return;
+    let raf = 0;
+    const dur = Math.max(2, page.duration ?? 5);
+    const start = performance.now() - animPlayTime * 1000;
+    const tick = (now: number) => {
+      const elapsed = ((now - start) / 1000) % dur;
+      setAnimPlayTime(elapsed);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [animPreviewOpen, animPlaying, page.duration]);
 
   useEffect(() => onComponentsChange(() => setComponents(listComponents())), []);
 
@@ -439,6 +460,158 @@ export function LeftPanel({
           />
           <p className="lp-hint">Drag anywhere on the canvas to draw freehand strokes. Hold still at the end of a stroke to snap into a line, circle, or box.</p>
         </div>
+      </div>
+    );
+  }
+
+  if (tab === 'animate') {
+    const sel = store.selected[0] ?? null;
+    const anim = sel?.animation ?? DEFAULT_ANIM;
+    const pageDur = page.duration ?? 5;
+    const runMagic = (style: MagicAnimateStyle) => {
+      if (animScope === 'all') {
+        store.restoreDesign({
+          ...store.design,
+          pages: store.design.pages.map(p => magicAnimate(p, style)),
+        });
+        toast(`Applied ${style} animation to all pages`);
+      } else {
+        store.updatePage(p => magicAnimate(p, style));
+        toast(`Applied ${style} animation`);
+      }
+    };
+
+    return (
+      <div className="lp">
+        <PanelHead title="Animate" onClose={onClose} />
+        <div className="lp-scroll">
+          <button
+            className="btn btn-primary btn-sm btn-block"
+            style={{ marginBottom: 12 }}
+            onClick={() => {
+              setAnimPlayTime(0);
+              setAnimPlaying(true);
+              setAnimPreviewOpen(true);
+            }}
+          >
+            <EditrimIcon name="play" size={14} /> Preview page ({pageDur}s)
+          </button>
+
+          <div className="lp-section-title">Magic Animate</div>
+          <Segmented
+            value={animScope}
+            options={[
+              { value: 'page', label: 'This page' },
+              { value: 'all', label: 'All pages' },
+            ]}
+            onChange={setAnimScope}
+          />
+          <div className="anim-magic-grid" style={{ marginTop: 8 }}>
+            {([
+              ['subtle', 'Subtle'],
+              ['bold', 'Bold'],
+              ['playful', 'Playful'],
+              ['cinematic', 'Cinematic'],
+            ] as [MagicAnimateStyle, string][]).map(([style, label]) => (
+              <button key={style} className="shape-btn" onClick={() => runMagic(style)}>
+                <span className="shape-glyph"><EditrimIcon name="animate" size={18} /></span>
+                <small>{label}</small>
+              </button>
+            ))}
+          </div>
+
+          <div className="lp-section-title">Page duration</div>
+          <SliderField
+            label="Duration"
+            value={pageDur}
+            min={2}
+            max={15}
+            step={0.5}
+            onChange={duration => store.updatePage(p => ({ ...p, duration }))}
+            format={v => `${v}s`}
+          />
+
+          <div className="lp-section-title">Selected element</div>
+          {!sel ? (
+            <p className="lp-hint">Select any element on the canvas to customize its enter, exit, and emphasis motion.</p>
+          ) : (
+            <>
+              <div className="insp-subhead">Enter</div>
+              <div className="insp-effect-grid">
+                {ANIM_PRESETS.filter(p => p.id !== 'typewriter' || sel.type === 'text').map(p => (
+                  <button
+                    key={p.id}
+                    className={anim.enter === p.id ? 'active' : ''}
+                    onClick={() => store.patchElement(sel.id, { animation: { ...anim, enter: p.id } })}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+              <div className="insp-subhead">Exit</div>
+              <div className="insp-effect-grid">
+                {ANIM_PRESETS.filter(p => p.id !== 'typewriter').slice(0, 9).map(p => (
+                  <button
+                    key={p.id}
+                    className={anim.exit === p.id ? 'active' : ''}
+                    onClick={() => store.patchElement(sel.id, { animation: { ...anim, exit: p.id } })}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+              <div className="insp-subhead">Emphasis</div>
+              <Segmented
+                value={anim.emphasis}
+                options={[
+                  { value: 'none', label: 'None' },
+                  { value: 'pulse', label: 'Pulse' },
+                  { value: 'wiggle', label: 'Wiggle' },
+                  { value: 'float', label: 'Float' },
+                ]}
+                onChange={emphasis => store.patchElement(sel.id, { animation: { ...anim, emphasis } })}
+              />
+              <SliderField
+                label="Speed"
+                value={anim.duration}
+                min={0.2}
+                max={2.5}
+                step={0.1}
+                onChange={duration => store.patchElement(sel.id, { animation: { ...anim, duration } }, { merge: 'anim-dur' })}
+                format={v => `${v}s`}
+              />
+              <SliderField
+                label="Delay"
+                value={anim.delay}
+                min={0}
+                max={4}
+                step={0.1}
+                onChange={delay => store.patchElement(sel.id, { animation: { ...anim, delay } }, { merge: 'anim-delay' })}
+                format={v => `${v}s`}
+              />
+            </>
+          )}
+        </div>
+
+        <Modal
+          open={animPreviewOpen}
+          onClose={() => setAnimPreviewOpen(false)}
+          title={`Animation preview — ${page.name}`}
+          subtitle={`${animPlayTime.toFixed(1)}s / ${pageDur}s`}
+          width={760}
+          footer={
+            <>
+              <button className="btn btn-secondary btn-sm" onClick={() => setAnimPlayTime(0)}>Restart</button>
+              <button className="btn btn-primary btn-sm" onClick={() => setAnimPlaying(v => !v)}>
+                {animPlaying ? 'Pause' : 'Play'}
+              </button>
+            </>
+          }
+        >
+          <div className="anim-preview-stage">
+            <PagePreview page={page} size={store.design.size} time={animPlayTime} />
+          </div>
+        </Modal>
       </div>
     );
   }

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { GlassActionButton, GlassButton, GlassTabs } from '@/components/liquid-glass';
 import { RangeSlider } from '@/components/liquid-glass/controls/RangeSlider';
@@ -7,16 +7,22 @@ import { EditrimIcon, type EditrimIconName } from '../components/EditrimIcon';
 import { Modal } from '../components/Modal';
 import type { Design } from '../lib/types';
 import { exportDesign, type ExportFormat } from '../lib/export';
+import { exportMotion, type MotionFormat } from '../lib/motionExport';
 import { useToast } from '../components/Toast';
 import { buildShareLink } from '../lib/share';
 import '../styles/export.css';
 
-const FORMATS: { id: ExportFormat; label: string; note: string; icon: EditrimIconName }[] = [
+type ModalFormat = ExportFormat | MotionFormat;
+
+const FORMATS: { id: ModalFormat; label: string; note: string; icon: EditrimIconName }[] = [
   { id: 'png', label: 'PNG', note: 'Lossless · alpha', icon: 'image' },
   { id: 'jpg', label: 'JPG', note: 'Smaller file', icon: 'camera' },
   { id: 'pdf', label: 'PDF', note: 'Print · bleed', icon: 'doc' },
   { id: 'webp', label: 'WebP', note: 'Web-ready · small', icon: 'website' },
   { id: 'svg', label: 'SVG', note: 'Vector text & shapes', icon: 'code' },
+  { id: 'gif', label: 'GIF', note: 'Animated loop', icon: 'animate' },
+  { id: 'mp4', label: 'MP4', note: 'H.264 video', icon: 'video' },
+  { id: 'webm', label: 'WebM', note: 'VP9/VP8 video', icon: 'film' },
 ];
 
 const PAPER: [string, number, number][] = [
@@ -49,8 +55,12 @@ export function ExportModal({
   pageIndex: number;
 }) {
   const { toast } = useToast();
-  const [format, setFormat] = useState<ExportFormat>('png');
+  const [format, setFormat] = useState<ModalFormat>('png');
   const [scale, setScale] = useState(2);
+  const [fps, setFps] = useState(24);
+  const [motionScale, setMotionScale] = useState(0.5);
+  const [motionProgress, setMotionProgress] = useState<number | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const [pages, setPages] = useState<'current' | 'all'>('current');
   const [transparent, setTransparent] = useState(false);
   const [quality, setQuality] = useState(0.92);
@@ -59,12 +69,16 @@ export function ExportModal({
   const [cropMarks, setCropMarks] = useState(true);
   const [dpi, setDpi] = useState<150 | 300>(300);
   const [busy, setBusy] = useState(false);
+  const hasWebCodecs = typeof VideoEncoder !== 'undefined' && typeof VideoFrame !== 'undefined';
 
   useEffect(() => {
     if (open) {
       setBusy(false);
+      setMotionProgress(null);
       setFormat('png');
       setScale(2);
+      setFps(24);
+      setMotionScale(0.5);
       setPages('current');
       setTransparent(false);
       setQuality(0.92);
@@ -72,10 +86,13 @@ export function ExportModal({
       setBleedMm(3);
       setCropMarks(true);
       setDpi(300);
+    } else {
+      abortRef.current?.abort();
     }
   }, [open]);
 
   const raster = format === 'png' || format === 'jpg' || format === 'webp';
+  const motion = format === 'gif' || format === 'mp4' || format === 'webm';
   const print = format === 'pdf' && pdfMode === 'print';
 
   const summary = useMemo(() => {
@@ -84,16 +101,36 @@ export function ExportModal({
       return `${paperLabel(design.size.width, design.size.height)}${bleed ? ` · ${bleed} mm bleed` : ''} · PDF`;
     }
     if (format === 'svg') return `${design.size.width} × ${design.size.height} px · SVG`;
+    if (motion) {
+      const effFps = format === 'gif' ? Math.min(15, fps) : fps;
+      return `${Math.round(design.size.width * motionScale)} × ${Math.round(design.size.height * motionScale)} · ${effFps} fps · ${format.toUpperCase()}`;
+    }
     const w = Math.round(design.size.width * scale);
     const h = Math.round(design.size.height * scale);
     return `${w} × ${h} px · ${format.toUpperCase()}`;
-  }, [format, print, bleedMm, design.size.width, design.size.height, scale]);
+  }, [format, print, bleedMm, design.size.width, design.size.height, scale, motion, fps, motionScale]);
 
   const run = async () => {
     setBusy(true);
     try {
+      if (motion) {
+        const ctrl = new AbortController();
+        abortRef.current = ctrl;
+        setMotionProgress(0);
+        await exportMotion(design, pageIndex, {
+          format: format as MotionFormat,
+          fps,
+          scale: motionScale,
+          pages,
+          onProgress: pct => setMotionProgress(pct),
+          signal: ctrl.signal,
+        });
+        toast(`${format.toUpperCase()} downloaded`);
+        onClose();
+        return;
+      }
       const result = await exportDesign(design, pageIndex, {
-        format,
+        format: format as ExportFormat,
         scale,
         pages,
         transparent,
@@ -106,10 +143,16 @@ export function ExportModal({
       toast(result.files > 1 ? `${result.files} pages downloaded` : `${format.toUpperCase()} downloaded`);
       onClose();
     } catch (err) {
-      toast('Export failed. If a photo is blocked, try another image.', 'error');
-      throw err;
+      if ((err as Error)?.message === 'Cancelled') {
+        toast('Export cancelled');
+      } else {
+        toast('Export failed. Try another format or scale.', 'error');
+        throw err;
+      }
     } finally {
+      abortRef.current = null;
       setBusy(false);
+      setMotionProgress(null);
     }
   };
 
@@ -144,14 +187,23 @@ export function ExportModal({
       }
     >
       <div className="export-formats export-formats-5">
-        {FORMATS.map(f => (
-          <button key={f.id} className={`export-format ${format === f.id ? 'active' : ''}`} onClick={() => setFormat(f.id)}>
-            <EditrimIcon name={f.icon} size={19} />
-            <b>{f.label}</b>
-            <span>{f.note}</span>
-            {format === f.id && <EditrimIcon name="check" size={15} className="export-check" />}
-          </button>
-        ))}
+        {FORMATS.map(f => {
+          const disabled = (f.id === 'mp4' || f.id === 'webm') && !hasWebCodecs;
+          return (
+            <button
+              key={f.id}
+              className={`export-format ${format === f.id ? 'active' : ''}`}
+              disabled={disabled}
+              title={disabled ? 'Requires WebCodecs VideoEncoder support' : f.label}
+              onClick={() => setFormat(f.id)}
+            >
+              <EditrimIcon name={f.icon} size={19} />
+              <b>{f.label}</b>
+              <span>{f.note}</span>
+              {format === f.id && <EditrimIcon name="check" size={15} className="export-check" />}
+            </button>
+          );
+        })}
       </div>
 
       <div className="export-options">
@@ -265,6 +317,40 @@ export function ExportModal({
             </div>
           </>
         )}
+        {motion && (
+          <>
+            <div className="export-option-row">
+              <span>Frame rate</span>
+              <GlassTabs
+                aria-label="Motion FPS"
+                size="sm"
+                value={String(fps)}
+                onValueChange={v => setFps(Number(v))}
+                options={([15, 24, 30] as const).map(v => ({ value: String(v), label: `${v} fps` }))}
+              />
+            </div>
+            <div className="export-option-row">
+              <span>Scale</span>
+              <GlassTabs
+                aria-label="Motion scale"
+                size="sm"
+                value={String(motionScale)}
+                onValueChange={v => setMotionScale(Number(v))}
+                options={[
+                  { value: '0.5', label: '0.5×' },
+                  { value: '1', label: '1×' },
+                ]}
+              />
+            </div>
+            {motionProgress !== null && (
+              <div className="export-motion-progress">
+                <div className="export-motion-bar"><i style={{ width: `${motionProgress}%` }} /></div>
+                <span>{motionProgress}%</span>
+                <button type="button" className="btn btn-secondary btn-sm" onClick={() => abortRef.current?.abort()}>Cancel</button>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {print && <div className="export-warning">Print PDF is raster at {dpi} DPI with bleed and crop marks.</div>}
@@ -272,7 +358,7 @@ export function ExportModal({
         <div className="export-warning">Standard PDF is a 2× raster of each page, sized to the design.</div>
       )}
       {format === 'svg' && <div className="export-warning">Text and shapes stay vector; photos are embedded.</div>}
-      {format !== 'pdf' && pages === 'all' && (
+      {!motion && format !== 'pdf' && pages === 'all' && (
         <div className="export-warning">Multi-page {format.toUpperCase()} downloads one numbered file per page.</div>
       )}
     </Modal>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { DesignSize, El, Page } from '../lib/types';
+import { animState } from '../lib/animation';
 import { ElementView, PageBackground } from './ElementView';
 
 export function PagePreview({
@@ -7,11 +8,17 @@ export function PagePreview({
   size,
   className = '',
   ariaLabel,
+  time,
+  interactiveLinks,
+  onNavigatePage,
 }: {
   page: Page;
   size: DesignSize;
   className?: string;
   ariaLabel?: string;
+  time?: number;
+  interactiveLinks?: boolean;
+  onNavigatePage?: (pageId: string) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
@@ -43,7 +50,14 @@ export function PagePreview({
         >
           <PageBackground bg={page.background} />
           {page.elements.map(el => (
-            <PreviewElement key={el.id} el={el} page={page} />
+            <PreviewElement
+              key={el.id}
+              el={el}
+              page={page}
+              time={time}
+              interactiveLinks={interactiveLinks}
+              onNavigatePage={onNavigatePage}
+            />
           ))}
         </div>
       )}
@@ -51,14 +65,37 @@ export function PagePreview({
   );
 }
 
-function PreviewElement({ el, page }: { el: El; page: Page }) {
+function PreviewElement({
+  el,
+  page,
+  time,
+  interactiveLinks,
+  onNavigatePage,
+}: {
+  el: El;
+  page: Page;
+  time?: number;
+  interactiveLinks?: boolean;
+  onNavigatePage?: (pageId: string) => void;
+}) {
   if (el.hidden) return null;
-  const filter =
+  const a = time !== undefined ? animState(el, time, page.duration ?? 5) : null;
+  const renderedEl: El =
+    a?.chars !== undefined && el.type === 'text' ? { ...el, text: el.text.slice(0, a.chars) } : el;
+  const baseFilter =
     el.type === 'image' || el.type === 'icon'
       ? el.shadow
         ? `drop-shadow(${el.shadow.x}px ${el.shadow.y}px ${el.shadow.blur}px ${el.shadow.color})`
-        : undefined
-      : undefined;
+        : ''
+      : '';
+  const blurFilter = a && a.blur > 0.1 ? `blur(${a.blur.toFixed(1)}px)` : '';
+  const filter = [baseFilter, blurFilter].filter(Boolean).join(' ') || undefined;
+  const clipPath = a && a.clipX < 0.999 ? `inset(0 ${((1 - a.clipX) * 100).toFixed(2)}% 0 0)` : undefined;
+  const opacity = (el.opacity ?? 1) * (a ? a.opacity : 1);
+  const transform = a
+    ? `translate(${a.dx}px, ${a.dy}px) rotate(${el.rotation + a.rotate}deg) scale(${a.scale})`
+    : `rotate(${el.rotation}deg)`;
+
   return (
     <div
       style={{
@@ -67,12 +104,31 @@ function PreviewElement({ el, page }: { el: El; page: Page }) {
         top: el.y,
         width: el.w,
         height: el.h,
-        transform: `rotate(${el.rotation}deg)`,
-        opacity: el.opacity,
+        transform,
+        opacity,
         filter,
+        clipPath,
       }}
     >
-      <ElementView el={el} page={page} />
+      <ElementView el={renderedEl} page={page} />
+      {interactiveLinks && el.link && (el.link.url || el.link.pageId) && (
+        el.link.pageId && onNavigatePage ? (
+          <button
+            type="button"
+            className="pv-link-hit"
+            onClick={() => onNavigatePage(el.link!.pageId!)}
+            aria-label={`Go to page`}
+          />
+        ) : el.link.url ? (
+          <a
+            href={el.link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="pv-link-hit"
+            aria-label={`Open ${el.link.url}`}
+          />
+        ) : null
+      )}
     </div>
   );
 }

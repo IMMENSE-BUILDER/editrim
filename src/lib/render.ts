@@ -2,6 +2,7 @@ import type { Background, DesignSize, El, ImageElement, MaskKind, Page, Paint, S
 import { resolveSrc } from './storage';
 import { FONT_CSS_STACK } from './fonts';
 import { iconById } from './icons';
+import { animState } from './animation';
 import { buildPrims, drawPrims, primFonts, primImages } from './rich';
 
 const imageCache = new Map<string, HTMLImageElement>();
@@ -476,18 +477,36 @@ function getIconPath(icon: string): Path2D {
 
 async function drawElement(
   ctx: CanvasRenderingContext2D,
-  el: El,
+  rawEl: El,
   scale: number,
   page: Page,
   resolvedMap: Map<string, string>,
+  time?: number,
 ) {
-  if (el.hidden) return;
+  if (rawEl.hidden) return;
+  const a = time !== undefined ? animState(rawEl, time, page.duration ?? 5) : null;
+  if (a && a.opacity <= 0.002) return;
+  const el: El =
+    a?.chars !== undefined && rawEl.type === 'text'
+      ? { ...rawEl, text: rawEl.text.slice(0, a.chars) }
+      : rawEl;
+
   const prims = buildPrims(el, page);
   ctx.save();
-  ctx.globalAlpha = el.opacity ?? 1;
-  ctx.translate(el.x + el.w / 2, el.y + el.h / 2);
-  ctx.rotate((el.rotation * Math.PI) / 180);
+  ctx.globalAlpha = (el.opacity ?? 1) * (a ? a.opacity : 1);
+  if (a && a.blur > 0.1) {
+    ctx.filter = `blur(${a.blur.toFixed(1)}px)`;
+  }
+  ctx.translate(el.x + el.w / 2 + (a ? a.dx : 0), el.y + el.h / 2 + (a ? a.dy : 0));
+  ctx.rotate(((el.rotation + (a ? a.rotate : 0)) * Math.PI) / 180);
+  if (a && a.scale !== 1) ctx.scale(a.scale, a.scale);
   ctx.translate(-el.w / 2, -el.h / 2);
+
+  if (a && a.clipX < 0.999) {
+    ctx.beginPath();
+    ctx.rect(0, 0, Math.max(0, el.w * a.clipX), el.h);
+    ctx.clip();
+  }
 
   if (prims !== null) {
     if (el.shadow) {
@@ -636,12 +655,15 @@ async function ensureFonts(page: Page) {
 export async function renderPageCanvas(
   page: Page,
   size: DesignSize,
-  opts: { scale?: number; transparent?: boolean } = {},
+  opts: { scale?: number; transparent?: boolean; bleedPx?: number; time?: number } = {},
 ): Promise<HTMLCanvasElement> {
   const scale = opts.scale ?? 2;
+  const bleed = Math.max(0, opts.bleedPx ?? 0);
+  const totalW = size.width + bleed * 2;
+  const totalH = size.height + bleed * 2;
   const canvas = document.createElement('canvas');
-  canvas.width = Math.round(size.width * scale);
-  canvas.height = Math.round(size.height * scale);
+  canvas.width = Math.round(totalW * scale);
+  canvas.height = Math.round(totalH * scale);
   const ctx = canvas.getContext('2d')!;
   ctx.imageSmoothingQuality = 'high';
   ctx.scale(scale, scale);
@@ -649,11 +671,14 @@ export async function renderPageCanvas(
   const resolvedMap = await preloadImages(page);
 
   if (!opts.transparent) {
-    await drawBackground(ctx, page.background, size.width, size.height);
+    await drawBackground(ctx, page.background, totalW, totalH);
   }
+  ctx.save();
+  if (bleed > 0) ctx.translate(bleed, bleed);
   for (const el of page.elements) {
-    await drawElement(ctx, el, scale, page, resolvedMap);
+    await drawElement(ctx, el, scale, page, resolvedMap, opts.time);
   }
+  ctx.restore();
   return canvas;
 }
 

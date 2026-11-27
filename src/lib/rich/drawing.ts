@@ -8,14 +8,20 @@ const TOOL_OPTS: Record<DrawingTool, { thinning: number; smoothing: number; stre
   highlighter: { thinning: 0, smoothing: 0.35, streamline: 0.4 },
 };
 
-export function pointsToStrokePath(pts: [number, number, number][], size: number, tool: DrawingTool): string {
+export function pointsToStrokePath(
+  pts: [number, number, number][],
+  size: number,
+  tool: DrawingTool,
+  smoothing?: number,
+): string {
   if (pts.length === 0) return '';
   const opts = TOOL_OPTS[tool] ?? TOOL_OPTS.pen;
+  const smoothRatio = smoothing !== undefined ? 0.2 + (Math.max(0, Math.min(100, smoothing)) / 100) * 0.65 : null;
   const outline = getStroke(pts, {
     size,
     thinning: opts.thinning,
-    smoothing: opts.smoothing,
-    streamline: opts.streamline,
+    smoothing: smoothRatio ?? opts.smoothing,
+    streamline: smoothRatio ?? opts.streamline,
     simulatePressure: pts.every(p => p[2] === 0.5),
   });
   if (outline.length === 0) return '';
@@ -56,7 +62,7 @@ export function buildDrawingPrims(el: DrawingElement): Prim[] {
       continue;
     }
     const scaled: [number, number, number][] = stroke.points.map(([px, py, pr]) => [px * sx, py * sy, pr]);
-    const d = pointsToStrokePath(scaled, Math.max(1.5, stroke.size * sAvg), stroke.tool);
+    const d = pointsToStrokePath(scaled, Math.max(1.5, stroke.size * sAvg), stroke.tool, stroke.smoothing);
     if (d) {
       prims.push({
         k: 'path',

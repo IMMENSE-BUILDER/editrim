@@ -40,6 +40,13 @@ const CURSORS: Record<Handle, string> = {
   w: 'ew-resize',
 };
 
+export type ViewPrefs = {
+  rulers: boolean;
+  margins: boolean;
+  bleed: boolean;
+  guides: boolean;
+};
+
 type Props = {
   design: Design;
   page: Page;
@@ -52,6 +59,8 @@ type Props = {
   comments?: CanvasComment[];
   drawMode?: boolean;
   drawSettings?: DrawSettings;
+  viewPrefs?: ViewPrefs;
+  onSetGuides?: (guides: { x: number[]; y: number[] }) => void;
   onAddElements?: (els: El[]) => void;
   onRemoveElement?: (id: string) => void;
   onDropAsset?: (file: File) => Promise<string | null>;
@@ -139,6 +148,8 @@ export function Canvas({
   comments = [],
   drawMode = false,
   drawSettings,
+  viewPrefs = { rulers: false, margins: false, bleed: false, guides: true },
+  onSetGuides,
   onAddElements,
   onRemoveElement,
   onDropAsset,
@@ -381,8 +392,8 @@ export function Canvas({
     const others = page.elements
       .filter(el => !ignoreIds.includes(el.id) && !el.hidden)
       .map(el => rotatedBBox(el));
-    const xLines = [0, size.width / 2, size.width];
-    const yLines = [0, size.height / 2, size.height];
+    const xLines = [0, size.width / 2, size.width, ...(viewPrefs.guides ? (design.guides?.x ?? []) : [])];
+    const yLines = [0, size.height / 2, size.height, ...(viewPrefs.guides ? (design.guides?.y ?? []) : [])];
     others.forEach(b => {
       xLines.push(b.x, b.x + b.w / 2, b.x + b.w);
       yLines.push(b.y, b.y + b.h / 2, b.y + b.h);
@@ -742,7 +753,7 @@ export function Canvas({
     ]);
     const tool = drawSettings.tool === 'eraser' ? 'pen' : drawSettings.tool;
     const drawingEl = createDrawing(
-      [{ points: rel, color: drawSettings.color, size: drawSettings.size, tool }],
+      [{ points: rel, color: drawSettings.color, size: drawSettings.size, tool, smoothing: drawSettings.smoothing }],
       x0,
       y0,
       w,
@@ -920,6 +931,44 @@ export function Canvas({
     );
   };
 
+  const startGuideDrag = (axis: 'x' | 'y', existingIdx: number | null, e: React.PointerEvent) => {
+    if (!onSetGuides) return;
+    e.stopPropagation();
+    e.preventDefault();
+    const cur = {
+      x: [...(design.guides?.x ?? [])],
+      y: [...(design.guides?.y ?? [])],
+    };
+    let idx = existingIdx;
+    const move = (ev: PointerEvent) => {
+      const p = toPage(ev.clientX, ev.clientY);
+      const pos = Math.round(axis === 'x' ? p.x : p.y);
+      const arr = [...cur[axis]];
+      if (idx === null) {
+        idx = arr.length;
+        arr.push(pos);
+        cur[axis] = arr;
+      } else {
+        arr[idx] = pos;
+      }
+      onSetGuides({ x: axis === 'x' ? arr : cur.x, y: axis === 'y' ? arr : cur.y });
+    };
+    const up = (ev: PointerEvent) => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      if (idx === null) return;
+      const p = toPage(ev.clientX, ev.clientY);
+      const val = axis === 'x' ? p.x : p.y;
+      const limit = axis === 'x' ? size.width : size.height;
+      if (val < 0 || val > limit) {
+        const nextArr = cur[axis].filter((_, i) => i !== idx);
+        onSetGuides({ x: axis === 'x' ? nextArr : cur.x, y: axis === 'y' ? nextArr : cur.y });
+      }
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
   return (
     <div
       className={`cv-viewport ${space ? 'is-space' : ''} ${panning ? 'is-panning' : ''}`}
@@ -1019,13 +1068,70 @@ export function Canvas({
                   />
                 ) : (
                   <path
-                    d={pointsToStrokePath(liveStroke, drawSettings.size, drawSettings.tool)}
+                    d={pointsToStrokePath(liveStroke, drawSettings.size, drawSettings.tool, drawSettings.smoothing)}
                     fill={snapReady ? '#2440F0' : drawSettings.color}
                     fillOpacity={drawSettings.tool === 'marker' ? 0.88 : 1}
                   />
                 )
               )}
             </svg>
+          )}
+
+          {viewPrefs.margins && (() => {
+            const m = Math.max(24, Math.round(Math.min(size.width, size.height) * 0.04));
+            return (
+              <div
+                className="cv-margin-overlay"
+                aria-hidden="true"
+                style={{
+                  left: m,
+                  top: m,
+                  width: Math.max(10, size.width - m * 2),
+                  height: Math.max(10, size.height - m * 2),
+                  borderWidth: 1 / view.zoom,
+                }}
+              />
+            );
+          })()}
+
+          {viewPrefs.bleed && (() => {
+            const bleedPx = 11.34;
+            return (
+              <div
+                className="cv-bleed-overlay"
+                aria-hidden="true"
+                style={{
+                  left: -bleedPx,
+                  top: -bleedPx,
+                  width: size.width + bleedPx * 2,
+                  height: size.height + bleedPx * 2,
+                  borderWidth: 1.25 / view.zoom,
+                }}
+              />
+            );
+          })()}
+
+          {viewPrefs.guides && (
+            <>
+              {(design.guides?.x ?? []).map((gx, gi) => (
+                <div
+                  key={`ugx-${gi}`}
+                  className="cv-user-guide is-x"
+                  style={{ left: gx, width: Math.max(1, 1.5 / view.zoom), height: size.height }}
+                  onPointerDown={e => startGuideDrag('x', gi, e)}
+                  title={`Guide X: ${gx}px (drag off canvas to remove)`}
+                />
+              ))}
+              {(design.guides?.y ?? []).map((gy, gi) => (
+                <div
+                  key={`ugy-${gi}`}
+                  className="cv-user-guide is-y"
+                  style={{ top: gy, height: Math.max(1, 1.5 / view.zoom), width: size.width }}
+                  onPointerDown={e => startGuideDrag('y', gi, e)}
+                  title={`Guide Y: ${gy}px (drag off canvas to remove)`}
+                />
+              ))}
+            </>
           )}
 
           {commentPins.map(pin => (
@@ -1179,6 +1285,47 @@ export function Canvas({
           )}
         </div>
       </div>
+
+      {viewPrefs.rulers && (() => {
+        const vpW = viewportRef.current?.clientWidth || 1000;
+        const vpH = viewportRef.current?.clientHeight || 700;
+        const step = view.zoom < 0.35 ? 200 : view.zoom < 0.75 ? 100 : 50;
+        const startX = Math.floor(-view.pan.x / view.zoom / step) * step;
+        const endX = Math.ceil((vpW - view.pan.x) / view.zoom / step) * step;
+        const startY = Math.floor(-view.pan.y / view.zoom / step) * step;
+        const endY = Math.ceil((vpH - view.pan.y) / view.zoom / step) * step;
+        const xTicks: number[] = [];
+        for (let t = startX; t <= endX; t += step) xTicks.push(t);
+        const yTicks: number[] = [];
+        for (let t = startY; t <= endY; t += step) yTicks.push(t);
+        return (
+          <>
+            <div className="cv-ruler-corner" aria-hidden="true" />
+            <div
+              className="cv-ruler cv-ruler-top"
+              title="Drag down to add horizontal guide"
+              onPointerDown={e => startGuideDrag('y', null, e)}
+            >
+              {xTicks.map(t => (
+                <span key={t} className="cv-ruler-tick" style={{ left: t * view.zoom + view.pan.x }}>
+                  <b>{t}</b>
+                </span>
+              ))}
+            </div>
+            <div
+              className="cv-ruler cv-ruler-left"
+              title="Drag right to add vertical guide"
+              onPointerDown={e => startGuideDrag('x', null, e)}
+            >
+              {yTicks.map(t => (
+                <span key={t} className="cv-ruler-tick" style={{ top: t * view.zoom + view.pan.y }}>
+                  <b>{t}</b>
+                </span>
+              ))}
+            </div>
+          </>
+        );
+      })()}
 
       <GlassButtonGroup
         size="sm"

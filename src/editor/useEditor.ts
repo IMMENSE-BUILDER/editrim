@@ -553,6 +553,13 @@ export function useEditor(initial: Design) {
     [apply],
   );
 
+  const setGuides = useCallback(
+    (guides: { x: number[]; y: number[] }) => {
+      apply(d => ({ ...d, guides }), { merge: 'guides' });
+    },
+    [apply],
+  );
+
   /** Replace the whole design in one undo step — used by version restore and brand apply. */
   const restoreDesign = useCallback(
     (next: Design) => {
@@ -620,6 +627,7 @@ export function useEditor(initial: Design) {
     setBackground,
     setPageName,
     setTitle,
+    setGuides,
     restoreDesign,
     addPages,
     undo,

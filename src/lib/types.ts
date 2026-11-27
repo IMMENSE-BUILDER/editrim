@@ -223,6 +223,7 @@ export type DrawingStroke = {
   color: string;
   size: number;
   tool: DrawingTool;
+  smoothing?: number;
 };
 
 export type DrawingElement = BaseElement & {

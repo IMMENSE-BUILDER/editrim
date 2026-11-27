@@ -90,27 +90,29 @@ export async function exportDesign(design: Design, currentPage: number, opts: Ex
 
   if (opts.format === 'pdf') {
     const print = opts.pdfMode === 'print';
-    const bleedPt = print ? mmToPt(opts.bleedMm ?? 0) : 0;
+    const bleedMm = print ? (opts.bleedMm ?? 0) : 0;
+    const bleedPt = print ? mmToPt(bleedMm) : 0;
+    const bleedPx = print ? (bleedMm * 96) / 25.4 : 0;
     const trimW = design.size.width * 0.75;
     const trimH = design.size.height * 0.75;
     const pageW = trimW + bleedPt * 2;
     const pageH = trimH + bleedPt * 2;
     const orientation = design.size.width >= design.size.height ? 'landscape' : 'portrait';
     const scale = print
-      ? Math.min((opts.dpi ?? 300) / 96, MAX_PRINT_SIDE / Math.max(design.size.width, design.size.height))
+      ? Math.min((opts.dpi ?? 300) / 96, MAX_PRINT_SIDE / Math.max(design.size.width + bleedPx * 2, design.size.height + bleedPx * 2))
       : Math.min(opts.scale, 2);
     const { jsPDF } = await import('jspdf');
     let doc: any = null;
     for (const i of indexes) {
       const page = design.pages[i];
-      const canvas = await renderPageCanvas(page, design.size, { scale, transparent: false });
+      const canvas = await renderPageCanvas(page, design.size, { scale, transparent: false, bleedPx });
       const data = canvas.toDataURL('image/jpeg', quality);
       if (!doc) {
         doc = new jsPDF({ orientation, unit: 'pt', format: [pageW, pageH], compress: true });
       } else {
         doc.addPage([pageW, pageH], orientation);
       }
-      doc.addImage(data, 'JPEG', bleedPt, bleedPt, trimW, trimH, undefined, 'FAST');
+      doc.addImage(data, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
       if (print && opts.cropMarks && bleedPt > 0) drawCropMarks(doc, bleedPt, bleedPt, trimW, trimH);
     }
     if (doc) doc.save(`${base}.pdf`);

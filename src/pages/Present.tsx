@@ -34,6 +34,7 @@ export default function Present() {
   const [help, setHelp] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
   const [elapsed, setElapsed] = useState(0);
+  const [pageTime, setPageTime] = useState(0);
 
   const pageRef = useRef<HTMLDivElement>(null);
   const hideTimer = useRef<number | null>(null);
@@ -199,12 +200,32 @@ export default function Present() {
   useEffect(() => {
     if (lastIndexRef.current === pageIndex) return;
     lastIndexRef.current = pageIndex;
+    setPageTime(0);
     const el = pageRef.current;
     if (!el) return;
     el.classList.remove('is-entering');
     void el.offsetWidth;
     el.classList.add('is-entering');
   }, [pageIndex]);
+
+  /* Element entrance/emphasis clock for animated slides. */
+  useEffect(() => {
+    const p = design?.pages[pageIndex];
+    if (!p || !p.elements.some(el => el.animation && (el.animation.enter !== 'none' || el.animation.emphasis !== 'none' || el.animation.exit !== 'none'))) {
+      setPageTime(0);
+      return;
+    }
+    let raf = 0;
+    const dur = Math.max(2, p.duration ?? 5);
+    const start = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min(dur, (now - start) / 1000);
+      setPageTime(t);
+      if (t < dur) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [design, pageIndex]);
 
   const toggleFullscreen = useCallback(() => {
     if (document.fullscreenElement) {
@@ -363,7 +384,16 @@ export default function Present() {
         <div className="presenter-body">
           <section className={`presenter-stage ${black ? 'is-blank' : ''}`} onClick={black ? () => setBlack(false) : undefined}>
             <div ref={pageRef} className="present-page" data-transition={transition} style={{ width: pw, height: ph }}>
-              <PagePreview page={page} size={design.size} />
+              <PagePreview
+                page={page}
+                size={design.size}
+                time={page.elements.some(e => e.animation) ? pageTime : undefined}
+                interactiveLinks
+                onNavigatePage={pid => {
+                  const idx = design.pages.findIndex(pp => pp.id === pid);
+                  if (idx >= 0) commit(idx);
+                }}
+              />
             </div>
             {black && <div className="presenter-blank" />}
           </section>
@@ -444,7 +474,17 @@ export default function Present() {
     >
       <div className="present-stage">
         <div ref={pageRef} className="present-page" data-transition={transition} style={{ width: w, height: h }}>
-          <PagePreview page={page} size={design.size} ariaLabel={`${design.title}, page ${index + 1}`} />
+          <PagePreview
+            page={page}
+            size={design.size}
+            time={page.elements.some(e => e.animation) ? pageTime : undefined}
+            interactiveLinks
+            onNavigatePage={pid => {
+              const idx = design.pages.findIndex(pp => pp.id === pid);
+              if (idx >= 0) commit(idx);
+            }}
+            ariaLabel={`${design.title}, page ${index + 1}`}
+          />
         </div>
       </div>
 
