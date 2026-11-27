@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { MouseEvent as ReactMouseEvent } from 'react';
+import type { CSSProperties, MouseEvent as ReactMouseEvent, PointerEvent as ReactPointerEvent } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { GlassButton, GlassButtonGroup, GlassButtonGroupItem, GlassButtonGroupSeparator, GlassCard } from '@/components/liquid-glass';
 import {
@@ -169,6 +169,52 @@ function EditorWorkspace({ initial }: { initial: Design }) {
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const [saveState, setSaveState] = useState<'saved' | 'saving' | 'error'>('saved');
   const [focusMode, setFocusMode] = useState(false);
+  const [panelW, setPanelW] = useState<number>(() => {
+    try {
+      const n = Number(localStorage.getItem('editrim_panel_w'));
+      return Number.isFinite(n) && n >= 220 && n <= 480 ? n : 300;
+    } catch {
+      return 300;
+    }
+  });
+  const [inspectorW, setInspectorW] = useState<number>(() => {
+    try {
+      const n = Number(localStorage.getItem('editrim_inspector_w'));
+      return Number.isFinite(n) && n >= 220 && n <= 460 ? n : 272;
+    } catch {
+      return 272;
+    }
+  });
+
+  useEffect(() => {
+    try { localStorage.setItem('editrim_panel_w', String(panelW)); } catch { /* ignore */ }
+  }, [panelW]);
+
+  useEffect(() => {
+    try { localStorage.setItem('editrim_inspector_w', String(inspectorW)); } catch { /* ignore */ }
+  }, [inspectorW]);
+
+  const startSidebarResize = useCallback((side: 'left' | 'right', e: ReactPointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startW = side === 'left' ? panelW : inspectorW;
+    document.body.classList.add('is-resizing-panel');
+    const onMove = (ev: PointerEvent) => {
+      const dx = ev.clientX - startX;
+      if (side === 'left') {
+        setPanelW(Math.max(220, Math.min(480, Math.round(startW + dx))));
+      } else {
+        setInspectorW(Math.max(220, Math.min(460, Math.round(startW - dx))));
+      }
+    };
+    const onUp = () => {
+      document.body.classList.remove('is-resizing-panel');
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp, { once: true });
+  }, [inspectorW, panelW]);
   const [density, setDensity] = useState<'comfortable' | 'compact'>(() => {
     try {
       return localStorage.getItem('editrim_density') === 'compact' ? 'compact' : 'comfortable';
@@ -849,7 +895,10 @@ function EditorWorkspace({ initial }: { initial: Design }) {
   ];
 
   return (
-    <div className={`editor ${inspectorOpen ? 'show-inspector' : ''} ${focusMode ? 'focus-mode' : ''} ${density === 'compact' ? 'density-compact' : ''}`}>
+    <div
+      className={`editor ${inspectorOpen ? 'show-inspector' : ''} ${focusMode ? 'focus-mode' : ''} ${density === 'compact' ? 'density-compact' : ''}`}
+      style={{ '--panel': `${panelW}px`, '--inspector': `${inspectorW}px` } as CSSProperties}
+    >
       <header className="ed-topbar">
         <div className="ed-top-left">
           <Link to="/dashboard" className="ed-back" title="Back to your designs"><EditrimIcon name="arrowLeft" size={17} /></Link>
@@ -1014,16 +1063,27 @@ function EditorWorkspace({ initial }: { initial: Design }) {
         </nav>
 
         {panel && (
-          <LeftPanel
-            tab={panel}
-            store={store}
-            brand={brand}
-            aiFocus={aiFocus}
-            drawSettings={drawSettings}
-            onDrawSettingsChange={setDrawSettings}
-            onClose={() => setPanel(null)}
-            onOpenBrand={() => setBrandOpen(true)}
-          />
+          <>
+            <LeftPanel
+              tab={panel}
+              store={store}
+              brand={brand}
+              aiFocus={aiFocus}
+              drawSettings={drawSettings}
+              onDrawSettingsChange={setDrawSettings}
+              onClose={() => setPanel(null)}
+              onOpenBrand={() => setBrandOpen(true)}
+            />
+            <div
+              className="ed-resizer ed-resizer-left"
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Resize left panel"
+              title="Drag to resize sidebar (double-click to reset)"
+              onPointerDown={e => startSidebarResize('left', e)}
+              onDoubleClick={() => setPanelW(300)}
+            />
+          </>
         )}
 
         <main className="ed-canvas-area">
@@ -1098,6 +1158,16 @@ function EditorWorkspace({ initial }: { initial: Design }) {
             </div>
           </div>
         </main>
+
+        <div
+          className="ed-resizer ed-resizer-right"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize inspector"
+          title="Drag to resize inspector (double-click to reset)"
+          onPointerDown={e => startSidebarResize('right', e)}
+          onDoubleClick={() => setInspectorW(272)}
+        />
 
         <Inspector
           store={store}

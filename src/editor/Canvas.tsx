@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type React from 'react';
-import { GlassButtonGroup, GlassButtonGroupItem, GlassButtonGroupSeparator } from '@/components/liquid-glass';
 import { EditrimIcon } from '../components/EditrimIcon';
 
 import type { CanvasComment, El, GridElement, MockupElement, Page, Point, Rect, ShapeKind, TableElement } from '../lib/types';
@@ -173,6 +172,22 @@ export function Canvas({
   const holdTimerRef = useRef<number | null>(null);
   const marqueeCleanup = useRef<(() => void) | null>(null);
   const fittedFor = useRef('');
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  useEffect(() => {
+    const onFs = () => setIsFullscreen(Boolean(document.fullscreenElement));
+    document.addEventListener('fullscreenchange', onFs);
+    return () => document.removeEventListener('fullscreenchange', onFs);
+  }, []);
+
+  const toggleFullscreen = useCallback(() => {
+    if (document.fullscreenElement) {
+      void document.exitFullscreen().catch(() => {});
+    } else {
+      const target = viewportRef.current?.closest('.ed-canvas-area') ?? viewportRef.current;
+      void target?.requestFullscreen?.().catch(() => {});
+    }
+  }, []);
 
   const size = design.size;
 
@@ -1327,31 +1342,46 @@ export function Canvas({
         );
       })()}
 
-      <GlassButtonGroup
-        size="sm"
-        material="clear"
-        className="cv-controls"
-        aria-label="Canvas zoom"
+      <div
+        className="cv-controls cv-controls-plain"
+        role="toolbar"
+        aria-label="Canvas zoom, fullscreen and shortcuts"
         onPointerDown={e => e.stopPropagation()}
       >
-        <GlassButtonGroupItem onClick={() => zoomBy(0.9)} aria-label="Zoom out" title="Zoom out">
+        <button type="button" onClick={() => zoomBy(0.9)} aria-label="Zoom out" title="Zoom out">
           <EditrimIcon name="minus" size={15} />
-        </GlassButtonGroupItem>
-        <GlassButtonGroupItem className="cv-zoom-val" onClick={() => zoomBy(1 / view.zoom)} title="Reset zoom">
+        </button>
+        <button type="button" className="cv-zoom-val" onClick={() => zoomBy(1 / view.zoom)} title="Reset zoom (100%)">
           {Math.round(view.zoom * 100)}%
-        </GlassButtonGroupItem>
-        <GlassButtonGroupItem onClick={() => zoomBy(1.1)} aria-label="Zoom in" title="Zoom in">
+        </button>
+        <button type="button" onClick={() => zoomBy(1.1)} aria-label="Zoom in" title="Zoom in">
           <EditrimIcon name="plus" size={15} />
-        </GlassButtonGroupItem>
-        <GlassButtonGroupSeparator />
-        <GlassButtonGroupItem onClick={fit} aria-label="Fit to screen" title="Fit to screen">
+        </button>
+        <span className="cv-ctrl-sep" aria-hidden="true" />
+        <button type="button" onClick={fit} aria-label="Fit to screen" title="Fit to screen">
           <EditrimIcon name="fit" size={15} />
-        </GlassButtonGroupItem>
-        <GlassButtonGroupSeparator />
-        <GlassButtonGroupItem onClick={onOpenShortcuts} className="cv-help" title="Keyboard shortcuts">
+        </button>
+        <button
+          type="button"
+          onClick={toggleFullscreen}
+          aria-label={isFullscreen ? 'Exit full screen' : 'Full screen'}
+          title={isFullscreen ? 'Exit full screen' : 'Full screen'}
+        >
+          {isFullscreen ? (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3" />
+            </svg>
+          ) : (
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+            </svg>
+          )}
+        </button>
+        <span className="cv-ctrl-sep" aria-hidden="true" />
+        <button type="button" onClick={onOpenShortcuts} className="cv-help" aria-label="Keyboard shortcuts" title="Keyboard shortcuts">
           ?
-        </GlassButtonGroupItem>
-      </GlassButtonGroup>
+        </button>
+      </div>
     </div>
   );
 }

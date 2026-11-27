@@ -667,3 +667,140 @@
   font-size: 11px;
   opacity: 0.7;
 }
+
+
+/* Desktop topbar spacing (prevent Resize & View collision) */
+@media (min-width: 901px) {
+  .editor .ed-topbar {
+    grid-template-columns: auto auto minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .editor .ed-top-left {
+    max-width: min(250px, 22vw);
+  }
+
+  .editor .ed-title input {
+    width: min(170px, 14vw);
+  }
+
+  .editor .ed-top-center {
+    justify-self: start;
+    margin-left: 6px;
+    flex: none;
+  }
+
+  .editor .ed-top-right {
+    justify-content: flex-end;
+    min-width: 0;
+  }
+}
+
+/* Resizable desktop sidebars */
+.ed-resizer {
+  width: 6px;
+  flex: none;
+  cursor: col-resize;
+  position: relative;
+  z-index: 30;
+  margin: 6px -3px;
+  touch-action: none;
+}
+
+.ed-resizer::after {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(120, 128, 145, 0.25);
+  opacity: 0;
+  transition: opacity 0.14s ease, background 0.14s ease, height 0.14s ease;
+}
+
+.ed-resizer:hover::after,
+body.is-resizing-panel .ed-resizer::after {
+  opacity: 1;
+  background: var(--cobalt, #2440F0);
+  height: 56px;
+}
+
+body.is-resizing-panel {
+  cursor: col-resize !important;
+  user-select: none;
+}
+
+@media (max-width: 1100px) {
+  .ed-resizer {
+    display: none;
+  }
+}
+
+/* Plain frosted white / black pill for bottom-left canvas zoom, fullscreen & shortcuts */
+.cv-controls.cv-controls-plain {
+  position: absolute;
+  left: 16px;
+  bottom: 14px;
+  z-index: 35;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 36px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(20, 19, 15, 0.14);
+  color: #14130F;
+  box-shadow: 0 6px 20px rgba(20, 19, 15, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+:root[data-theme='dark'] .cv-controls.cv-controls-plain {
+  background: rgba(18, 18, 22, 0.94);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #F4F1EA;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.48);
+}
+
+.cv-controls.cv-controls-plain button {
+  height: 28px;
+  min-width: 28px;
+  padding: 0 7px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  transition: background 0.14s ease;
+}
+
+.cv-controls.cv-controls-plain button:hover {
+  background: rgba(20, 19, 15, 0.08);
+}
+
+:root[data-theme='dark'] .cv-controls.cv-controls-plain button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.cv-controls.cv-controls-plain .cv-zoom-val {
+  min-width: 46px !important;
+  font-variant-numeric: tabular-nums;
+  color: inherit !important;
+}
+
+.cv-controls.cv-controls-plain .cv-ctrl-sep {
+  width: 1px;
+  height: 16px;
+  background: rgba(20, 19, 15, 0.12);
+  margin: 0 2px;
+}
+
+:root[data-theme='dark'] .cv-controls.cv-controls-plain .cv-ctrl-sep {
+  background: rgba(255, 255, 255, 0.16);
+}
